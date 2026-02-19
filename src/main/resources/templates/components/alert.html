@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<style>
+    .alert {
+        margin: 0;
+        padding: 8px 14px;
+        border: 0;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+
+    .alert .btn-close {
+        text-shadow: none !important;
+        width: 40px;
+        padding: 0;
+        opacity: 1;
+        margin-top: 3px;
+        line-height: 1em;
+        height: 36px !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+        background: none;
+    }
+
+    .alert .btn-close:hover, .alert .btn-close:active, .alert .btn-close:focus {
+        outline: 0 !important;
+    }
+
+    .alert .btn-close:hover {
+        opacity: .7;
+    }
+
+    .alert .btn-close:before, .alert .btn-close:after {
+        position: absolute;
+        width: 16px;
+        height: 2px;
+        left: 12px;
+        top: 16px;
+        content: '';
+        display: block;
+        background: #FFF;
+        border-radius: 20px;
+    }
+
+    .alert .btn-close:before {
+        transform: rotate(45deg);
+    }
+
+    .alert .btn-close:after {
+        transform: rotate(-45deg);
+    }
+
+    .alert .alert-title {
+        margin: 4px 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .alert.alert-dismissible {
+        padding-right: 56px;
+    }
+
+    .alert-imaged {
+        display: flex;
+    }
+
+    .alert-imaged .img-wrap {
+        margin-right: 10px;
+    }
+
+    .alert-imaged .img-wrap .imaged {
+        width: 24px;
+        height: 24px;
+    }
+
+    .alert-imaged .icon-wrap {
+        margin-right: 10px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .alert-imaged .icon-wrap i.icon,
+    .alert-imaged .icon-wrap ion-icon {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .alert-primary {
+        background: #6236FF;
+        color: #fff;
+        border: 1px solid #6236FF;
+    }
+
+    .alert-primary a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-primary .alert-title {
+        color: #FFF;
+    }
+
+    .alert-primary .close {
+        color: #FFF;
+    }
+
+    .alert-outline-primary {
+        background: transparent;
+        color: #6236FF;
+        border: 2px solid #6236FF;
+    }
+
+    .alert-outline-primary a {
+        color: #6236FF !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-primary .alert-title {
+        color: #6236FF;
+    }
+
+    .alert-outline-primary .btn-close {
+        color: #6236FF;
+        opacity: 1;
+    }
+
+    .alert-outline-primary .btn-close:before, .alert-outline-primary .btn-close:after {
+        background: #6236FF;
+    }
+
+    .alert-secondary {
+        background: #8494A8;
+        color: #fff;
+        border: 1px solid #8494A8;
+    }
+
+    .alert-secondary a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-secondary .alert-title {
+        color: #FFF;
+    }
+
+    .alert-secondary .close {
+        color: #FFF;
+    }
+
+    .alert-outline-secondary {
+        background: transparent;
+        color: #8494A8;
+        border: 2px solid #8494A8;
+    }
+
+    .alert-outline-secondary a {
+        color: #8494A8 !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-secondary .alert-title {
+        color: #8494A8;
+    }
+
+    .alert-outline-secondary .btn-close {
+        color: #8494A8;
+        opacity: 1;
+    }
+
+    .alert-outline-secondary .btn-close:before, .alert-outline-secondary .btn-close:after {
+        background: #8494A8;
+    }
+
+    .alert-success {
+        background: #1DCC70;
+        color: #fff;
+        border: 1px solid #1DCC70;
+    }
+
+    .alert-success a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-success .alert-title {
+        color: #FFF;
+    }
+
+    .alert-success .close {
+        color: #FFF;
+    }
+
+    .alert-outline-success {
+        background: transparent;
+        color: #1DCC70;
+        border: 2px solid #1DCC70;
+    }
+
+    .alert-outline-success a {
+        color: #1DCC70 !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-success .alert-title {
+        color: #1DCC70;
+    }
+
+    .alert-outline-success .btn-close {
+        color: #1DCC70;
+        opacity: 1;
+    }
+
+    .alert-outline-success .btn-close:before, .alert-outline-success .btn-close:after {
+        background: #1DCC70;
+    }
+
+    .alert-danger {
+        background: #FF396F;
+        color: #fff;
+        border: 1px solid #FF396F;
+    }
+
+    .alert-danger a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-danger .alert-title {
+        color: #FFF;
+    }
+
+    .alert-danger .close {
+        color: #FFF;
+    }
+
+    .alert-outline-danger {
+        background: transparent;
+        color: #FF396F;
+        border: 2px solid #FF396F;
+    }
+
+    .alert-outline-danger a {
+        color: #FF396F !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-danger .alert-title {
+        color: #FF396F;
+    }
+
+    .alert-outline-danger .btn-close {
+        color: #FF396F;
+        opacity: 1;
+    }
+
+    .alert-outline-danger .btn-close:before, .alert-outline-danger .btn-close:after {
+        background: #FF396F;
+    }
+
+    .alert-warning {
+        background: #FFB400;
+        color: #fff;
+        border: 1px solid #FFB400;
+    }
+
+    .alert-warning a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-warning .alert-title {
+        color: #FFF;
+    }
+
+    .alert-warning .close {
+        color: #FFF;
+    }
+
+    .alert-outline-warning {
+        background: transparent;
+        color: #FFB400;
+        border: 2px solid #FFB400;
+    }
+
+    .alert-outline-warning a {
+        color: #FFB400 !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-warning .alert-title {
+        color: #FFB400;
+    }
+
+    .alert-outline-warning .btn-close {
+        color: #FFB400;
+        opacity: 1;
+    }
+
+    .alert-outline-warning .btn-close:before, .alert-outline-warning .btn-close:after {
+        background: #FFB400;
+    }
+
+    .alert-info {
+        background: #05D0A4;
+        color: #fff;
+        border: 1px solid #05D0A4;
+    }
+
+    .alert-info a {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+
+    .alert-info .alert-title {
+        color: #FFF;
+    }
+
+    .alert-info .close {
+        color: #FFF;
+    }
+
+    .alert-outline-info {
+        background: transparent;
+        color: #05D0A4;
+        border: 2px solid #05D0A4;
+    }
+
+    .alert-outline-info a {
+        color: #05D0A4 !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-info .alert-title {
+        color: #05D0A4;
+    }
+
+    .alert-outline-info .btn-close {
+        color: #05D0A4;
+        opacity: 1;
+    }
+
+    .alert-outline-info .btn-close:before, .alert-outline-info .btn-close:after {
+        background: #05D0A4;
+    }
+
+    .alert-light {
+        background: #FFF;
+        color: #27173E;
+    }
+
+    .alert-dark {
+        background: #333;
+        color: #FFF;
+    }
+
+    .alert-dark a {
+        color: #FFF !important;
+        text-decoration: underline !important;
+    }
+
+    .alert-outline-dark {
+        background: transparent;
+        color: #333;
+        border: 2px solid #333;
+    }
+</style>
+
+<div class="alert mb-1" role="alert" th:if="${alert != null}"
+     th:classappend="${alert.getType() == 'success' ? 'alert-success' : (alert.getType() == 'error' ? 'alert-danger' : 'alert-warning')}"
+     th:text="${alert.getMessage()}">
+</div>
+
+</html>

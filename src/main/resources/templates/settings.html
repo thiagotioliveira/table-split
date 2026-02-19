@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações - TableSplit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Settings specific styles */
+    .settings-layout {
+      max-width: 800px;
+    }
+    
+    .settings-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+    }
+    
+    .settings-section-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .settings-section-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .settings-section-header p {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    
+    .settings-section-body {
+      padding: 1.5rem;
+    }
+    
+    .logo-upload {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    
+    .logo-preview {
+      width: 6rem;
+      height: 6rem;
+      border-radius: var(--radius-lg);
+      border: 2px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--background-secondary);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .logo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .logo-preview svg {
+      width: 2rem;
+      height: 2rem;
+      color: var(--muted);
+    }
+    
+    .logo-upload-actions {
+      flex: 1;
+    }
+    
+    .logo-upload-actions p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+    
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    
+    @media (min-width: 640px) {
+      .form-row-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    
+    .hours-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .hours-row {
+      display: grid;
+      grid-template-columns: 5rem 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    @media (max-width: 640px) {
+      .hours-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+      
+      .hours-row .day-label {
+        grid-column: span 2;
+      }
+    }
+    
+    .day-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .hours-input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font: inherit;
+      font-size: 0.875rem;
+      background: var(--background);
+    }
+    
+    .hours-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .closed-badge {
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--background-secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius);
+    }
+    
+    .color-picker-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .color-preview {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    
+    .color-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .danger-zone {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .danger-zone .settings-section-header {
+      border-bottom-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .danger-zone h2 {
+      color: var(--destructive);
+    }
+    
+    .settings-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1rem 0;
+      position: sticky;
+      bottom: 0;
+      background: var(--background);
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+    
+    .input-with-addon {
+      display: flex;
+    }
+    
+    .input-with-addon .form-input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    
+    .input-addon {
+      padding: 0.625rem 0.75rem;
+      background: var(--background-secondary);
+      border: 1px solid var(--border);
+      border-left: none;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    
+    /* Language checkboxes */
+    .language-checkboxes {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .language-checkboxes {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .language-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .language-checkbox:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .language-checkbox input {
+      display: none;
+    }
+    .language-checkbox .checkmark {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .language-checkbox input:checked + .checkmark {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .language-checkbox input:checked + .checkmark::after {
+      content: '✓';
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .language-checkbox input:disabled + .checkmark {
+      opacity: 0.5;
+    }
+    .lang-flag {
+      font-size: 1.25rem;
+    }
+    .lang-name {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+    .lang-badge {
+      font-size: 0.625rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 9999px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .language-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .language-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      background: var(--background-secondary);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      cursor: grab;
+    }
+    .language-tag.primary {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+<div th:insert="~{components/sidebar :: sidebar('Configurações')}"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div th:insert="~{components/alert}"></div>
+
+    <div class="dashboard-body">
+      <form th:action="@{/settings}" th:object="${form}" method="post">
+        <div class="settings-layout">
+
+          <!-- Informações Básicas -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2>Informações do Restaurante</h2>
+              <p>Dados básicos que aparecem para seus clientes</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="logo-upload" style="margin-bottom: 1.5rem;" th:if="${false}">
+                <div class="logo-preview" id="logoPreview">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" x2="22" y1="5" y2="5"/><line x1="19" x2="19" y1="2" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                </div>
+                <div class="logo-upload-actions">
+                  <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                  <button class="btn btn-outline btn-sm" onclick="document.getElementById('logoInput').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    Enviar Logo
+                  </button>
+                  <p>PNG, JPG até 2MB. Recomendado: 200x200px</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="restaurantName">Nome do Restaurante *</label>
+                <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia" placeholder="Nome do seu restaurante" th:field="*{name}">
+                <div th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}"
+                     style="color:red"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="restaurantDesc">Descrição</label>
+                <textarea id="restaurantDesc" class="form-textarea" rows="3" placeholder="Uma breve descrição do seu restaurante...">Autêntica culinária italiana no coração da cidade. Ambiente aconchegante e pratos preparados com ingredientes frescos.</textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="restaurantPhone">Telefone</label>
+                  <input type="tel" id="restaurantPhone" class="form-input" value="(11) 99999-9999" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="restaurantEmail">Email</label>
+                  <input type="email" id="restaurantEmail" class="form-input" value="contato@cantinabella.com" placeholder="email@restaurante.com">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="restaurantAddress">Endereço</label>
+                <input type="text" id="restaurantAddress" class="form-input" value="Rua das Flores, 123 - Centro" placeholder="Endereço completo">
+              </div>
+            </div>
+          </div>
+
+          <!-- Idiomas -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2>Idiomas</h2>
+              <p>Configure os idiomas disponíveis para seus clientes</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="form-group">
+                <label class="form-label" for="primaryLanguage">Idioma Principal *</label>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Usado na área administrativa do restaurante</p>
+                <select id="primaryLanguage" class="form-select" onchange="updateLanguages()">
+                  <option value="pt-BR" selected>Português (Brasil)</option>
+                  <option value="en-US">English (US)</option>
+                  <option value="es-ES">Español</option>
+                  <option value="fr-FR">Français</option>
+                  <option value="it-IT">Italiano</option>
+                  <option value="de-DE">Deutsch</option>
+                  <option value="ja-JP">日本語</option>
+                  <option value="zh-CN">中文</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-top: 1.5rem;">
+                <label class="form-label">Idiomas Disponíveis para Clientes</label>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;">Selecione os idiomas que estarão disponíveis no cardápio digital</p>
+                <div class="language-checkboxes" id="languageCheckboxes">
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="pt-BR" checked disabled>
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇧🇷</span>
+                    <span class="lang-name">Português (Brasil)</span>
+                    <span class="lang-badge primary">Principal</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="en-US" checked onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇺🇸</span>
+                    <span class="lang-name">English (US)</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="es-ES" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇪🇸</span>
+                    <span class="lang-name">Español</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="fr-FR" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇫🇷</span>
+                    <span class="lang-name">Français</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="it-IT" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇮🇹</span>
+                    <span class="lang-name">Italiano</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="de-DE" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇩🇪</span>
+                    <span class="lang-name">Deutsch</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="ja-JP" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇯🇵</span>
+                    <span class="lang-name">日本語 (Japanese)</span>
+                  </label>
+                  <label class="language-checkbox">
+                    <input type="checkbox" value="zh-CN" onchange="toggleLanguage(this)">
+                    <span class="checkmark"></span>
+                    <span class="lang-flag">🇨🇳</span>
+                    <span class="lang-name">中文 (Chinese)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="selected-languages" id="selectedLanguages" style="margin-top: 1rem;">
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Idiomas selecionados (arraste para reordenar):</p>
+                <div class="language-tags">
+                  <span class="language-tag primary">🇧🇷 Português</span>
+                  <span class="language-tag">🇺🇸 English</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configurações Financeiras -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2>Configurações Financeiras</h2>
+              <p>Taxa de serviço e moeda utilizada</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label class="form-label" for="currency">Moeda</label>
+                  <select id="currency" class="form-select">
+                    <option value="BRL" selected>R$ (Real)</option>
+                    <option value="USD">$ (Dólar)</option>
+                    <option value="EUR">€ (Euro)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="serviceFee">Taxa de Serviço</label>
+                  <div class="input-with-addon">
+                    <input type="number" id="serviceFee" class="form-input" value="10" min="0" max="100" step="0.5">
+                    <span class="input-addon">%</span>
+                  </div>
+                </div>
+
+                <div class="form-group" th:if="${false}">
+                  <label class="form-label" for="minOrder">Pedido Mínimo</label>
+                  <div class="input-with-addon">
+                    <input type="number" id="minOrder" class="form-input" value="0" min="0" step="1">
+                    <span class="input-addon">R$</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-switch" style="margin-top: 1rem;" th:if="${false}">
+                <div class="form-switch-label">
+                  <label class="form-label" style="margin-bottom: 0;">Incluir taxa de serviço automaticamente</label>
+                  <p>A taxa será adicionada ao total da conta</p>
+                </div>
+                <div id="autoServiceFee" class="switch active" onclick="toggleSwitch(this)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Horário de Funcionamento -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2>Horário de Funcionamento</h2>
+              <p>Defina os horários de abertura e fechamento</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="hours-grid">
+                <div class="hours-row">
+                  <span class="day-label">Segunda</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="23:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)" title="Marcar como fechado">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label">Terça</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="23:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label">Quarta</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="23:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label">Quinta</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="23:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label">Sexta</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="00:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label">Sábado</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="00:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row" style="opacity: 0.5;">
+                  <span class="day-label">Domingo</span>
+                  <span class="closed-badge" style="grid-column: span 2; text-align: center;">Fechado</span>
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)" style="color: var(--accent);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aparência -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2>Aparência do Menu</h2>
+              <p>Personalize as cores do menu digital</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label class="form-label">Cor Principal</label>
+                  <div class="color-picker-group">
+                    <label class="color-preview" style="background: #f97316;">
+                      <input type="color" class="color-input" value="#f97316" onchange="this.parentElement.style.background = this.value">
+                    </label>
+                    <input type="text" class="form-input" value="#f97316" style="font-family: monospace;">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Cor de Destaque</label>
+                  <div class="color-picker-group">
+                    <label class="color-preview" style="background: #10b981;">
+                      <input type="color" class="color-input" value="#10b981" onchange="this.parentElement.style.background = this.value">
+                    </label>
+                    <input type="text" class="form-input" value="#10b981" style="font-family: monospace;">
+                  </div>
+                </div>
+
+                <div class="form-group" th:if="${false}">
+                  <label class="form-label">Fundo do Menu</label>
+                  <select class="form-select">
+                    <option value="light" selected>Claro</option>
+                    <option value="dark">Escuro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notificações -->
+          <div class="settings-section" th:if="${false}">
+            <div class="settings-section-header">
+              <h2>Notificações</h2>
+              <p>Configure como você recebe alertas</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="form-switch" style="margin-bottom: 1rem;">
+                <div class="form-switch-label">
+                  <label class="form-label" style="margin-bottom: 0;">Notificações de novos pedidos</label>
+                  <p>Receba alertas quando um cliente fizer um pedido</p>
+                </div>
+                <div class="switch active" onclick="toggleSwitch(this)"></div>
+              </div>
+
+              <div class="form-switch" style="margin-bottom: 1rem;">
+                <div class="form-switch-label">
+                  <label class="form-label" style="margin-bottom: 0;">Alertas de "Chamar Garçom"</label>
+                  <p>Notificação sonora quando cliente solicitar atendimento</p>
+                </div>
+                <div class="switch active" onclick="toggleSwitch(this)"></div>
+              </div>
+
+              <div class="form-switch">
+                <div class="form-switch-label">
+                  <label class="form-label" style="margin-bottom: 0;">Email de resumo diário</label>
+                  <p>Receba um resumo das vendas do dia por email</p>
+                </div>
+                <div class="switch" onclick="toggleSwitch(this)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zona de Perigo -->
+          <div class="settings-section danger-zone" th:if="${false}">
+            <div class="settings-section-header">
+              <h2>Zona de Perigo</h2>
+              <p>Ações irreversíveis</p>
+            </div>
+            <div class="settings-section-body">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <p style="font-weight: 500; margin-bottom: 0.25rem;">Excluir Restaurante</p>
+                  <p style="font-size: 0.875rem; color: var(--muted);">Esta ação não pode ser desfeita. Todos os dados serão perdidos.</p>
+                </div>
+                <button class="btn btn-outline" style="border-color: var(--destructive); color: var(--destructive);">
+                  Excluir Restaurante
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="settings-footer">
+            <button class="btn btn-outline">Cancelar</button>
+            <button class="btn btn-primary" type="submit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar Alterações
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // Toggle switch
+    function toggleSwitch(el) {
+      el.classList.toggle('active');
+    }
+    
+    // Toggle day open/closed
+    function toggleDay(btn) {
+      const row = btn.closest('.hours-row');
+      const inputs = row.querySelectorAll('.hours-input');
+      const closedBadge = row.querySelector('.closed-badge');
+      
+      if (inputs.length > 0) {
+        // Currently open, make closed
+        inputs.forEach(input => input.remove());
+        const badge = document.createElement('span');
+        badge.className = 'closed-badge';
+        badge.style.gridColumn = 'span 2';
+        badge.style.textAlign = 'center';
+        badge.textContent = 'Fechado';
+        row.insertBefore(badge, btn);
+        row.style.opacity = '0.5';
+        btn.style.color = 'var(--accent)';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>';
+      } else if (closedBadge) {
+        // Currently closed, make open
+        closedBadge.remove();
+        const input1 = document.createElement('input');
+        input1.type = 'time';
+        input1.className = 'hours-input';
+        input1.value = '11:30';
+        const input2 = document.createElement('input');
+        input2.type = 'time';
+        input2.className = 'hours-input';
+        input2.value = '23:00';
+        row.insertBefore(input2, btn);
+        row.insertBefore(input1, input2);
+        row.style.opacity = '1';
+        btn.style.color = '';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>';
+      }
+    }
+    
+    /* Logo preview
+    document.getElementById('logoInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('logoPreview');
+          preview.innerHTML = '<img src="' + e.target.result + '" alt="Logo">';
+        };
+        reader.readAsDataURL(file);
+      }
+    });*/
+    
+    // Language management
+    function updateLanguages() {
+      const primary = document.getElementById('primaryLanguage').value;
+      const checkboxes = document.querySelectorAll('.language-checkbox input');
+      checkboxes.forEach(cb => {
+        const label = cb.closest('.language-checkbox');
+        const badge = label.querySelector('.lang-badge');
+        if (cb.value === primary) {
+          cb.checked = true;
+          cb.disabled = true;
+          if (!badge) {
+            const newBadge = document.createElement('span');
+            newBadge.className = 'lang-badge primary';
+            newBadge.textContent = 'Principal';
+            label.appendChild(newBadge);
+          }
+        } else {
+          cb.disabled = false;
+          if (badge) badge.remove();
+        }
+      });
+      updateLanguageTags();
+    }
+    
+    function toggleLanguage(checkbox) {
+      updateLanguageTags();
+    }
+    
+    function updateLanguageTags() {
+      const checked = document.querySelectorAll('.language-checkbox input:checked');
+      const tagsContainer = document.querySelector('.language-tags');
+      const primary = document.getElementById('primaryLanguage').value;
+      const langNames = {
+        'pt-BR': '🇧🇷 Português',
+        'en-US': '🇺🇸 English',
+        'es-ES': '🇪🇸 Español',
+        'fr-FR': '🇫🇷 Français',
+        'it-IT': '🇮🇹 Italiano',
+        'de-DE': '🇩🇪 Deutsch',
+        'ja-JP': '🇯🇵 日本語',
+        'zh-CN': '🇨🇳 中文'
+      };
+      tagsContainer.innerHTML = Array.from(checked).map(cb => 
+        `<span class="language-tag ${cb.value === primary ? 'primary' : ''}">${langNames[cb.value]}</span>`
+      ).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TableSplit - Menu Digital com QR Code e Divisão de Conta</title>
+  <meta name="description" content="Sistema de menu digital com QR Code por mesa e divisão automática de conta para restaurantes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 16px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 4px;
+    }
+    .lang-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      color: var(--text-primary);
+    }
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    @media (max-width: 768px) {
+      .lang-switcher {
+        margin-right: 8px;
+      }
+      .lang-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+          </div>
+          <span class="logo-text">TableSplit</span>
+        </a>
+        
+        <nav class="nav">
+          <a href="#funcionalidades" data-i18n="nav.features">Funcionalidades</a>
+          <a href="#como-funciona" data-i18n="nav.howItWorks">Como Funciona</a>
+          <a href="#beneficios" data-i18n="nav.benefits">Benefícios</a>
+        </nav>
+        
+        <div class="header-actions">
+          <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="pt">PT</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+          </div>
+          <a href="/login" class="btn btn-ghost" data-i18n="nav.login">Entrar</a>
+          <a href="/register" class="btn btn-primary" data-i18n="nav.register">Começar Grátis</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-blob-1"></div>
+    <div class="hero-blob-2"></div>
+    
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
+          <span data-i18n="hero.badge">Menu Digital Inteligente</span>
+        </div>
+        
+        <h1 class="hero-title" data-i18n="hero.title">
+          Divisão de Conta <span class="gradient">Automática</span> para Restaurantes
+        </h1>
+        
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+          Seus clientes escaneiam o QR Code, fazem pedidos individualmente e cada um paga apenas o que consumiu. Simples assim.
+        </p>
+        
+        <div class="hero-actions">
+          <a href="/register" class="btn btn-primary btn-lg">
+            <span data-i18n="hero.cta">Criar Conta Grátis</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="/demo" class="btn btn-outline btn-lg" data-i18n="hero.demo">Ver Demonstração</a>
+        </div>
+      </div>
+      
+      <!-- Preview Cards -->
+      <div class="preview-container">
+        <div class="preview-card">
+          <div class="preview-card-bg"></div>
+          <div class="preview-card-content">
+            <div class="preview-item">
+              <div class="preview-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
+                <span class="preview-step">1</span>
+              </div>
+              <h3 class="preview-title" data-i18n="preview.step1.title">Cliente Escaneia</h3>
+              <p class="preview-desc" data-i18n="preview.step1.desc">QR Code na mesa abre o menu digital instantaneamente</p>
+            </div>
+            
+            <div class="preview-item">
+              <div class="preview-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                <span class="preview-step">2</span>
+              </div>
+              <h3 class="preview-title" data-i18n="preview.step2.title">Faz o Pedido</h3>
+              <p class="preview-desc" data-i18n="preview.step2.desc">Cada pessoa adiciona seus itens individualmente</p>
+            </div>
+            
+            <div class="preview-item">
+              <div class="preview-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+                <span class="preview-step">3</span>
+              </div>
+              <h3 class="preview-title" data-i18n="preview.step3.title">Conta Dividida</h3>
+              <p class="preview-desc" data-i18n="preview.step3.desc">Sistema calcula automaticamente o valor de cada um</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="funcionalidades" class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 data-i18n="features.title">Tudo que seu restaurante precisa</h2>
+        <p data-i18n="features.subtitle">Funcionalidades pensadas para melhorar a experiência dos seus clientes e facilitar a gestão</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.qr.title">QR Code por Mesa</h3>
+          <p class="feature-desc" data-i18n="features.qr.desc">Cada mesa tem seu próprio código. Clientes acessam o menu digitalizando com o celular.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.individual.title">Pedidos Individuais</h3>
+          <p class="feature-desc" data-i18n="features.individual.desc">Cada pessoa na mesa registra seus próprios itens. Sem confusão na hora de pagar.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.split.title">Divisão Automática</h3>
+          <p class="feature-desc" data-i18n="features.split.desc">O sistema calcula exatamente quanto cada pessoa deve pagar, incluindo taxa de serviço.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.waiter.title">Chamar Garçom</h3>
+          <p class="feature-desc" data-i18n="features.waiter.desc">Botão para solicitar atendimento. O restaurante recebe alerta instantâneo no painel.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.menu.title">Gestão de Menu</h3>
+          <p class="feature-desc" data-i18n="features.menu.desc">Cadastre categorias, itens com fotos, preços e disponibilidade facilmente.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.mobile.title">100% Mobile</h3>
+          <p class="feature-desc" data-i18n="features.mobile.desc">Interface otimizada para celular. Seus clientes usam seus próprios dispositivos.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <h3 class="feature-title" data-i18n="features.multilang.title">Multi-idioma</h3>
+          <p class="feature-desc" data-i18n="features.multilang.desc">Cadastre itens do cardápio em múltiplos idiomas. Ideal para turistas e clientes internacionais.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Section -->
+  <section id="como-funciona" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2 data-i18n="howItWorks.title">Como Funciona</h2>
+        <p data-i18n="howItWorks.subtitle">Um fluxo simples e intuitivo para restaurantes e clientes</p>
+      </div>
+      
+      <div class="how-grid">
+        <div class="how-column">
+          <h3>
+            <div class="how-icon primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
+            </div>
+            <span data-i18n="howItWorks.restaurant.title">Para o Restaurante</span>
+          </h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <p class="step-text" data-i18n="howItWorks.restaurant.step1">Crie sua conta e cadastre seu restaurante</p>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <p class="step-text" data-i18n="howItWorks.restaurant.step2">Adicione as mesas e configure o menu</p>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <p class="step-text" data-i18n="howItWorks.restaurant.step3">Imprima os QR Codes e coloque nas mesas</p>
+            </div>
+            <div class="step">
+              <div class="step-number">4</div>
+              <p class="step-text" data-i18n="howItWorks.restaurant.step4">Acompanhe pedidos e gerencie tudo pelo painel</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="how-column">
+          <h3>
+            <div class="how-icon accent">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span data-i18n="howItWorks.customer.title">Para o Cliente</span>
+          </h3>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <p class="step-text" data-i18n="howItWorks.customer.step1">Escaneie o QR Code da mesa com seu celular</p>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <p class="step-text" data-i18n="howItWorks.customer.step2">Informe seu nome e entre na sessão da mesa</p>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <p class="step-text" data-i18n="howItWorks.customer.step3">Navegue pelo menu e faça seus pedidos</p>
+            </div>
+            <div class="step">
+              <div class="step-number">4</div>
+              <p class="step-text" data-i18n="howItWorks.customer.step4">Veja seu total individual e o total da mesa</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section id="beneficios" class="benefits">
+    <div class="container">
+      <div class="section-header">
+        <h2 data-i18n="benefits.title">Benefícios para seu Negócio</h2>
+      </div>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <h3 class="benefit-title" data-i18n="benefits.errors.title">Menos Erros</h3>
+          <p class="benefit-desc" data-i18n="benefits.errors.desc">Elimina conferência manual de pedidos e divisão de conta</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <h3 class="benefit-title" data-i18n="benefits.speed.title">Mais Agilidade</h3>
+          <p class="benefit-desc" data-i18n="benefits.speed.desc">Clientes fazem pedidos diretamente, sem esperar garçom</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <h3 class="benefit-title" data-i18n="benefits.experience.title">Melhor Experiência</h3>
+          <p class="benefit-desc" data-i18n="benefits.experience.desc">Interface moderna que impressiona seus clientes</p>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <h3 class="benefit-title" data-i18n="benefits.control.title">Controle Total</h3>
+          <p class="benefit-desc" data-i18n="benefits.control.desc">Acompanhe tudo em tempo real pelo painel de gestão</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <h2 data-i18n="cta.title">Pronto para modernizar seu restaurante?</h2>
+      <p data-i18n="cta.subtitle">Comece gratuitamente e veja como o TableSplit pode transformar a experiência dos seus clientes.</p>
+      <a href="/register" class="btn btn-primary btn-lg">
+        <span data-i18n="cta.button">Começar Agora</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+          </div>
+          <span>TableSplit</span>
+        </div>
+        <p class="footer-copy" data-i18n="footer.copy">© 2026 TableSplit. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const translations = {
+      pt: {
+        'nav.features': 'Funcionalidades',
+        'nav.howItWorks': 'Como Funciona',
+        'nav.benefits': 'Benefícios',
+        'nav.login': 'Entrar',
+        'nav.register': 'Começar Grátis',
+        'hero.badge': 'Menu Digital Inteligente',
+        'hero.title': 'Divisão de Conta <span class="gradient">Automática</span> para Restaurantes',
+        'hero.subtitle': 'Seus clientes escaneiam o QR Code, fazem pedidos individualmente e cada um paga apenas o que consumiu. Simples assim.',
+        'hero.cta': 'Criar Conta Grátis',
+        'hero.demo': 'Ver Demonstração',
+        'preview.step1.title': 'Cliente Escaneia',
+        'preview.step1.desc': 'QR Code na mesa abre o menu digital instantaneamente',
+        'preview.step2.title': 'Faz o Pedido',
+        'preview.step2.desc': 'Cada pessoa adiciona seus itens individualmente',
+        'preview.step3.title': 'Conta Dividida',
+        'preview.step3.desc': 'Sistema calcula automaticamente o valor de cada um',
+        'features.title': 'Tudo que seu restaurante precisa',
+        'features.subtitle': 'Funcionalidades pensadas para melhorar a experiência dos seus clientes e facilitar a gestão',
+        'features.qr.title': 'QR Code por Mesa',
+        'features.qr.desc': 'Cada mesa tem seu próprio código. Clientes acessam o menu digitalizando com o celular.',
+        'features.individual.title': 'Pedidos Individuais',
+        'features.individual.desc': 'Cada pessoa na mesa registra seus próprios itens. Sem confusão na hora de pagar.',
+        'features.split.title': 'Divisão Automática',
+        'features.split.desc': 'O sistema calcula exatamente quanto cada pessoa deve pagar, incluindo taxa de serviço.',
+        'features.waiter.title': 'Chamar Garçom',
+        'features.waiter.desc': 'Botão para solicitar atendimento. O restaurante recebe alerta instantâneo no painel.',
+        'features.menu.title': 'Gestão de Menu',
+        'features.menu.desc': 'Cadastre categorias, itens com fotos, preços e disponibilidade facilmente.',
+        'features.mobile.title': '100% Mobile',
+        'features.mobile.desc': 'Interface otimizada para celular. Seus clientes usam seus próprios dispositivos.',
+        'features.multilang.title': 'Multi-idioma',
+        'features.multilang.desc': 'Cadastre itens do cardápio em múltiplos idiomas. Ideal para turistas e clientes internacionais.',
+        'howItWorks.title': 'Como Funciona',
+        'howItWorks.subtitle': 'Um fluxo simples e intuitivo para restaurantes e clientes',
+        'howItWorks.restaurant.title': 'Para o Restaurante',
+        'howItWorks.restaurant.step1': 'Crie sua conta e cadastre seu restaurante',
+        'howItWorks.restaurant.step2': 'Adicione as mesas e configure o menu',
+        'howItWorks.restaurant.step3': 'Imprima os QR Codes e coloque nas mesas',
+        'howItWorks.restaurant.step4': 'Acompanhe pedidos e gerencie tudo pelo painel',
+        'howItWorks.customer.title': 'Para o Cliente',
+        'howItWorks.customer.step1': 'Escaneie o QR Code da mesa com seu celular',
+        'howItWorks.customer.step2': 'Informe seu nome e entre na sessão da mesa',
+        'howItWorks.customer.step3': 'Navegue pelo menu e faça seus pedidos',
+        'howItWorks.customer.step4': 'Veja seu total individual e o total da mesa',
+        'benefits.title': 'Benefícios para seu Negócio',
+        'benefits.errors.title': 'Menos Erros',
+        'benefits.errors.desc': 'Elimina conferência manual de pedidos e divisão de conta',
+        'benefits.speed.title': 'Mais Agilidade',
+        'benefits.speed.desc': 'Clientes fazem pedidos diretamente, sem esperar garçom',
+        'benefits.experience.title': 'Melhor Experiência',
+        'benefits.experience.desc': 'Interface moderna que impressiona seus clientes',
+        'benefits.control.title': 'Controle Total',
+        'benefits.control.desc': 'Acompanhe tudo em tempo real pelo painel de gestão',
+        'cta.title': 'Pronto para modernizar seu restaurante?',
+        'cta.subtitle': 'Comece gratuitamente e veja como o TableSplit pode transformar a experiência dos seus clientes.',
+        'cta.button': 'Começar Agora',
+        'footer.copy': '© 2025 TableSplit. Todos os direitos reservados.'
+      },
+      en: {
+        'nav.features': 'Features',
+        'nav.howItWorks': 'How It Works',
+        'nav.benefits': 'Benefits',
+        'nav.login': 'Login',
+        'nav.register': 'Start Free',
+        'hero.badge': 'Smart Digital Menu',
+        'hero.title': '<span class="gradient">Automatic</span> Bill Splitting for Restaurants',
+        'hero.subtitle': 'Your customers scan the QR Code, order individually, and each pays only for what they consumed. Simple as that.',
+        'hero.cta': 'Create Free Account',
+        'hero.demo': 'See Demo',
+        'preview.step1.title': 'Customer Scans',
+        'preview.step1.desc': 'QR Code on the table opens the digital menu instantly',
+        'preview.step2.title': 'Places Order',
+        'preview.step2.desc': 'Each person adds their items individually',
+        'preview.step3.title': 'Bill Split',
+        'preview.step3.desc': 'System automatically calculates each person\'s amount',
+        'features.title': 'Everything your restaurant needs',
+        'features.subtitle': 'Features designed to improve your customers\' experience and simplify management',
+        'features.qr.title': 'QR Code per Table',
+        'features.qr.desc': 'Each table has its own code. Customers access the menu by scanning with their phone.',
+        'features.individual.title': 'Individual Orders',
+        'features.individual.desc': 'Each person at the table registers their own items. No confusion when paying.',
+        'features.split.title': 'Automatic Split',
+        'features.split.desc': 'The system calculates exactly how much each person should pay, including service fee.',
+        'features.waiter.title': 'Call Waiter',
+        'features.waiter.desc': 'Button to request service. The restaurant receives an instant alert on the dashboard.',
+        'features.menu.title': 'Menu Management',
+        'features.menu.desc': 'Register categories, items with photos, prices and availability easily.',
+        'features.mobile.title': '100% Mobile',
+        'features.mobile.desc': 'Mobile-optimized interface. Your customers use their own devices.',
+        'features.multilang.title': 'Multi-language',
+        'features.multilang.desc': 'Register menu items in multiple languages. Ideal for tourists and international customers.',
+        'howItWorks.title': 'How It Works',
+        'howItWorks.subtitle': 'A simple and intuitive flow for restaurants and customers',
+        'howItWorks.restaurant.title': 'For the Restaurant',
+        'howItWorks.restaurant.step1': 'Create your account and register your restaurant',
+        'howItWorks.restaurant.step2': 'Add tables and configure the menu',
+        'howItWorks.restaurant.step3': 'Print QR Codes and place them on tables',
+        'howItWorks.restaurant.step4': 'Track orders and manage everything from the dashboard',
+        'howItWorks.customer.title': 'For the Customer',
+        'howItWorks.customer.step1': 'Scan the table QR Code with your phone',
+        'howItWorks.customer.step2': 'Enter your name and join the table session',
+        'howItWorks.customer.step3': 'Browse the menu and place your orders',
+        'howItWorks.customer.step4': 'See your individual total and the table total',
+        'benefits.title': 'Benefits for Your Business',
+        'benefits.errors.title': 'Fewer Errors',
+        'benefits.errors.desc': 'Eliminates manual order checking and bill splitting',
+        'benefits.speed.title': 'More Agility',
+        'benefits.speed.desc': 'Customers order directly without waiting for a waiter',
+        'benefits.experience.title': 'Better Experience',
+        'benefits.experience.desc': 'Modern interface that impresses your customers',
+        'benefits.control.title': 'Total Control',
+        'benefits.control.desc': 'Track everything in real-time from the management dashboard',
+        'cta.title': 'Ready to modernize your restaurant?',
+        'cta.subtitle': 'Start for free and see how TableSplit can transform your customers\' experience.',
+        'cta.button': 'Start Now',
+        'footer.copy': '© 2025 TableSplit. All rights reserved.'
+      }
+    };
+
+    let currentLang = localStorage.getItem('lang') || 'pt';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      
+      // Update all translatable elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.innerHTML = translations[lang][key];
+        }
+      });
+
+      // Update active button
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Update page title
+      document.title = lang === 'pt' 
+        ? 'TableSplit - Menu Digital com QR Code e Divisão de Conta'
+        : 'TableSplit - Digital Menu with QR Code and Bill Splitting';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up language buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+      });
+
+      // Apply saved language
+      setLanguage(currentLang);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: table-split
+  datasource:
+    url: jdbc:h2:mem:table-split
+
+logging:
+  level:
+    ROOT: INFO
+    dev.thiagooliveira: DEBUG
