@@ -3,7 +3,9 @@ spring:
     name: table-split
   datasource:
     url: jdbc:h2:mem:table-split
-
+  messages:
+    basename: messages
+    encoding: UTF-8
 logging:
   level:
     ROOT: INFO

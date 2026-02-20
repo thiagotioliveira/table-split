@@ -27,46 +27,56 @@ databaseChangeLog:
                   type: varchar(100)
                   constraints:
                     nullable: false
-#              - column:
-#                  name: description
-#                  type: varchar(255)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: phone
-#                  type: varchar(50)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: email
-#                  type: varchar(100)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: address
-#                  type: varchar(255)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: currency
-#                  type: varchar(3)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: service_fee
-#                  type: smallint
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: hash_primary_color
-#                  type: varchar(7)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: hash_secundary_color
-#                  type: varchar(7)
-#                  constraints:
-#                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: phone
+                  type: varchar(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: default_language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_fee
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: average_price
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_primary_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_accent_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: false
 #
 #        - createTable:
 #            tableName: restaurant_languages

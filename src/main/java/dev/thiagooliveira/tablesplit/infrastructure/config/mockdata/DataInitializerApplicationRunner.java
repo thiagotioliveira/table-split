@@ -24,6 +24,16 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     var restaurant = new RestaurantEntity();
     restaurant.setId(UUID.randomUUID());
     restaurant.setName("Dona Maria");
+    restaurant.setDescription("Comida brasileira de qualidade!");
+    restaurant.setPhone("+351 963 927 944");
+    restaurant.setEmail("contato@cantinabella.com");
+    restaurant.setAddress("Rua das Flores, 123 - Centro");
+    restaurant.setDefaultLanguage("pt-BR");
+    restaurant.setCurrency("EUR");
+    restaurant.setServiceFee(10);
+    restaurant.setAveragePrice("20-50");
+    restaurant.setHashPrimaryColor("#f97316");
+    restaurant.setHashAccentColor("#10b981");
     restaurant = this.restaurantJpaRepository.save(restaurant);
     context.setRestaurantId(restaurant.getId());
   }

@@ -1,7 +1,8 @@
-package dev.thiagooliveira.tablesplit.infrastructure.restaurant;
+package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

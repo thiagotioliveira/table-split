@@ -7,7 +7,7 @@
         padding: 8px 14px;
         border: 0;
         font-size: 13px;
-        border-radius: 10px;
+        /*border-radius: 10px;*/
     }
 
     .alert .btn-close {
@@ -368,7 +368,7 @@
 
 <div class="alert mb-1" role="alert" th:if="${alert != null}"
      th:classappend="${alert.getType() == 'success' ? 'alert-success' : (alert.getType() == 'error' ? 'alert-danger' : 'alert-warning')}"
-     th:text="${alert.getMessage()}">
+     th:text="#{${alert.getMessage()}}">
 </div>
 
 </html>

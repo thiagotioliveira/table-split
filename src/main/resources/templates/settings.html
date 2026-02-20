@@ -300,7 +300,7 @@
   </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar('Configurações')}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{nav.settings})}"></div>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -310,11 +310,11 @@
       <form th:action="@{/settings}" th:object="${form}" method="post">
         <div class="settings-layout">
 
-          <!-- Informações Básicas -->
+          <!-- Basic Information -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2>Informações do Restaurante</h2>
-              <p>Dados básicos que aparecem para seus clientes</p>
+              <h2 th:text="#{section.restaurant.title}">Restaurant Information</h2>
+              <p th:text="#{section.restaurant.description}">Basic information that appears to your customers</p>
             </div>
             <div class="settings-section-body">
               <div class="logo-upload" style="margin-bottom: 1.5rem;" th:if="${false}">
@@ -332,61 +332,65 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantName">Nome do Restaurante *</label>
-                <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia" placeholder="Nome do seu restaurante" th:field="*{name}">
-                <div th:if="${#fields.hasErrors('name')}"
-                     th:errors="*{name}"
-                     style="color:red"></div>
+                <label class="form-label" for="restaurantName" th:text="#{form.restaurant.name.required}">Restaurant Name *</label>
+                <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia" th:placeholder="#{form.restaurant.name.placeholder}" th:field="*{name}">
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantDesc">Descrição</label>
-                <textarea id="restaurantDesc" class="form-textarea" rows="3" placeholder="Uma breve descrição do seu restaurante...">Autêntica culinária italiana no coração da cidade. Ambiente aconchegante e pratos preparados com ingredientes frescos.</textarea>
+                <label class="form-label" for="restaurantDesc" th:text="#{form.restaurant.description}">Description</label>
+                <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254" th:placeholder="#{form.restaurant.description.placeholder}"
+                  th:field="*{description}"></textarea>
+                <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red"></div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label" for="restaurantPhone">Telefone</label>
-                  <input type="tel" id="restaurantPhone" class="form-input" value="(11) 99999-9999" placeholder="(00) 00000-0000">
+                  <label class="form-label" for="restaurantPhone" th:text="#{form.restaurant.phone}">Phone</label>
+                  <input type="tel" id="restaurantPhone" class="form-input" maxlength="20" th:field="*{phone}" th:placeholder="#{form.restaurant.phone.placeholder}">
+                  <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="restaurantEmail">Email</label>
-                  <input type="email" id="restaurantEmail" class="form-input" value="contato@cantinabella.com" placeholder="email@restaurante.com">
+                  <label class="form-label" for="restaurantEmail" th:text="#{form.restaurant.email}">Email *</label>
+                  <input type="email" id="restaurantEmail" class="form-input" maxlength="254" th:field="*{email}" th:placeholder="#{form.restaurant.email.placeholder}">
+                  <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantAddress">Endereço</label>
-                <input type="text" id="restaurantAddress" class="form-input" value="Rua das Flores, 123 - Centro" placeholder="Endereço completo">
+                <label class="form-label" for="restaurantAddress" th:text="#{form.restaurant.address}">Address</label>
+                <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}" th:placeholder="#{form.restaurant.address.placeholder}">
+                <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
               </div>
             </div>
           </div>
 
-          <!-- Idiomas -->
+          <!-- Languages -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2>Idiomas</h2>
-              <p>Configure os idiomas disponíveis para seus clientes</p>
+              <h2 th:text="#{section.languages.title}">Languages</h2>
+              <p th:text="#{section.languages.description}">Configure the languages available for your customers</p>
             </div>
             <div class="settings-section-body">
               <div class="form-group">
-                <label class="form-label" for="primaryLanguage">Idioma Principal *</label>
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Usado na área administrativa do restaurante</p>
-                <select id="primaryLanguage" class="form-select" onchange="updateLanguages()">
-                  <option value="pt-BR" selected>Português (Brasil)</option>
-                  <option value="en-US">English (US)</option>
-                  <option value="es-ES">Español</option>
-                  <option value="fr-FR">Français</option>
-                  <option value="it-IT">Italiano</option>
-                  <option value="de-DE">Deutsch</option>
-                  <option value="ja-JP">日本語</option>
-                  <option value="zh-CN">中文</option>
+                <label class="form-label" for="primaryLanguage" th:text="#{form.language.primary}">Primary Language *</label>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;" th:text="#{form.language.primary.hint}">Used in the restaurant admin area</p>
+                <select id="primaryLanguage" class="form-select" onchange="updateLanguages()" th:field="*{defaultLanguage}">
+                  <option value="en-US" selected>English (US)</option>
+                  <option value="pt-BR">Português (Brasil)</option>
+                  <option value="es-ES" th:if="${false}">Español</option>
+                  <option value="fr-FR" th:if="${false}">Français</option>
+                  <option value="it-IT" th:if="${false}">Italiano</option>
+                  <option value="de-DE" th:if="${false}">Deutsch</option>
+                  <option value="ja-JP" th:if="${false}">日本語</option>
+                  <option value="zh-CN" th:if="${false}">中文</option>
                 </select>
+                <div th:if="${#fields.hasErrors('defaultLanguage')}" th:errors="*{defaultLanguage}" style="color:red"></div>
               </div>
 
               <div class="form-group" style="margin-top: 1.5rem;">
-                <label class="form-label">Idiomas Disponíveis para Clientes</label>
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;">Selecione os idiomas que estarão disponíveis no cardápio digital</p>
+                <label class="form-label" th:text="#{form.language.available}">Languages Available for Customers</label>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;" th:text="#{form.language.available.hint}">Select the languages that will be available in the digital menu</p>
                 <div class="language-checkboxes" id="languageCheckboxes">
                   <label class="language-checkbox">
                     <input type="checkbox" value="pt-BR" checked disabled>
@@ -401,37 +405,37 @@
                     <span class="lang-flag">🇺🇸</span>
                     <span class="lang-name">English (US)</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="es-ES" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇪🇸</span>
                     <span class="lang-name">Español</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="fr-FR" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇫🇷</span>
                     <span class="lang-name">Français</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="it-IT" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇮🇹</span>
                     <span class="lang-name">Italiano</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="de-DE" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇩🇪</span>
                     <span class="lang-name">Deutsch</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="ja-JP" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇯🇵</span>
                     <span class="lang-name">日本語 (Japanese)</span>
                   </label>
-                  <label class="language-checkbox">
+                  <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="zh-CN" onchange="toggleLanguage(this)">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇨🇳</span>
@@ -441,7 +445,7 @@
               </div>
 
               <div class="selected-languages" id="selectedLanguages" style="margin-top: 1rem;">
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">Idiomas selecionados (arraste para reordenar):</p>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;" th:text="#{language.selected}">Selected languages (drag to reorder):</p>
                 <div class="language-tags">
                   <span class="language-tag primary">🇧🇷 Português</span>
                   <span class="language-tag">🇺🇸 English</span>
@@ -450,36 +454,44 @@
             </div>
           </div>
 
-          <!-- Configurações Financeiras -->
+          <!-- Financial Settings -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2>Configurações Financeiras</h2>
-              <p>Taxa de serviço e moeda utilizada</p>
+              <h2 th:text="#{section.financial.title}">Financial Settings</h2>
+              <p th:text="#{section.financial.description}">Service fee and currency used</p>
             </div>
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label" for="currency">Moeda</label>
-                  <select id="currency" class="form-select">
-                    <option value="BRL" selected>R$ (Real)</option>
-                    <option value="USD">$ (Dólar)</option>
-                    <option value="EUR">€ (Euro)</option>
+                  <label class="form-label" for="currency" th:text="#{form.currency}">Currency</label>
+                  <select id="currency" class="form-select" th:field="*{currency}">
+                    <option value="EUR" selected th:text="#{form.currency.eur}">€ (Euro)</option>
+                    <option value="BRL" th:text="#{form.currency.brl}">R$ (Real)</option>
+                    <option value="USD" th:if="${false}">$ (Dólar)</option>
                   </select>
+                  <div th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}" style="color:red"></div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="serviceFee">Taxa de Serviço</label>
+                  <label class="form-label" for="serviceFee" th:text="#{form.service.fee}">Service Fee</label>
                   <div class="input-with-addon">
-                    <input type="number" id="serviceFee" class="form-input" value="10" min="0" max="100" step="0.5">
+                    <input type="number" id="serviceFee" class="form-input" th:field="*{serviceFee}" min="0" max="100" step="1">
                     <span class="input-addon">%</span>
                   </div>
+                  <div th:if="${#fields.hasErrors('serviceFee')}" th:errors="*{serviceFee}" style="color:red"></div>
                 </div>
 
-                <div class="form-group" th:if="${false}">
-                  <label class="form-label" for="minOrder">Pedido Mínimo</label>
+                <div class="form-group">
+                  <label class="form-label" for="averagePrice" th:text="#{form.average.price}">Average Price</label>
                   <div class="input-with-addon">
-                    <input type="number" id="minOrder" class="form-input" value="0" min="0" step="1">
-                    <span class="input-addon">R$</span>
+                    <select id="averagePrice" class="form-select" th:field="*{averagePrice}">
+                      <option value="1-20" selected>$ 1 - $ 20</option>
+                      <option value="20-50">$ 20 - $ 50</option>
+                      <option value="50-100">$ 50 - $ 100</option>
+                      <option value="100-200">$ 100 - $ 200</option>
+                      <option value="200-450">$ 200 - $ 450</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('averagePrice')}" th:errors="*{averagePrice}" style="color:red"></div>
                   </div>
                 </div>
               </div>
@@ -494,34 +506,25 @@
             </div>
           </div>
 
-          <!-- Horário de Funcionamento -->
+          <!-- Business Hours -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2>Horário de Funcionamento</h2>
-              <p>Defina os horários de abertura e fechamento</p>
+              <h2 th:text="#{section.hours.title}">Business Hours</h2>
+              <p th:text="#{section.hours.description}">Set the opening and closing times</p>
             </div>
             <div class="settings-section-body">
               <div class="hours-grid">
                 <div class="hours-row">
-                  <span class="day-label">Segunda</span>
+                  <span class="day-label" th:text="#{day.monday}">Monday</span>
                   <input type="time" class="hours-input" value="11:30">
                   <input type="time" class="hours-input" value="23:00">
-                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)" title="Marcar como fechado">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)" th:title="#{hours.toggle.close}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
                   </button>
                 </div>
 
                 <div class="hours-row">
-                  <span class="day-label">Terça</span>
-                  <input type="time" class="hours-input" value="11:30">
-                  <input type="time" class="hours-input" value="23:00">
-                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-                  </button>
-                </div>
-
-                <div class="hours-row">
-                  <span class="day-label">Quarta</span>
+                  <span class="day-label" th:text="#{day.tuesday}">Tuesday</span>
                   <input type="time" class="hours-input" value="11:30">
                   <input type="time" class="hours-input" value="23:00">
                   <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
@@ -530,7 +533,7 @@
                 </div>
 
                 <div class="hours-row">
-                  <span class="day-label">Quinta</span>
+                  <span class="day-label" th:text="#{day.wednesday}">Wednesday</span>
                   <input type="time" class="hours-input" value="11:30">
                   <input type="time" class="hours-input" value="23:00">
                   <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
@@ -539,7 +542,16 @@
                 </div>
 
                 <div class="hours-row">
-                  <span class="day-label">Sexta</span>
+                  <span class="day-label" th:text="#{day.thursday}">Thursday</span>
+                  <input type="time" class="hours-input" value="11:30">
+                  <input type="time" class="hours-input" value="23:00">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  </button>
+                </div>
+
+                <div class="hours-row">
+                  <span class="day-label" th:text="#{day.friday}">Friday</span>
                   <input type="time" class="hours-input" value="11:30">
                   <input type="time" class="hours-input" value="00:00">
                   <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
@@ -548,7 +560,7 @@
                 </div>
 
                 <div class="hours-row">
-                  <span class="day-label">Sábado</span>
+                  <span class="day-label" th:text="#{day.saturday}">Saturday</span>
                   <input type="time" class="hours-input" value="11:30">
                   <input type="time" class="hours-input" value="00:00">
                   <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)">
@@ -557,8 +569,8 @@
                 </div>
 
                 <div class="hours-row" style="opacity: 0.5;">
-                  <span class="day-label">Domingo</span>
-                  <span class="closed-badge" style="grid-column: span 2; text-align: center;">Fechado</span>
+                  <span class="day-label" th:text="#{day.sunday}">Sunday</span>
+                  <span class="closed-badge" style="grid-column: span 2; text-align: center;" th:text="#{hours.closed}">Closed</span>
                   <button class="btn btn-ghost btn-sm" onclick="toggleDay(this)" style="color: var(--accent);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
                   </button>
@@ -567,31 +579,33 @@
             </div>
           </div>
 
-          <!-- Aparência -->
+          <!-- Appearance -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2>Aparência do Menu</h2>
-              <p>Personalize as cores do menu digital</p>
+              <h2 th:text="#{section.appearance.title}">Menu Appearance</h2>
+              <p th:text="#{section.appearance.description}">Customize the digital menu colors</p>
             </div>
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label">Cor Principal</label>
+                  <label class="form-label" th:text="#{form.color.primary}">Primary Color</label>
                   <div class="color-picker-group">
-                    <label class="color-preview" style="background: #f97316;">
-                      <input type="color" class="color-input" value="#f97316" onchange="this.parentElement.style.background = this.value">
+                    <label class="color-preview">
+                      <input type="color" class="color-input" th:field="*{hashPrimaryColor}">
                     </label>
-                    <input type="text" class="form-input" value="#f97316" style="font-family: monospace;">
+                    <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
+                           th:value="*{hashPrimaryColor}" name="">
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Cor de Destaque</label>
+                  <label class="form-label" th:text="#{form.color.accent}">Accent Color</label>
                   <div class="color-picker-group">
-                    <label class="color-preview" style="background: #10b981;">
-                      <input type="color" class="color-input" value="#10b981" onchange="this.parentElement.style.background = this.value">
+                    <label class="color-preview">
+                      <input type="color" class="color-input" th:field="*{hashAccentColor}">
                     </label>
-                    <input type="text" class="form-input" value="#10b981" style="font-family: monospace;">
+                    <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
+                           th:value="*{hashAccentColor}" name="">
                   </div>
                 </div>
 
@@ -606,7 +620,7 @@
             </div>
           </div>
 
-          <!-- Notificações -->
+          <!-- Notifications -->
           <div class="settings-section" th:if="${false}">
             <div class="settings-section-header">
               <h2>Notificações</h2>
@@ -639,7 +653,7 @@
             </div>
           </div>
 
-          <!-- Zona de Perigo -->
+          <!-- Danger Zone -->
           <div class="settings-section danger-zone" th:if="${false}">
             <div class="settings-section-header">
               <h2>Zona de Perigo</h2>
@@ -660,10 +674,10 @@
 
           <!-- Footer Actions -->
           <div class="settings-footer">
-            <button class="btn btn-outline">Cancelar</button>
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-outline" th:text="#{button.cancel}">Cancel</button>
+            <button class="btn btn-primary" type="submit" th:text="#{button.save}">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Salvar Alterações
+              Save Changes
             </button>
           </div>
         </div>
@@ -773,6 +787,46 @@
         `<span class="language-tag ${cb.value === primary ? 'primary' : ''}">${langNames[cb.value]}</span>`
       ).join('');
     }
+
+    // Color select
+    document.querySelectorAll('.color-picker-group').forEach(group => {
+
+      const colorInput = group.querySelector('.color-input');
+      const textInput = group.querySelector('.color-text');
+      const preview = group.querySelector('.color-preview');
+
+      function updateUI(value) {
+        preview.style.background = value;
+        textInput.value = value.toUpperCase();
+        colorInput.value = value;
+      }
+
+      // Inicializa com valor vindo do backend (th:field)
+      if (colorInput.value) {
+        updateUI(colorInput.value);
+      }
+
+      // Quando altera no color picker
+      colorInput.addEventListener('input', () => {
+        updateUI(colorInput.value);
+      });
+
+      // Quando digita no campo texto
+      textInput.addEventListener('input', () => {
+        let value = textInput.value.trim();
+
+        // Auto adiciona # se esquecer
+        if (value && !value.startsWith('#')) {
+          value = '#' + value;
+        }
+
+        // Validação HEX
+        if (/^#([0-9A-F]{3}){1,2}$/i.test(value)) {
+          updateUI(value);
+        }
+      });
+
+    });
   </script>
 </body>
 </html>

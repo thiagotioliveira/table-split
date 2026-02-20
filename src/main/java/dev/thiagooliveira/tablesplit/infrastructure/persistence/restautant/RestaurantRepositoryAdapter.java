@@ -1,9 +1,7 @@
-package dev.thiagooliveira.tablesplit.infrastructure.restaurant;
+package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

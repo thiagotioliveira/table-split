@@ -2,21 +2,81 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 public class SettingsModel {
 
   public static class RestaurantForm {
     @NotBlank private String name;
 
+    @Size(max = 254)
+    private String description;
+
+    @Size(max = 20)
+    private String phone;
+
+    @NotBlank
+    @Size(max = 254)
+    @Email
+    private String email;
+
+    @Size(max = 254)
+    private String address;
+
+    @Size(max = 5)
+    @NotBlank
+    private String defaultLanguage;
+
+    @Size(min = 3, max = 3)
+    @NotBlank
+    private String currency;
+
+    @Min(0)
+    @Max(100)
+    @NotNull
+    private int serviceFee;
+
+    @NotBlank
+    @Size(max = 10)
+    private String averagePrice;
+
+    @NotBlank
+    @Size(min = 7, max = 7)
+    private String hashPrimaryColor;
+
+    @NotBlank
+    @Size(min = 7, max = 7)
+    private String hashAccentColor;
+
     public RestaurantForm() {}
 
     public RestaurantForm(Restaurant restaurant) {
       this.name = restaurant.getName();
+      this.description = restaurant.getDescription();
+      this.phone = restaurant.getPhone();
+      this.email = restaurant.getEmail();
+      this.address = restaurant.getAddress();
+      this.defaultLanguage = restaurant.getDefaultLanguage();
+      this.currency = restaurant.getCurrency();
+      this.serviceFee = restaurant.getServiceFee();
+      this.averagePrice = restaurant.getAveragePrice();
+      this.hashPrimaryColor = restaurant.getHashPrimaryColor();
+      this.hashAccentColor = restaurant.getHashAccentColor();
     }
 
     public UpdateRestaurantCommand toCommand() {
-      return new UpdateRestaurantCommand(this.name);
+      return new UpdateRestaurantCommand(
+          this.name,
+          this.description,
+          this.phone,
+          this.email,
+          this.address,
+          this.defaultLanguage,
+          this.currency,
+          this.serviceFee,
+          this.averagePrice,
+          this.hashPrimaryColor,
+          this.hashAccentColor);
     }
 
     public String getName() {
@@ -25,6 +85,86 @@ public class SettingsModel {
 
     public void setName(String name) {
       this.name = name;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public void setDescription(String description) {
+      this.description = description;
+    }
+
+    public String getPhone() {
+      return phone;
+    }
+
+    public void setPhone(String phone) {
+      this.phone = phone;
+    }
+
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    public String getAddress() {
+      return address;
+    }
+
+    public void setAddress(String address) {
+      this.address = address;
+    }
+
+    public String getDefaultLanguage() {
+      return defaultLanguage;
+    }
+
+    public void setDefaultLanguage(String defaultLanguage) {
+      this.defaultLanguage = defaultLanguage;
+    }
+
+    public String getCurrency() {
+      return currency;
+    }
+
+    public void setCurrency(String currency) {
+      this.currency = currency;
+    }
+
+    public int getServiceFee() {
+      return serviceFee;
+    }
+
+    public void setServiceFee(int serviceFee) {
+      this.serviceFee = serviceFee;
+    }
+
+    public String getAveragePrice() {
+      return averagePrice;
+    }
+
+    public void setAveragePrice(String averagePrice) {
+      this.averagePrice = averagePrice;
+    }
+
+    public String getHashPrimaryColor() {
+      return hashPrimaryColor;
+    }
+
+    public void setHashPrimaryColor(String hashPrimaryColor) {
+      this.hashPrimaryColor = hashPrimaryColor;
+    }
+
+    public String getHashAccentColor() {
+      return hashAccentColor;
+    }
+
+    public void setHashAccentColor(String hashAccentColor) {
+      this.hashAccentColor = hashAccentColor;
     }
   }
 }
