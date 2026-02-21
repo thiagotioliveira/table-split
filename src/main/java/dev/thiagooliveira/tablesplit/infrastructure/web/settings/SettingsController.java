@@ -47,7 +47,7 @@ public class SettingsController {
       return "settings";
     }
     updateRestaurant.execute(context.getRestaurantId(), form.toCommand());
-    model.addAttribute("alert", AlertModel.success("alert.settings.saved"));
-    return "settings";
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.settings.saved"));
+    return "redirect:/settings";
   }
 }

@@ -2,9 +2,35 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import jakarta.validation.constraints.*;
+import java.util.List;
 
 public class SettingsModel {
+
+  public static class TagForm {
+
+    private String icon;
+    private String description;
+
+    public TagForm() {}
+
+    public String getIcon() {
+      return icon;
+    }
+
+    public void setIcon(String icon) {
+      this.icon = icon;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public void setDescription(String description) {
+      this.description = description;
+    }
+  }
 
   public static class RestaurantForm {
     @NotBlank private String name;
@@ -22,6 +48,8 @@ public class SettingsModel {
 
     @Size(max = 254)
     private String address;
+
+    private List<TagForm> tags;
 
     @Size(max = 5)
     @NotBlank
@@ -56,6 +84,18 @@ public class SettingsModel {
       this.phone = restaurant.getPhone();
       this.email = restaurant.getEmail();
       this.address = restaurant.getAddress();
+      this.tags =
+          restaurant.getTags() == null
+              ? List.of()
+              : restaurant.getTags().stream()
+                  .map(
+                      t -> {
+                        TagForm f = new TagForm();
+                        f.setIcon(t.getIcon());
+                        f.setDescription(t.getDescription());
+                        return f;
+                      })
+                  .toList();
       this.defaultLanguage = restaurant.getDefaultLanguage();
       this.currency = restaurant.getCurrency();
       this.serviceFee = restaurant.getServiceFee();
@@ -65,12 +105,17 @@ public class SettingsModel {
     }
 
     public UpdateRestaurantCommand toCommand() {
+      List<Tag> domainTags =
+          this.tags == null
+              ? List.of()
+              : this.tags.stream().map(t -> new Tag(t.getIcon(), t.getDescription())).toList();
       return new UpdateRestaurantCommand(
           this.name,
           this.description,
           this.phone,
           this.email,
           this.address,
+          domainTags,
           this.defaultLanguage,
           this.currency,
           this.serviceFee,
@@ -117,6 +162,14 @@ public class SettingsModel {
 
     public void setAddress(String address) {
       this.address = address;
+    }
+
+    public List<TagForm> getTags() {
+      return tags;
+    }
+
+    public void setTags(List<TagForm> tags) {
+      this.tags = tags;
     }
 
     public String getDefaultLanguage() {

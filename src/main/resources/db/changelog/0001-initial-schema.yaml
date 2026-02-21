@@ -48,6 +48,11 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
+                  name: tags
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
                   name: default_language
                   type: varchar(5)
                   constraints:

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setPhone("+351 963 927 944");
     restaurant.setEmail("contato@cantinabella.com");
     restaurant.setAddress("Rua das Flores, 123 - Centro");
+    restaurant.getTags().add(new Tag("\uD83D\uDCF6", "Wi-Fi Grátis"));
     restaurant.setDefaultLanguage("pt-BR");
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);

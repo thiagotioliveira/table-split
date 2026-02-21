@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Restaurant {
@@ -9,6 +10,7 @@ public class Restaurant {
   private String phone;
   private String email;
   private String address;
+  private List<Tag> tags;
   private String defaultLanguage;
   private String currency;
   private int serviceFee;
@@ -62,6 +64,14 @@ public class Restaurant {
 
   public void setAddress(String address) {
     this.address = address;
+  }
+
+  public List<Tag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<Tag> tags) {
+    this.tags = tags;
   }
 
   public String getDefaultLanguage() {

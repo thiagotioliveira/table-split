@@ -13,40 +13,40 @@
     .settings-layout {
       max-width: 800px;
     }
-    
+
     .settings-section {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       margin-bottom: 1.5rem;
     }
-    
+
     .settings-section-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border);
     }
-    
+
     .settings-section-header h2 {
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 0.25rem;
     }
-    
+
     .settings-section-header p {
       font-size: 0.875rem;
       color: var(--muted);
     }
-    
+
     .settings-section-body {
       padding: 1.5rem;
     }
-    
+
     .logo-upload {
       display: flex;
       align-items: center;
       gap: 1.5rem;
     }
-    
+
     .logo-preview {
       width: 6rem;
       height: 6rem;
@@ -59,70 +59,70 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    
+
     .logo-preview img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    
+
     .logo-preview svg {
       width: 2rem;
       height: 2rem;
       color: var(--muted);
     }
-    
+
     .logo-upload-actions {
       flex: 1;
     }
-    
+
     .logo-upload-actions p {
       font-size: 0.75rem;
       color: var(--muted);
       margin-top: 0.5rem;
     }
-    
+
     .form-row-3 {
       display: grid;
       grid-template-columns: repeat(1, minmax(0, 1fr));
       gap: 1rem;
     }
-    
+
     @media (min-width: 640px) {
       .form-row-3 {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
-    
+
     .hours-grid {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
     }
-    
+
     .hours-row {
       display: grid;
       grid-template-columns: 5rem 1fr 1fr auto;
       gap: 0.75rem;
       align-items: center;
     }
-    
+
     @media (max-width: 640px) {
       .hours-row {
         grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
       }
-      
+
       .hours-row .day-label {
         grid-column: span 2;
       }
     }
-    
+
     .day-label {
       font-size: 0.875rem;
       font-weight: 500;
     }
-    
+
     .hours-input {
       padding: 0.5rem 0.75rem;
       border: 1px solid var(--border);
@@ -131,12 +131,12 @@
       font-size: 0.875rem;
       background: var(--background);
     }
-    
+
     .hours-input:focus {
       outline: none;
       border-color: var(--primary);
     }
-    
+
     .closed-badge {
       font-size: 0.75rem;
       color: var(--muted);
@@ -144,13 +144,13 @@
       padding: 0.25rem 0.5rem;
       border-radius: var(--radius);
     }
-    
+
     .color-picker-group {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
-    
+
     .color-preview {
       width: 2.5rem;
       height: 2.5rem;
@@ -158,26 +158,26 @@
       border: 1px solid var(--border);
       cursor: pointer;
     }
-    
+
     .color-input {
       position: absolute;
       opacity: 0;
       width: 0;
       height: 0;
     }
-    
+
     .danger-zone {
       border-color: rgba(239, 68, 68, 0.3);
     }
-    
+
     .danger-zone .settings-section-header {
       border-bottom-color: rgba(239, 68, 68, 0.3);
     }
-    
+
     .danger-zone h2 {
       color: var(--destructive);
     }
-    
+
     .settings-footer {
       display: flex;
       justify-content: flex-end;
@@ -189,16 +189,16 @@
       border-top: 1px solid var(--border);
       margin-top: 1rem;
     }
-    
+
     .input-with-addon {
       display: flex;
     }
-    
+
     .input-with-addon .form-input {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
-    
+
     .input-addon {
       padding: 0.625rem 0.75rem;
       background: var(--background-secondary);
@@ -208,7 +208,7 @@
       font-size: 0.875rem;
       color: var(--muted);
     }
-    
+
     /* Language checkboxes */
     .language-checkboxes {
       display: grid;
@@ -297,6 +297,272 @@
       border-color: var(--primary);
       color: var(--primary);
     }
+
+    /* Profile Tags */
+    .profile-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .profile-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: grab;
+    }
+    .profile-tag .tag-emoji {
+      font-size: 1rem;
+    }
+    .profile-tag .tag-remove {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--muted);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+    .profile-tag .tag-remove:hover {
+      background: var(--destructive);
+      color: white;
+    }
+    .add-tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .add-tag-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .tag-suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    @media (min-width: 640px) {
+      .tag-suggestions {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .tag-suggestion {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tag-suggestion:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+    .tag-suggestion.selected {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    /* Multi-period hours */
+    .day-schedule {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--background-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .day-header.closed {
+      opacity: 0.6;
+    }
+    .day-name {
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+    .day-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .periods-container {
+      padding: 0.75rem 1rem;
+    }
+    .period-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .period-row:last-child {
+      margin-bottom: 0;
+    }
+    .period-row .hours-input {
+      flex: 1;
+      max-width: 100px;
+    }
+    .period-separator {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+    .remove-period-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--muted-foreground);
+    }
+    .remove-period-btn:hover {
+      background: var(--destructive);
+      border-color: var(--destructive);
+      color: white;
+    }
+    .add-period-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .add-period-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Photo Gallery */
+    .gallery-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .gallery-upload-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gallery-item-actions {
+      position: absolute;
+      top: 0.375rem;
+      right: 0.375rem;
+      display: flex;
+      gap: 0.25rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .gallery-item:hover .gallery-item-actions {
+      opacity: 1;
+    }
+    .gallery-item-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .gallery-item-btn:hover {
+      background: var(--destructive);
+    }
+    .gallery-item-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+    .gallery-item.cover::after {
+      content: 'Capa';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.25rem;
+      background: var(--primary);
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .gallery-add-item {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--muted-foreground);
+      transition: all 0.2s;
+    }
+    .gallery-add-item:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--accent);
+    }
+    .gallery-add-item svg {
+      width: 24px;
+      height: 24px;
+    }
+    .gallery-add-item span {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -361,6 +627,71 @@
                 <label class="form-label" for="restaurantAddress" th:text="#{form.restaurant.address}">Address</label>
                 <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}" th:placeholder="#{form.restaurant.address.placeholder}">
                 <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Tags -->
+          <div id="hiddenTagsContainer"></div>
+
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <h2 th:text="#{section.tags.title}">Profile Tags</h2>
+              <p th:text="#{section.tags.description}">Features and amenities of your restaurant</p>
+            </div>
+            <div class="settings-section-body">
+              <div class="profile-tags-container" id="profileTags">
+                <div class="profile-tag" th:each="tag, iterStat : *{tags}"
+                     th:attr="data-tag=${iterStat.index}">
+                  <span class="tag-emoji" th:text="${tag.icon}">🍷</span>
+                  <span th:text="${tag.description}">
+                    Vinhos
+                  </span>
+                  <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+                </div>
+                <button type="button" class="add-tag-btn" onclick="showTagSuggestions()" th:text="#{section.tags.button.add}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                  Add tag
+                </button>
+              </div>
+
+              <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
+                <div class="tag-suggestion" onclick="addTag('estacionamento', '🅿️', 'Estacionamento')">
+                  <span>🅿️</span> Estacionamento
+                </div>
+                <div class="tag-suggestion" onclick="addTag('acessivel', '♿', 'Acessível')">
+                  <span>♿</span> Acessível
+                </div>
+                <div class="tag-suggestion" onclick="addTag('delivery', '🛵', 'Delivery')">
+                  <span>🛵</span> Delivery
+                </div>
+                <div class="tag-suggestion" onclick="addTag('reservas', '📅', 'Reservas')">
+                  <span>📅</span> Reservas
+                </div>
+                <div class="tag-suggestion" onclick="addTag('kids', '👶', 'Espaço Kids')">
+                  <span>👶</span> Espaço Kids
+                </div>
+                <div class="tag-suggestion" onclick="addTag('live', '🎵', 'Música ao Vivo')">
+                  <span>🎵</span> Música ao Vivo
+                </div>
+                <div class="tag-suggestion" onclick="addTag('petfriendly', '🐕', 'Pet Friendly')">
+                  <span>🐕</span> Pet Friendly
+                </div>
+                <div class="tag-suggestion" onclick="addTag('ar', '❄️', 'Ar Condicionado')">
+                  <span>❄️</span> Ar Condicionado
+                </div>
+                <div class="tag-suggestion" onclick="addTag('vegano', '🌱', 'Vegano')">
+                  <span>🌱</span> Vegano
+                </div>
+                <div class="tag-suggestion" onclick="addTag('glutenfree', '🌾', 'Sem Glúten')">
+                  <span>🌾</span> Sem Glúten
+                </div>
+                <div class="tag-suggestion" onclick="addTag('romantico', '💑', 'Romântico')">
+                  <span>💑</span> Romântico
+                </div>
+                <div class="tag-suggestion" onclick="addTag('grupos', '👥', 'Grupos')">
+                  <span>👥</span> Grupos
+                </div>
               </div>
             </div>
           </div>
@@ -740,7 +1071,98 @@
         reader.readAsDataURL(file);
       }
     });*/
-    
+
+    // Profile Tags functions
+    function syncHiddenTags() {
+      const container = document.getElementById('hiddenTagsContainer');
+      container.innerHTML = '';
+
+      const tags = document.querySelectorAll('#profileTags .profile-tag');
+
+      tags.forEach((tag, index) => {
+        const icon = tag.querySelector('.tag-emoji').textContent.trim();
+        const description = tag.querySelector('span:nth-child(2)').textContent.trim();
+
+        const iconInput = document.createElement('input');
+        iconInput.type = 'hidden';
+        iconInput.name = `tags[${index}].icon`;
+        iconInput.value = icon;
+
+        const descInput = document.createElement('input');
+        descInput.type = 'hidden';
+        descInput.name = `tags[${index}].description`;
+        descInput.value = description;
+
+        container.appendChild(iconInput);
+        container.appendChild(descInput);
+      });
+    }
+
+    function showTagSuggestions() {
+      const suggestions = document.getElementById('tagSuggestions');
+      suggestions.style.display =
+              suggestions.style.display === 'none' ? 'grid' : 'none';
+      updateTagSuggestions();
+    }
+
+    function updateTagSuggestions() {
+      const existingTags = Array.from(
+              document.querySelectorAll('#profileTags .profile-tag')
+      ).map(t => t.dataset.tag);
+
+      document.querySelectorAll('.tag-suggestion').forEach(s => {
+        const tagId = s.getAttribute('onclick').match(/addTag\('([^']+)'/)[1];
+        s.classList.toggle('selected', existingTags.includes(tagId));
+      });
+    }
+
+    function addTag(id, emoji, label) {
+      const container = document.getElementById('profileTags');
+      const addBtn = container.querySelector('.add-tag-btn');
+
+      if (container.querySelector(`[data-tag="${id}"]`)) {
+        removeTagById(id);
+        updateTagSuggestions();
+        syncHiddenTags();
+        return;
+      }
+
+      const tag = document.createElement('div');
+      tag.className = 'profile-tag';
+      tag.dataset.tag = id;
+      tag.innerHTML = `
+      <span class="tag-emoji">${emoji}</span>
+      <span>${label}</span>
+      <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+    `;
+
+      container.insertBefore(tag, addBtn);
+
+      updateTagSuggestions();
+      syncHiddenTags();
+    }
+
+    function removeTag(btn) {
+      btn.closest('.profile-tag').remove();
+      updateTagSuggestions();
+      syncHiddenTags();
+    }
+
+    function removeTagById(id) {
+      const tag = document.querySelector(`#profileTags [data-tag="${id}"]`);
+      if (tag) tag.remove();
+    }
+
+    // 🔥 GARANTE que as tags iniciais sejam enviadas
+    document.addEventListener('DOMContentLoaded', function () {
+      syncHiddenTags();
+    });
+
+    // 🔥 GARANTE que antes do submit esteja sincronizado
+    document.querySelector('form').addEventListener('submit', function () {
+      syncHiddenTags();
+    });
+
     // Language management
     function updateLanguages() {
       const primary = document.getElementById('primaryLanguage').value;

@@ -1,10 +1,10 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -25,6 +25,9 @@ public class RestaurantEntity {
   private String email;
 
   private String address;
+
+  @Convert(converter = TagJsonListConverter.class)
+  private List<Tag> tags = new ArrayList<>();
 
   @Column(nullable = false)
   private String defaultLanguage;
@@ -52,6 +55,7 @@ public class RestaurantEntity {
     domain.setPhone(this.phone);
     domain.setEmail(this.email);
     domain.setAddress(this.address);
+    domain.setTags(this.tags);
     domain.setDefaultLanguage(this.defaultLanguage);
     domain.setCurrency(this.currency);
     domain.setServiceFee(this.serviceFee);
@@ -69,6 +73,7 @@ public class RestaurantEntity {
     entity.setPhone(domain.getPhone());
     entity.setEmail(domain.getEmail());
     entity.setAddress(domain.getAddress());
+    entity.setTags(domain.getTags());
     entity.setDefaultLanguage(domain.getDefaultLanguage());
     entity.setCurrency(domain.getCurrency());
     entity.setServiceFee(domain.getServiceFee());
@@ -184,5 +189,13 @@ public class RestaurantEntity {
 
   public void setHashAccentColor(String hashAccentColor) {
     this.hashAccentColor = hashAccentColor;
+  }
+
+  public List<Tag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<Tag> tags) {
+    this.tags = tags;
   }
 }
