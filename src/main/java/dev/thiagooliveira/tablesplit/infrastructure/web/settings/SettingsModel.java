@@ -1,14 +1,43 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurantCommand;
-import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
+import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import jakarta.validation.constraints.*;
 import java.util.List;
 
 public class SettingsModel {
+
+  public static class LanguageForm {
+    private String label;
+    private String code;
+
+    public LanguageForm() {}
+
+    public LanguageForm(Language language) {
+      this.label = language.getLabel();
+      this.code = language.getCode();
+    }
+
+    public Language toCommand() {
+      return new Language(this.label, this.code);
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public void setLabel(String label) {
+      this.label = label;
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    public void setCode(String code) {
+      this.code = code;
+    }
+  }
 
   public static class BusinessHoursForm {
     private String day;
@@ -145,6 +174,8 @@ public class SettingsModel {
     @NotBlank
     private String defaultLanguage;
 
+    private List<LanguageForm> customerLanguages;
+
     @Size(min = 3, max = 3)
     @NotBlank
     private String currency;
@@ -181,6 +212,10 @@ public class SettingsModel {
               ? List.of()
               : restaurant.getTags().stream().map(TagForm::new).toList();
       this.defaultLanguage = restaurant.getDefaultLanguage();
+      this.customerLanguages =
+          restaurant.getCustomerLanguages() == null
+              ? List.of()
+              : restaurant.getCustomerLanguages().stream().map(LanguageForm::new).toList();
       this.currency = restaurant.getCurrency();
       this.serviceFee = restaurant.getServiceFee();
       this.averagePrice = restaurant.getAveragePrice();
@@ -199,6 +234,10 @@ public class SettingsModel {
           this.days == null
               ? List.of()
               : this.days.stream().map(BusinessHoursForm::toCommand).toList();
+      List<Language> domainLanguage =
+          this.customerLanguages == null
+              ? List.of()
+              : this.customerLanguages.stream().map(LanguageForm::toCommand).toList();
       return new UpdateRestaurantCommand(
           this.name,
           this.description,
@@ -207,6 +246,7 @@ public class SettingsModel {
           this.address,
           domainTags,
           this.defaultLanguage,
+          domainLanguage,
           this.currency,
           this.serviceFee,
           this.averagePrice,
@@ -269,6 +309,14 @@ public class SettingsModel {
 
     public void setDefaultLanguage(String defaultLanguage) {
       this.defaultLanguage = defaultLanguage;
+    }
+
+    public List<LanguageForm> getCustomerLanguages() {
+      return customerLanguages;
+    }
+
+    public void setCustomerLanguages(List<LanguageForm> customerLanguages) {
+      this.customerLanguages = customerLanguages;
     }
 
     public String getCurrency() {

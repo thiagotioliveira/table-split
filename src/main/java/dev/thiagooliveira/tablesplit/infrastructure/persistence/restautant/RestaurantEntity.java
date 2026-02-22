@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import jakarta.persistence.*;
@@ -33,6 +34,9 @@ public class RestaurantEntity {
   @Column(nullable = false)
   private String defaultLanguage;
 
+  @Convert(converter = LanguageJsonListConverter.class)
+  private List<Language> customerLanguages = new ArrayList<>();
+
   @Column(nullable = false)
   private String currency;
 
@@ -61,6 +65,7 @@ public class RestaurantEntity {
     domain.setAddress(this.address);
     domain.setTags(this.tags);
     domain.setDefaultLanguage(this.defaultLanguage);
+    domain.setCustomerLanguages(this.customerLanguages);
     domain.setCurrency(this.currency);
     domain.setServiceFee(this.serviceFee);
     domain.setAveragePrice(this.averagePrice);
@@ -80,6 +85,7 @@ public class RestaurantEntity {
     entity.setAddress(domain.getAddress());
     entity.setTags(domain.getTags());
     entity.setDefaultLanguage(domain.getDefaultLanguage());
+    entity.setCustomerLanguages(domain.getCustomerLanguages());
     entity.setCurrency(domain.getCurrency());
     entity.setServiceFee(domain.getServiceFee());
     entity.setAveragePrice(domain.getAveragePrice());
@@ -155,6 +161,14 @@ public class RestaurantEntity {
 
   public void setDefaultLanguage(String defaultLanguage) {
     this.defaultLanguage = defaultLanguage;
+  }
+
+  public List<Language> getCustomerLanguages() {
+    return customerLanguages;
+  }
+
+  public void setCustomerLanguages(List<Language> customerLanguages) {
+    this.customerLanguages = customerLanguages;
   }
 
   public String getCurrency() {

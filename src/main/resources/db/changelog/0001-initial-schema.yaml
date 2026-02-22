@@ -58,6 +58,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: customer_languages
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
                   name: currency
                   type: varchar(3)
                   constraints:
@@ -87,87 +92,3 @@ databaseChangeLog:
                   type: varchar(7)
                   constraints:
                     nullable: false
-#
-#        - createTable:
-#            tableName: restaurant_languages
-#            columns:
-#              - column:
-#                  name: restaurant_id
-#                  type: uuid
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: language_code
-#                  type: varchar(5)
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: created_at
-#                  type: TIMESTAMP
-#                  constraints:
-#                    nullable: false
-#        - addPrimaryKey:
-#            tableName: restaurant_languages
-#            columnNames: restaurant_id, language_code
-#            constraintName: pk_restaurant_languages
-#
-#        - addForeignKeyConstraint:
-#            baseTableName: restaurant_languages
-#            baseColumnNames: restaurant_id
-#            referencedTableName: restaurants
-#            referencedColumnNames: id
-#            constraintName: fk_restaurant_languages_restaurant
-#            onDelete: CASCADE
-#
-#        - createTable:
-#            tableName: restaurant_opening_hours
-#            columns:
-#              - column:
-#                  name: id
-#                  type: uuid
-#                  constraints:
-#                    primaryKey: true
-#                    nullable: false
-#              - column:
-#                  name: restaurant_id
-#                  type: uuid
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: day_of_week
-#                  type: smallint
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: opens_at
-#                  type: TIME
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: closes_at
-#                  type: TIME
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: is_closed
-#                  type: boolean
-#                  constraints:
-#                    nullable: false
-#              - column:
-#                  name: created_at
-#                  type: TIMESTAMP
-#                  constraints:
-#                    nullable: false
-#
-#        - addForeignKeyConstraint:
-#            baseTableName: restaurant_opening_hours
-#            baseColumnNames: restaurant_id
-#            referencedTableName: restaurants
-#            referencedColumnNames: id
-#            constraintName: fk_restaurant_opening_hours_restaurant
-#            onDelete: CASCADE
-#
-#        - addUniqueConstraint:
-#            tableName: restaurant_opening_hours
-#            columnNames: restaurant_id, day_of_week
-#            constraintName: uk_restaurant_day_unique

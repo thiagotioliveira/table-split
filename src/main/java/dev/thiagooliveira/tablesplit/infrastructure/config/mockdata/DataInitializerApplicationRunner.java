@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
@@ -35,6 +36,10 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setAddress("Rua das Flores, 123 - Centro");
     restaurant.getTags().add(new Tag("\uD83D\uDCF6", "Wi-Fi Grátis"));
     restaurant.setDefaultLanguage("pt-BR");
+    restaurant.setCustomerLanguages(
+        List.of(
+            new Language("\uD83C\uDDE7\uD83C\uDDF7 Português", "pt-BR"),
+            new Language("\uD83C\uDDFA\uD83C\uDDF8 English", "en-US")));
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);
     restaurant.setAveragePrice("20-50");

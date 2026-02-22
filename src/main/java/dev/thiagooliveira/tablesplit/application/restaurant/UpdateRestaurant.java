@@ -20,6 +20,7 @@ public class UpdateRestaurant {
     restaurant.setEmail(command.email());
     restaurant.setAddress(command.address());
     restaurant.setDefaultLanguage(command.defaultLanguage());
+    restaurant.setCustomerLanguages(command.customerLanguages());
     restaurant.setTags(command.tags());
     restaurant.setCurrency(command.currency());
     restaurant.setServiceFee(command.serviceFee());

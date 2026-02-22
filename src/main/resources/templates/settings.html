@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configurações - TableSplit</title>
+  <title>Configurações</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -215,11 +216,13 @@
       grid-template-columns: repeat(1, 1fr);
       gap: 0.5rem;
     }
+
     @media (min-width: 640px) {
       .language-checkboxes {
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
     .language-checkbox {
       display: flex;
       align-items: center;
@@ -230,13 +233,16 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .language-checkbox:hover {
       border-color: var(--primary);
       background: var(--primary-light);
     }
+
     .language-checkbox input {
       display: none;
     }
+
     .language-checkbox .checkmark {
       width: 1.25rem;
       height: 1.25rem;
@@ -248,26 +254,32 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
-    .language-checkbox input:checked + .checkmark {
+
+    .language-checkbox input:checked+.checkmark {
       background: var(--primary);
       border-color: var(--primary);
     }
-    .language-checkbox input:checked + .checkmark::after {
+
+    .language-checkbox input:checked+.checkmark::after {
       content: '✓';
       color: white;
       font-size: 0.75rem;
       font-weight: 700;
     }
-    .language-checkbox input:disabled + .checkmark {
+
+    .language-checkbox input:disabled+.checkmark {
       opacity: 0.5;
     }
+
     .lang-flag {
       font-size: 1.25rem;
     }
+
     .lang-name {
       flex: 1;
       font-size: 0.875rem;
     }
+
     .lang-badge {
       font-size: 0.625rem;
       padding: 0.125rem 0.375rem;
@@ -276,11 +288,13 @@
       color: var(--primary);
       font-weight: 600;
     }
+
     .language-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+
     .language-tag {
       display: inline-flex;
       align-items: center;
@@ -292,10 +306,27 @@
       font-size: 0.75rem;
       cursor: grab;
     }
+
     .language-tag.primary {
       background: var(--primary-light);
       border-color: var(--primary);
       color: var(--primary);
+    }
+
+    .language-tag.dragging {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+
+    .language-tag.drag-over {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
+
+    .language-tags-hint {
+      font-size: 0.6875rem;
+      color: var(--muted-foreground);
+      margin-top: 0.25rem;
     }
 
     /* Profile Tags */
@@ -305,6 +336,7 @@
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
+
     .profile-tag {
       display: inline-flex;
       align-items: center;
@@ -316,9 +348,11 @@
       font-size: 0.875rem;
       cursor: grab;
     }
+
     .profile-tag .tag-emoji {
       font-size: 1rem;
     }
+
     .profile-tag .tag-remove {
       width: 18px;
       height: 18px;
@@ -332,10 +366,12 @@
       color: var(--muted-foreground);
       font-size: 0.75rem;
     }
+
     .profile-tag .tag-remove:hover {
       background: var(--destructive);
       color: white;
     }
+
     .add-tag-btn {
       display: inline-flex;
       align-items: center;
@@ -349,10 +385,12 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .add-tag-btn:hover {
       border-color: var(--primary);
       color: var(--primary);
     }
+
     .tag-suggestions {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -361,11 +399,13 @@
       padding-top: 1rem;
       border-top: 1px solid var(--border);
     }
+
     @media (min-width: 640px) {
       .tag-suggestions {
         grid-template-columns: repeat(4, 1fr);
       }
     }
+
     .tag-suggestion {
       display: flex;
       align-items: center;
@@ -378,10 +418,12 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .tag-suggestion:hover {
       border-color: var(--primary);
       background: var(--accent);
     }
+
     .tag-suggestion.selected {
       border-color: var(--primary);
       background: var(--accent);
@@ -395,6 +437,7 @@
       margin-bottom: 0.75rem;
       overflow: hidden;
     }
+
     .day-header {
       display: flex;
       align-items: center;
@@ -403,37 +446,46 @@
       background: var(--background-secondary);
       border-bottom: 1px solid var(--border);
     }
+
     .day-header.closed {
       opacity: 0.6;
     }
+
     .day-name {
       font-weight: 600;
       font-size: 0.9375rem;
     }
+
     .day-actions {
       display: flex;
       gap: 0.5rem;
     }
+
     .periods-container {
       padding: 0.75rem 1rem;
     }
+
     .period-row {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
     }
+
     .period-row:last-child {
       margin-bottom: 0;
     }
+
     .period-row .hours-input {
       flex: 1;
       max-width: 100px;
     }
+
     .period-separator {
       color: var(--muted-foreground);
       font-size: 0.875rem;
     }
+
     .remove-period-btn {
       width: 28px;
       height: 28px;
@@ -446,11 +498,13 @@
       cursor: pointer;
       color: var(--muted-foreground);
     }
+
     .remove-period-btn:hover {
       background: var(--destructive);
       border-color: var(--destructive);
       color: white;
     }
+
     .add-period-btn {
       display: inline-flex;
       align-items: center;
@@ -464,6 +518,7 @@
       cursor: pointer;
       margin-top: 0.5rem;
     }
+
     .add-period-btn:hover {
       border-color: var(--primary);
       color: var(--primary);
@@ -475,11 +530,13 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
     }
+
     @media (min-width: 640px) {
       .gallery-upload-grid {
         grid-template-columns: repeat(4, 1fr);
       }
     }
+
     .gallery-item {
       position: relative;
       aspect-ratio: 1;
@@ -487,11 +544,13 @@
       overflow: hidden;
       border: 1px solid var(--border);
     }
+
     .gallery-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .gallery-item-actions {
       position: absolute;
       top: 0.375rem;
@@ -501,28 +560,33 @@
       opacity: 0;
       transition: opacity 0.2s;
     }
+
     .gallery-item:hover .gallery-item-actions {
       opacity: 1;
     }
+
     .gallery-item-btn {
       width: 28px;
       height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.6);
       border: none;
       border-radius: 6px;
       cursor: pointer;
       color: white;
     }
+
     .gallery-item-btn:hover {
       background: var(--destructive);
     }
+
     .gallery-item-btn svg {
       width: 14px;
       height: 14px;
     }
+
     .gallery-item.cover::after {
       content: 'Capa';
       position: absolute;
@@ -537,6 +601,7 @@
       text-align: center;
       text-transform: uppercase;
     }
+
     .gallery-add-item {
       aspect-ratio: 1;
       display: flex;
@@ -550,23 +615,27 @@
       color: var(--muted-foreground);
       transition: all 0.2s;
     }
+
     .gallery-add-item:hover {
       border-color: var(--primary);
       color: var(--primary);
       background: var(--accent);
     }
+
     .gallery-add-item svg {
       width: 24px;
       height: 24px;
     }
+
     .gallery-add-item span {
       font-size: 0.75rem;
       font-weight: 500;
     }
   </style>
 </head>
+
 <body>
-<div th:insert="~{components/sidebar :: sidebar(#{nav.settings})}"></div>
+  <div th:insert="~{components/sidebar :: sidebar(#{nav.settings})}"></div>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -585,12 +654,24 @@
             <div class="settings-section-body">
               <div class="logo-upload" style="margin-bottom: 1.5rem;" th:if="${false}">
                 <div class="logo-preview" id="logoPreview">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" x2="22" y1="5" y2="5"/><line x1="19" x2="19" y1="2" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                    <line x1="16" x2="22" y1="5" y2="5" />
+                    <line x1="19" x2="19" y1="2" y2="8" />
+                    <circle cx="9" cy="9" r="2" />
+                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                  </svg>
                 </div>
                 <div class="logo-upload-actions">
                   <input type="file" id="logoInput" accept="image/*" style="display: none;">
                   <button class="btn btn-outline btn-sm" onclick="document.getElementById('logoInput').click()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" x2="12" y1="3" y2="15" />
+                    </svg>
                     Enviar Logo
                   </button>
                   <p>PNG, JPG até 2MB. Recomendado: 200x200px</p>
@@ -598,34 +679,40 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantName" th:text="#{form.restaurant.name.required}">Restaurant Name *</label>
-                <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia" th:placeholder="#{form.restaurant.name.placeholder}" th:field="*{name}">
+                <label class="form-label" for="restaurantName" th:text="#{form.restaurant.name.required}">Restaurant
+                  Name *</label>
+                <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia"
+                  th:placeholder="#{form.restaurant.name.placeholder}" th:field="*{name}">
                 <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantDesc" th:text="#{form.restaurant.description}">Description</label>
-                <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254" th:placeholder="#{form.restaurant.description.placeholder}"
-                  th:field="*{description}"></textarea>
+                <label class="form-label" for="restaurantDesc"
+                  th:text="#{form.restaurant.description}">Description</label>
+                <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254"
+                  th:placeholder="#{form.restaurant.description.placeholder}" th:field="*{description}"></textarea>
                 <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red"></div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" for="restaurantPhone" th:text="#{form.restaurant.phone}">Phone</label>
-                  <input type="tel" id="restaurantPhone" class="form-input" maxlength="20" th:field="*{phone}" th:placeholder="#{form.restaurant.phone.placeholder}">
+                  <input type="tel" id="restaurantPhone" class="form-input" maxlength="20" th:field="*{phone}"
+                    th:placeholder="#{form.restaurant.phone.placeholder}">
                   <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></div>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="restaurantEmail" th:text="#{form.restaurant.email}">Email *</label>
-                  <input type="email" id="restaurantEmail" class="form-input" maxlength="254" th:field="*{email}" th:placeholder="#{form.restaurant.email.placeholder}">
+                  <input type="email" id="restaurantEmail" class="form-input" maxlength="254" th:field="*{email}"
+                    th:placeholder="#{form.restaurant.email.placeholder}">
                   <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="restaurantAddress" th:text="#{form.restaurant.address}">Address</label>
-                <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}" th:placeholder="#{form.restaurant.address.placeholder}">
+                <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}"
+                  th:placeholder="#{form.restaurant.address.placeholder}">
                 <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
               </div>
             </div>
@@ -633,6 +720,7 @@
 
           <!-- Profile Tags -->
           <div id="hiddenTagsContainer"></div>
+          <div id="hiddenLanguagesContainer"></div>
 
           <div class="settings-section">
             <div class="settings-section-header">
@@ -641,16 +729,20 @@
             </div>
             <div class="settings-section-body">
               <div class="profile-tags-container" id="profileTags">
-                <div class="profile-tag" th:each="tag, iterStat : *{tags}"
-                     th:attr="data-tag=${iterStat.index}">
+                <div class="profile-tag" th:each="tag, iterStat : *{tags}" th:attr="data-tag=${iterStat.index}">
                   <span class="tag-emoji" th:text="${tag.icon}">🍷</span>
                   <span th:text="${tag.description}">
                     Vinhos
                   </span>
                   <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
                 </div>
-                <button type="button" class="add-tag-btn" onclick="showTagSuggestions()" th:text="#{section.tags.button.add}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
+                  th:text="#{section.tags.button.add}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
+                  </svg>
                   Add tag
                 </button>
               </div>
@@ -704,9 +796,12 @@
             </div>
             <div class="settings-section-body">
               <div class="form-group">
-                <label class="form-label" for="primaryLanguage" th:text="#{form.language.primary}">Primary Language *</label>
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;" th:text="#{form.language.primary.hint}">Used in the restaurant admin area</p>
-                <select id="primaryLanguage" class="form-select" onchange="updateLanguages()" th:field="*{defaultLanguage}">
+                <label class="form-label" for="primaryLanguage" th:text="#{form.language.primary}">Primary Language
+                  *</label>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;"
+                  th:text="#{form.language.primary.hint}">Used in the restaurant admin area</p>
+                <select id="primaryLanguage" class="form-select" onchange="updateLanguages()"
+                  th:field="*{defaultLanguage}">
                   <option value="en-US" selected>English (US)</option>
                   <option value="pt-BR">Português (Brasil)</option>
                   <option value="es-ES" th:if="${false}">Español</option>
@@ -716,25 +811,35 @@
                   <option value="ja-JP" th:if="${false}">日本語</option>
                   <option value="zh-CN" th:if="${false}">中文</option>
                 </select>
-                <div th:if="${#fields.hasErrors('defaultLanguage')}" th:errors="*{defaultLanguage}" style="color:red"></div>
+                <div th:if="${#fields.hasErrors('defaultLanguage')}" th:errors="*{defaultLanguage}" style="color:red">
+                </div>
               </div>
 
               <div class="form-group" style="margin-top: 1.5rem;">
                 <label class="form-label" th:text="#{form.language.available}">Languages Available for Customers</label>
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;" th:text="#{form.language.available.hint}">Select the languages that will be available in the digital menu</p>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;"
+                  th:text="#{form.language.available.hint}">Select the languages that will be available in the digital
+                  menu</p>
                 <div class="language-checkboxes" id="languageCheckboxes">
                   <label class="language-checkbox">
-                    <input type="checkbox" value="pt-BR" checked disabled>
+                    <input type="checkbox" value="pt-BR" onchange="toggleLanguage(this)"
+                           th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}"
+                           th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'pt-BR')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇧🇷</span>
                     <span class="lang-name">Português (Brasil)</span>
-                    <span class="lang-badge primary">Principal</span>
+                    <span class="lang-badge primary"
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}">Principal</span>
                   </label>
                   <label class="language-checkbox">
-                    <input type="checkbox" value="en-US" checked onchange="toggleLanguage(this)">
+                    <input type="checkbox" value="en-US" onchange="toggleLanguage(this)"
+                           th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}"
+                           th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'en-US')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇺🇸</span>
                     <span class="lang-name">English (US)</span>
+                    <span class="lang-badge primary"
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}">Principal</span>
                   </label>
                   <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="es-ES" onchange="toggleLanguage(this)">
@@ -776,11 +881,16 @@
               </div>
 
               <div class="selected-languages" id="selectedLanguages" style="margin-top: 1rem;">
-                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;" th:text="#{language.selected}">Selected languages (drag to reorder):</p>
-                <div class="language-tags">
-                  <span class="language-tag primary">🇧🇷 Português</span>
-                  <span class="language-tag">🇺🇸 English</span>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;"
+                  th:text="#{language.selected}">Selected languages (drag to reorder):</p>
+                <div class="language-tags" id="languageTags">
+                  <div th:each="lang, stat : *{customerLanguages}">
+                    <span class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true"
+                      th:attr="data-lang=${lang.code}" th:text="${lang.label}"></span>
+                  </div>
                 </div>
+                <p class="language-tags-hint" th:text="#{language.hint}">The first language will be the main menu
+                  language</p>
               </div>
             </div>
           </div>
@@ -806,7 +916,8 @@
                 <div class="form-group">
                   <label class="form-label" for="serviceFee" th:text="#{form.service.fee}">Service Fee</label>
                   <div class="input-with-addon">
-                    <input type="number" id="serviceFee" class="form-input" th:field="*{serviceFee}" min="0" max="100" step="1">
+                    <input type="number" id="serviceFee" class="form-input" th:field="*{serviceFee}" min="0" max="100"
+                      step="1">
                     <span class="input-addon">%</span>
                   </div>
                   <div th:if="${#fields.hasErrors('serviceFee')}" th:errors="*{serviceFee}" style="color:red"></div>
@@ -822,7 +933,8 @@
                       <option value="100-200">$ 100 - $ 200</option>
                       <option value="200-450">$ 200 - $ 450</option>
                     </select>
-                    <div th:if="${#fields.hasErrors('averagePrice')}" th:errors="*{averagePrice}" style="color:red"></div>
+                    <div th:if="${#fields.hasErrors('averagePrice')}" th:errors="*{averagePrice}" style="color:red">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -841,34 +953,59 @@
           <div class="settings-section">
             <div class="settings-section-header">
               <h2 th:text="#{section.hours.title}">Business Hours</h2>
-              <p th:text="#{section.hours.description}">Define the opening and closing hours (you can add multiple time periods per day)</p>
+              <p th:text="#{section.hours.description}">Define the opening and closing hours (you can add multiple time
+                periods per day)</p>
             </div>
             <div class="settings-section-body">
               <div id="hoursContainer">
-                <div class="day-schedule" th:data-day="${day.day}" th:data-closed="${day.closed}" th:data-day-index="${dayStat.index}" th:each="day, dayStat : *{days}">
+                <div class="day-schedule" th:data-day="${day.day}" th:data-closed="${day.closed}"
+                  th:data-day-index="${dayStat.index}" th:each="day, dayStat : *{days}">
                   <input type="hidden" th:field="*{days[__${dayStat.index}__].day}" />
                   <input type="hidden" th:field="*{days[__${dayStat.index}__].closed}" />
                   <div class="day-header" th:classappend="${day.closed} ? ' closed' : ''">
                     <span class="day-name" th:text="#{${'day.' + day.day}}">Monday</span>
                     <div class="day-actions">
                       <span class="closed-badge" th:text="#{hours.closed}" th:if="${day.closed}">Closed</span>
-                      <button type="button" class="btn btn-ghost btn-sm" th:attr="onclick=|toggleDaySchedule('${day.day}')|" th:title="#{hours.toggle.open}">
-                        <svg xmlns="http://www.w3.org/2000/svg" th:if="${day.closed}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" th:if="${!day.closed}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                      <button type="button" class="btn btn-ghost btn-sm"
+                        th:attr="onclick=|toggleDaySchedule('${day.day}')|" th:title="#{hours.toggle.open}">
+                        <svg xmlns="http://www.w3.org/2000/svg" th:if="${day.closed}" width="16" height="16"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                          <path d="m9 11 3 3L22 4" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" th:if="${!day.closed}" width="16" height="16"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="m15 9-6 6" />
+                          <path d="m9 9 6 6" />
+                        </svg>
                       </button>
                     </div>
                   </div>
                   <div class="periods-container" th:if="${!day.closed}">
                     <div class="period-row" th:each="period, periodStat : *{days[__${dayStat.index}__].periods}">
-                      <input type="time" class="hours-input" th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].start}">
+                      <input type="time" class="hours-input"
+                        th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].start}">
                       <span class="period-separator" th:text="#{period.until}">until</span>
-                      <input type="time" class="hours-input" th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].end}">
-                      <button type="button" class="remove-period-btn" onclick="removePeriod(this)" th:title="#{period.remove}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      <input type="time" class="hours-input"
+                        th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].end}">
+                      <button type="button" class="remove-period-btn" onclick="removePeriod(this)"
+                        th:title="#{period.remove}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
                       </button>
                     </div>
                     <button type="button" class="add-period-btn" onclick="addPeriod(this)" th:text="#{period.add}">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
                       Add period
                     </button>
                   </div>
@@ -892,7 +1029,7 @@
                       <input type="color" class="color-input" th:field="*{hashPrimaryColor}">
                     </label>
                     <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
-                           th:value="*{hashPrimaryColor}" name="">
+                      th:value="*{hashPrimaryColor}" name="">
                   </div>
                 </div>
 
@@ -903,7 +1040,7 @@
                       <input type="color" class="color-input" th:field="*{hashAccentColor}">
                     </label>
                     <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
-                           th:value="*{hashAccentColor}" name="">
+                      th:value="*{hashAccentColor}" name="">
                   </div>
                 </div>
 
@@ -958,10 +1095,12 @@
               <p>Ações irreversíveis</p>
             </div>
             <div class="settings-section-body">
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div>
                   <p style="font-weight: 500; margin-bottom: 0.25rem;">Excluir Restaurante</p>
-                  <p style="font-size: 0.875rem; color: var(--muted);">Esta ação não pode ser desfeita. Todos os dados serão perdidos.</p>
+                  <p style="font-size: 0.875rem; color: var(--muted);">Esta ação não pode ser desfeita. Todos os dados
+                    serão perdidos.</p>
                 </div>
                 <button class="btn btn-outline" style="border-color: var(--destructive); color: var(--destructive);">
                   Excluir Restaurante
@@ -974,7 +1113,12 @@
           <div class="settings-footer">
             <button class="btn btn-outline" th:text="#{button.cancel}">Cancel</button>
             <button class="btn btn-primary" type="submit" th:text="#{button.save}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
               Save Changes
             </button>
           </div>
@@ -1001,7 +1145,7 @@
     function toggleSwitch(el) {
       el.classList.toggle('active');
     }
-    
+
     /* Logo preview
     document.getElementById('logoInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -1044,13 +1188,13 @@
     function showTagSuggestions() {
       const suggestions = document.getElementById('tagSuggestions');
       suggestions.style.display =
-              suggestions.style.display === 'none' ? 'grid' : 'none';
+        suggestions.style.display === 'none' ? 'grid' : 'none';
       updateTagSuggestions();
     }
 
     function updateTagSuggestions() {
       const existingTags = Array.from(
-              document.querySelectorAll('#profileTags .profile-tag')
+        document.querySelectorAll('#profileTags .profile-tag')
       ).map(t => t.dataset.tag);
 
       document.querySelectorAll('.tag-suggestion').forEach(s => {
@@ -1104,54 +1248,197 @@
     // 🔥 GARANTE que antes do submit esteja sincronizado
     document.querySelector('form').addEventListener('submit', function () {
       syncHiddenTags();
+      syncHiddenLanguages();
     });
 
     // Language management
+    function syncHiddenLanguages() {
+      const container = document.getElementById('hiddenLanguagesContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const tags = document.querySelectorAll('#languageTags .language-tag');
+
+      tags.forEach((tag, index) => {
+        const code = tag.dataset.lang;
+        const label = tag.textContent.trim();
+
+        const codeInput = document.createElement('input');
+        codeInput.type = 'hidden';
+        codeInput.name = `customerLanguages[${index}].code`;
+        codeInput.value = code;
+        codeInput.className = 'lang-code';
+
+        const labelInput = document.createElement('input');
+        labelInput.type = 'hidden';
+        labelInput.name = `customerLanguages[${index}].label`;
+        labelInput.value = label;
+        labelInput.className = 'lang-label';
+
+        container.appendChild(codeInput);
+        container.appendChild(labelInput);
+      });
+    }
     function updateLanguages() {
       const primary = document.getElementById('primaryLanguage').value;
-      const checkboxes = document.querySelectorAll('.language-checkbox input');
-      checkboxes.forEach(cb => {
-        const label = cb.closest('.language-checkbox');
-        const badge = label.querySelector('.lang-badge');
-        if (cb.value === primary) {
-          cb.checked = true;
-          cb.disabled = true;
-          if (!badge) {
-            const newBadge = document.createElement('span');
-            newBadge.className = 'lang-badge primary';
-            newBadge.textContent = 'Principal';
-            label.appendChild(newBadge);
-          }
-        } else {
-          cb.disabled = false;
-          if (badge) badge.remove();
-        }
-      });
+
+      // Move selected language to first position in order
+      const currentIndex = languageOrder.indexOf(primary);
+      if (currentIndex > 0) {
+        languageOrder.splice(currentIndex, 1);
+        languageOrder.unshift(primary);
+      } else if (currentIndex === -1) {
+        // Language not in order yet, add it and check its checkbox
+        languageOrder.unshift(primary);
+        const checkbox = document.querySelector(`.language-checkbox input[value="${primary}"]`);
+        if (checkbox) checkbox.checked = true;
+      }
+
       updateLanguageTags();
     }
-    
+
     function toggleLanguage(checkbox) {
       updateLanguageTags();
     }
-    
+
+    const langNames = {
+      'pt-BR': '🇧🇷 Português',
+      'en-US': '🇺🇸 English',
+      'es-ES': '🇪🇸 Español',
+      'fr-FR': '🇫🇷 Français',
+      'it-IT': '🇮🇹 Italiano',
+      'de-DE': '🇩🇪 Deutsch',
+      'ja-JP': '🇯🇵 日本語',
+      'zh-CN': '🇨🇳 中文'
+    };
+
+    // Track language order (first = primary)
+    let languageOrder = /*[[${form.customerLanguages.![code]}]]*/['pt-BR', 'en-US'];
+
     function updateLanguageTags() {
-      const checked = document.querySelectorAll('.language-checkbox input:checked');
-      const tagsContainer = document.querySelector('.language-tags');
-      const primary = document.getElementById('primaryLanguage').value;
-      const langNames = {
-        'pt-BR': '🇧🇷 Português',
-        'en-US': '🇺🇸 English',
-        'es-ES': '🇪🇸 Español',
-        'fr-FR': '🇫🇷 Français',
-        'it-IT': '🇮🇹 Italiano',
-        'de-DE': '🇩🇪 Deutsch',
-        'ja-JP': '🇯🇵 日本語',
-        'zh-CN': '🇨🇳 中文'
-      };
-      tagsContainer.innerHTML = Array.from(checked).map(cb => 
-        `<span class="language-tag ${cb.value === primary ? 'primary' : ''}">${langNames[cb.value]}</span>`
+      const checked = Array.from(document.querySelectorAll('.language-checkbox input:checked')).map(cb => cb.value);
+      const tagsContainer = document.getElementById('languageTags');
+
+      // Update order: keep existing order, add new ones at end, remove unchecked
+      languageOrder = languageOrder.filter(lang => checked.includes(lang));
+      checked.forEach(lang => {
+        if (!languageOrder.includes(lang)) languageOrder.push(lang);
+      });
+
+      // Render tags
+      tagsContainer.innerHTML = languageOrder.map((lang, index) =>
+        `<span class="language-tag ${index === 0 ? 'primary' : ''}" draggable="true" data-lang="${lang}">${langNames[lang]}</span>`
       ).join('');
+
+      // Re-attach drag events
+      initDragAndDrop();
+
+      // Update hidden inputs
+      syncHiddenLanguages();
+
+      // Update primary language select
+      updatePrimaryFromOrder();
     }
+
+    function updatePrimaryFromOrder() {
+      if (languageOrder.length > 0) {
+        //const primarySelect = document.getElementById('primaryLanguage');
+        const newPrimary = languageOrder[0];
+        //primarySelect.value = newPrimary;
+
+        // Update checkbox badges
+        document.querySelectorAll('.language-checkbox').forEach(label => {
+          const cb = label.querySelector('input');
+          const badge = label.querySelector('.lang-badge');
+
+          if (cb.value === newPrimary) {
+            cb.disabled = true;
+            if (!badge) {
+              const newBadge = document.createElement('span');
+              newBadge.className = 'lang-badge primary';
+              newBadge.textContent = 'Principal';
+              label.appendChild(newBadge);
+            }
+          } else {
+            cb.disabled = false;
+            if (badge) badge.remove();
+          }
+        });
+      }
+    }
+
+    // Drag and Drop
+    let draggedElement = null;
+
+    function initDragAndDrop() {
+      const tags = document.querySelectorAll('#languageTags .language-tag');
+
+      tags.forEach(tag => {
+        tag.addEventListener('dragstart', handleDragStart);
+        tag.addEventListener('dragend', handleDragEnd);
+        tag.addEventListener('dragover', handleDragOver);
+        tag.addEventListener('dragenter', handleDragEnter);
+        tag.addEventListener('dragleave', handleDragLeave);
+        tag.addEventListener('drop', handleDrop);
+      });
+    }
+
+    function handleDragStart(e) {
+      draggedElement = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.dataset.lang);
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.language-tag').forEach(tag => {
+        tag.classList.remove('drag-over');
+      });
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+      e.preventDefault();
+      if (this !== draggedElement) {
+        this.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+
+      if (this !== draggedElement) {
+        const draggedLang = draggedElement.dataset.lang;
+        const targetLang = this.dataset.lang;
+
+        const draggedIndex = languageOrder.indexOf(draggedLang);
+        const targetIndex = languageOrder.indexOf(targetLang);
+
+        // Remove dragged from current position
+        languageOrder.splice(draggedIndex, 1);
+        // Insert at target position
+        languageOrder.splice(targetIndex, 0, draggedLang);
+
+        // Re-render
+        updateLanguageTags();
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      initDragAndDrop();
+      syncHiddenLanguages();
+    });
 
     function toggleDaySchedule(day) {
       const schedule = document.querySelector(`[data-day="${day}"]`);
@@ -1180,15 +1467,15 @@
         periodsContainer.innerHTML = `
           <div class="period-row">
             <input type="time" class="hours-input" name="days[${dayIndex}].periods[${periodIndex}].start" value="11:30">
-            <span class="period-separator">`+i18n.until+`</span>
+            <span class="period-separator">`+ i18n.until + `</span>
             <input type="time" class="hours-input" name="days[${dayIndex}].periods[${periodIndex}].end" value="23:00">
-            <button type="button" class="remove-period-btn" onclick="removePeriod(this)" title="`+i18n.removePeriod+`">
+            <button type="button" class="remove-period-btn" onclick="removePeriod(this)" title="`+ i18n.removePeriod + `">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
           </div>
           <button type="button" class="add-period-btn" onclick="addPeriod(this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-            `+i18n.addPeriod+`
+            `+ i18n.addPeriod + `
           </button>
         `;
         schedule.appendChild(periodsContainer);
@@ -1225,7 +1512,7 @@
       periodRow.className = 'period-row';
       periodRow.innerHTML = `
         <input type="time" class="hours-input" name="days[${dayIndex}].periods[${periodIndex}].start" value="18:00">
-        <span class="period-separator">`+i18n.until+`</span>
+        <span class="period-separator">`+ i18n.until + `</span>
         <input type="time" class="hours-input" name="days[${dayIndex}].periods[${periodIndex}].end" value="23:00">
         <button type="button" class="remove-period-btn" onclick="removePeriod(this)" title="Remover período">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1258,7 +1545,7 @@
       rows.forEach((row, periodIndex) => {
 
         const startInput = row.querySelector('input[name$=".start"]');
-        const endInput   = row.querySelector('input[name$=".end"]');
+        const endInput = row.querySelector('input[name$=".end"]');
 
         if (startInput) {
           startInput.name = `days[${dayIndex}].periods[${periodIndex}].start`;
@@ -1313,4 +1600,5 @@
     });
   </script>
 </body>
+
 </html>
