@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import jakarta.persistence.*;
@@ -41,6 +42,9 @@ public class RestaurantEntity {
   @Column(nullable = false)
   private String averagePrice;
 
+  @Convert(converter = BusinessHoursJsonListConverter.class)
+  private List<BusinessHours> days = new ArrayList<>();
+
   @Column(nullable = false)
   private String hashPrimaryColor;
 
@@ -60,6 +64,7 @@ public class RestaurantEntity {
     domain.setCurrency(this.currency);
     domain.setServiceFee(this.serviceFee);
     domain.setAveragePrice(this.averagePrice);
+    domain.setDays(this.days);
     domain.setHashPrimaryColor(this.hashPrimaryColor);
     domain.setHashAccentColor(this.hashAccentColor);
     return domain;
@@ -78,6 +83,7 @@ public class RestaurantEntity {
     entity.setCurrency(domain.getCurrency());
     entity.setServiceFee(domain.getServiceFee());
     entity.setAveragePrice(domain.getAveragePrice());
+    entity.setDays(domain.getDays());
     entity.setHashPrimaryColor(domain.getHashPrimaryColor());
     entity.setHashAccentColor(domain.getHashAccentColor());
     return entity;
@@ -173,6 +179,14 @@ public class RestaurantEntity {
 
   public void setAveragePrice(String averagePrice) {
     this.averagePrice = averagePrice;
+  }
+
+  public List<BusinessHours> getDays() {
+    return days;
+  }
+
+  public void setDays(List<BusinessHours> days) {
+    this.days = days;
   }
 
   public String getHashPrimaryColor() {

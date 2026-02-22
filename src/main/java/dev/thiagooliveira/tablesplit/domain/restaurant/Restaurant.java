@@ -15,6 +15,7 @@ public class Restaurant {
   private String currency;
   private int serviceFee;
   private String averagePrice;
+  private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
 
@@ -104,6 +105,14 @@ public class Restaurant {
 
   public void setAveragePrice(String averagePrice) {
     this.averagePrice = averagePrice;
+  }
+
+  public List<BusinessHours> getDays() {
+    return days;
+  }
+
+  public void setDays(List<BusinessHours> days) {
+    this.days = days;
   }
 
   public String getHashPrimaryColor() {

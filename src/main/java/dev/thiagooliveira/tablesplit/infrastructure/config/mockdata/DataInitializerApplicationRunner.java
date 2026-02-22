@@ -1,8 +1,12 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
+import java.time.DayOfWeek;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -34,6 +38,55 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);
     restaurant.setAveragePrice("20-50");
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.MONDAY.name().toLowerCase(),
+                true,
+                List.of(new Period("11:00", "23:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.TUESDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "23:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.WEDNESDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "23:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.THURSDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "23:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.FRIDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "02:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.SATURDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "02:00"))));
+    restaurant
+        .getDays()
+        .add(
+            new BusinessHours(
+                DayOfWeek.SUNDAY.name().toLowerCase(),
+                false,
+                List.of(new Period("11:00", "23:00"))));
     restaurant.setHashPrimaryColor("#f97316");
     restaurant.setHashAccentColor("#10b981");
     restaurant = this.restaurantJpaRepository.save(restaurant);

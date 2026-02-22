@@ -24,6 +24,7 @@ public class UpdateRestaurant {
     restaurant.setCurrency(command.currency());
     restaurant.setServiceFee(command.serviceFee());
     restaurant.setAveragePrice(command.averagePrice());
+    restaurant.setDays(command.days());
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurantRepository.save(restaurant);

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import java.util.List;
 
@@ -14,5 +15,6 @@ public record UpdateRestaurantCommand(
     String currency,
     int serviceFee,
     String averagePrice,
+    List<BusinessHours> days,
     String hashPrimaryColor,
     String hashAccentColor) {}
