@@ -15,6 +15,15 @@ public class SettingsModel {
 
     public TagForm() {}
 
+    public TagForm(Tag tag) {
+      this.icon = tag.getIcon();
+      this.description = tag.getDescription();
+    }
+
+    public Tag toCommand() {
+      return new Tag(this.icon, this.description);
+    }
+
     public String getIcon() {
       return icon;
     }
@@ -87,15 +96,7 @@ public class SettingsModel {
       this.tags =
           restaurant.getTags() == null
               ? List.of()
-              : restaurant.getTags().stream()
-                  .map(
-                      t -> {
-                        TagForm f = new TagForm();
-                        f.setIcon(t.getIcon());
-                        f.setDescription(t.getDescription());
-                        return f;
-                      })
-                  .toList();
+              : restaurant.getTags().stream().map(TagForm::new).toList();
       this.defaultLanguage = restaurant.getDefaultLanguage();
       this.currency = restaurant.getCurrency();
       this.serviceFee = restaurant.getServiceFee();
@@ -106,9 +107,7 @@ public class SettingsModel {
 
     public UpdateRestaurantCommand toCommand() {
       List<Tag> domainTags =
-          this.tags == null
-              ? List.of()
-              : this.tags.stream().map(t -> new Tag(t.getIcon(), t.getDescription())).toList();
+          this.tags == null ? List.of() : this.tags.stream().map(TagForm::toCommand).toList();
       return new UpdateRestaurantCommand(
           this.name,
           this.description,
