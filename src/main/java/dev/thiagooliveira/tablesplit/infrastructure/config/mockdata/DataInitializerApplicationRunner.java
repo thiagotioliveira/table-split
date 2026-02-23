@@ -34,7 +34,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setEmail("contato@cantinabella.com");
     restaurant.setAddress("Rua das Flores, 123 - Centro");
     restaurant.getCuisineType().add(CuisineType.BRAZILIAN);
-    restaurant.getTags().add(new Tag("\uD83D\uDCF6", "Wi-Fi Grátis"));
+    restaurant.getTags().add(Tag.WIFI);
     restaurant.setDefaultLanguage("pt-BR");
     restaurant.setCustomerLanguages(
         List.of(

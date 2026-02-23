@@ -32,7 +32,7 @@ public class SettingsModel {
 
   private List<String> cuisineType;
 
-  private List<TagModel> tags;
+  private List<String> tags;
 
   @Size(max = 5)
   @NotBlank
@@ -80,7 +80,7 @@ public class SettingsModel {
     this.tags =
         restaurant.getTags() == null
             ? List.of()
-            : restaurant.getTags().stream().map(TagModel::new).toList();
+            : restaurant.getTags().stream().map(Enum::name).toList();
     this.defaultLanguage = restaurant.getDefaultLanguage();
     this.customerLanguages =
         restaurant.getCustomerLanguages() == null
@@ -99,7 +99,7 @@ public class SettingsModel {
 
   public UpdateRestaurantCommand toCommand() {
     List<Tag> domainTags =
-        this.tags == null ? List.of() : this.tags.stream().map(TagModel::toCommand).toList();
+        this.tags == null ? List.of() : this.tags.stream().map(Tag::valueOf).toList();
     List<BusinessHours> domainDays =
         this.days == null
             ? List.of()
@@ -196,11 +196,11 @@ public class SettingsModel {
     this.cuisineType = cuisineType;
   }
 
-  public List<TagModel> getTags() {
+  public List<String> getTags() {
     return tags;
   }
 
-  public void setTags(List<TagModel> tags) {
+  public void setTags(List<String> tags) {
     this.tags = tags;
   }
 

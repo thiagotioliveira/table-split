@@ -870,12 +870,64 @@
             </div>
             <div class="settings-section-body">
               <div class="profile-tags-container" id="profileTags">
-                <div class="profile-tag" th:each="tag, iterStat : *{tags}" th:attr="data-tag=${iterStat.index}">
-                  <span class="tag-emoji" th:text="${tag.icon}">🍷</span>
-                  <span th:text="${tag.description}">
-                    Vinhos
-                  </span>
-                  <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+                <div class="profile-tag" th:each="tag, iterStat : *{tags}" th:attr="data-tag=${tag}">
+
+                  <span class="tag-emoji" th:if="${tag == 'WIFI'}">📶</span>
+                  <span th:if="${tag == 'WIFI'}" th:text="#{section.tags.wifi}">Wi-Fi Grátis</span>
+                  <button th:if="${tag == 'WIFI'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'WINE'}">🍷</span>
+                  <span th:if="${tag == 'WINE'}" th:text="#{section.tags.wine}">Vinhos</span>
+                  <button th:if="${tag == 'WINE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'PARKING'}">🅿️</span>
+                  <span th:if="${tag == 'PARKING'}" th:text="#{section.tags.parking}">Estacionamento</span>
+                  <button th:if="${tag == 'PARKING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'ACCESSIBLE'}">♿️</span>
+                  <span th:if="${tag == 'ACCESSIBLE'}" th:text="#{section.tags.accessible}">Acessível</span>
+                  <button th:if="${tag == 'ACCESSIBLE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'DELIVERY'}">🛵️</span>
+                  <span th:if="${tag == 'DELIVERY'}" th:text="#{section.tags.delivery}">Delivery</span>
+                  <button th:if="${tag == 'DELIVERY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'RESERVATIONS'}">📅️</span>
+                  <span th:if="${tag == 'RESERVATIONS'}" th:text="#{section.tags.reservations}">Reservas</span>
+                  <button th:if="${tag == 'RESERVATIONS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'KIDS_SPACE'}">👶</span>
+                  <span th:if="${tag == 'KIDS_SPACE'}" th:text="#{section.tags.kidsspace}">Espaço Kids</span>
+                  <button th:if="${tag == 'KIDS_SPACE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'LIVE_MUSIC'}">🎵</span>
+                  <span th:if="${tag == 'LIVE_MUSIC'}" th:text="#{section.tags.livemusic}">Música ao Vivo</span>
+                  <button th:if="${tag == 'LIVE_MUSIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'PET_FRIENDLY'}">🐕</span>
+                  <span th:if="${tag == 'PET_FRIENDLY'}" th:text="#{section.tags.petfriendly}">Pet Friendly</span>
+                  <button th:if="${tag == 'PET_FRIENDLY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'AIR_CONDITIONING'}">❄️</span>
+                  <span th:if="${tag == 'AIR_CONDITIONING'}" th:text="#{section.tags.air}">Ar Condicionado</span>
+                  <button th:if="${tag == 'AIR_CONDITIONING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'VEGAN'}">🌱</span>
+                  <span th:if="${tag == 'VEGAN'}" th:text="#{section.tags.vegan}">Vegano</span>
+                  <button th:if="${tag == 'VEGAN'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'GLUTEN_FREE'}">🌾</span>
+                  <span th:if="${tag == 'GLUTEN_FREE'}" th:text="#{section.tags.glutenfree}">Sem Glúten</span>
+                  <button th:if="${tag == 'GLUTEN_FREE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'ROMANTIC'}">💑</span>
+                  <span th:if="${tag == 'ROMANTIC'}" th:text="#{section.tags.romantic}">Romântico</span>
+                  <button th:if="${tag == 'ROMANTIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
+                  <span class="tag-emoji" th:if="${tag == 'GROUPS'}">👥</span>
+                  <span th:if="${tag == 'GROUPS'}" th:text="#{section.tags.groups}">Grupos</span>
+                  <button th:if="${tag == 'GROUPS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
                 </div>
                 <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
                   th:text="#{section.tags.button.add}">
@@ -889,41 +941,75 @@
               </div>
 
               <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
-                <div class="tag-suggestion" onclick="addTag('estacionamento', '🅿️', 'Estacionamento')">
-                  <span>🅿️</span> Estacionamento
+                <div class="tag-suggestion" th:text="#{section.tags.wifi}"
+                     onclick="addTag('WIFI', '📶️', 'Wi-Fi Grátis')" th:classappend="${form.tags.contains('WIFI')} ? ' selected' : ''">
+                  <span>📶</span> Wi-Fi Grátis
                 </div>
-                <div class="tag-suggestion" onclick="addTag('acessivel', '♿', 'Acessível')">
-                  <span>♿</span> Acessível
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('WINE', '🍷️', '#{section.tags.wine}')|"
+                     th:classappend="${form.tags.contains('WINE')} ? ' selected' : ''">
+                  <span>🍷️</span> <span th:text="#{section.tags.wine}">Wine</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('delivery', '🛵', 'Delivery')">
-                  <span>🛵</span> Delivery
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('PARKING', '🅿', '#{section.tags.parking}')|"
+                     th:classappend="${form.tags.contains('PARKING')} ? ' selected' : ''">
+                  <span>🅿️</span> <span th:text="#{section.tags.parking}">Parking</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('reservas', '📅', 'Reservas')">
-                  <span>📅</span> Reservas
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('ACCESSIBLE', '♿', '#{section.tags.accessible}')|"
+                     th:classappend="${form.tags.contains('ACCESSIBLE')} ? ' selected' : ''">
+                  <span>♿</span> <span th:text="#{section.tags.accessible}">Accessible</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('kids', '👶', 'Espaço Kids')">
-                  <span>👶</span> Espaço Kids
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('DELIVERY', '🛵', '#{section.tags.delivery}')|"
+                     th:classappend="${form.tags.contains('DELIVERY')} ? ' selected' : ''">
+                  <span>🛵</span> <span th:text="#{section.tags.delivery}">Delivery</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('live', '🎵', 'Música ao Vivo')">
-                  <span>🎵</span> Música ao Vivo
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('RESERVATIONS', '📅', '#{section.tags.reservations}')|"
+                     th:classappend="${form.tags.contains('RESERVATIONS')} ? ' selected' : ''">
+                  <span>📅</span> <span th:text="#{section.tags.reservations}">Reservations</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('petfriendly', '🐕', 'Pet Friendly')">
-                  <span>🐕</span> Pet Friendly
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('KIDS_SPACE', '👶', '#{section.tags.kidsspace}')|"
+                     th:classappend="${form.tags.contains('KIDS_SPACE')} ? ' selected' : ''">
+                  <span>👶</span> <span th:text="#{section.tags.kidsspace}">Kids Area</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('ar', '❄️', 'Ar Condicionado')">
-                  <span>❄️</span> Ar Condicionado
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('LIVE_MUSIC', '🎵', '#{section.tags.livemusic}')|"
+                     th:classappend="${form.tags.contains('LIVE_MUSIC')} ? ' selected' : ''">
+                  <span>🎵</span> <span th:text="#{section.tags.livemusic}">Live Music</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('vegano', '🌱', 'Vegano')">
-                  <span>🌱</span> Vegano
+                <div class="tag-suggestion"
+                     onclick="addTag('PET_FRIENDLY', '🐕', 'Pet Friendly')"
+                     th:attr="onclick=|addTag('PET_FRIENDLY', '🐕️', '#{section.tags.petfriendly}')|"
+                     th:classappend="${form.tags.contains('PET_FRIENDLY')} ? ' selected' : ''">
+                  <span>🐕</span> <span th:text="#{section.tags.petfriendly}">Pet Friendly</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('glutenfree', '🌾', 'Sem Glúten')">
-                  <span>🌾</span> Sem Glúten
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('AIR_CONDITIONING', '❄️', '#{section.tags.air}')|"
+                     th:classappend="${form.tags.contains('AIR_CONDITIONING')} ? ' selected' : ''">
+                  <span>❄️</span> <span th:text="#{section.tags.air}">Air Conditioning</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('romantico', '💑', 'Romântico')">
-                  <span>💑</span> Romântico
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('VEGAN', '🌱', '#{section.tags.vegan}')|"
+                     th:classappend="${form.tags.contains('VEGAN')} ? ' selected' : ''">
+                  <span>🌱</span> <span th:text="#{section.tags.vegan}">Vegan</span>
                 </div>
-                <div class="tag-suggestion" onclick="addTag('grupos', '👥', 'Grupos')">
-                  <span>👥</span> Grupos
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('GLUTEN_FREE', '🌾', '#{section.tags.glutenfree}')|"
+                     th:classappend="${form.tags.contains('GLUTEN_FREE')} ? ' selected' : ''">
+                  <span>🌾</span> <span th:text="#{section.tags.glutenfree}">Gluten Free</span>
+                </div>
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('ROMANTIC', '💑', '#{section.tags.romantic}')|"
+                     th:classappend="${form.tags.contains('ROMANTIC')} ? ' selected' : ''">
+                  <span>💑</span> <span th:text="#{section.tags.romantic}">Romantic</span>
+                </div>
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('GROUPS', '👥', '#{section.tags.groups}')|"
+                     th:classappend="${form.tags.contains('GROUPS')} ? ' selected' : ''">
+                  <span>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
                 </div>
               </div>
             </div>
@@ -1362,21 +1448,12 @@
       const tags = document.querySelectorAll('#profileTags .profile-tag');
 
       tags.forEach((tag, index) => {
-        const icon = tag.querySelector('.tag-emoji').textContent.trim();
-        const description = tag.querySelector('span:nth-child(2)').textContent.trim();
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `tags`;
+        input.value = tag.dataset.tag;
 
-        const iconInput = document.createElement('input');
-        iconInput.type = 'hidden';
-        iconInput.name = `tags[${index}].icon`;
-        iconInput.value = icon;
-
-        const descInput = document.createElement('input');
-        descInput.type = 'hidden';
-        descInput.name = `tags[${index}].description`;
-        descInput.value = description;
-
-        container.appendChild(iconInput);
-        container.appendChild(descInput);
+        container.appendChild(input);
       });
     }
 
