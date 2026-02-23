@@ -276,7 +276,8 @@
     /* Action buttons */
     .action-buttons {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
+      /*grid-template-columns: 1fr 1fr;*/
       gap: 0.75rem;
     }
 
@@ -308,7 +309,7 @@
 
     .action-btn.primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+      box-shadow: 0 6px 20px [[${profile.hashPrimaryShadowColor}]];
     }
 
     .action-btn.secondary {
@@ -782,12 +783,12 @@
 
   <!-- Profile Card -->
   <div class="profile-card">
-    <div class="profile-header">
+    <div class="profile-header" style="margin-bottom: 0px;">
       <div class="profile-logo" th:if="${false}">🍽️</div>
       <div class="profile-info">
         <h1 class="profile-name" th:text="${profile.name}">Restaurante Sabor & Arte</h1>
-        <p class="profile-category">Gastronomia Contemporânea</p>
-        <div class="profile-rating">
+        <p class="profile-category" style="margin-bottom: 0px;">Gastronomia Contemporânea</p>
+        <div class="profile-rating" th:if="${false}">
           <div class="stars">
             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -806,29 +807,80 @@
     </p>
 
     <div class="profile-tags">
-      <span class="tag">🍷 Vinhos</span>
-      <span class="tag">🥗 Vegetariano</span>
-      <span class="tag">🅿️ Estacionamento</span>
-      <span class="tag">♿ Acessível</span>
-      <span class="tag">💳 Cartões</span>
+      <div class="tag" th:if="${profile.tags.contains('WIFI')}">
+        <span>📶</span> <span th:text="#{section.tags.wifi}">Free Wi-Fi</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('WINE')}">
+        <span>🍷</span> <span th:text="#{section.tags.wine}">Wine</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('PARKING')}">
+        <span>🅿️</span> <span th:text="#{section.tags.parking}">Parking</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('ACCESSIBLE')}">
+        <span>♿️</span> <span th:text="#{section.tags.accessible}">Accessible</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('DELIVERY')}">
+        <span>🛵️</span> <span th:text="#{section.tags.delivery}">Delivery</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('RESERVATIONS')}">
+        <span>📅️</span> <span th:text="#{section.tags.reservations}">Reservations</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('KIDS_SPACE')}">
+        <span>👶</span> <span th:text="#{section.tags.kidsspace}">Kids Area</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('LIVE_MUSIC')}">
+        <span>🎵</span> <span th:text="#{section.tags.livemusic}">Live Music</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('PET_FRIENDLY')}">
+        <span>🐕</span> <span th:text="#{section.tags.petfriendly}">Pet Friendly</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('AIR_CONDITIONING')}">
+        <span>❄</span> <span th:text="#{section.tags.air}">Air Conditioning</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('VEGAN')}">
+        <span>🌱</span> <span th:text="#{section.tags.vegan}">Vegan</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('GLUTEN_FREE')}">
+        <span>>🌾</span> <span th:text="#{section.tags.glutenfree}">Gluten Free</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('ROMANTIC')}">
+        <span>>💑</span> <span th:text="#{section.tags.romantic}">Romantic</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('GROUPS')}">
+        <span>>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
+      </div>
+      <div class="tag" th:if="${profile.tags.contains('CARDS')}">
+        <span>💳</span> <span th:text="#{section.tags.cards}">Cards</span>
+      </div>
     </div>
 
-    <div class="profile-status">
+    <div class="profile-status" th:classappend="${!profile.open} ? ' closed' : ''">
       <div class="status-dot"></div>
-      <span class="status-text">Aberto agora</span>
-      <span class="status-hours">Fecha às 23:00</span>
+      <span class="status-text" th:if="${profile.open}" th:text="#{profile.status.open}">Open now</span>
+      <span class="status-text" th:if="${!profile.open}" th:text="#{profile.status.closed}">Closed now</span>
+      <span class="status-hours"
+                  th:text="${profile.open} ?
+              #{profile.status.hours.close(
+                  ${#temporals.format(profile.nextOpeningOrClosingHours, 'HH:mm')}
+              )} :
+              #{profile.status.hours.open(
+                  #{'day.' + ${profile.nextOpeningOrClosingHours.dayOfWeek.name().toLowerCase()}}
+                  + ' ' +
+                  ${#temporals.format(profile.nextOpeningOrClosingHours, 'HH:mm')}
+              )}">
+      </span>
     </div>
 
     <div class="action-buttons">
-      <a href="customer-menu.html" class="action-btn primary">
+      <a href="/customer-menu" class="action-btn primary">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
           <path d="M7 2v20"/>
           <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
         </svg>
-        Ver Cardápio
+        <span th:text="#{profile.view.menu}">View Menu</span>
       </a>
-      <a href="tel:+5511999999999" class="action-btn secondary">
+      <a href="tel:+5511999999999" class="action-btn secondary" th:if="${false}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
         </svg>
@@ -876,7 +928,7 @@
           </div>
           <div class="info-content">
             <h4>Website</h4>
-            <p><a href="#" th:text="${profile.website}">saborarte.com.br</a></p>
+            <p><a th:href="${profile.website}" target="_blank" th:text="${profile.website}">saborarte.com.br</a></p>
           </div>
         </div>
         <div class="info-card">
@@ -896,35 +948,12 @@
 
     <!-- Hours -->
     <section class="section">
-      <h2 class="section-title">Horário de Funcionamento</h2>
+      <h2 class="section-title" th:text="#{section.hours.title}">Business Hours</h2>
       <div class="hours-list">
-        <div class="hours-item">
-          <span class="hours-day">Segunda-feira</span>
-          <span class="hours-time hours-closed">Fechado</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Terça-feira</span>
-          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Quarta-feira</span>
-          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
-        </div>
-        <div class="hours-item today">
-          <span class="hours-day">Quinta-feira (Hoje)</span>
-          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Sexta-feira</span>
-          <span class="hours-time">11:30 - 15:00, 18:00 - 00:00</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Sábado</span>
-          <span class="hours-time">11:30 - 00:00</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Domingo</span>
-          <span class="hours-time">11:30 - 16:00</span>
+        <div class="hours-item" th:each="schedule : ${profile.schedule}">
+          <span class="hours-day" th:text="#{${'day.' + schedule.day}}">Monday</span>
+          <span class="hours-time hours-closed" th:if="${schedule.closed}" th:text="#{hours.closed}">Closed</span>
+          <span class="hours-time" th:if="${!schedule.closed}" th:text="${schedule.hours}">11:30 - 15:00, 18:00 - 23:00</span>
         </div>
       </div>
     </section>
@@ -1079,9 +1108,9 @@
         <path d="M7 2v20"/>
         <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
       </svg>
-      MesaFácil
+      <span th:text="#{app.name}"></span>
     </a>
-    <p class="footer-text">© 2024 MesaFácil. Todos os direitos reservados.</p>
+    <p class="footer-text" th:text="#{app.footer}"></p>
   </footer>
 
   <script>

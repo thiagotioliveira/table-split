@@ -928,6 +928,10 @@
                   <span th:if="${tag == 'GROUPS'}" th:text="#{section.tags.groups}">Grupos</span>
                   <button th:if="${tag == 'GROUPS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
+                  <span class="tag-emoji" th:if="${tag == 'CARDS'}">💳</span>
+                  <span th:if="${tag == 'CARDS'}" th:text="#{section.tags.cards}">Cards</span>
+                  <button th:if="${tag == 'CARDS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+
                 </div>
                 <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
                   th:text="#{section.tags.button.add}">
@@ -1010,6 +1014,11 @@
                      th:attr="onclick=|addTag('GROUPS', '👥', '#{section.tags.groups}')|"
                      th:classappend="${form.tags.contains('GROUPS')} ? ' selected' : ''">
                   <span>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
+                </div>
+                <div class="tag-suggestion"
+                     th:attr="onclick=|addTag('CARDS', '💳', '#{section.tags.cards}')|"
+                     th:classappend="${form.tags.contains('CARDS')} ? ' selected' : ''">
+                  <span>💳</span> <span th:text="#{section.tags.cards}">Cards</span>
                 </div>
               </div>
             </div>

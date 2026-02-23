@@ -1,6 +1,10 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
+import java.time.format.DateTimeFormatter;
+
 public class Period {
+  static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
   private String start;
   private String end;
 

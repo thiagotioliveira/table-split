@@ -1,6 +1,9 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Restaurant {
@@ -22,6 +25,97 @@ public class Restaurant {
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
+
+  public ZonedDateTime getNextOpeningOrClosing(ZonedDateTime now) {
+
+    boolean currentlyOpen = isOpen(now);
+
+    for (int i = 0; i < 7; i++) {
+
+      ZonedDateTime dateToCheck = now.plusDays(i);
+      String dayString = dateToCheck.getDayOfWeek().name().toLowerCase();
+
+      Optional<BusinessHours> optional =
+          days.stream()
+              .filter(d -> dayString.equals(d.getDay()))
+              .filter(d -> !d.isClosed())
+              .findFirst();
+
+      if (optional.isEmpty()) continue;
+
+      BusinessHours bh = optional.get();
+
+      for (Period period : bh.getPeriods()) {
+
+        LocalTime start = LocalTime.parse(period.getStart(), Period.TIME_FORMATTER);
+        LocalTime end = LocalTime.parse(period.getEnd(), Period.TIME_FORMATTER);
+
+        ZonedDateTime startDateTime = dateToCheck.with(start);
+
+        ZonedDateTime endDateTime =
+            end.isAfter(start) ? dateToCheck.with(end) : dateToCheck.plusDays(1).with(end);
+
+        if (currentlyOpen) {
+          if (now.isBefore(endDateTime)) {
+            return endDateTime;
+          }
+        } else {
+          if (now.isBefore(startDateTime)) {
+            return startDateTime;
+          }
+        }
+      }
+    }
+
+    return null; // nunca abre
+  }
+
+  public boolean isOpen(ZonedDateTime now) {
+
+    if (days == null || days.isEmpty()) {
+      return false;
+    }
+
+    String currentDay = now.getDayOfWeek().name().toLowerCase();
+    LocalTime currentTime = now.toLocalTime();
+
+    return days.stream()
+        .filter(d -> currentDay.equals(d.getDay()))
+        .filter(d -> !d.isClosed())
+        .findFirst()
+        .map(d -> isOpenAt(d, currentTime))
+        .orElse(false);
+  }
+
+  private boolean isOpenAt(BusinessHours businessHours, LocalTime currentTime) {
+
+    if (businessHours.getPeriods() == null) {
+      return false;
+    }
+
+    for (Period period : businessHours.getPeriods()) {
+
+      LocalTime start = LocalTime.parse(period.getStart(), Period.TIME_FORMATTER);
+      LocalTime end = LocalTime.parse(period.getEnd(), Period.TIME_FORMATTER);
+
+      if (isWithinPeriod(currentTime, start, end)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isWithinPeriod(LocalTime now, LocalTime start, LocalTime end) {
+
+    // Caso normal (08:00 → 18:00)
+    if (end.isAfter(start)) {
+      return !now.isBefore(start) && now.isBefore(end);
+    }
+
+    // Caso atravessa meia-noite (18:00 → 02:00)
+    return !now.isBefore(start) || now.isBefore(end);
+  }
 
   public UUID getId() {
     return id;

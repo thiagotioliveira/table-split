@@ -14,5 +14,6 @@ public enum Tag {
   VEGAN,
   GLUTEN_FREE,
   ROMANTIC,
-  GROUPS
+  GROUPS,
+  CARDS
 }
