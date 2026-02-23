@@ -28,13 +28,17 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setId(UUID.randomUUID());
     restaurant.setName("Dona Maria");
     restaurant.setSlug("donamaria.restaurant");
-    restaurant.setDescription("Comida brasileira de qualidade!");
+    restaurant.setDescription("Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.");
     restaurant.setWebsite("https://donamaria.com.br");
     restaurant.setPhone("+351 963 927 944");
-    restaurant.setEmail("contato@cantinabella.com");
+    restaurant.setEmail("contato@donamaria.com.br");
     restaurant.setAddress("Rua das Flores, 123 - Centro");
     restaurant.getCuisineType().add(CuisineType.BRAZILIAN);
     restaurant.getTags().add(Tag.WIFI);
+    restaurant.getTags().add(Tag.DELIVERY);
+    restaurant.getTags().add(Tag.RESERVATIONS);
+    restaurant.getTags().add(Tag.GROUPS);
+    restaurant.getTags().add(Tag.CARDS);
     restaurant.setDefaultLanguage("pt-BR");
     restaurant.setCustomerLanguages(
         List.of(
@@ -92,10 +96,10 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
                 DayOfWeek.SUNDAY.name().toLowerCase(),
                 false,
                 List.of(new Period("11:00", "23:00"))));
-    //    restaurant.setHashPrimaryColor("#EA580C");
-    //    restaurant.setHashAccentColor("#FFEDD5");
-    restaurant.setHashPrimaryColor("#15803D");
-    restaurant.setHashAccentColor("#FEF9C3");
+    restaurant.setHashPrimaryColor("#EA580C");
+    restaurant.setHashAccentColor("#FFEDD5");
+    //    restaurant.setHashPrimaryColor("#15803D");
+    //    restaurant.setHashAccentColor("#FEF9C3");
     restaurant = this.restaurantJpaRepository.save(restaurant);
     context.setRestaurantId(restaurant.getId());
   }
