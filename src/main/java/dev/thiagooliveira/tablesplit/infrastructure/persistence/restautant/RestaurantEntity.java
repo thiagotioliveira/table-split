@@ -21,6 +21,8 @@ public class RestaurantEntity {
 
   private String description;
 
+  private String website;
+
   private String phone;
 
   @Column(nullable = false)
@@ -65,6 +67,7 @@ public class RestaurantEntity {
     domain.setName(this.name);
     domain.setSlug(this.slug);
     domain.setDescription(this.description);
+    domain.setWebsite(this.website);
     domain.setPhone(this.phone);
     domain.setEmail(this.email);
     domain.setAddress(this.address);
@@ -87,6 +90,7 @@ public class RestaurantEntity {
     entity.setName(domain.getName());
     entity.setSlug(domain.getSlug());
     entity.setDescription(domain.getDescription());
+    entity.setWebsite(domain.getWebsite());
     entity.setPhone(domain.getPhone());
     entity.setEmail(domain.getEmail());
     entity.setAddress(domain.getAddress());
@@ -145,6 +149,14 @@ public class RestaurantEntity {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getWebsite() {
+    return website;
+  }
+
+  public void setWebsite(String website) {
+    this.website = website;
   }
 
   public String getPhone() {

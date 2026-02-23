@@ -1,6 +1,10 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity, UUID> {}
+public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity, UUID> {
+
+  Optional<RestaurantEntity> findBySlug(String slug);
+}

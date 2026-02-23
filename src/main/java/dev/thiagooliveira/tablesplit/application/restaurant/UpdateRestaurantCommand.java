@@ -10,6 +10,7 @@ public record UpdateRestaurantCommand(
     String name,
     String slug,
     String description,
+    String website,
     String phone,
     String email,
     String address,

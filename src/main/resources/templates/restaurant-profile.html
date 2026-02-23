@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${profile.name}">Restaurante Sabor & Arte</title>
+  <style>
+    :root {
+      --background: #FFFBF5;
+      --foreground: #1C1917;
+      --card: #FFFFFF;
+      --primary: #EA580C;
+      --primary-foreground: #FFFFFF;
+      --muted: #F5F5F4;
+      --muted-foreground: #78716C;
+      --accent: #FFEDD5;
+      --border: #E7E5E4;
+      --success: #16A34A;
+      --error: #DC2626;
+      --warning: #F59E0B;
+      --info: #3B82F6;
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      height: 300px;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+    }
+
+    .hero-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Gallery dots */
+    .gallery-dots {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .gallery-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .gallery-dot.active {
+      background: white;
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: var(--card);
+      margin: -60px 1rem 0;
+      position: relative;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      z-index: 20;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-category {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stars {
+      display: flex;
+      gap: 0.125rem;
+      color: var(--warning);
+    }
+
+    .stars svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .rating-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .rating-count {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    .profile-description {
+      font-size: 0.9375rem;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--accent);
+      color: var(--primary);
+      border-radius: 20px;
+    }
+
+    .profile-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #DCFCE7;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .profile-status.closed {
+      background: #FEE2E2;
+    }
+
+    .profile-status.closed .status-dot {
+      background: var(--error);
+      animation: none;
+    }
+
+    .status-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--success);
+    }
+
+    .profile-status.closed .status-text {
+      color: var(--error);
+    }
+
+    .status-hours {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      margin-left: auto;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, [[${profile.hashGradientColor}]] 100%);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px [[${profile.hashPrimaryShadowColor}]];
+    }
+
+    .action-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+    }
+
+    .action-btn.secondary {
+      background: var(--card);
+      color: var(--foreground);
+      border: 2px solid var(--border);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--muted);
+      border-color: var(--muted-foreground);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 1.5rem 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .section-link {
+      font-size: 0.875rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .section-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .info-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .info-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--primary);
+    }
+
+    .info-content h4 {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      margin-bottom: 0.25rem;
+    }
+
+    .info-content p {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .info-content a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .info-content a:hover {
+      text-decoration: underline;
+    }
+
+    /* Hours */
+    .hours-list {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hours-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hours-item:last-child {
+      border-bottom: none;
+    }
+
+    .hours-item.today {
+      background: var(--accent);
+    }
+
+    .hours-day {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .hours-time {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    .hours-item.today .hours-time {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .hours-closed {
+      color: var(--error);
+    }
+
+    /* Map */
+    .map-container {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .map-placeholder {
+      height: 200px;
+      background: linear-gradient(135deg, #E7E5E4 0%, #D6D3D1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-foreground);
+    }
+
+    .map-placeholder svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .map-info {
+      padding: 1rem;
+    }
+
+    .map-address {
+      font-size: 0.9375rem;
+      color: var(--foreground);
+      margin-bottom: 0.75rem;
+    }
+
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .map-btn:hover {
+      background: #FED7AA;
+    }
+
+    .map-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Reviews */
+    .reviews-summary {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .reviews-score {
+      text-align: center;
+    }
+
+    .score-value {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1;
+    }
+
+    .score-stars {
+      display: flex;
+      justify-content: center;
+      gap: 0.125rem;
+      color: var(--warning);
+      margin: 0.5rem 0;
+    }
+
+    .score-stars svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .score-count {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    .reviews-bars {
+      flex: 1;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.375rem;
+    }
+
+    .bar-label {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      width: 12px;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--muted);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--warning);
+      border-radius: 4px;
+    }
+
+    .bar-count {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      width: 30px;
+      text-align: right;
+    }
+
+    /* Review Card */
+    .review-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .review-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, #FED7AA 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .review-info {
+      flex: 1;
+    }
+
+    .review-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .review-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    .review-stars {
+      display: flex;
+      gap: 0.125rem;
+      color: var(--warning);
+    }
+
+    .review-stars svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .review-text {
+      font-size: 0.9375rem;
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    /* Gallery section */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+
+    .gallery-item.more {
+      background: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 2rem 1rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-logo svg {
+      width: 24px;
+      height: 24px;
+      color: var(--primary);
+    }
+
+    .footer-text {
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .reviews-summary {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .reviews-bars {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body th:style="|--primary: ${profile.hashPrimaryColor};
+                 --accent: ${profile.hashAccentColor};|">
+  <!-- Hero -->
+  <section class="hero">
+    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=600&fit=crop" alt="Restaurante" class="hero-image">
+    <div class="hero-overlay"></div>
+    
+    <nav class="hero-nav">
+      <button class="nav-btn" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 19-7-7 7-7"/>
+          <path d="M19 12H5"/>
+        </svg>
+      </button>
+      <div class="nav-actions" th:if="${false}">
+        <button class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" x2="12" y1="2" y2="15"/>
+          </svg>
+        </button>
+        <button class="nav-btn" th:if="${false}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="gallery-dots">
+      <div class="gallery-dot active"></div>
+      <div class="gallery-dot"></div>
+      <div class="gallery-dot"></div>
+      <div class="gallery-dot"></div>
+    </div>
+  </section>
+
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-logo" th:if="${false}">🍽️</div>
+      <div class="profile-info">
+        <h1 class="profile-name" th:text="${profile.name}">Restaurante Sabor & Arte</h1>
+        <p class="profile-category">Gastronomia Contemporânea</p>
+        <div class="profile-rating">
+          <div class="stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" style="color: var(--muted);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <span class="rating-text">4.5</span>
+          <span class="rating-count">(234 avaliações)</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="profile-description" th:text="${profile.description}">
+      Cozinha contemporânea com toques da culinária brasileira. Ambiente aconchegante, perfeito para reuniões especiais e jantares românticos.
+    </p>
+
+    <div class="profile-tags">
+      <span class="tag">🍷 Vinhos</span>
+      <span class="tag">🥗 Vegetariano</span>
+      <span class="tag">🅿️ Estacionamento</span>
+      <span class="tag">♿ Acessível</span>
+      <span class="tag">💳 Cartões</span>
+    </div>
+
+    <div class="profile-status">
+      <div class="status-dot"></div>
+      <span class="status-text">Aberto agora</span>
+      <span class="status-hours">Fecha às 23:00</span>
+    </div>
+
+    <div class="action-buttons">
+      <a href="customer-menu.html" class="action-btn primary">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+        Ver Cardápio
+      </a>
+      <a href="tel:+5511999999999" class="action-btn secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        Ligar
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Contact Info -->
+    <section class="section">
+      <h2 class="section-title">Informações</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h4>Telefone</h4>
+            <p><a href="tel:+5511999999999" th:text="${profile.phone}">(11) 99999-9999</a></p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h4>Email</h4>
+            <p><a href="mailto:contato@saborarte.com" th:text="${profile.email}">contato@saborarte.com</a></p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+              <path d="M2 12h20"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h4>Website</h4>
+            <p><a href="#" th:text="${profile.website}">saborarte.com.br</a></p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" x2="12" y1="2" y2="22"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="info-content">
+            <h4>Preço médio</h4>
+            <p th:text="${profile.averagePrice}">R$ 60 - R$ 120</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hours -->
+    <section class="section">
+      <h2 class="section-title">Horário de Funcionamento</h2>
+      <div class="hours-list">
+        <div class="hours-item">
+          <span class="hours-day">Segunda-feira</span>
+          <span class="hours-time hours-closed">Fechado</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Terça-feira</span>
+          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Quarta-feira</span>
+          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
+        </div>
+        <div class="hours-item today">
+          <span class="hours-day">Quinta-feira (Hoje)</span>
+          <span class="hours-time">11:30 - 15:00, 18:00 - 23:00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Sexta-feira</span>
+          <span class="hours-time">11:30 - 15:00, 18:00 - 00:00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Sábado</span>
+          <span class="hours-time">11:30 - 00:00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Domingo</span>
+          <span class="hours-time">11:30 - 16:00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location -->
+    <section class="section" th:if="${false}">
+      <h2 class="section-title">Localização</h2>
+      <div class="map-container">
+        <div class="map-placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="map-info">
+          <p class="map-address">Rua das Flores, 123 - Centro<br>São Paulo, SP - 01234-567</p>
+          <a href="https://maps.google.com" target="_blank" class="map-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+            Abrir no Google Maps
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section" th:if="${false}">
+      <div class="section-header">
+        <h2 class="section-title">Fotos</h2>
+        <a href="#" class="section-link">Ver todas (24)</a>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop" alt="Prato">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop" alt="Prato">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop" alt="Prato">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop" alt="Prato">
+        </div>
+        <div class="gallery-item">
+          <img src="https://images.unsplash.com/photo-1482049016gy?w=300&h=300&fit=crop" alt="Ambiente">
+        </div>
+        <div class="gallery-item more">+18</div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section" th:if="${false}">
+      <div class="section-header">
+        <h2 class="section-title">Avaliações</h2>
+        <a href="#" class="section-link">Ver todas</a>
+      </div>
+
+      <div class="reviews-summary">
+        <div class="reviews-score">
+          <div class="score-value">4.5</div>
+          <div class="score-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" style="color: var(--muted);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="score-count">234 avaliações</div>
+        </div>
+        <div class="reviews-bars">
+          <div class="bar-row">
+            <span class="bar-label">5</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 65%;"></div></div>
+            <span class="bar-count">152</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">4</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 25%;"></div></div>
+            <span class="bar-count">58</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">3</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 7%;"></div></div>
+            <span class="bar-count">16</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">2</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
+            <span class="bar-count">5</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">1</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 1%;"></div></div>
+            <span class="bar-count">3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">M</div>
+          <div class="review-info">
+            <div class="review-name">Maria Silva</div>
+            <div class="review-meta">
+              <div class="review-stars">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span>Há 2 dias</span>
+            </div>
+          </div>
+        </div>
+        <p class="review-text">
+          Experiência incrível! O ambiente é muito aconchegante e a comida é simplesmente maravilhosa. O atendimento foi impecável, especialmente o garçom que nos atendeu. Com certeza voltarei!
+        </p>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">J</div>
+          <div class="review-info">
+            <div class="review-name">João Pedro</div>
+            <div class="review-meta">
+              <div class="review-stars">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" style="color: var(--muted);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span>Há 1 semana</span>
+            </div>
+          </div>
+        </div>
+        <p class="review-text">
+          Ótima opção para um jantar especial. Os pratos são bem elaborados e o vinho que o sommelier recomendou harmonizou perfeitamente. Preço justo para a qualidade oferecida.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a href="/" class="footer-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+        <path d="M7 2v20"/>
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+      </svg>
+      MesaFácil
+    </a>
+    <p class="footer-text">© 2024 MesaFácil. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    // Gallery dots interaction
+    document.querySelectorAll('.gallery-dot').forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        document.querySelectorAll('.gallery-dot').forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

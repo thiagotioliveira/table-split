@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 0001
+      id: 0001-restaurants-table
       author: thiagooliveira
       changes:
         - createTable:
@@ -34,6 +34,11 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: website
                   type: varchar(255)
                   constraints:
                     nullable: true
@@ -102,3 +107,10 @@ databaseChangeLog:
                   type: varchar(7)
                   constraints:
                     nullable: false
+        - createIndex:
+            indexName: idx_restaurants_slug
+            tableName: restaurants
+            unique: true
+            columns:
+              - column:
+                  name: slug

@@ -17,6 +17,7 @@ public class UpdateRestaurant {
     restaurant.setName(command.name());
     restaurant.setSlug(command.slug().toLowerCase().trim());
     restaurant.setDescription(command.description());
+    restaurant.setWebsite(command.website());
     restaurant.setPhone(command.phone());
     restaurant.setEmail(command.email());
     restaurant.setAddress(command.address());

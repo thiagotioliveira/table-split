@@ -8,5 +8,7 @@ public interface RestaurantRepository {
 
   Optional<Restaurant> findById(UUID restaurantId);
 
+  Optional<Restaurant> findBySlug(String slug);
+
   void save(Restaurant restaurant);
 }

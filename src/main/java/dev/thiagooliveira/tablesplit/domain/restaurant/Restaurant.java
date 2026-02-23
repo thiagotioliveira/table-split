@@ -8,6 +8,7 @@ public class Restaurant {
   private String name;
   private String slug;
   private String description;
+  private String website;
   private String phone;
   private String email;
   private String address;
@@ -52,6 +53,14 @@ public class Restaurant {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getWebsite() {
+    return website;
+  }
+
+  public void setWebsite(String website) {
+    this.website = website;
   }
 
   public String getPhone() {

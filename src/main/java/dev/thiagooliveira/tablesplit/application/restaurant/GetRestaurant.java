@@ -15,4 +15,8 @@ public class GetRestaurant {
   public Optional<Restaurant> execute(UUID restaurantId) {
     return this.restaurantRepository.findById(restaurantId);
   }
+
+  public Optional<Restaurant> execute(String slug) {
+    return this.restaurantRepository.findBySlug(slug);
+  }
 }

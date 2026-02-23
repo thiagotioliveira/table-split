@@ -29,6 +29,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setName("Dona Maria");
     restaurant.setSlug("donamaria.restaurant");
     restaurant.setDescription("Comida brasileira de qualidade!");
+    restaurant.setWebsite("https://donamaria.com.br");
     restaurant.setPhone("+351 963 927 944");
     restaurant.setEmail("contato@cantinabella.com");
     restaurant.setAddress("Rua das Flores, 123 - Centro");
@@ -91,8 +92,10 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
                 DayOfWeek.SUNDAY.name().toLowerCase(),
                 false,
                 List.of(new Period("11:00", "23:00"))));
-    restaurant.setHashPrimaryColor("#f97316");
-    restaurant.setHashAccentColor("#10b981");
+    //    restaurant.setHashPrimaryColor("#EA580C");
+    //    restaurant.setHashAccentColor("#FFEDD5");
+    restaurant.setHashPrimaryColor("#15803D");
+    restaurant.setHashAccentColor("#FEF9C3");
     restaurant = this.restaurantJpaRepository.save(restaurant);
     context.setRestaurantId(restaurant.getId());
   }

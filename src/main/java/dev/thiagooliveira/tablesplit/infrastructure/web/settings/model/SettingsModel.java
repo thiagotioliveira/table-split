@@ -16,6 +16,9 @@ public class SettingsModel {
   @Size(max = 254)
   private String description;
 
+  @Size(max = 254)
+  private String website;
+
   @Size(max = 20)
   private String phone;
 
@@ -66,6 +69,7 @@ public class SettingsModel {
     this.name = restaurant.getName();
     this.slug = restaurant.getSlug();
     this.description = restaurant.getDescription();
+    this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
     this.email = restaurant.getEmail();
     this.address = restaurant.getAddress();
@@ -112,6 +116,7 @@ public class SettingsModel {
         this.name,
         this.slug,
         this.description,
+        this.website,
         this.phone,
         this.email,
         this.address,
@@ -149,6 +154,14 @@ public class SettingsModel {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getWebsite() {
+    return website;
+  }
+
+  public void setWebsite(String website) {
+    this.website = website;
   }
 
   public String getPhone() {

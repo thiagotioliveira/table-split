@@ -740,6 +740,18 @@
               </div>
 
               <div class="form-group">
+                <label class="form-label" for="restaurantSlug" th:text="#{form.restaurant.slug}">Id *</label>
+                <div class="slug-input-group">
+                  <span class="slug-prefix" th:text="#{app.domain}+'/'">tablesplit.com/</span>
+                  <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
+                         th:placeholder="#{form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
+                </div>
+                <p class="slug-hint" id="slugHint" th:text="#{form.restaurant.slug.hint}">Use only lowercase letters,
+                  numbers, and underscores (_) or periods (.).</p>
+                <div th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" style="color:red"></div>
+              </div>
+
+              <div class="form-group">
                 <label class="form-label" for="restaurantName" th:text="#{form.restaurant.name.required}">Restaurant
                   Name *</label>
                 <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia"
@@ -748,23 +760,18 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantSlug" th:text="#{form.restaurant.slug}">Id *</label>
-                <div class="slug-input-group">
-                  <span class="slug-prefix" th:text="#{app.domain}+'/'">tablesplit.com/</span>
-                  <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
-                    th:placeholder="#{form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
-                </div>
-                <p class="slug-hint" id="slugHint" th:text="#{form.restaurant.slug.hint}">Use only lowercase letters,
-                  numbers, and underscores (_) or periods (.).</p>
-                <div th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" style="color:red"></div>
-              </div>
-
-              <div class="form-group">
                 <label class="form-label" for="restaurantDesc"
                   th:text="#{form.restaurant.description}">Description</label>
                 <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254"
                   th:placeholder="#{form.restaurant.description.placeholder}" th:field="*{description}"></textarea>
                 <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red"></div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="website">Website</label>
+                <input type="text" id="website" class="form-input"
+                       th:placeholder="#{form.restaurant.website.placeholder}" th:field="*{website}">
+                <div th:if="${#fields.hasErrors('website')}" th:errors="*{website}" style="color:red"></div>
               </div>
 
               <div class="form-row">
