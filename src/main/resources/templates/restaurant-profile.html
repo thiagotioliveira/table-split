@@ -825,6 +825,7 @@
       <div class="tag" th:if="${profile.tags.contains('RESERVATIONS')}">
         <span>📅️</span> <span th:text="#{section.tags.reservations}">Reservations</span>
       </div>
+      </div>
       <div class="tag" th:if="${profile.tags.contains('KIDS_SPACE')}">
         <span>👶</span> <span th:text="#{section.tags.kidsspace}">Kids Area</span>
       </div>
@@ -841,13 +842,13 @@
         <span>🌱</span> <span th:text="#{section.tags.vegan}">Vegan</span>
       </div>
       <div class="tag" th:if="${profile.tags.contains('GLUTEN_FREE')}">
-        <span>>🌾</span> <span th:text="#{section.tags.glutenfree}">Gluten Free</span>
+        <span>🌾</span> <span th:text="#{section.tags.glutenfree}">Gluten Free</span>
       </div>
       <div class="tag" th:if="${profile.tags.contains('ROMANTIC')}">
-        <span>>💑</span> <span th:text="#{section.tags.romantic}">Romantic</span>
+        <span>💑</span> <span th:text="#{section.tags.romantic}">Romantic</span>
       </div>
       <div class="tag" th:if="${profile.tags.contains('GROUPS')}">
-        <span>>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
+        <span>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
       </div>
       <div class="tag" th:if="${profile.tags.contains('CARDS')}">
         <span>💳</span> <span th:text="#{section.tags.cards}">Cards</span>
