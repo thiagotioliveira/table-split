@@ -1,9 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Language;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
+import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +16,9 @@ public class RestaurantEntity {
   @Column(nullable = false)
   private String name;
 
+  @Column(nullable = false)
+  private String slug;
+
   private String description;
 
   private String phone;
@@ -27,6 +27,10 @@ public class RestaurantEntity {
   private String email;
 
   private String address;
+
+  @Convert(converter = CuisineTypeJsonListConverter.class)
+  @Column(nullable = false)
+  private List<CuisineType> cuisineType = new ArrayList<>();
 
   @Convert(converter = TagJsonListConverter.class)
   private List<Tag> tags = new ArrayList<>();
@@ -59,10 +63,12 @@ public class RestaurantEntity {
     var domain = new Restaurant();
     domain.setId(this.id);
     domain.setName(this.name);
+    domain.setSlug(this.slug);
     domain.setDescription(this.description);
     domain.setPhone(this.phone);
     domain.setEmail(this.email);
     domain.setAddress(this.address);
+    domain.setCuisineType(this.cuisineType);
     domain.setTags(this.tags);
     domain.setDefaultLanguage(this.defaultLanguage);
     domain.setCustomerLanguages(this.customerLanguages);
@@ -79,10 +85,12 @@ public class RestaurantEntity {
     var entity = new RestaurantEntity();
     entity.setId(domain.getId());
     entity.setName(domain.getName());
+    entity.setSlug(domain.getSlug());
     entity.setDescription(domain.getDescription());
     entity.setPhone(domain.getPhone());
     entity.setEmail(domain.getEmail());
     entity.setAddress(domain.getAddress());
+    entity.setCuisineType(domain.getCuisineType());
     entity.setTags(domain.getTags());
     entity.setDefaultLanguage(domain.getDefaultLanguage());
     entity.setCustomerLanguages(domain.getCustomerLanguages());
@@ -123,6 +131,14 @@ public class RestaurantEntity {
     this.name = name;
   }
 
+  public String getSlug() {
+    return slug;
+  }
+
+  public void setSlug(String slug) {
+    this.slug = slug;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -153,6 +169,14 @@ public class RestaurantEntity {
 
   public void setAddress(String address) {
     this.address = address;
+  }
+
+  public List<CuisineType> getCuisineType() {
+    return cuisineType;
+  }
+
+  public void setCuisineType(List<CuisineType> cuisineType) {
+    this.cuisineType = cuisineType;
   }
 
   public String getDefaultLanguage() {

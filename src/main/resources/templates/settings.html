@@ -631,6 +631,67 @@
       font-size: 0.75rem;
       font-weight: 500;
     }
+
+    /* Cuisine Tags */
+    .cuisine-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .cuisine-tag {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cuisine-tag:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    .cuisine-tag.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Slug Input */
+    .slug-input-group {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .slug-prefix {
+      padding: 0.625rem 0.75rem;
+      background: var(--background-secondary);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      font-size: 0.875rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .slug-input-group .form-input {
+      border-radius: 0 var(--radius) var(--radius) 0;
+      flex: 1;
+    }
+
+    .slug-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.375rem;
+    }
+
+    .slug-hint.error {
+      color: var(--destructive);
+    }
   </style>
 </head>
 
@@ -687,6 +748,18 @@
               </div>
 
               <div class="form-group">
+                <label class="form-label" for="restaurantSlug" th:text="#{form.restaurant.slug}">Id *</label>
+                <div class="slug-input-group">
+                  <span class="slug-prefix" th:text="#{app.domain}+'/'">tablesplit.com/</span>
+                  <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
+                    th:placeholder="#{form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
+                </div>
+                <p class="slug-hint" id="slugHint" th:text="#{form.restaurant.slug.hint}">Use only lowercase letters,
+                  numbers, and underscores (_) or periods (.).</p>
+                <div th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" style="color:red"></div>
+              </div>
+
+              <div class="form-group">
                 <label class="form-label" for="restaurantDesc"
                   th:text="#{form.restaurant.description}">Description</label>
                 <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254"
@@ -715,12 +788,73 @@
                   th:placeholder="#{form.restaurant.address.placeholder}">
                 <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
               </div>
+
+              <div class="form-group">
+                <label class="form-label" th:text="#{form.restaurant.cuisine.type}">Cuisine Type</label>
+                <p class="form-hint" style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;"
+                  th:text="#{form.restaurant.cuisine.type.hint}">Select the types that best describe your restaurant.
+                </p>
+                <div class="cuisine-tags" id="cuisineTags">
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('ITALIAN')} ? ' selected' : ''" data-cuisine="ITALIAN"
+                    onclick="toggleCuisine(this)">🍝 Italiana</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('JAPANESE')} ? ' selected' : ''" data-cuisine="JAPANESE"
+                    onclick="toggleCuisine(this)">🍣 Japonesa</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('BRAZILIAN')} ? ' selected' : ''"
+                    data-cuisine="BRAZILIAN" onclick="toggleCuisine(this)">🍖 Brasileira</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('MEXICAN')} ? ' selected' : ''" data-cuisine="MEXICAN"
+                    onclick="toggleCuisine(this)">🌮 Mexicana</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('FRENCH')} ? ' selected' : ''" data-cuisine="FRENCH"
+                    onclick="toggleCuisine(this)">🥐 Francesa</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('CHINESE')} ? ' selected' : ''" data-cuisine="CHINESE"
+                    onclick="toggleCuisine(this)">🥡 Chinesa</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('INDIANA')} ? ' selected' : ''" data-cuisine="INDIANA"
+                    onclick="toggleCuisine(this)">🍛 Indiana</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('ARABIC')} ? ' selected' : ''" data-cuisine="ARABIC"
+                    onclick="toggleCuisine(this)">🧆 Árabe</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('AMERICAN')} ? ' selected' : ''" data-cuisine="AMERICAN"
+                    onclick="toggleCuisine(this)">🍔 Americana</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('FAST_FOOD')} ? ' selected' : ''" data-cuisine="FAST_FOOD"
+                    onclick="toggleCuisine(this)">🍟 Fast-Food</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('PIZZERIA')} ? ' selected' : ''" data-cuisine="PIZZERIA"
+                    onclick="toggleCuisine(this)">🍕 Pizzaria</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('CONTEMPORARY')} ? ' selected' : ''" data-cuisine="CONTEMPORARY"
+                    onclick="toggleCuisine(this)">🍽️ Contemporânea</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('SEAFOOD')} ? ' selected' : ''" data-cuisine="SEAFOOD"
+                    onclick="toggleCuisine(this)">🦐 Frutos do Mar</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('VEGETARIAN')} ? ' selected' : ''"
+                    data-cuisine="VEGETARIAN" onclick="toggleCuisine(this)">🥗 Vegetariana</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('STEAKHOUSE')} ? ' selected' : ''"
+                    data-cuisine="STEAKHOUSE" onclick="toggleCuisine(this)">🥩 Churrascaria</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('CAFETERIA')} ? ' selected' : ''"
+                    data-cuisine="CAFETERIA" onclick="toggleCuisine(this)">☕ Cafeteria</button>
+                  <button type="button" class="cuisine-tag"
+                    th:classappend="${form.cuisineType.contains('SWEET_SHOP')} ? ' selected' : ''"
+                    data-cuisine="SWEET_SHOP" onclick="toggleCuisine(this)">🍰 Doceria</button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Profile Tags -->
           <div id="hiddenTagsContainer"></div>
           <div id="hiddenLanguagesContainer"></div>
+          <div id="hiddenCuisineContainer"></div>
 
           <div class="settings-section">
             <div class="settings-section-header">
@@ -823,8 +957,8 @@
                 <div class="language-checkboxes" id="languageCheckboxes">
                   <label class="language-checkbox">
                     <input type="checkbox" value="pt-BR" onchange="toggleLanguage(this)"
-                           th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}"
-                           th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'pt-BR')}">
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'pt-BR')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇧🇷</span>
                     <span class="lang-name">Português (Brasil)</span>
@@ -833,8 +967,8 @@
                   </label>
                   <label class="language-checkbox">
                     <input type="checkbox" value="en-US" onchange="toggleLanguage(this)"
-                           th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}"
-                           th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'en-US')}">
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'en-US')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇺🇸</span>
                     <span class="lang-name">English (US)</span>
@@ -1136,11 +1270,65 @@
       until: /*[[#{period.until}]]*/ 'to',
       removePeriod: /*[[#{period.remove}]]*/ 'Remove period',
       addPeriod: /*[[#{period.add}]]*/ 'Add period',
-      minOnePeriod: /*[[#{period.minimum.message}]]*/ 'There must be at least one period. To close the day, use the close button.'
+      minOnePeriod: /*[[#{period.minimum.message}]]*/ 'There must be at least one period. To close the day, use the close button.',
+      slugHint: /*[[#{form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
+      slugInvalid: /*[[#{form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
+      slugLength: /*[[#{form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
+      domain: /*[[#{app.domain}]]*/ 'tablesplit.com'
     };
   </script>
 
   <script>
+    // Slug validation
+    function validateSlug(input) {
+      const value = input.value;
+      const hint = document.getElementById('slugHint');
+      const validPattern = /^[a-z0-9_]*$/;
+
+      // Auto-format: lowercase, replace spaces/hyphens with underscore
+      let formatted = value.toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/-/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+
+      if (formatted !== value) {
+        input.value = formatted;
+      }
+
+      if (formatted.length === 0) {
+        hint.textContent = i18n.slugHint;
+        hint.classList.remove('error');
+      } else if (!validPattern.test(formatted)) {
+        hint.textContent = i18n.slugInvalid;
+        hint.classList.add('error');
+      } else if (formatted.length < 3) {
+        hint.textContent = i18n.slugLength;
+        hint.classList.add('error');
+      } else {
+        hint.textContent = i18n.domain + '/' + formatted;
+        hint.classList.remove('error');
+      }
+    }
+
+    // Cuisine type toggle
+    function toggleCuisine(btn) {
+      btn.classList.toggle('selected');
+      syncHiddenCuisines();
+    }
+
+    function syncHiddenCuisines() {
+      const container = document.getElementById('hiddenCuisineContainer');
+      container.innerHTML = '';
+      const selected = document.querySelectorAll('#cuisineTags .cuisine-tag.selected');
+      selected.forEach(btn => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cuisineType';
+        input.value = btn.dataset.cuisine;
+        container.appendChild(input);
+      });
+    }
+
     // Toggle switch
     function toggleSwitch(el) {
       el.classList.toggle('active');
@@ -1438,6 +1626,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
       syncHiddenLanguages();
+      syncHiddenCuisines();
     });
 
     function toggleDaySchedule(day) {

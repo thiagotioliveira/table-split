@@ -28,6 +28,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: slug
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
                   name: description
                   type: varchar(255)
                   constraints:
@@ -47,6 +52,11 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: true
+              - column:
+                  name: cuisine_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
               - column:
                   name: tags
                   type: TEXT

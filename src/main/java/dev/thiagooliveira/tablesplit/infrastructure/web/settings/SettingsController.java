@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.domain.security.Context;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.settings.model.SettingsModel;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,14 +33,13 @@ public class SettingsController {
   @GetMapping
   public String index(Model model) {
     var restaurant = getRestaurant.execute(context.getRestaurantId()).orElseThrow();
-    var form = new SettingsModel.RestaurantForm(restaurant);
-    model.addAttribute("form", form);
+    model.addAttribute("form", new SettingsModel(restaurant));
     return "settings";
   }
 
   @PostMapping
   public String postSettings(
-      @Valid @ModelAttribute("form") SettingsModel.RestaurantForm form,
+      @Valid @ModelAttribute("form") SettingsModel form,
       BindingResult bindingResult,
       Model model,
       RedirectAttributes redirectAttributes) {

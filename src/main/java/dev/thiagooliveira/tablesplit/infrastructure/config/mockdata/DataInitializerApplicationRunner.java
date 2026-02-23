@@ -1,9 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Language;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
+import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
 import java.time.DayOfWeek;
@@ -30,10 +27,12 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     var restaurant = new RestaurantEntity();
     restaurant.setId(UUID.randomUUID());
     restaurant.setName("Dona Maria");
+    restaurant.setSlug("donamaria.restaurant");
     restaurant.setDescription("Comida brasileira de qualidade!");
     restaurant.setPhone("+351 963 927 944");
     restaurant.setEmail("contato@cantinabella.com");
     restaurant.setAddress("Rua das Flores, 123 - Centro");
+    restaurant.getCuisineType().add(CuisineType.BRAZILIAN);
     restaurant.getTags().add(new Tag("\uD83D\uDCF6", "Wi-Fi Grátis"));
     restaurant.setDefaultLanguage("pt-BR");
     restaurant.setCustomerLanguages(

@@ -6,10 +6,12 @@ import java.util.UUID;
 public class Restaurant {
   private UUID id;
   private String name;
+  private String slug;
   private String description;
   private String phone;
   private String email;
   private String address;
+  private List<CuisineType> cuisineType;
   private List<Tag> tags;
   private String defaultLanguage;
   private List<Language> customerLanguages;
@@ -34,6 +36,14 @@ public class Restaurant {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getSlug() {
+    return slug;
+  }
+
+  public void setSlug(String slug) {
+    this.slug = slug;
   }
 
   public String getDescription() {
@@ -66,6 +76,14 @@ public class Restaurant {
 
   public void setAddress(String address) {
     this.address = address;
+  }
+
+  public List<CuisineType> getCuisineType() {
+    return cuisineType;
+  }
+
+  public void setCuisineType(List<CuisineType> cuisineType) {
+    this.cuisineType = cuisineType;
   }
 
   public List<Tag> getTags() {
