@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configurações</title>
+  <title th:text="#{page.settings.title}">Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -696,7 +696,7 @@
 </head>
 
 <body>
-  <div th:insert="~{components/sidebar :: sidebar(#{nav.settings})}"></div>
+  <div th:insert="~{components/sidebar :: sidebar(#{page.settings.header.title})}"></div>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -709,8 +709,8 @@
           <!-- Basic Information -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.restaurant.title}">Restaurant Information</h2>
-              <p th:text="#{section.restaurant.description}">Basic information that appears to your customers</p>
+              <h2 th:text="#{page.settings.section.restaurant.title}">Restaurant Information</h2>
+              <p th:text="#{page.settings.section.restaurant.description}">Basic information that appears to your customers</p>
             </div>
             <div class="settings-section-body">
               <div class="logo-upload" style="margin-bottom: 1.5rem;" th:if="${false}">
@@ -740,119 +740,119 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantSlug" th:text="#{form.restaurant.slug}">Id *</label>
+                <label class="form-label" for="restaurantSlug" th:text="#{page.settings.form.restaurant.slug}">Id *</label>
                 <div class="slug-input-group">
                   <span class="slug-prefix" th:text="#{app.domain}+'/'">tablesplit.com/</span>
                   <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
-                         th:placeholder="#{form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
+                         th:placeholder="#{page.settings.form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
                 </div>
-                <p class="slug-hint" id="slugHint" th:text="#{form.restaurant.slug.hint}">Use only lowercase letters,
+                <p class="slug-hint" id="slugHint" th:text="#{page.settings.form.restaurant.slug.hint}">Use only lowercase letters,
                   numbers, and underscores (_) or periods (.).</p>
                 <div th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}" style="color:red"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantName" th:text="#{form.restaurant.name.required}">Restaurant
+                <label class="form-label" for="restaurantName" th:text="#{page.settings.form.restaurant.name.required}">Restaurant
                   Name *</label>
                 <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia"
-                  th:placeholder="#{form.restaurant.name.placeholder}" th:field="*{name}">
+                  th:placeholder="#{page.settings.form.restaurant.name.placeholder}" th:field="*{name}">
                 <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="restaurantDesc"
-                  th:text="#{form.restaurant.description}">Description</label>
+                  th:text="#{page.settings.form.restaurant.description}">Description</label>
                 <textarea id="restaurantDesc" class="form-textarea" rows="3" maxlength="254"
-                  th:placeholder="#{form.restaurant.description.placeholder}" th:field="*{description}"></textarea>
+                  th:placeholder="#{page.settings.form.restaurant.description.placeholder}" th:field="*{description}"></textarea>
                 <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red"></div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="website">Website</label>
                 <input type="text" id="website" class="form-input"
-                       th:placeholder="#{form.restaurant.website.placeholder}" th:field="*{website}">
+                       th:placeholder="#{page.settings.form.restaurant.website.placeholder}" th:field="*{website}">
                 <div th:if="${#fields.hasErrors('website')}" th:errors="*{website}" style="color:red"></div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label" for="restaurantPhone" th:text="#{form.restaurant.phone}">Phone</label>
+                  <label class="form-label" for="restaurantPhone" th:text="#{page.settings.form.restaurant.phone}">Phone</label>
                   <input type="tel" id="restaurantPhone" class="form-input" maxlength="20" th:field="*{phone}"
-                    th:placeholder="#{form.restaurant.phone.placeholder}">
+                    th:placeholder="#{page.settings.form.restaurant.phone.placeholder}">
                   <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="restaurantEmail" th:text="#{form.restaurant.email}">Email *</label>
+                  <label class="form-label" for="restaurantEmail" th:text="#{page.settings.form.restaurant.email}">Email *</label>
                   <input type="email" id="restaurantEmail" class="form-input" maxlength="254" th:field="*{email}"
-                    th:placeholder="#{form.restaurant.email.placeholder}">
+                    th:placeholder="#{page.settings.form.restaurant.email.placeholder}">
                   <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantAddress" th:text="#{form.restaurant.address}">Address</label>
+                <label class="form-label" for="restaurantAddress" th:text="#{page.settings.form.restaurant.address}">Address</label>
                 <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}"
-                  th:placeholder="#{form.restaurant.address.placeholder}">
+                  th:placeholder="#{page.settings.form.restaurant.address.placeholder}">
                 <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" th:text="#{form.restaurant.cuisine.type}">Cuisine Type</label>
+                <label class="form-label" th:text="#{page.settings.form.restaurant.cuisine.type}">Cuisine Type</label>
                 <p class="form-hint" style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;"
-                  th:text="#{form.restaurant.cuisine.type.hint}">Select the types that best describe your restaurant.
+                  th:text="#{page.settings.form.restaurant.cuisine.type.hint}">Select the types that best describe your restaurant.
                 </p>
                 <div class="cuisine-tags" id="cuisineTags">
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('ITALIAN')} ? ' selected' : ''" data-cuisine="ITALIAN"
-                    onclick="toggleCuisine(this)">🍝 Italiana</button>
+                    onclick="toggleCuisine(this)">🍝 <span th:text="#{restaurant.cuisine.type.italian}">Italian</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('JAPANESE')} ? ' selected' : ''" data-cuisine="JAPANESE"
-                    onclick="toggleCuisine(this)">🍣 Japonesa</button>
+                    onclick="toggleCuisine(this)">🍣 <span th:text="#{restaurant.cuisine.type.japanese}">Japanese</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('BRAZILIAN')} ? ' selected' : ''"
-                    data-cuisine="BRAZILIAN" onclick="toggleCuisine(this)">🍖 Brasileira</button>
+                    data-cuisine="BRAZILIAN" onclick="toggleCuisine(this)">🍖 <span th:text="#{restaurant.cuisine.type.brazilian}">Brazilian</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('MEXICAN')} ? ' selected' : ''" data-cuisine="MEXICAN"
-                    onclick="toggleCuisine(this)">🌮 Mexicana</button>
+                    onclick="toggleCuisine(this)">🌮 <span th:text="#{restaurant.cuisine.type.mexican}">Mexican</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('FRENCH')} ? ' selected' : ''" data-cuisine="FRENCH"
-                    onclick="toggleCuisine(this)">🥐 Francesa</button>
+                    onclick="toggleCuisine(this)">🥐 <span th:text="#{restaurant.cuisine.type.french}">French</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('CHINESE')} ? ' selected' : ''" data-cuisine="CHINESE"
-                    onclick="toggleCuisine(this)">🥡 Chinesa</button>
+                    onclick="toggleCuisine(this)">🥡 <span th:text="#{restaurant.cuisine.type.chinese}">Chinese</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('INDIANA')} ? ' selected' : ''" data-cuisine="INDIANA"
-                    onclick="toggleCuisine(this)">🍛 Indiana</button>
+                    onclick="toggleCuisine(this)">🍛 <span th:text="#{restaurant.cuisine.type.indian}">Indian</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('ARABIC')} ? ' selected' : ''" data-cuisine="ARABIC"
-                    onclick="toggleCuisine(this)">🧆 Árabe</button>
+                    onclick="toggleCuisine(this)">🧆 <span th:text="#{restaurant.cuisine.type.arabic}">Arabic</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('AMERICAN')} ? ' selected' : ''" data-cuisine="AMERICAN"
-                    onclick="toggleCuisine(this)">🍔 Americana</button>
+                    onclick="toggleCuisine(this)">🍔 <span th:text="#{restaurant.cuisine.type.american}">American</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('FAST_FOOD')} ? ' selected' : ''" data-cuisine="FAST_FOOD"
-                    onclick="toggleCuisine(this)">🍟 Fast-Food</button>
+                    onclick="toggleCuisine(this)">🍟 <span th:text="#{restaurant.cuisine.type.fastfood}">Fast-Food</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('PIZZERIA')} ? ' selected' : ''" data-cuisine="PIZZERIA"
-                    onclick="toggleCuisine(this)">🍕 Pizzaria</button>
+                    onclick="toggleCuisine(this)">🍕 <span th:text="#{restaurant.cuisine.type.pizzeria}">Pizzeria</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('CONTEMPORARY')} ? ' selected' : ''" data-cuisine="CONTEMPORARY"
-                    onclick="toggleCuisine(this)">🍽️ Contemporânea</button>
+                    onclick="toggleCuisine(this)">🍽️ <span th:text="#{restaurant.cuisine.type.contemporary}">Contemporary</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('SEAFOOD')} ? ' selected' : ''" data-cuisine="SEAFOOD"
-                    onclick="toggleCuisine(this)">🦐 Frutos do Mar</button>
+                    onclick="toggleCuisine(this)">🦐 <span th:text="#{restaurant.cuisine.type.seafood}">Sea-Food</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('VEGETARIAN')} ? ' selected' : ''"
-                    data-cuisine="VEGETARIAN" onclick="toggleCuisine(this)">🥗 Vegetariana</button>
+                    data-cuisine="VEGETARIAN" onclick="toggleCuisine(this)">🥗 <span th:text="#{restaurant.cuisine.type.vegetarian}">Vegetarian</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('STEAKHOUSE')} ? ' selected' : ''"
-                    data-cuisine="STEAKHOUSE" onclick="toggleCuisine(this)">🥩 Churrascaria</button>
+                    data-cuisine="STEAKHOUSE" onclick="toggleCuisine(this)">🥩 <span th:text="#{restaurant.cuisine.type.steakhouse}">Steak House</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('CAFETERIA')} ? ' selected' : ''"
-                    data-cuisine="CAFETERIA" onclick="toggleCuisine(this)">☕ Cafeteria</button>
+                    data-cuisine="CAFETERIA" onclick="toggleCuisine(this)">☕ <span th:text="#{restaurant.cuisine.type.cafeteria}">Cafeteria</span></button>
                   <button type="button" class="cuisine-tag"
                     th:classappend="${form.cuisineType.contains('SWEET_SHOP')} ? ' selected' : ''"
-                    data-cuisine="SWEET_SHOP" onclick="toggleCuisine(this)">🍰 Doceria</button>
+                    data-cuisine="SWEET_SHOP" onclick="toggleCuisine(this)">🍰 <span th:text="#{restaurant.cuisine.type.sweetshop}">Sweet Shop</span></button>
                 </div>
               </div>
             </div>
@@ -865,76 +865,76 @@
 
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.tags.title}">Profile Tags</h2>
-              <p th:text="#{section.tags.description}">Features and amenities of your restaurant</p>
+              <h2 th:text="#{page.settings.section.tags.title}">Profile Tags</h2>
+              <p th:text="#{page.settings.section.tags.description}">Features and amenities of your restaurant</p>
             </div>
             <div class="settings-section-body">
               <div class="profile-tags-container" id="profileTags">
                 <div class="profile-tag" th:each="tag, iterStat : *{tags}" th:attr="data-tag=${tag}">
 
                   <span class="tag-emoji" th:if="${tag == 'WIFI'}">📶</span>
-                  <span th:if="${tag == 'WIFI'}" th:text="#{section.tags.wifi}">Wi-Fi Grátis</span>
+                  <span th:if="${tag == 'WIFI'}" th:text="#{tags.wifi}">Wi-Fi Grátis</span>
                   <button th:if="${tag == 'WIFI'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'WINE'}">🍷</span>
-                  <span th:if="${tag == 'WINE'}" th:text="#{section.tags.wine}">Vinhos</span>
+                  <span th:if="${tag == 'WINE'}" th:text="#{tags.wine}">Vinhos</span>
                   <button th:if="${tag == 'WINE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'PARKING'}">🅿️</span>
-                  <span th:if="${tag == 'PARKING'}" th:text="#{section.tags.parking}">Estacionamento</span>
+                  <span th:if="${tag == 'PARKING'}" th:text="#{tags.parking}">Estacionamento</span>
                   <button th:if="${tag == 'PARKING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'ACCESSIBLE'}">♿️</span>
-                  <span th:if="${tag == 'ACCESSIBLE'}" th:text="#{section.tags.accessible}">Acessível</span>
+                  <span th:if="${tag == 'ACCESSIBLE'}" th:text="#{tags.accessible}">Acessível</span>
                   <button th:if="${tag == 'ACCESSIBLE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'DELIVERY'}">🛵️</span>
-                  <span th:if="${tag == 'DELIVERY'}" th:text="#{section.tags.delivery}">Delivery</span>
+                  <span th:if="${tag == 'DELIVERY'}" th:text="#{tags.delivery}">Delivery</span>
                   <button th:if="${tag == 'DELIVERY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'RESERVATIONS'}">📅️</span>
-                  <span th:if="${tag == 'RESERVATIONS'}" th:text="#{section.tags.reservations}">Reservas</span>
+                  <span th:if="${tag == 'RESERVATIONS'}" th:text="#{tags.reservations}">Reservas</span>
                   <button th:if="${tag == 'RESERVATIONS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'KIDS_SPACE'}">👶</span>
-                  <span th:if="${tag == 'KIDS_SPACE'}" th:text="#{section.tags.kidsspace}">Espaço Kids</span>
+                  <span th:if="${tag == 'KIDS_SPACE'}" th:text="#{tags.kidsspace}">Espaço Kids</span>
                   <button th:if="${tag == 'KIDS_SPACE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'LIVE_MUSIC'}">🎵</span>
-                  <span th:if="${tag == 'LIVE_MUSIC'}" th:text="#{section.tags.livemusic}">Música ao Vivo</span>
+                  <span th:if="${tag == 'LIVE_MUSIC'}" th:text="#{tags.livemusic}">Música ao Vivo</span>
                   <button th:if="${tag == 'LIVE_MUSIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'PET_FRIENDLY'}">🐕</span>
-                  <span th:if="${tag == 'PET_FRIENDLY'}" th:text="#{section.tags.petfriendly}">Pet Friendly</span>
+                  <span th:if="${tag == 'PET_FRIENDLY'}" th:text="#{tags.petfriendly}">Pet Friendly</span>
                   <button th:if="${tag == 'PET_FRIENDLY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'AIR_CONDITIONING'}">❄️</span>
-                  <span th:if="${tag == 'AIR_CONDITIONING'}" th:text="#{section.tags.air}">Ar Condicionado</span>
+                  <span th:if="${tag == 'AIR_CONDITIONING'}" th:text="#{tags.air}">Ar Condicionado</span>
                   <button th:if="${tag == 'AIR_CONDITIONING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'VEGAN'}">🌱</span>
-                  <span th:if="${tag == 'VEGAN'}" th:text="#{section.tags.vegan}">Vegano</span>
+                  <span th:if="${tag == 'VEGAN'}" th:text="#{tags.vegan}">Vegano</span>
                   <button th:if="${tag == 'VEGAN'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'GLUTEN_FREE'}">🌾</span>
-                  <span th:if="${tag == 'GLUTEN_FREE'}" th:text="#{section.tags.glutenfree}">Sem Glúten</span>
+                  <span th:if="${tag == 'GLUTEN_FREE'}" th:text="#{tags.glutenfree}">Sem Glúten</span>
                   <button th:if="${tag == 'GLUTEN_FREE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'ROMANTIC'}">💑</span>
-                  <span th:if="${tag == 'ROMANTIC'}" th:text="#{section.tags.romantic}">Romântico</span>
+                  <span th:if="${tag == 'ROMANTIC'}" th:text="#{tags.romantic}">Romântico</span>
                   <button th:if="${tag == 'ROMANTIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'GROUPS'}">👥</span>
-                  <span th:if="${tag == 'GROUPS'}" th:text="#{section.tags.groups}">Grupos</span>
+                  <span th:if="${tag == 'GROUPS'}" th:text="#{tags.groups}">Grupos</span>
                   <button th:if="${tag == 'GROUPS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                   <span class="tag-emoji" th:if="${tag == 'CARDS'}">💳</span>
-                  <span th:if="${tag == 'CARDS'}" th:text="#{section.tags.cards}">Cards</span>
+                  <span th:if="${tag == 'CARDS'}" th:text="#{tags.cards}">Cards</span>
                   <button th:if="${tag == 'CARDS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
 
                 </div>
                 <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
-                  th:text="#{section.tags.button.add}">
+                  th:text="#{page.settings.section.tags.button.add}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 5v14" />
@@ -945,80 +945,80 @@
               </div>
 
               <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
-                <div class="tag-suggestion" th:text="#{section.tags.wifi}"
+                <div class="tag-suggestion" th:text="#{tags.wifi}"
                      onclick="addTag('WIFI', '📶️', 'Wi-Fi Grátis')" th:classappend="${form.tags.contains('WIFI')} ? ' selected' : ''">
                   <span>📶</span> Wi-Fi Grátis
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('WINE', '🍷️', '#{section.tags.wine}')|"
                      th:classappend="${form.tags.contains('WINE')} ? ' selected' : ''">
-                  <span>🍷️</span> <span th:text="#{section.tags.wine}">Wine</span>
+                  <span>🍷️</span> <span th:text="#{tags.wine}">Wine</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('PARKING', '🅿', '#{section.tags.parking}')|"
                      th:classappend="${form.tags.contains('PARKING')} ? ' selected' : ''">
-                  <span>🅿️</span> <span th:text="#{section.tags.parking}">Parking</span>
+                  <span>🅿️</span> <span th:text="#{tags.parking}">Parking</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('ACCESSIBLE', '♿', '#{section.tags.accessible}')|"
                      th:classappend="${form.tags.contains('ACCESSIBLE')} ? ' selected' : ''">
-                  <span>♿</span> <span th:text="#{section.tags.accessible}">Accessible</span>
+                  <span>♿</span> <span th:text="#{tags.accessible}">Accessible</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('DELIVERY', '🛵', '#{section.tags.delivery}')|"
                      th:classappend="${form.tags.contains('DELIVERY')} ? ' selected' : ''">
-                  <span>🛵</span> <span th:text="#{section.tags.delivery}">Delivery</span>
+                  <span>🛵</span> <span th:text="#{tags.delivery}">Delivery</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('RESERVATIONS', '📅', '#{section.tags.reservations}')|"
                      th:classappend="${form.tags.contains('RESERVATIONS')} ? ' selected' : ''">
-                  <span>📅</span> <span th:text="#{section.tags.reservations}">Reservations</span>
+                  <span>📅</span> <span th:text="#{tags.reservations}">Reservations</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('KIDS_SPACE', '👶', '#{section.tags.kidsspace}')|"
                      th:classappend="${form.tags.contains('KIDS_SPACE')} ? ' selected' : ''">
-                  <span>👶</span> <span th:text="#{section.tags.kidsspace}">Kids Area</span>
+                  <span>👶</span> <span th:text="#{tags.kidsspace}">Kids Area</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('LIVE_MUSIC', '🎵', '#{section.tags.livemusic}')|"
                      th:classappend="${form.tags.contains('LIVE_MUSIC')} ? ' selected' : ''">
-                  <span>🎵</span> <span th:text="#{section.tags.livemusic}">Live Music</span>
+                  <span>🎵</span> <span th:text="#{tags.livemusic}">Live Music</span>
                 </div>
                 <div class="tag-suggestion"
                      onclick="addTag('PET_FRIENDLY', '🐕', 'Pet Friendly')"
                      th:attr="onclick=|addTag('PET_FRIENDLY', '🐕️', '#{section.tags.petfriendly}')|"
                      th:classappend="${form.tags.contains('PET_FRIENDLY')} ? ' selected' : ''">
-                  <span>🐕</span> <span th:text="#{section.tags.petfriendly}">Pet Friendly</span>
+                  <span>🐕</span> <span th:text="#{tags.petfriendly}">Pet Friendly</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('AIR_CONDITIONING', '❄️', '#{section.tags.air}')|"
                      th:classappend="${form.tags.contains('AIR_CONDITIONING')} ? ' selected' : ''">
-                  <span>❄️</span> <span th:text="#{section.tags.air}">Air Conditioning</span>
+                  <span>❄️</span> <span th:text="#{tags.air}">Air Conditioning</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('VEGAN', '🌱', '#{section.tags.vegan}')|"
                      th:classappend="${form.tags.contains('VEGAN')} ? ' selected' : ''">
-                  <span>🌱</span> <span th:text="#{section.tags.vegan}">Vegan</span>
+                  <span>🌱</span> <span th:text="#{tags.vegan}">Vegan</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('GLUTEN_FREE', '🌾', '#{section.tags.glutenfree}')|"
                      th:classappend="${form.tags.contains('GLUTEN_FREE')} ? ' selected' : ''">
-                  <span>🌾</span> <span th:text="#{section.tags.glutenfree}">Gluten Free</span>
+                  <span>🌾</span> <span th:text="#{tags.glutenfree}">Gluten Free</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('ROMANTIC', '💑', '#{section.tags.romantic}')|"
                      th:classappend="${form.tags.contains('ROMANTIC')} ? ' selected' : ''">
-                  <span>💑</span> <span th:text="#{section.tags.romantic}">Romantic</span>
+                  <span>💑</span> <span th:text="#{tags.romantic}">Romantic</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('GROUPS', '👥', '#{section.tags.groups}')|"
                      th:classappend="${form.tags.contains('GROUPS')} ? ' selected' : ''">
-                  <span>👥</span> <span th:text="#{section.tags.groups}">Groups</span>
+                  <span>👥</span> <span th:text="#{tags.groups}">Groups</span>
                 </div>
                 <div class="tag-suggestion"
                      th:attr="onclick=|addTag('CARDS', '💳', '#{section.tags.cards}')|"
                      th:classappend="${form.tags.contains('CARDS')} ? ' selected' : ''">
-                  <span>💳</span> <span th:text="#{section.tags.cards}">Cards</span>
+                  <span>💳</span> <span th:text="#{tags.cards}">Cards</span>
                 </div>
               </div>
             </div>
@@ -1027,19 +1027,19 @@
           <!-- Languages -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.languages.title}">Languages</h2>
-              <p th:text="#{section.languages.description}">Configure the languages available for your customers</p>
+              <h2 th:text="#{page.settings.section.languages.title}">Languages</h2>
+              <p th:text="#{page.settings.section.languages.description}">Configure the languages available for your customers</p>
             </div>
             <div class="settings-section-body">
               <div class="form-group">
-                <label class="form-label" for="primaryLanguage" th:text="#{form.language.primary}">Primary Language
+                <label class="form-label" for="primaryLanguage" th:text="#{page.settings.form.language.primary}">Primary Language
                   *</label>
                 <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;"
-                  th:text="#{form.language.primary.hint}">Used in the restaurant admin area</p>
+                  th:text="#{page.settings.form.language.primary.hint}">Used in the restaurant admin area</p>
                 <select id="primaryLanguage" class="form-select" onchange="updateLanguages()"
                   th:field="*{defaultLanguage}">
-                  <option value="en-US" selected>English (US)</option>
-                  <option value="pt-BR">Português (Brasil)</option>
+                  <option value="EN_US" selected>English (US)</option>
+                  <option value="PT_BR">Português (Brasil)</option>
                   <option value="es-ES" th:if="${false}">Español</option>
                   <option value="fr-FR" th:if="${false}">Français</option>
                   <option value="it-IT" th:if="${false}">Italiano</option>
@@ -1052,30 +1052,32 @@
               </div>
 
               <div class="form-group" style="margin-top: 1.5rem;">
-                <label class="form-label" th:text="#{form.language.available}">Languages Available for Customers</label>
+                <label class="form-label" th:text="#{page.settings.form.language.available}">Languages Available for Customers</label>
                 <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;"
-                  th:text="#{form.language.available.hint}">Select the languages that will be available in the digital
+                  th:text="#{page.settings.form.language.available.hint}">Select the languages that will be available in the digital
                   menu</p>
                 <div class="language-checkboxes" id="languageCheckboxes">
                   <label class="language-checkbox">
-                    <input type="checkbox" value="pt-BR" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'pt-BR')}">
+                    <input type="checkbox" value="PT_BR" onchange="toggleLanguage(this)"
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT_BR'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'PT_BR')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇧🇷</span>
-                    <span class="lang-name">Português (Brasil)</span>
+                    <span class="lang-name" th:text="#{language.PT_BR}">Portuguese (Brazil)</span>
                     <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'pt-BR'}">Principal</span>
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT_BR'}"
+                      th:text="#{page.settings.language.badge.primary}">Primary</span>
                   </label>
                   <label class="language-checkbox">
-                    <input type="checkbox" value="en-US" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages.![code], 'en-US')}">
+                    <input type="checkbox" value="EN_US" onchange="toggleLanguage(this)"
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN_US'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'EN_US')}">
                     <span class="checkmark"></span>
                     <span class="lang-flag">🇺🇸</span>
-                    <span class="lang-name">English (US)</span>
+                    <span class="lang-name" th:text="#{language.EN_US}">English (US)</span>
                     <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0].code == 'en-US'}">Principal</span>
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN_US'}"
+                      th:text="#{page.settings.language.badge.primary}">Primary</span>
                   </label>
                   <label class="language-checkbox" th:if="${false}">
                     <input type="checkbox" value="es-ES" onchange="toggleLanguage(this)">
@@ -1118,11 +1120,11 @@
 
               <div class="selected-languages" id="selectedLanguages" style="margin-top: 1rem;">
                 <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;"
-                  th:text="#{language.selected}">Selected languages (drag to reorder):</p>
+                  th:text="#{page.settings.language.selected}">Selected languages (drag to reorder):</p>
                 <div class="language-tags" id="languageTags">
                   <div th:each="lang, stat : *{customerLanguages}">
-                    <span class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true"
-                      th:attr="data-lang=${lang.code}" th:text="${lang.label}"></span>
+                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'PT_BR'}">🇧🇷 <span th:text="#{language.PT_BR}">Portuguese (Brazil)</span></div>
+                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'EN_US'}">🇺🇸 <span th:text="#{language.EN_US}">English</span></div>
                   </div>
                 </div>
                 <p class="language-tags-hint" th:text="#{language.hint}">The first language will be the main menu
@@ -1134,23 +1136,23 @@
           <!-- Financial Settings -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.financial.title}">Financial Settings</h2>
-              <p th:text="#{section.financial.description}">Service fee and currency used</p>
+              <h2 th:text="#{page.settings.section.financial.title}">Financial Settings</h2>
+              <p th:text="#{page.settings.section.financial.description}">Service fee and currency used</p>
             </div>
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label" for="currency" th:text="#{form.currency}">Currency</label>
+                  <label class="form-label" for="currency" th:text="#{page.settings.form.currency}">Currency</label>
                   <select id="currency" class="form-select" th:field="*{currency}">
-                    <option value="EUR" selected th:text="#{form.currency.eur}">€ (Euro)</option>
-                    <option value="BRL" th:text="#{form.currency.brl}">R$ (Real)</option>
+                    <option value="EUR" selected th:text="#{page.settings.form.currency.eur}">€ (Euro)</option>
+                    <option value="BRL" th:text="#{page.settings.form.currency.brl}">R$ (Real)</option>
                     <option value="USD" th:if="${false}">$ (Dólar)</option>
                   </select>
                   <div th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}" style="color:red"></div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="serviceFee" th:text="#{form.service.fee}">Service Fee</label>
+                  <label class="form-label" for="serviceFee" th:text="#{page.settings.form.service.fee}">Service Fee</label>
                   <div class="input-with-addon">
                     <input type="number" id="serviceFee" class="form-input" th:field="*{serviceFee}" min="0" max="100"
                       step="1">
@@ -1160,7 +1162,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="averagePrice" th:text="#{form.average.price}">Average Price</label>
+                  <label class="form-label" for="averagePrice" th:text="#{page.settings.form.average.price}">Average Price</label>
                   <div class="input-with-addon">
                     <select id="averagePrice" class="form-select" th:field="*{averagePrice}">
                       <option value="1-20" selected>$ 1 - $ 20</option>
@@ -1188,8 +1190,8 @@
           <!-- Opening Hours -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.hours.title}">Business Hours</h2>
-              <p th:text="#{section.hours.description}">Define the opening and closing hours (you can add multiple time
+              <h2 th:text="#{page.settings.section.hours.title}">Business Hours</h2>
+              <p th:text="#{page.settings.section.hours.description}">Define the opening and closing hours (you can add multiple time
                 periods per day)</p>
             </div>
             <div class="settings-section-body">
@@ -1201,9 +1203,9 @@
                   <div class="day-header" th:classappend="${day.closed} ? ' closed' : ''">
                     <span class="day-name" th:text="#{${'day.' + day.day}}">Monday</span>
                     <div class="day-actions">
-                      <span class="closed-badge" th:text="#{hours.closed}" th:if="${day.closed}">Closed</span>
+                      <span class="closed-badge" th:text="#{page.settings.hours.closed}" th:if="${day.closed}">Closed</span>
                       <button type="button" class="btn btn-ghost btn-sm"
-                        th:attr="onclick=|toggleDaySchedule('${day.day}')|" th:title="#{hours.toggle.open}">
+                        th:attr="onclick=|toggleDaySchedule('${day.day}')|" th:title="#{page.settings.hours.toggle.open}">
                         <svg xmlns="http://www.w3.org/2000/svg" th:if="${day.closed}" width="16" height="16"
                           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                           stroke-linejoin="round">
@@ -1224,11 +1226,11 @@
                     <div class="period-row" th:each="period, periodStat : *{days[__${dayStat.index}__].periods}">
                       <input type="time" class="hours-input"
                         th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].start}">
-                      <span class="period-separator" th:text="#{period.until}">until</span>
+                      <span class="period-separator" th:text="#{page.settings.period.until}">until</span>
                       <input type="time" class="hours-input"
                         th:field="*{days[__${dayStat.index}__].periods[__${periodStat.index}__].end}">
                       <button type="button" class="remove-period-btn" onclick="removePeriod(this)"
-                        th:title="#{period.remove}">
+                        th:title="#{page.settings.period.remove}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M18 6 6 18" />
@@ -1236,7 +1238,7 @@
                         </svg>
                       </button>
                     </div>
-                    <button type="button" class="add-period-btn" onclick="addPeriod(this)" th:text="#{period.add}">
+                    <button type="button" class="add-period-btn" onclick="addPeriod(this)" th:text="#{page.settings.period.add}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 5v14" />
@@ -1253,13 +1255,13 @@
           <!-- Appearance -->
           <div class="settings-section">
             <div class="settings-section-header">
-              <h2 th:text="#{section.appearance.title}">Menu Appearance</h2>
-              <p th:text="#{section.appearance.description}">Customize the digital menu colors</p>
+              <h2 th:text="#{page.settings.section.appearance.title}">Menu Appearance</h2>
+              <p th:text="#{page.settings.section.appearance.description}">Customize the digital menu colors</p>
             </div>
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label" th:text="#{form.color.primary}">Primary Color</label>
+                  <label class="form-label" th:text="#{page.settings.form.color.primary}">Primary Color</label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashPrimaryColor}">
@@ -1270,7 +1272,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" th:text="#{form.color.accent}">Accent Color</label>
+                  <label class="form-label" th:text="#{page.settings.form.color.accent}">Accent Color</label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashAccentColor}">
@@ -1366,16 +1368,16 @@
   <script th:inline="javascript">
     // Business Hours functions
     const i18n = {
-      open: /*[[#{hours.toggle.open}]]*/ 'Open',
-      close: /*[[#{hours.toggle.close}]]*/ 'Close',
-      closed: /*[[#{hours.closed}]]*/ 'Closed',
-      until: /*[[#{period.until}]]*/ 'to',
-      removePeriod: /*[[#{period.remove}]]*/ 'Remove period',
-      addPeriod: /*[[#{period.add}]]*/ 'Add period',
-      minOnePeriod: /*[[#{period.minimum.message}]]*/ 'There must be at least one period. To close the day, use the close button.',
-      slugHint: /*[[#{form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
-      slugInvalid: /*[[#{form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
-      slugLength: /*[[#{form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
+      open: /*[[#{page.settings.hours.toggle.open}]]*/ 'Open',
+      close: /*[[#{page.settings.hours.toggle.close}]]*/ 'Close',
+      closed: /*[[#{page.settings.hours.closed}]]*/ 'Closed',
+      until: /*[[#{page.settings.period.until}]]*/ 'to',
+      removePeriod: /*[[#{page.settings.period.remove}]]*/ 'Remove period',
+      addPeriod: /*[[#{page.settings.period.add}]]*/ 'Add period',
+      minOnePeriod: /*[[#{page.settings.period.minimum.message}]]*/ 'There must be at least one period. To close the day, use the close button.',
+      slugHint: /*[[#{page.settings.form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
+      slugInvalid: /*[[#{page.settings.form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
+      slugLength: /*[[#{page.settings.form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
       domain: /*[[#{app.domain}]]*/ 'tablesplit.com'
     };
   </script>
@@ -1542,22 +1544,22 @@
 
       tags.forEach((tag, index) => {
         const code = tag.dataset.lang;
-        const label = tag.textContent.trim();
+        //const label = tag.textContent.trim();
 
         const codeInput = document.createElement('input');
         codeInput.type = 'hidden';
-        codeInput.name = `customerLanguages[${index}].code`;
+        codeInput.name = `customerLanguages`;
         codeInput.value = code;
         codeInput.className = 'lang-code';
 
-        const labelInput = document.createElement('input');
+        /*const labelInput = document.createElement('input');
         labelInput.type = 'hidden';
         labelInput.name = `customerLanguages[${index}].label`;
         labelInput.value = label;
-        labelInput.className = 'lang-label';
+        labelInput.className = 'lang-label';*/
 
         container.appendChild(codeInput);
-        container.appendChild(labelInput);
+        //container.appendChild(labelInput);
       });
     }
     function updateLanguages() {
@@ -1583,8 +1585,8 @@
     }
 
     const langNames = {
-      'pt-BR': '🇧🇷 Português',
-      'en-US': '🇺🇸 English',
+      'PT_BR': '🇧🇷 Português',
+      'EN_US': '🇺🇸 English',
       'es-ES': '🇪🇸 Español',
       'fr-FR': '🇫🇷 Français',
       'it-IT': '🇮🇹 Italiano',
@@ -1594,7 +1596,7 @@
     };
 
     // Track language order (first = primary)
-    let languageOrder = /*[[${form.customerLanguages.![code]}]]*/['pt-BR', 'en-US'];
+    let languageOrder = /*[[${form.customerLanguages}]]*/['pt-BR', 'en-US'];
 
     function updateLanguageTags() {
       const checked = Array.from(document.querySelectorAll('.language-checkbox input:checked')).map(cb => cb.value);

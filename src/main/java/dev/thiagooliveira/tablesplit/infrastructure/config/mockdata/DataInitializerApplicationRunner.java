@@ -28,7 +28,8 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.setId(UUID.randomUUID());
     restaurant.setName("Restaurante Dona Maria");
     restaurant.setSlug("donamaria.restaurant");
-    restaurant.setDescription("Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.");
+    restaurant.setDescription(
+        "Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.");
     restaurant.setWebsite("https://donamaria.com.br");
     restaurant.setPhone("+351 963 927 944");
     restaurant.setEmail("contato@donamaria.com.br");
@@ -40,10 +41,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.getTags().add(Tag.GROUPS);
     restaurant.getTags().add(Tag.CARDS);
     restaurant.setDefaultLanguage("pt-BR");
-    restaurant.setCustomerLanguages(
-        List.of(
-            new Language("\uD83C\uDDE7\uD83C\uDDF7 Português", "pt-BR"),
-            new Language("\uD83C\uDDFA\uD83C\uDDF8 English", "en-US")));
+    restaurant.setCustomerLanguages(List.of(Language.PT_BR, Language.EN_US));
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);
     restaurant.setAveragePrice("20-50");

@@ -38,7 +38,7 @@ public class SettingsModel {
   @NotBlank
   private String defaultLanguage;
 
-  private List<LanguageModel> customerLanguages;
+  private List<String> customerLanguages;
 
   @Size(min = 3, max = 3)
   @NotBlank
@@ -85,7 +85,7 @@ public class SettingsModel {
     this.customerLanguages =
         restaurant.getCustomerLanguages() == null
             ? List.of()
-            : restaurant.getCustomerLanguages().stream().map(LanguageModel::new).toList();
+            : restaurant.getCustomerLanguages().stream().map(Enum::name).toList();
     this.currency = restaurant.getCurrency();
     this.serviceFee = restaurant.getServiceFee();
     this.averagePrice = restaurant.getAveragePrice();
@@ -107,7 +107,7 @@ public class SettingsModel {
     List<Language> domainLanguage =
         this.customerLanguages == null
             ? List.of()
-            : this.customerLanguages.stream().map(LanguageModel::toCommand).toList();
+            : this.customerLanguages.stream().map(Language::valueOf).toList();
     List<CuisineType> domainCuisineType =
         this.cuisineType == null
             ? List.of()
@@ -212,11 +212,11 @@ public class SettingsModel {
     this.defaultLanguage = defaultLanguage;
   }
 
-  public List<LanguageModel> getCustomerLanguages() {
+  public List<String> getCustomerLanguages() {
     return customerLanguages;
   }
 
-  public void setCustomerLanguages(List<LanguageModel> customerLanguages) {
+  public void setCustomerLanguages(List<String> customerLanguages) {
     this.customerLanguages = customerLanguages;
   }
 
