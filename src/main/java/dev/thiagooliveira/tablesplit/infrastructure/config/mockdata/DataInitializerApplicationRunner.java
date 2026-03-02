@@ -26,7 +26,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
   public void run(ApplicationArguments args) throws Exception {
     var restaurant = new RestaurantEntity();
     restaurant.setId(UUID.randomUUID());
-    restaurant.setName("Dona Maria");
+    restaurant.setName("Restaurante Dona Maria");
     restaurant.setSlug("donamaria.restaurant");
     restaurant.setDescription("Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.");
     restaurant.setWebsite("https://donamaria.com.br");
