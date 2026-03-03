@@ -6,10 +6,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CategoryModel {
-  private UUID id;
-  private int order;
-  private Map<String, String> name;
-  private int amount;
+  private final UUID id;
+  private final int order;
+  private final Map<String, String> name;
+  private final int amount;
 
   public CategoryModel(Category category, int amount) {
     this.id = category.getId();

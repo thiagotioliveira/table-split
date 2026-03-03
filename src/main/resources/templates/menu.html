@@ -99,7 +99,7 @@
         <div class="categories-sidebar">
           <div class="categories-card">
             <div class="categories-header">
-              <h2>Categorias</h2>
+              <h2 th:text="#{page.menu.category.title}">Categories</h2>
               <button type="button" class="btn btn-ghost btn-sm"
                 th:attr="onclick=|openCategoryModal(null, '${context.restaurant.customerLanguages[0]}')|">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
