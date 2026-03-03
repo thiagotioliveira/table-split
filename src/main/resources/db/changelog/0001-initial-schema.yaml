@@ -114,3 +114,36 @@ databaseChangeLog:
             columns:
               - column:
                   name: slug
+  - changeSet:
+      id: 0002-categories-table
+      author: thiagooliveira
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: num_order
+                  type: integer
+                  constraints:
+                    nullable: false
+                  defaultValue: "0"
+              - column:
+                  name: name
+                  type: TEXT
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: restaurant_id
+            referencedTableName: restaurants
+            referencedColumnNames: id
+            constraintName: fk_categories_restaurants

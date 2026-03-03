@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
 public class UpdateRestaurant {
@@ -12,7 +13,7 @@ public class UpdateRestaurant {
     this.restaurantRepository = restaurantRepository;
   }
 
-  public void execute(UUID restaurantId, UpdateRestaurantCommand command) {
+  public Restaurant execute(UUID restaurantId, UpdateRestaurantCommand command) {
     var restaurant = getRestaurant.execute(restaurantId).orElseThrow();
     restaurant.setName(command.name());
     restaurant.setSlug(command.slug().toLowerCase().trim());
@@ -32,5 +33,6 @@ public class UpdateRestaurant {
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurantRepository.save(restaurant);
+    return restaurant;
   }
 }

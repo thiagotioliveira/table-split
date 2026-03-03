@@ -1038,8 +1038,8 @@
                   th:text="#{page.settings.form.language.primary.hint}">Used in the restaurant admin area</p>
                 <select id="primaryLanguage" class="form-select" onchange="updateLanguages()"
                   th:field="*{defaultLanguage}">
-                  <option value="EN_US" selected>English (US)</option>
-                  <option value="PT_BR">Português (Brasil)</option>
+                  <option value="EN" selected>English (US)</option>
+                  <option value="PT">Português (Brasil)</option>
                   <option value="es-ES" th:if="${false}">Español</option>
                   <option value="fr-FR" th:if="${false}">Français</option>
                   <option value="it-IT" th:if="${false}">Italiano</option>
@@ -1058,25 +1058,25 @@
                   menu</p>
                 <div class="language-checkboxes" id="languageCheckboxes">
                   <label class="language-checkbox">
-                    <input type="checkbox" value="PT_BR" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT_BR'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'PT_BR')}">
+                    <input type="checkbox" value="PT" onchange="toggleLanguage(this)"
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'PT')}">
                     <span class="checkmark"></span>
-                    <span class="lang-flag">🇧🇷</span>
-                    <span class="lang-name" th:text="#{language.PT_BR}">Portuguese (Brazil)</span>
+                    <span class="lang-flag">🇵🇹</span>
+                    <span class="lang-name" th:text="#{language.PT}">Portuguese</span>
                     <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT_BR'}"
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT'}"
                       th:text="#{page.settings.language.badge.primary}">Primary</span>
                   </label>
                   <label class="language-checkbox">
-                    <input type="checkbox" value="EN_US" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN_US'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'EN_US')}">
+                    <input type="checkbox" value="EN" onchange="toggleLanguage(this)"
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN'}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'EN')}">
                     <span class="checkmark"></span>
-                    <span class="lang-flag">🇺🇸</span>
-                    <span class="lang-name" th:text="#{language.EN_US}">English (US)</span>
+                    <span class="lang-flag">🇬🇧</span>
+                    <span class="lang-name" th:text="#{language.EN}">English</span>
                     <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN_US'}"
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN'}"
                       th:text="#{page.settings.language.badge.primary}">Primary</span>
                   </label>
                   <label class="language-checkbox" th:if="${false}">
@@ -1123,8 +1123,8 @@
                   th:text="#{page.settings.language.selected}">Selected languages (drag to reorder):</p>
                 <div class="language-tags" id="languageTags">
                   <div th:each="lang, stat : *{customerLanguages}">
-                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'PT_BR'}">🇧🇷 <span th:text="#{language.PT_BR}">Portuguese (Brazil)</span></div>
-                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'EN_US'}">🇺🇸 <span th:text="#{language.EN_US}">English</span></div>
+                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'PT'}">🇵🇹 <span th:text="#{language.PT}">Portuguese</span></div>
+                    <div class="language-tag" th:classappend="${stat.index == 0} ? ' primary' : ''" draggable="true" th:attr="data-lang=${lang}" th:if="${lang == 'EN'}">🇬🇧 <span th:text="#{language.EN}">English</span></div>
                   </div>
                 </div>
                 <p class="language-tags-hint" th:text="#{language.hint}">The first language will be the main menu
@@ -1585,8 +1585,8 @@
     }
 
     const langNames = {
-      'PT_BR': '🇧🇷 Português',
-      'EN_US': '🇺🇸 English',
+      'PT': '🇵🇹 Português',
+      'EN': '🇬🇧 English',
       'es-ES': '🇪🇸 Español',
       'fr-FR': '🇫🇷 Français',
       'it-IT': '🇮🇹 Italiano',
@@ -1596,7 +1596,7 @@
     };
 
     // Track language order (first = primary)
-    let languageOrder = /*[[${form.customerLanguages}]]*/['pt-BR', 'en-US'];
+    let languageOrder = /*[[${form.customerLanguages}]]*/['PT', 'EN'];
 
     function updateLanguageTags() {
       const checked = Array.from(document.querySelectorAll('.language-checkbox input:checked')).map(cb => cb.value);

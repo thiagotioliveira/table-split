@@ -2,8 +2,10 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.security.Context;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.settings.model.SettingsModel;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -32,7 +34,9 @@ public class SettingsController {
 
   @GetMapping
   public String index(Model model) {
-    var restaurant = getRestaurant.execute(context.getRestaurantId()).orElseThrow();
+    var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
+    model.addAttribute("module", Module.SETTINGS);
+    model.addAttribute("context", context);
     model.addAttribute("form", new SettingsModel(restaurant));
     return "settings";
   }
@@ -46,8 +50,15 @@ public class SettingsController {
     if (bindingResult.hasErrors()) {
       return "settings";
     }
-    updateRestaurant.execute(context.getRestaurantId(), form.toCommand());
+    var restaurant = updateRestaurant.execute(context.getRestaurant().getId(), form.toCommand());
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.settings.saved"));
+    updateContext(restaurant);
     return "redirect:/settings";
+  }
+
+  private void updateContext(Restaurant restaurant) {
+    context.getRestaurant().setName(restaurant.getName());
+    context.getRestaurant().setCurrency(restaurant.getCurrency());
+    context.getRestaurant().setCustomerLanguages(restaurant.getCustomerLanguages());
   }
 }

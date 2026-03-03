@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Language;
+import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Collections;

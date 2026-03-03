@@ -1,6 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
+import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
 import java.time.DayOfWeek;
@@ -15,15 +18,20 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
 
   private final MockContext context;
   private final RestaurantJpaRepository restaurantJpaRepository;
+  private final CategoryJpaRepository categoryJpaRepository;
 
   public DataInitializerApplicationRunner(
-      MockContext context, RestaurantJpaRepository restaurantJpaRepository) {
+      MockContext context,
+      RestaurantJpaRepository restaurantJpaRepository,
+      CategoryJpaRepository categoryJpaRepository) {
     this.context = context;
     this.restaurantJpaRepository = restaurantJpaRepository;
+    this.categoryJpaRepository = categoryJpaRepository;
   }
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
+    var customerLanguages = List.of(Language.PT, Language.EN);
     var restaurant = new RestaurantEntity();
     restaurant.setId(UUID.randomUUID());
     restaurant.setName("Restaurante Dona Maria");
@@ -41,7 +49,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.getTags().add(Tag.GROUPS);
     restaurant.getTags().add(Tag.CARDS);
     restaurant.setDefaultLanguage("pt-BR");
-    restaurant.setCustomerLanguages(List.of(Language.PT_BR, Language.EN_US));
+    restaurant.setCustomerLanguages(customerLanguages);
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);
     restaurant.setAveragePrice("20-50");
@@ -99,6 +107,17 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     //    restaurant.setHashPrimaryColor("#15803D");
     //    restaurant.setHashAccentColor("#FEF9C3");
     restaurant = this.restaurantJpaRepository.save(restaurant);
-    context.setRestaurantId(restaurant.getId());
+
+    context.initContext(
+        restaurant.getId(), restaurant.getName(), restaurant.getCurrency(), customerLanguages);
+
+    var category = new CategoryEntity();
+    category.setId(UUID.randomUUID());
+    category.setRestaurantId(restaurant.getId());
+    category.setNumOrder(1);
+    category.getName().put(Language.PT, "Entradas");
+    category.getName().put(Language.EN, "Starters");
+
+    category = this.categoryJpaRepository.save(category);
   }
 }

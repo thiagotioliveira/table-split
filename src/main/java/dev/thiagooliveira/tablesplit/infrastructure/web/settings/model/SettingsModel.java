@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings.model;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
+import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.validation.constraints.*;
 import java.util.List;
 
