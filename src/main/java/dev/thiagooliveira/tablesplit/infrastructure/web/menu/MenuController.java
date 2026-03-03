@@ -1,14 +1,12 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.CreateCategory;
-import dev.thiagooliveira.tablesplit.application.menu.DeleteCategory;
-import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
-import dev.thiagooliveira.tablesplit.application.menu.UpdateCategory;
+import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.domain.security.Context;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.MenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateCategoryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateItemModel;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,25 +22,39 @@ public class MenuController {
   private final CreateCategory createCategory;
   private final UpdateCategory updateCategory;
   private final DeleteCategory deleteCategory;
+  private final GetItem getItem;
+  private final UpdateItem updateItem;
+  private final CreateItem createItem;
+  private final DeleteItem deleteItem;
 
   public MenuController(
       Context context,
       GetCategory getCategory,
       CreateCategory createCategory,
       UpdateCategory updateCategory,
-      DeleteCategory deleteCategory) {
+      DeleteCategory deleteCategory,
+      GetItem getItem,
+      UpdateItem updateItem,
+      CreateItem createItem,
+      DeleteItem deleteItem) {
     this.context = context;
     this.getCategory = getCategory;
     this.createCategory = createCategory;
     this.updateCategory = updateCategory;
     this.deleteCategory = deleteCategory;
+    this.getItem = getItem;
+    this.updateItem = updateItem;
+    this.createItem = createItem;
+    this.deleteItem = deleteItem;
   }
 
   @GetMapping
   public String index(Model model) {
     var categories = this.getCategory.execute(context.getRestaurant().getId());
+    var items = this.getItem.execute(context.getRestaurant().getId());
     model.addAttribute("module", Module.MENU);
-    model.addAttribute("menu", new MenuModel(categories));
+    model.addAttribute(
+        "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
     model.addAttribute("context", context);
     return "menu";
   }
@@ -67,12 +79,36 @@ public class MenuController {
     return "redirect:/menu";
   }
 
+  @PostMapping("/items")
+  public String updateItem(
+      @ModelAttribute UpdateItemModel updateItemModel, RedirectAttributes redirectAttributes) {
+    if (updateItemModel.getId() == null) {
+      this.createItem.execute(
+          context.getRestaurant().getId(), updateItemModel.toCreateItemCommand());
+      redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.created"));
+    } else {
+      this.updateItem.execute(
+          context.getRestaurant().getId(),
+          updateItemModel.getId(),
+          updateItemModel.toUpdateItemCommand());
+      redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.updated"));
+    }
+    return "redirect:/menu";
+  }
+
   @PostMapping("/categories/delete")
   public String deleteCategory(
       @RequestParam UUID categoryId, RedirectAttributes redirectAttributes) {
     this.deleteCategory.execute(context.getRestaurant().getId(), categoryId);
     redirectAttributes.addFlashAttribute(
         "alert", AlertModel.success("alert.menu.category.deleted"));
+    return "redirect:/menu";
+  }
+
+  @PostMapping("/items/delete")
+  public String deleteItem(@RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
+    this.deleteItem.execute(itemId);
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
     return "redirect:/menu";
   }
 }

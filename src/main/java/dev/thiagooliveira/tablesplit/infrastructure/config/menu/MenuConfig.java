@@ -27,4 +27,24 @@ public class MenuConfig {
   public DeleteCategory deleteCategory(CategoryRepository categoryRepository) {
     return new DeleteCategory(categoryRepository);
   }
+
+  @Bean
+  public GetItem getItem(ItemRepository itemRepository) {
+    return new GetItem(itemRepository);
+  }
+
+  @Bean
+  public UpdateItem updateItem(GetItem getItem, ItemRepository itemRepository) {
+    return new UpdateItem(getItem, itemRepository);
+  }
+
+  @Bean
+  public CreateItem createItem(ItemRepository itemRepository) {
+    return new CreateItem(itemRepository);
+  }
+
+  @Bean
+  public DeleteItem deleteItem(ItemRepository itemRepository) {
+    return new DeleteItem(itemRepository);
+  }
 }

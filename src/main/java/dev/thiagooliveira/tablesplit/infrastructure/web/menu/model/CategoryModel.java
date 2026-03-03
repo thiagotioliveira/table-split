@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -9,17 +10,19 @@ public class CategoryModel {
   private final UUID id;
   private final int order;
   private final Map<String, String> name;
-  private final int amount;
+  private final long amount;
 
-  public CategoryModel(Category category, int amount) {
+  public CategoryModel(Category category, long amount) {
     this.id = category.getId();
     this.order = category.getOrder();
-    this.name =
-        category.getName().entrySet().stream()
-            .collect(
-                Collectors.toMap(
-                    entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
+    this.name = convertMap(category.getName());
     this.amount = amount;
+  }
+
+  private static Map<String, String> convertMap(Map<Language, String> map) {
+    return map.entrySet().stream()
+        .collect(
+            Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
   }
 
   public UUID getId() {
@@ -34,7 +37,7 @@ public class CategoryModel {
     return name;
   }
 
-  public int getAmount() {
+  public long getAmount() {
     return amount;
   }
 }

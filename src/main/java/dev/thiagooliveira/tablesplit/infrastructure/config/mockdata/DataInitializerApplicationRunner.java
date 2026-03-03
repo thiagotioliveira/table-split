@@ -4,8 +4,11 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.UUID;
@@ -19,14 +22,17 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
   private final MockContext context;
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final CategoryJpaRepository categoryJpaRepository;
+  private final ItemJpaRepository itemJpaRepository;
 
   public DataInitializerApplicationRunner(
       MockContext context,
       RestaurantJpaRepository restaurantJpaRepository,
-      CategoryJpaRepository categoryJpaRepository) {
+      CategoryJpaRepository categoryJpaRepository,
+      ItemJpaRepository itemJpaRepository) {
     this.context = context;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.categoryJpaRepository = categoryJpaRepository;
+    this.itemJpaRepository = itemJpaRepository;
   }
 
   @Override
@@ -119,5 +125,23 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     category.getName().put(Language.EN, "Starters");
 
     category = this.categoryJpaRepository.save(category);
+
+    var item = new ItemEntity();
+    item.setId(UUID.randomUUID());
+    item.setCategory(new CategoryEntity());
+    item.getCategory().setId(category.getId());
+    item.getName().put(Language.PT, "Batata-frita");
+    item.getName().put(Language.EN, "French fries");
+    item.getDescription()
+        .put(
+            Language.PT,
+            "Batatas selecionadas, cortadas e fritas até ficarem douradas e crocantes por fora, macias por dentro. Servidas quentinhas e levemente salgadas.");
+    item.getDescription()
+        .put(
+            Language.EN,
+            "Selected potatoes, cut and fried until golden and crispy on the outside, soft on the inside. Served hot and lightly seasoned.");
+    item.setPrice(BigDecimal.TEN);
+
+    item = this.itemJpaRepository.save(item);
   }
 }

@@ -83,7 +83,8 @@
     <div th:insert="~{components/alert}"></div>
 
     <div style="padding: 1.5rem 1.5rem 0">
-      <button class="btn btn-primary" onclick="openItemModal()">
+      <button class="btn btn-primary"
+        th:attr="onclick=|openItemModal(null, '${context.restaurant.customerLanguages[0]}')|">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
@@ -126,7 +127,8 @@
 
               <div class="category-item" th:data-category-id="${category.id}"
                 th:attr="onclick=|selectCategory('${category.id}')|" th:each="category : ${menu.categories}">
-                <span class="category-name" th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
+                <span class="category-name"
+                  th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
                 <span class="category-count" th:text="${category.amount}">2</span>
                 <div class="category-actions">
                   <button type="button"
@@ -155,144 +157,13 @@
         <div class="menu-items-section">
           <div class="menu-items-card">
             <div class="menu-items-header">
-              <h2>Todos os Itens</h2>
-              <p>8 itens</p>
+              <h2 th:text="#{page.menu.item.all}">All items</h2>
+              <p><span th:text="${menu.totalAmount}">8</span> <span th:text="#{page.menu.item.items}">items</span></p>
             </div>
 
             <div class="menu-items-grid">
               <!-- Item 1 -->
-              <div class="menu-item-card" data-category="1">
-                <div class="menu-item-image">
-                  <img src="https://images.unsplash.com/photo-1541014741259-de529411b96a?w=400" alt="Bruschetta">
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name">Bruschetta Italiana</h3>
-                    <span class="menu-item-price">R$ 28,90</span>
-                  </div>
-                  <p class="menu-item-desc">Pão italiano tostado com tomate, manjericão e azeite</p>
-                  <span class="menu-item-category">Entradas</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Desativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(1)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(1)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Item 2 -->
-              <div class="menu-item-card" data-category="1">
-                <div class="menu-item-image">
-                  <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400" alt="Salada Caesar">
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name">Salada Caesar</h3>
-                    <span class="menu-item-price">R$ 32,00</span>
-                  </div>
-                  <p class="menu-item-desc">Alface romana, croutons, parmesão e molho caesar</p>
-                  <span class="menu-item-category">Entradas</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Desativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(2)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(2)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Item 3 -->
-              <div class="menu-item-card" data-category="2">
-                <div class="menu-item-image">
-                  <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=400" alt="Filé Mignon">
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name">Filé Mignon ao Molho</h3>
-                    <span class="menu-item-price">R$ 89,90</span>
-                  </div>
-                  <p class="menu-item-desc">Filé mignon grelhado ao molho madeira com arroz e batatas</p>
-                  <span class="menu-item-category">Pratos Principais</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Desativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(3)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(3)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Item 4 - Indisponível -->
-              <div class="menu-item-card unavailable" data-category="2">
-                <div class="menu-item-image">
-                  <img src="https://images.unsplash.com/photo-1485963631004-f2f00b1d6571?w=400" alt="Salmão">
-                  <div class="unavailable-overlay">
-                    <span class="unavailable-badge">Indisponível</span>
-                  </div>
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name">Salmão Grelhado</h3>
-                    <span class="menu-item-price">R$ 78,00</span>
-                  </div>
-                  <p class="menu-item-desc">Salmão fresco grelhado com legumes salteados</p>
-                  <span class="menu-item-category">Pratos Principais</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Ativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(4)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(4)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Item 5 - Sem imagem -->
-              <div class="menu-item-card" data-category="2">
+              <div class="menu-item-card" th:data-category="${item.id}" th:each="item : ${menu.items}">
                 <div class="menu-item-image">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -305,52 +176,23 @@
                 </div>
                 <div class="menu-item-content">
                   <div class="menu-item-header">
-                    <h3 class="menu-item-name">Risoto de Funghi</h3>
-                    <span class="menu-item-price">R$ 62,00</span>
+                    <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
+                    <span class="menu-item-price" th:text="${item.priceFormatted}">R$ 28,90</span>
                   </div>
-                  <p class="menu-item-desc">Risoto cremoso com mix de cogumelos frescos</p>
-                  <span class="menu-item-category">Pratos Principais</span>
+                  <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com
+                    tomate, manjericão e azeite</p>
+                  <span class="menu-item-category" th:text="${item.categoryName[#locale.language]}">Starters</span>
                   <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Desativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(5)">
+                    <button class="btn btn-ghost btn-sm" th:if="${false}">Desativar</button>
+                    <button class="btn btn-ghost btn-sm"
+                      th:attr="onclick=|editItem('${item.id}', '${context.restaurant.customerLanguages[0]}')|">
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                       </svg>
                     </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(5)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Item 6 -->
-              <div class="menu-item-card" data-category="3">
-                <div class="menu-item-image">
-                  <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400" alt="Caipirinha">
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name">Caipirinha</h3>
-                    <span class="menu-item-price">R$ 18,00</span>
-                  </div>
-                  <p class="menu-item-desc">Cachaça, limão, açúcar e gelo</p>
-                  <span class="menu-item-category">Bebidas</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm">Desativar</button>
-                    <button class="btn btn-ghost btn-sm" onclick="editItem(6)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);" onclick="deleteItem(6)">
+                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);"
+                      th:attr="onclick=|deleteItem('${item.id}', '${#locale.language}')|">
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 6h18" />
@@ -435,11 +277,32 @@
         <p id="deleteCategoryName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()">Cancelar</button>
+        <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()" th:text="#{button.cancel}">Cancel</button>
         <form th:action="@{'/menu/categories/delete'}" method="post">
           <input type="hidden" name="categoryId" id="deleteCategoryId">
           <button type="submit" class="btn btn-primary"
-            style="background-color: var(--destructive); border-color: var(--destructive);">Excluir</button>
+            style="background-color: var(--destructive); border-color: var(--destructive);" th:text="#{button.delete}">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Item Modal -->
+  <div id="deleteItemModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 th:text="#{page.menu.modal.delete.item.message.title}">Delete Item?</h3>
+      </div>
+      <div class="modal-body">
+        <p th:text="#{page.menu.modal.delete.item.message.body}">Are you sure you want to delete this item?</p>
+        <p id="deleteItemName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeDeleteItemModal()" th:text="#{button.cancel}">Cancel</button>
+        <form th:action="@{'/menu/items/delete'}" method="post">
+          <input type="hidden" name="itemId" id="deleteItemId">
+          <button type="submit" class="btn btn-primary"
+            style="background-color: var(--destructive); border-color: var(--destructive);" th:text="#{button.delete}">Delete</button>
         </form>
       </div>
     </div>
@@ -449,110 +312,87 @@
   <div id="itemModal" class="modal-overlay">
     <div class="modal" style="max-width: 40rem;">
       <div class="modal-header">
-        <h3 id="itemModalTitle">Novo Item</h3>
+        <h3 id="itemModalTitle" th:text="#{page.menu.item.new}">New Item</h3>
       </div>
-      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-        <!-- Language Tabs for Item -->
-        <div class="lang-tabs" id="itemLangTabs">
-          <button class="lang-tab active" data-lang="pt-BR" onclick="switchItemLang('pt-BR', this)">
-            <span class="lang-flag">🇧🇷</span> Português
-          </button>
-          <button class="lang-tab" data-lang="en-US" onclick="switchItemLang('en-US', this)">
-            <span class="lang-flag">🇺🇸</span> English
-          </button>
-          <button class="lang-tab" data-lang="es-ES" onclick="switchItemLang('es-ES', this)">
-            <span class="lang-flag">🇪🇸</span> Español
-          </button>
-        </div>
-
-        <!-- Portuguese Fields (Primary) -->
-        <div class="lang-fields active" id="itemFields-pt-BR">
-          <div class="form-group">
-            <label class="form-label" for="itemName-pt-BR">Nome do Item * <span
-                class="lang-indicator">🇧🇷</span></label>
-            <input type="text" id="itemName-pt-BR" class="form-input" placeholder="Ex: Filé Mignon ao Molho...">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="itemDesc-pt-BR">Descrição <span class="lang-indicator">🇧🇷</span></label>
-            <textarea id="itemDesc-pt-BR" class="form-textarea" placeholder="Descreva o prato em português..."
-              rows="3"></textarea>
-          </div>
-        </div>
-
-        <!-- English Fields -->
-        <div class="lang-fields" id="itemFields-en-US">
-          <div class="form-group">
-            <label class="form-label" for="itemName-en-US">Item Name <span class="lang-indicator">🇺🇸</span></label>
-            <input type="text" id="itemName-en-US" class="form-input" placeholder="Ex: Filet Mignon with Sauce...">
-            <p class="form-hint">Leave empty to use automatic translation</p>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="itemDesc-en-US">Description <span class="lang-indicator">🇺🇸</span></label>
-            <textarea id="itemDesc-en-US" class="form-textarea" placeholder="Describe the dish in English..."
-              rows="3"></textarea>
-            <p class="form-hint">Leave empty to use automatic translation</p>
-          </div>
-        </div>
-
-        <!-- Spanish Fields -->
-        <div class="lang-fields" id="itemFields-es-ES">
-          <div class="form-group">
-            <label class="form-label" for="itemName-es-ES">Nombre del Plato <span
-                class="lang-indicator">🇪🇸</span></label>
-            <input type="text" id="itemName-es-ES" class="form-input" placeholder="Ej: Filete Mignon al Salsa...">
-            <p class="form-hint">Dejar vacío para usar traducción automática</p>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="itemDesc-es-ES">Descripción <span class="lang-indicator">🇪🇸</span></label>
-            <textarea id="itemDesc-es-ES" class="form-textarea" placeholder="Describe el plato en español..."
-              rows="3"></textarea>
-            <p class="form-hint">Dejar vacío para usar traducción automática</p>
-          </div>
-        </div>
-
-        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="itemPrice">Preço (R$) *</label>
-            <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01">
+      <form th:action="@{'/menu/items'}" method="post">
+        <input type="hidden" name="id" id="itemId">
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+          <!-- Language Tabs for Item -->
+          <div class="lang-tabs" id="itemLangTabs">
+            <div th:each="lang, stat : ${context.restaurant.customerLanguages}">
+              <button type="button" class="lang-tab" th:classappend="${stat.index == 0} ? ' active'" data-lang="PT"
+                onclick="switchItemLang('PT', this)" th:if="${lang.name() == 'PT'}">
+                <span class="lang-flag">🇵🇹</span> <span th:text="#{language.PT}">Portuguese</span>
+              </button>
+              <button type="button" class="lang-tab" th:classappend="${stat.index == 0} ? ' active'" data-lang="EN"
+                onclick="switchItemLang('EN', this)" th:if="${lang.name() == 'EN'}">
+                <span class="lang-flag">🇬🇧</span> <span th:text="#{language.EN}">English</span>
+              </button>
+              <button class="lang-tab" data-lang="es-ES" onclick="switchItemLang('es-ES', this)" th:if="${false}">
+                <span class="lang-flag">🇪🇸</span> Español
+              </button>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="itemCategory">Categoria *</label>
-            <select id="itemCategory" class="form-select">
-              <option value="">Selecione</option>
-              <option value="1">Entradas</option>
-              <option value="2">Pratos Principais</option>
-              <option value="3">Bebidas</option>
-              <option value="4">Sobremesas</option>
-            </select>
+          <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
+            th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
+            <div class="form-group">
+              <label class="form-label" th:for="'itemName-' + ${lang.name()}" th:text="#{page.menu.item.name}">Name
+                *</label>
+              <input type="text" th:id="'itemName-' + ${lang.name()}" class="form-input"
+                th:placeholder="#{page.menu.item.name.placeholder}" th:name="|name[${lang.name()}]|">
+            </div>
+            <div class="form-group">
+              <label class="form-label" th:for="'itemDesc-' + ${lang.name()}"
+                th:text="#{page.menu.item.description}">Description</label>
+              <textarea th:id="'itemDesc-' + ${lang.name()}" class="form-textarea"
+                th:placeholder="#{page.menu.item.description.placeholder}" th:name="|description[${lang.name()}]|"
+                rows="3"></textarea>
+            </div>
+          </div>
+
+          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="itemPrice"><span th:text="#{page.menu.item.price}">Preço</span> (<span
+                  th:text="${menu.currencySymbol}"></span>) *</label>
+              <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:name="price">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="itemCategory">Categoria *</label>
+              <select id="itemCategory" class="form-select" th:name="categoryId">
+                <option th:each="c : ${menu.categories}" th:text="${c.name[#locale.language]}" th:value="${c.id}">
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" th:if="${false}">
+            <label class="form-label" for="itemImage">URL da Imagem</label>
+            <input type="text" id="itemImage" class="form-input" placeholder="https://...">
+          </div>
+
+          <div class="form-group" th:if="${false}">
+            <label class="form-label">Tags</label>
+            <input type="text" id="itemTags" class="form-input"
+              placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
+          </div>
+
+          <div class="form-switch" th:if="${false}">
+            <div class="form-switch-label">
+              <label class="form-label" style="margin-bottom: 0;">Disponível para pedidos</label>
+              <p>Desative se o item não estiver disponível</p>
+            </div>
+            <div id="itemAvailable" class="switch active" onclick="toggleSwitch(this)"></div>
           </div>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="itemImage">URL da Imagem</label>
-          <input type="text" id="itemImage" class="form-input" placeholder="https://...">
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeItemModal()"
+            th:text="#{button.cancel}">Cancel</button>
+          <button class="btn btn-primary" th:text="#{button.save}">Save Changes</button>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Tags</label>
-          <input type="text" id="itemTags" class="form-input"
-            placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
-        </div>
-
-        <div class="form-switch">
-          <div class="form-switch-label">
-            <label class="form-label" style="margin-bottom: 0;">Disponível para pedidos</label>
-            <p>Desative se o item não estiver disponível</p>
-          </div>
-          <div id="itemAvailable" class="switch active" onclick="toggleSwitch(this)"></div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeItemModal()">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveItem()">Salvar</button>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -561,8 +401,11 @@
     const i18n = {
       categoryModalTitleNew: /*[[#{page.menu.category.new}]]*/ 'New Category',
       categoryModalTitleEdit: /*[[#{page.menu.category.edit}]]*/ 'Edit Category',
+      itemModalTitleNew: /*[[#{page.menu.item.new}]]*/ 'New Item',
+      itemModalTitleEdit: /*[[#{page.menu.item.edit}]]*/ 'Edit Item',
     };
     const categories = /*[[${menu.categories}]]*/[];
+    const items = /*[[${menu.items}]]*/[];
   </script>
 
   <script>
@@ -685,17 +528,36 @@
     }
 
     // Item Modal
-    function openItemModal(id) {
-      document.getElementById('itemModalTitle').textContent = id ? 'Editar Item' : 'Novo Item';
+    function openItemModal(id, lang) {
+      document.getElementById('itemModalTitle').textContent = id ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
       document.getElementById('itemModal').classList.add('active');
       // Reset to first tab
-      switchItemLang('pt-BR', document.querySelector('#itemLangTabs .lang-tab'));
+      switchItemLang(lang, document.querySelector('#itemLangTabs .lang-tab'));
+
+      if (id) {
+        const filtered = items.find(c => c.id === id);
+        if (filtered) {
+          document.getElementById('itemId').value = filtered.id;
+          document.getElementById('itemPrice').value = filtered.price;
+          document.getElementById('itemCategory').value = filtered.categoryId;
+
+          // Fill names for each language
+          Object.keys(filtered.name).forEach(langKey => {
+            const input = document.getElementById('itemName-' + langKey.toUpperCase());
+            if (input) input.value = filtered.name[langKey];
+          });
+          Object.keys(filtered.name).forEach(langKey => {
+            const input = document.getElementById('itemDesc-' + langKey.toUpperCase());
+            if (input) input.value = filtered.description[langKey];
+          });
+        }
+      }
     }
 
     function closeItemModal() {
       document.getElementById('itemModal').classList.remove('active');
       // Clear all language fields
-      ['pt-BR', 'en-US', 'es-ES'].forEach(lang => {
+      ['PT', 'EN', 'es-ES'].forEach(lang => {
         const nameInput = document.getElementById('itemName-' + lang);
         const descInput = document.getElementById('itemDesc-' + lang);
         if (nameInput) nameInput.value = '';
@@ -707,30 +569,26 @@
       document.getElementById('itemTags').value = '';
     }
 
-    function saveItem() {
-      const name = document.getElementById('itemName-pt-BR').value;
-      const price = document.getElementById('itemPrice').value;
-      const category = document.getElementById('itemCategory').value;
-
-      if (!name.trim() || !price || !category) {
-        alert('Por favor, preencha todos os campos obrigatórios');
-        switchItemLang('pt-BR', document.querySelector('#itemLangTabs .lang-tab'));
-        return;
-      }
-      // TODO: Implementar salvamento no backend
-      alert('Item salvo: ' + name);
-      closeItemModal();
+    function editItem(id, lang) {
+      openItemModal(id, lang);
     }
 
-    function editItem(id) {
-      openItemModal(id);
+    let itemIdToDelete = null;
+
+    function deleteItem(id, language) {
+      const item = items.find(i => i.id === id);
+      if (item) {
+        itemIdToDelete = id;
+        document.getElementById('deleteItemId').value = id;
+        document.getElementById('deleteItemName').textContent = item.name[language];
+        document.getElementById('deleteItemModal').classList.add('active');
+      }
     }
 
-    function deleteItem(id) {
-      if (confirm('Excluir este item do cardápio?')) {
-        // TODO: Implementar exclusão no backend
-        alert('Item excluído');
-      }
+    function closeDeleteItemModal() {
+      document.getElementById('deleteItemModal').classList.remove('active');
+      document.getElementById('deleteItemId').value = '';
+      itemIdToDelete = null;
     }
 
     function toggleSwitch(el) {

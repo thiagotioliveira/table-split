@@ -3,10 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "categories")
@@ -21,6 +18,9 @@ public class CategoryEntity {
 
   @Convert(converter = LanguageMapConverter.class)
   private Map<Language, String> name = new HashMap<>();
+
+  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemEntity> items = new ArrayList<>();
 
   public Category toDomain() {
     var domain = new Category();

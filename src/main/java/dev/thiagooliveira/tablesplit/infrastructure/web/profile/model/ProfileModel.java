@@ -5,6 +5,7 @@ import static dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.ZONE;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.CurrencyMapper;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
