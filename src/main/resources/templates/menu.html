@@ -112,7 +112,7 @@
             </div>
 
             <div class="categories-list">
-              <button class="category-item active" onclick="selectCategory(null)">
+              <button class="category-item active" th:attr="onclick=|selectCategory(null, '${#locale.language}')|">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m7.5 4.27 9 5.15" />
@@ -126,7 +126,7 @@
               </button>
 
               <div class="category-item" th:data-category-id="${category.id}"
-                th:attr="onclick=|selectCategory('${category.id}')|" th:each="category : ${menu.categories}">
+                th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|" th:each="category : ${menu.categories}">
                 <span class="category-name"
                   th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
                 <span class="category-count" th:text="${category.amount}">2</span>
@@ -163,7 +163,7 @@
 
             <div class="menu-items-grid">
               <!-- Item 1 -->
-              <div class="menu-item-card" th:data-category="${item.id}" th:each="item : ${menu.items}">
+              <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}">
                 <div class="menu-item-image">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -403,20 +403,16 @@
       categoryModalTitleEdit: /*[[#{page.menu.category.edit}]]*/ 'Edit Category',
       itemModalTitleNew: /*[[#{page.menu.item.new}]]*/ 'New Item',
       itemModalTitleEdit: /*[[#{page.menu.item.edit}]]*/ 'Edit Item',
+      allItems: /*[[#{page.menu.item.all}]]*/ 'All items',
+      itemTitle: /*[[#{page.menu.item.title}]]*/ 'Category',
+      items: /*[[#{page.menu.item.items}]]*/ 'items',
+      item: /*[[#{page.menu.item.item}]]*/ 'item',
     };
     const categories = /*[[${menu.categories}]]*/[];
     const items = /*[[${menu.items}]]*/[];
   </script>
 
   <script>
-    // Category names mapping
-    const categoryNames = {
-      1: 'Entradas',
-      2: 'Pratos Principais',
-      3: 'Bebidas',
-      4: 'Sobremesas'
-    };
-
     let selectedCategoryId = null;
 
     // Category Modal
@@ -465,7 +461,6 @@
     function deleteCategory(id, language) {
       const category = categories.find(c => c.id === id);
       if (category) {
-        console.log(language);
         categoryIdToDelete = id;
         document.getElementById('deleteCategoryId').value = id;
         document.getElementById('deleteCategoryName').textContent = category.name[language];
@@ -479,7 +474,7 @@
       categoryIdToDelete = null;
     }
 
-    function selectCategory(id) {
+    function selectCategory(id, lang) {
       selectedCategoryId = id;
 
       // Update active state on category buttons
@@ -512,11 +507,12 @@
       const headerCount = document.querySelector('.menu-items-header p');
 
       if (id === null) {
-        headerTitle.textContent = 'Todos os Itens';
+        headerTitle.textContent = i18n.allItems;
       } else {
-        headerTitle.textContent = categoryNames[id] || 'Categoria';
+        const filtered = categories.find(c => c.id === id);
+        headerTitle.textContent = filtered.name[lang] || i18n.itemTitle;
       }
-      headerCount.textContent = visibleCount + (visibleCount === 1 ? ' item' : ' itens');
+      headerCount.textContent = visibleCount + (visibleCount === 1 ? ' ' + i18n.item : ' ' + i18n.items);
     }
 
     // Language switching for category modal

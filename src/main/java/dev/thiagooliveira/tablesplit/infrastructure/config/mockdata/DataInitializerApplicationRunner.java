@@ -110,38 +110,115 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
                 List.of(new Period("11:00", "23:00"))));
     restaurant.setHashPrimaryColor("#EA580C");
     restaurant.setHashAccentColor("#FFEDD5");
-    //    restaurant.setHashPrimaryColor("#15803D");
-    //    restaurant.setHashAccentColor("#FEF9C3");
+    // restaurant.setHashPrimaryColor("#15803D");
+    // restaurant.setHashAccentColor("#FEF9C3");
     restaurant = this.restaurantJpaRepository.save(restaurant);
 
     context.initContext(
         restaurant.getId(), restaurant.getName(), restaurant.getCurrency(), customerLanguages);
 
+    // Categorias
+    var catStarters = saveCategory(restaurant.getId(), 1, "Entradas", "Starters");
+    var catPrincipal = saveCategory(restaurant.getId(), 2, "Prato Principal", "Main Courses");
+    var catDesserts = saveCategory(restaurant.getId(), 3, "Sobremesas", "Desserts");
+    var catDrinks = saveCategory(restaurant.getId(), 4, "Bebidas", "Drinks");
+
+    // Itens - Entradas
+    saveItem(
+        catStarters,
+        "Batata-frita",
+        "French fries",
+        "Batatas selecionadas, cortadas e fritas até ficarem douradas e crocantes por fora, macias por dentro. Servidas quentinhas e levemente salgadas.",
+        "Selected potatoes, cut and fried until golden and crispy on the outside, soft on the inside. Served hot and lightly seasoned.",
+        new BigDecimal("10.00"));
+
+    saveItem(
+        catStarters,
+        "Bruschettas de Tomate",
+        "Tomato Bruschettas",
+        "Pão italiano tostado com tomates frescos, manjericão e azeite extra virgem.",
+        "Toasted Italian bread with fresh tomatoes, basil and extra virgin olive oil.",
+        new BigDecimal("15.00"));
+
+    // Itens - Prato Principal
+    saveItem(
+        catPrincipal,
+        "Filé Mignon ao Molho de Vinho",
+        "Filet Mignon with Wine Sauce",
+        "Medalhão de filé mignon grelhado, acompanhado de risoto de parmesão e molho de vinho tinto.",
+        "Grilled filet mignon medallion, accompanied by parmesan risotto and red wine sauce.",
+        new BigDecimal("45.00"));
+
+    saveItem(
+        catPrincipal,
+        "Bacalhau à Lagareiro",
+        "Codfish Lagareiro style",
+        "Posta de bacalhau assada com batatas a murro, alho, cebola e azeite.",
+        "Roasted cod fillet with punched potatoes, garlic, onion and olive oil.",
+        new BigDecimal("38.00"));
+
+    // Itens - Sobremesas
+    saveItem(
+        catDesserts,
+        "Petit Gâteau com Sorvete",
+        "Petit Gâteau with Ice Cream",
+        "Bolinho quente de chocolate com recheio cremoso, servido com sorvete de baunilha.",
+        "Warm chocolate cake with creamy filling, served with vanilla ice cream.",
+        new BigDecimal("22.00"));
+
+    saveItem(
+        catDesserts,
+        "Pudim de Leite Condensado",
+        "Condensed Milk Pudding",
+        "Pudim clássico e cremoso com calda de caramelo.",
+        "Classic and creamy pudding with caramel sauce.",
+        new BigDecimal("12.00"));
+
+    // Itens - Bebidas
+    saveItem(
+        catDrinks,
+        "Suco de Laranja Natural",
+        "Natural Orange Juice",
+        "Suco de laranja preparado na hora com frutas selecionadas.",
+        "Freshly prepared orange juice with selected fruits.",
+        new BigDecimal("8.00"));
+
+    saveItem(
+        catDrinks,
+        "Vinho Tinto Reserva",
+        "Reserva Red Wine",
+        "Vinho tinto seco de corpo médio, perfeito para acompanhar carnes vermelhas.",
+        "Medium-bodied dry red wine, perfect to accompany red meats.",
+        new BigDecimal("85.00"));
+  }
+
+  private CategoryEntity saveCategory(UUID restaurantId, int order, String namePT, String nameEN) {
     var category = new CategoryEntity();
     category.setId(UUID.randomUUID());
-    category.setRestaurantId(restaurant.getId());
-    category.setNumOrder(1);
-    category.getName().put(Language.PT, "Entradas");
-    category.getName().put(Language.EN, "Starters");
+    category.setRestaurantId(restaurantId);
+    category.setNumOrder(order);
+    category.getName().put(Language.PT, namePT);
+    category.getName().put(Language.EN, nameEN);
 
-    category = this.categoryJpaRepository.save(category);
+    return this.categoryJpaRepository.save(category);
+  }
 
+  private void saveItem(
+      CategoryEntity category,
+      String namePT,
+      String nameEN,
+      String descPT,
+      String descEN,
+      BigDecimal price) {
     var item = new ItemEntity();
     item.setId(UUID.randomUUID());
-    item.setCategory(new CategoryEntity());
-    item.getCategory().setId(category.getId());
-    item.getName().put(Language.PT, "Batata-frita");
-    item.getName().put(Language.EN, "French fries");
-    item.getDescription()
-        .put(
-            Language.PT,
-            "Batatas selecionadas, cortadas e fritas até ficarem douradas e crocantes por fora, macias por dentro. Servidas quentinhas e levemente salgadas.");
-    item.getDescription()
-        .put(
-            Language.EN,
-            "Selected potatoes, cut and fried until golden and crispy on the outside, soft on the inside. Served hot and lightly seasoned.");
-    item.setPrice(BigDecimal.TEN);
+    item.setCategory(category);
+    item.getName().put(Language.PT, namePT);
+    item.getName().put(Language.EN, nameEN);
+    item.getDescription().put(Language.PT, descPT);
+    item.getDescription().put(Language.EN, descEN);
+    item.setPrice(price);
 
-    item = this.itemJpaRepository.save(item);
+    this.itemJpaRepository.save(item);
   }
 }
