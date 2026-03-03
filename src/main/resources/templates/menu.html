@@ -126,7 +126,7 @@
 
               <div class="category-item" th:data-category-id="${category.id}"
                 th:attr="onclick=|selectCategory('${category.id}')|" th:each="category : ${menu.categories}">
-                <span class="category-name" th:text="${category.name[#locale.language]}">Starters</span>
+                <span class="category-name" th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
                 <span class="category-count" th:text="${category.amount}">2</span>
                 <div class="category-actions">
                   <button type="button"
