@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="#{page.customer.menu.title(${customerMenu.restaurantName})}">Menu - Cantina Bella Italia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-light: rgba(249, 115, 22, 0.1);
+            --primary-dark: #ea580c;
+            --accent: #10b981;
+            --accent-light: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-light: rgba(245, 158, 11, 0.1);
+            --info: #3b82f6;
+            --info-light: rgba(59, 130, 246, 0.1);
+            --background: #f8fafc;
+            --card: #ffffff;
+            --foreground: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --destructive: #ef4444;
+            --radius: 0.75rem;
+            --radius-lg: 1rem;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+        .restaurant-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .restaurant-logo {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .restaurant-logo svg { width: 1.25rem; height: 1.25rem; }
+        .restaurant-name { font-weight: 700; font-size: 1rem; }
+        .table-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .table-badge:hover { background: var(--primary); color: white; }
+        .table-badge svg { width: 1rem; height: 1rem; }
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .waiter-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .waiter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .waiter-btn svg { width: 1rem; height: 1rem; }
+
+        /* Language Selector */
+        .lang-selector {
+            position: relative;
+        }
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { border-color: var(--primary); }
+        .lang-btn svg { width: 0.75rem; height: 0.75rem; color: var(--muted); }
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            min-width: 10rem;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-0.5rem);
+            transition: all 0.2s;
+        }
+        .lang-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: none;
+            background: none;
+            font: inherit;
+            font-size: 0.875rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .lang-option:hover { background: var(--background); }
+        .lang-option.active { color: var(--primary); font-weight: 600; }
+        .lang-option .flag { font-size: 1.125rem; }
+        .lang-option .check { margin-left: auto; opacity: 0; }
+        .lang-option.active .check { opacity: 1; }
+
+        /* Main Tabs */
+        .main-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+        .main-tab {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: none;
+            background: none;
+            font: inherit;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .main-tab:hover { color: var(--foreground); }
+        .main-tab.active { color: var(--primary); }
+        .main-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+        .main-tab svg { width: 1.125rem; height: 1.125rem; }
+        .tab-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        /* Tab Content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Categories Navigation */
+        .categories-nav {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .categories-nav::-webkit-scrollbar { display: none; }
+        .category-btn {
+            flex-shrink: 0;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            background: var(--card);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .category-btn:hover { border-color: var(--primary); }
+        .category-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* Search Bar */
+        .search-container { padding: 1rem; background: var(--card); }
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font: inherit;
+            font-size: 0.875rem;
+            background: var(--background);
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { outline: none; border-color: var(--primary); }
+        .search-wrapper { position: relative; }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Menu Content */
+        .menu-content { padding: 1rem; }
+        .category-section { margin-bottom: 2rem; }
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .category-count {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--muted);
+            background: var(--background);
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        /* Menu Item Card */
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+        .menu-item-image {
+            width: 5rem;
+            height: 5rem;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .menu-item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .menu-item-image svg { width: 1.5rem; height: 1.5rem; color: var(--muted); }
+        .menu-item-content { flex: 1; min-width: 0; }
+        .menu-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem; }
+        .menu-item-name { font-weight: 600; font-size: 0.9375rem; }
+        .menu-item-price { font-weight: 700; color: var(--primary); white-space: nowrap; }
+        .menu-item-desc {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+        .menu-item-footer { display: flex; align-items: center; justify-content: space-between; }
+        .item-tags { display: flex; gap: 0.375rem; }
+        .item-tag {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            background: var(--accent-light);
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .add-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
+        .add-btn svg { width: 1.25rem; height: 1.25rem; }
+
+        /* Orders Tab Content */
+        .orders-content { padding: 1rem; }
+        .orders-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--muted);
+        }
+        .orders-empty-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .orders-empty-icon svg { width: 2rem; height: 2rem; }
+        .orders-empty h3 { font-weight: 600; margin-bottom: 0.25rem; color: var(--foreground); }
+
+        /* Order Item with Status */
+        .order-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .order-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .order-item-info h4 { font-size: 0.9375rem; font-weight: 600; }
+        .order-item-info p { font-size: 0.75rem; color: var(--muted); }
+        .order-status {
+            font-size: 0.625rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .order-status svg { width: 0.75rem; height: 0.75rem; }
+        .order-status.sent { background: var(--info-light); color: var(--info); }
+        .order-status.preparing { background: var(--warning-light); color: var(--warning); }
+        .order-status.ready { background: var(--accent-light); color: var(--accent); }
+        .order-status.delivered { background: var(--border); color: var(--muted); }
+        .order-item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--border);
+            margin-top: 0.5rem;
+        }
+        .order-item-qty { font-size: 0.875rem; color: var(--muted); }
+        .order-item-price { font-weight: 600; color: var(--primary); }
+
+        /* Orders Summary */
+        .orders-summary {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .orders-summary h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .orders-summary h3 svg { width: 1rem; height: 1rem; color: var(--primary); }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            margin-bottom: 0.375rem;
+        }
+        .summary-row.total {
+            font-weight: 700;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--border);
+            margin-top: 0.5rem;
+        }
+        .summary-row.total .value { color: var(--primary); }
+
+        /* Cart Floating Button */
+        .cart-float {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
+        .cart-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+            transition: all 0.2s;
+        }
+        .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5); }
+        .cart-btn-left { display: flex; align-items: center; gap: 0.75rem; }
+        .cart-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+        }
+        .cart-btn-right { font-size: 1.125rem; }
+
+        /* Cart Drawer */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+        .cart-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 85vh;
+            background: var(--card);
+            border-radius: 1.5rem 1.5rem 0 0;
+            z-index: 101;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-overlay.active .cart-drawer { transform: translateY(0); }
+        .cart-handle { width: 3rem; height: 0.25rem; background: var(--border); border-radius: 9999px; margin: 0.75rem auto; }
+        .cart-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem 1rem; border-bottom: 1px solid var(--border); }
+        .cart-title { font-size: 1.125rem; font-weight: 700; }
+        .cart-clear { font-size: 0.875rem; color: var(--destructive); background: none; border: none; cursor: pointer; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; }
+        .cart-item { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-image { width: 3.5rem; height: 3.5rem; border-radius: var(--radius); background: var(--background); overflow: hidden; flex-shrink: 0; }
+        .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-item-info { flex: 1; min-width: 0; }
+        .cart-item-name { font-weight: 500; font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .cart-item-price { font-size: 0.875rem; color: var(--primary); font-weight: 600; }
+        .cart-item-actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; }
+        .cart-item-remove { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.25rem; }
+        .cart-item-remove:hover { color: var(--destructive); }
+        .cart-item-qty { display: flex; align-items: center; gap: 0.375rem; background: var(--background); border-radius: var(--radius); padding: 0.25rem; }
+        .cart-item-qty button { width: 1.5rem; height: 1.5rem; border: none; background: var(--card); border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .cart-item-qty button svg { width: 0.75rem; height: 0.75rem; }
+        .cart-item-qty span { font-size: 0.875rem; font-weight: 600; min-width: 1.25rem; text-align: center; }
+        .cart-note { padding: 0 1.25rem 1rem; }
+        .cart-note-input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); font: inherit; font-size: 0.875rem; resize: none; }
+        .cart-note-input:focus { outline: none; border-color: var(--primary); }
+        .cart-note-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; display: block; }
+        .cart-footer { padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--border); background: var(--card); }
+        .cart-summary { margin-bottom: 1rem; }
+        .cart-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; }
+        .cart-row.total { font-weight: 700; font-size: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.75rem; }
+        .cart-row.total .value { color: var(--primary); font-size: 1.125rem; }
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
+        .checkout-btn svg { width: 1.25rem; height: 1.25rem; }
+        .cart-empty { padding: 3rem 1rem; text-align: center; }
+        .cart-empty-icon { width: 4rem; height: 4rem; border-radius: 50%; background: var(--background); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .cart-empty-icon svg { width: 2rem; height: 2rem; color: var(--muted); }
+        .cart-empty-title { font-weight: 600; margin-bottom: 0.25rem; }
+        .cart-empty-text { font-size: 0.875rem; color: var(--muted); }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            max-width: 22rem;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .modal-icon svg { width: 2rem; height: 2rem; }
+        .modal-icon.success { background: var(--accent-light); color: var(--accent); }
+        .modal-icon.warning { background: var(--primary-light); color: var(--primary); }
+        .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .modal-text { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .modal-btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: var(--radius);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+        .modal-btn.primary { background: var(--primary); color: white; }
+        .modal-btn.secondary { background: var(--background); color: var(--foreground); }
+
+        /* Item Detail Modal (Bottom Sheet) */
+        .item-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .item-modal-overlay.active { opacity: 1; visibility: visible; }
+        .item-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 90vh;
+            background: var(--card);
+            border-radius: 1.5rem 1.5rem 0 0;
+            z-index: 101;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .item-modal-overlay.active .item-modal { transform: translateY(0); }
+
+        /* Image Carousel */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 16rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+        }
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .carousel-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .carousel-dot.active { background: white; width: 1.5rem; border-radius: 0.25rem; }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .carousel-btn:hover { background: white; }
+        .carousel-btn.prev { left: 0.75rem; }
+        .carousel-btn.next { right: 0.75rem; }
+        .carousel-btn svg { width: 1.25rem; height: 1.25rem; }
+        .item-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--card);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+        .item-modal-close svg { width: 1rem; height: 1rem; }
+        .item-modal-content { padding: 1.25rem; flex: 1; overflow-y: auto; }
+        .item-modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .item-modal-name { font-size: 1.25rem; font-weight: 700; }
+        .item-modal-price { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+        .item-modal-desc { color: var(--muted); font-size: 0.9375rem; margin-bottom: 1rem; line-height: 1.6; }
+        .item-modal-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .item-modal-tag { font-size: 0.75rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--accent-light); color: var(--accent); font-weight: 500; }
+        .item-modal-tag.popular { background: var(--primary-light); color: var(--primary); }
+        .item-modal-footer { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .modal-qty-selector { display: flex; align-items: center; gap: 0.75rem; background: var(--background); padding: 0.5rem; border-radius: var(--radius); }
+        .modal-qty-selector button {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius);
+            border: none;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .modal-qty-selector button:hover { background: var(--primary); color: white; }
+        .modal-qty-selector span { font-size: 1.125rem; font-weight: 700; min-width: 2rem; text-align: center; }
+        .modal-add-btn {
+            flex: 1;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .modal-add-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3); }
+        .modal-add-btn svg { width: 1.25rem; height: 1.25rem; }
+
+        /* Table Orders Modal */
+        .table-modal-content {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            max-width: 28rem;
+            width: 100%;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            text-align: left;
+        }
+        .modal-overlay.active .table-modal-content { transform: scale(1); }
+        .table-modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-modal-header h2 { font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .table-modal-header h2 svg { width: 1.25rem; height: 1.25rem; color: var(--primary); }
+        .table-modal-close { background: none; border: none; cursor: pointer; color: var(--muted); padding: 0.25rem; }
+        .table-modal-close:hover { color: var(--foreground); }
+        .table-modal-body { flex: 1; overflow-y: auto; padding: 1.25rem; }
+        .person-section { margin-bottom: 1.5rem; }
+        .person-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .person-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        .person-name { font-weight: 600; flex: 1; }
+        .person-total { font-weight: 700; color: var(--primary); }
+        .person-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+        .person-item-name { display: flex; align-items: center; gap: 0.5rem; }
+        .person-item-qty { color: var(--primary); font-weight: 600; }
+        .table-modal-footer {
+            padding: 1.25rem;
+            border-top: 1px solid var(--border);
+            background: var(--background);
+        }
+        .table-total-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; }
+        .table-total-row.grand { font-size: 1.125rem; font-weight: 700; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.5rem; }
+        .table-total-row.grand .value { color: var(--primary); }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-top">
+        <div class="restaurant-info" th:attr="onclick=|window.location.href='${customerMenu.profileLink}'|" style="cursor: pointer;">
+            <div class="restaurant-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+            </div>
+            <span class="restaurant-name" th:text="${customerMenu.restaurantName}">Cantina Bella Italia</span>
+        </div>
+        <div class="header-actions" th:if="${false}">
+            <!-- Language Selector -->
+            <div class="lang-selector">
+                <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">
+                    <span id="currentLangFlag">🇵🇹</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" onclick="selectLang('pt-BR', '🇵🇹', 'Português')">
+                        <span class="flag">🇵🇹</span>
+                        <span>Português</span>
+                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </button>
+                    <button class="lang-option" onclick="selectLang('en-US', '🇬🇧', 'English')">
+                        <span class="flag">🇬🇧</span>
+                        <span>English</span>
+                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </button>
+                    <button class="lang-option" onclick="selectLang('es-ES', '🇪🇸', 'Español')" th:if="${false}">
+                        <span class="flag">🇪🇸</span>
+                        <span>Español</span>
+                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <button class="table-badge" onclick="openTableModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg>
+                Mesa 2
+            </button>
+            <button class="waiter-btn" onclick="confirmCallWaiter()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                Garçom
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Tabs -->
+    <div class="main-tabs">
+        <button class="main-tab active" onclick="switchTab('menu', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
+            <span th:text="#{page.customer.menu.tab.menu}">Menu</span>
+        </button>
+        <button class="main-tab" onclick="switchTab('orders', this)" th:if="${false}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Meus Pedidos
+            <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
+        </button>
+    </div>
+</header>
+
+<!-- Menu Tab Content -->
+<div id="menuTab" class="tab-content active">
+    <!-- Categories -->
+    <div class="categories-nav">
+        <button class="category-btn active" onclick="selectCategory('all', this)">All</button>
+        <button class="category-btn"
+                th:attr="onclick=|selectCategory('${category.id}', this)|"
+                th:text="${category.name[#locale.language]}"
+                th:each="category, stat : ${customerMenu.categories}">All</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" class="search-input" placeholder="Buscar no cardápio..." oninput="searchItems(this.value)">
+        </div>
+    </div>
+
+    <main class="menu-content">
+        <section class="category-section" th:data-category="${category.id}" th:each="category : ${customerMenu.categories}">
+            <h2 class="category-title"><span th:text="${category.name[#locale.language]}">Starters</span> <span class="category-count" th:text="#{page.customer.menu.category.item.count(${category.itemsSize})}">2 items</span></h2>
+            <div class="menu-item" th:attr="onclick=|openItemModal('${item.id}')|" th:each="item : ${category.items}">
+                <div class="menu-item-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+                <div class="menu-item-content">
+                    <div class="menu-item-header">
+                        <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
+                        <span class="menu-item-price" th:text="${item.priceFormatted}">R$ 28,90</span>
+                    </div>
+                    <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
+                    <div class="menu-item-footer">
+                        <div class="item-tags" th:if="${false}"><span class="item-tag">Vegetariano</span></div>
+                        <button th:if="${false}" class="add-btn" onclick="event.stopPropagation(); addToCart(1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Orders Tab Content -->
+<div id="ordersTab" class="tab-content" th:if="${false}">
+    <div class="orders-content" id="ordersContent">
+        <div class="orders-empty" id="ordersEmpty">
+            <div class="orders-empty-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <h3>Nenhum pedido ainda</h3>
+            <p>Seus pedidos enviados aparecerão aqui</p>
+        </div>
+        <div id="ordersList"></div>
+        <div class="orders-summary" id="ordersSummary" style="display: none;">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                Resumo do seu consumo
+            </h3>
+            <div class="summary-row"><span>Subtotal</span><span id="mySubtotal">R$ 0,00</span></div>
+            <div class="summary-row"><span>Taxa de serviço (10%)</span><span id="myServiceFee">R$ 0,00</span></div>
+            <div class="summary-row total"><span>Seu Total</span><span class="value" id="myTotal">R$ 0,00</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Floating Button -->
+<div class="cart-float" id="cartFloat" style="display: none;" th:if="${false}">
+    <button class="cart-btn" onclick="openCart()">
+        <span class="cart-btn-left"><span class="cart-count" id="cartCount">0 itens</span>Ver carrinho</span>
+        <span class="cart-btn-right" id="cartTotal">R$ 0,00</span>
+    </button>
+</div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()" th:if="${false}">
+    <div class="cart-drawer" onclick="event.stopPropagation()">
+        <div class="cart-handle"></div>
+        <div class="cart-header">
+            <h2 class="cart-title">Seu Pedido</h2>
+            <button class="cart-clear" onclick="clearCart()">Limpar</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty">
+                <div class="cart-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                <h3 class="cart-empty-title">Carrinho vazio</h3>
+                <p class="cart-empty-text">Adicione itens do cardápio</p>
+            </div>
+        </div>
+        <div class="cart-note" id="cartNote" style="display: none;">
+            <label class="cart-note-label">Observações do pedido</label>
+            <textarea class="cart-note-input" placeholder="Ex: Sem cebola, ponto da carne..." rows="2"></textarea>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-summary">
+                <div class="cart-row"><span>Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+                <div class="cart-row"><span>Taxa de serviço (10%)</span><span id="cartServiceFee">R$ 0,00</span></div>
+                <div class="cart-row total"><span>Total</span><span class="value" id="cartTotalFinal">R$ 0,00</span></div>
+            </div>
+            <button class="checkout-btn" onclick="submitOrder()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                Confirmar Pedido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Order Sent Modal -->
+<div class="modal-overlay" id="orderSentModal" th:if="${false}">
+    <div class="modal-content">
+        <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
+        <h3 class="modal-title">Pedido Enviado!</h3>
+        <p class="modal-text">Seu pedido foi recebido pela cozinha. Acompanhe o status na aba "Meus Pedidos".</p>
+        <button class="modal-btn primary" onclick="closeOrderSentModal()">Continuar</button>
+    </div>
+</div>
+
+<!-- Confirm Call Waiter Modal -->
+<div class="modal-overlay" id="confirmWaiterModal" th:if="${false}">
+    <div class="modal-content">
+        <div class="modal-icon warning"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+        <h3 class="modal-title">Chamar Garçom?</h3>
+        <p class="modal-text">Um garçom será notificado e virá atendê-lo na Mesa 2.</p>
+        <button class="modal-btn primary" onclick="callWaiter()">Sim, Chamar</button>
+        <button class="modal-btn secondary" onclick="closeConfirmWaiterModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- Waiter Called Modal -->
+<div class="modal-overlay" id="waiterCalledModal" th:if="${false}">
+    <div class="modal-content">
+        <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
+        <h3 class="modal-title">Garçom Chamado!</h3>
+        <p class="modal-text">Um garçom foi notificado e está a caminho.</p>
+        <button class="modal-btn primary" onclick="closeWaiterCalledModal()">OK</button>
+    </div>
+</div>
+
+<!-- Table Orders Modal -->
+<div class="modal-overlay" id="tableModal" onclick="closeTableModal()" th:if="${false}">
+    <div class="table-modal-content" onclick="event.stopPropagation()">
+        <div class="table-modal-header">
+            <h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg>Mesa 2 - Conta Completa</h2>
+            <button class="table-modal-close" onclick="closeTableModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="table-modal-body" id="tableModalBody">
+            <!-- Populated by JS -->
+        </div>
+        <div class="table-modal-footer">
+            <div class="table-total-row"><span>Subtotal da Mesa</span><span id="tableSubtotal">R$ 0,00</span></div>
+            <div class="table-total-row"><span>Taxa de serviço (10%)</span><span id="tableServiceFee">R$ 0,00</span></div>
+            <div class="table-total-row grand"><span>Total da Mesa</span><span class="value" id="tableGrandTotal">R$ 0,00</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Item Detail Modal -->
+<div class="item-modal-overlay" id="itemModalOverlay" onclick="closeItemModal()">
+    <div class="item-modal" onclick="event.stopPropagation()">
+        <div class="carousel-container" id="carouselContainer">
+            <div class="carousel-track" id="carouselTrack"></div>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <button class="carousel-btn prev" onclick="prevSlide()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="carousel-btn next" onclick="nextSlide()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+            <button class="item-modal-close" onclick="closeItemModal()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <div class="item-modal-content">
+            <div class="item-modal-header">
+                <h2 class="item-modal-name" id="itemModalName">Nome</h2>
+                <span class="item-modal-price" id="itemModalPrice">R$ 0,00</span>
+            </div>
+            <p class="item-modal-desc" id="itemModalDesc">Descrição</p>
+            <div class="item-modal-tags" id="itemModalTags"></div>
+        </div>
+        <div class="item-modal-footer">
+            <div class="modal-qty-selector" th:if="${false}">
+                <button onclick="decreaseModalQty()">−</button>
+                <span id="modalQty">1</span>
+                <button onclick="increaseModalQty()">+</button>
+            </div>
+            <button class="modal-add-btn" onclick="addFromModal()" th:if="${false}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Adicionar <span id="modalTotalPrice">R$ 0,00</span>
+            </button>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    const menuItems = /*[[${customerMenu.items}]]*/[];
+</script>
+<script>
+    // Current language
+    let currentLang = 'pt';
+
+    // UI translations
+    const uiTranslations = {
+        'pt-BR': {
+            menu: 'Cardápio', myOrders: 'Meus Pedidos', all: 'Todos', starters: 'Entradas',
+            mains: 'Pratos Principais', drinks: 'Bebidas', desserts: 'Sobremesas',
+            searchPlaceholder: 'Buscar no cardápio...', waiter: 'Garçom', add: 'Adicionar',
+            yourOrder: 'Seu Pedido', subtotal: 'Subtotal', serviceFee: 'Taxa de serviço',
+            total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
+            preparing: 'Em preparo', ready: 'Pronto', delivered: 'Entregue',
+            callWaiter: 'Chamar Garçom?', waiterComing: 'Um garçom virá atendê-lo.',
+            orderSent: 'Pedido Enviado!', orderReceived: 'Seu pedido foi recebido pela cozinha.',
+            noOrders: 'Nenhum pedido ainda', ordersAppear: 'Seus pedidos aparecerão aqui',
+            yourConsumption: 'Resumo do seu consumo', tableAccount: 'Conta Completa',
+            tableSubtotal: 'Subtotal da Mesa', tableTotal: 'Total da Mesa', you: 'Você'
+        },
+        'en-US': {
+            menu: 'Menu', myOrders: 'My Orders', all: 'All', starters: 'Starters',
+            mains: 'Main Courses', drinks: 'Drinks', desserts: 'Desserts',
+            searchPlaceholder: 'Search menu...', waiter: 'Waiter', add: 'Add',
+            yourOrder: 'Your Order', subtotal: 'Subtotal', serviceFee: 'Service fee',
+            total: 'Total', confirmOrder: 'Confirm Order', sent: 'Sent',
+            preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered',
+            callWaiter: 'Call Waiter?', waiterComing: 'A waiter will assist you shortly.',
+            orderSent: 'Order Sent!', orderReceived: 'Your order was received by the kitchen.',
+            noOrders: 'No orders yet', ordersAppear: 'Your orders will appear here',
+            yourConsumption: 'Your consumption summary', tableAccount: 'Full Bill',
+            tableSubtotal: 'Table Subtotal', tableTotal: 'Table Total', you: 'You'
+        },
+        'es-ES': {
+            menu: 'Menú', myOrders: 'Mis Pedidos', all: 'Todos', starters: 'Entrantes',
+            mains: 'Platos Principales', drinks: 'Bebidas', desserts: 'Postres',
+            searchPlaceholder: 'Buscar en el menú...', waiter: 'Camarero', add: 'Añadir',
+            yourOrder: 'Tu Pedido', subtotal: 'Subtotal', serviceFee: 'Cargo por servicio',
+            total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
+            preparing: 'Preparando', ready: 'Listo', delivered: 'Entregado',
+            callWaiter: '¿Llamar camarero?', waiterComing: 'Un camarero vendrá a atenderte.',
+            orderSent: '¡Pedido Enviado!', orderReceived: 'Tu pedido fue recibido por la cocina.',
+            noOrders: 'Sin pedidos aún', ordersAppear: 'Tus pedidos aparecerán aquí',
+            yourConsumption: 'Resumen de tu consumo', tableAccount: 'Cuenta Completa',
+            tableSubtotal: 'Subtotal de la Mesa', tableTotal: 'Total de la Mesa', you: 'Tú'
+        }
+    };
+
+    // Helper to get item text in current language
+    function getItemText(item, field) {
+        return item[field][currentLang] || item[field]['pt'];
+    }
+
+    // Language selector functions
+    function toggleLangDropdown() {
+        document.getElementById('langDropdown').classList.toggle('active');
+    }
+
+    function selectLang(lang, flag, name) {
+        currentLang = lang;
+        document.getElementById('currentLangFlag').textContent = flag;
+        document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById('langDropdown').classList.remove('active');
+        updateUILanguage();
+    }
+
+    function updateUILanguage() {
+        const t = uiTranslations[currentLang];
+        // Update tabs
+        document.querySelectorAll('.main-tab')[0].innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>${t.menu}`;
+        const ordersTab = document.querySelectorAll('.main-tab')[1];
+        const badge = ordersTab.querySelector('.tab-badge');
+        ordersTab.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>${t.myOrders}`;
+        if (badge) ordersTab.appendChild(badge);
+        // Update categories
+        const cats = document.querySelectorAll('.category-btn');
+        cats[0].textContent = t.all;
+        cats[1].textContent = t.starters;
+        cats[2].textContent = t.mains;
+        cats[3].textContent = t.drinks;
+        cats[4].textContent = t.desserts;
+        // Update search
+        document.querySelector('.search-input').placeholder = t.searchPlaceholder;
+        // Update menu items display
+        document.querySelectorAll('.menu-item').forEach(el => {
+            const id = el.getAttribute('onclick').match(/\d+/)[0];
+            const item = menuItems[id];
+            if (item) {
+                el.querySelector('.menu-item-name').textContent = getItemText(item, 'name');
+                el.querySelector('.menu-item-desc').textContent = getItemText(item, 'desc');
+            }
+        });
+        // Update section titles
+        const sections = document.querySelectorAll('.category-title');
+        if (sections[0]) sections[0].innerHTML = `${t.starters} <span class="category-count">2 itens</span>`;
+        if (sections[1]) sections[1].innerHTML = `${t.mains} <span class="category-count">3 itens</span>`;
+        if (sections[2]) sections[2].innerHTML = `${t.drinks} <span class="category-count">2 itens</span>`;
+        if (sections[3]) sections[3].innerHTML = `${t.desserts} <span class="category-count">1 item</span>`;
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.lang-selector')) {
+            document.getElementById('langDropdown').classList.remove('active');
+        }
+    });
+
+    // Table simulation data (other people at the table)
+    const tableOrders = {
+        'Maria Silva': [
+            { name: 'Filé Mignon ao Molho', qty: 1, price: 89.90, status: 'ready' },
+            { name: 'Caipirinha', qty: 2, price: 36.00, status: 'delivered' }
+        ],
+        'João Pedro': [
+            { name: 'Salmão Grelhado', qty: 1, price: 78.00, status: 'preparing' },
+            { name: 'Suco Natural', qty: 1, price: 12.00, status: 'delivered' }
+        ]
+    };
+
+    let cart = [];
+    let myOrders = []; // Orders sent by current user
+    const SERVICE_FEE = 0.10;
+    const currentUser = 'Você';
+
+    // Carousel state
+    let currentSlide = 0;
+    let currentModalItem = null;
+    let modalQty = 1;
+
+    // Tab switching
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + 'Tab').classList.add('active');
+    }
+
+    // Category selection
+    function selectCategory(category, btn) {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.category-section').forEach(section => {
+            section.style.display = (category === 'all' || section.dataset.category === category) ? 'block' : 'none';
+        });
+    }
+
+    // Search
+    function searchItems(query) {
+        query = query.toLowerCase();
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const name = item.querySelector('.menu-item-name').textContent.toLowerCase();
+            item.style.display = (name.includes(query) || query === '') ? 'flex' : 'none';
+        });
+    }
+
+    // Cart functions
+    function addToCart(itemId) {
+        const item = menuItems[itemId];
+        const existing = cart.find(c => c.id === itemId);
+        if (existing) existing.qty++;
+        else cart.push({ ...item, qty: 1 });
+        updateCartUI();
+    }
+
+    function removeFromCart(itemId) {
+        cart = cart.filter(c => c.id !== itemId);
+        updateCartUI();
+    }
+
+    function updateQty(itemId, delta) {
+        const item = cart.find(c => c.id === itemId);
+        if (item) {
+            item.qty += delta;
+            if (item.qty <= 0) removeFromCart(itemId);
+            else updateCartUI();
+        }
+    }
+
+    function clearCart() {
+        cart = [];
+        updateCartUI();
+        closeCart();
+    }
+
+    function formatPrice(value) {
+        return 'R$ ' + value.toFixed(2).replace('.', ',');
+    }
+
+    function updateCartUI() {
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const total = subtotal + (subtotal * SERVICE_FEE);
+
+        document.getElementById('cartFloat').style.display = totalItems > 0 ? 'block' : 'none';
+        document.getElementById('cartCount').textContent = totalItems + ' ' + (totalItems === 1 ? 'item' : 'itens');
+        document.getElementById('cartTotal').textContent = formatPrice(total);
+
+        if (totalItems > 0) {
+            document.getElementById('cartEmpty').style.display = 'none';
+            document.getElementById('cartNote').style.display = 'block';
+            document.getElementById('cartFooter').style.display = 'block';
+            document.getElementById('cartItems').innerHTML = cart.map(item => `
+          <div class="cart-item">
+            <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0]}" alt="">` : ''}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${getItemText(item, 'name')}</div>
+              <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
+            </div>
+            <div class="cart-item-actions">
+              <button class="cart-item-remove" onclick="removeFromCart(${item.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+              <div class="cart-item-qty">
+                <button onclick="updateQty(${item.id}, -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                <span>${item.qty}</span>
+                <button onclick="updateQty(${item.id}, 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+            document.getElementById('cartSubtotal').textContent = formatPrice(subtotal);
+            document.getElementById('cartServiceFee').textContent = formatPrice(subtotal * SERVICE_FEE);
+            document.getElementById('cartTotalFinal').textContent = formatPrice(total);
+        } else {
+            document.getElementById('cartEmpty').style.display = 'flex';
+            document.getElementById('cartNote').style.display = 'none';
+            document.getElementById('cartFooter').style.display = 'none';
+        }
+    }
+
+    function openCart() { document.getElementById('cartOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeCart() { document.getElementById('cartOverlay').classList.remove('active'); document.body.style.overflow = ''; }
+
+    function submitOrder() {
+        if (cart.length === 0) return;
+        const statuses = ['sent', 'preparing'];
+        cart.forEach(item => {
+            myOrders.push({ ...item, status: statuses[Math.floor(Math.random() * statuses.length)], time: new Date() });
+        });
+        cart = [];
+        updateCartUI();
+        updateOrdersUI();
+        closeCart();
+        document.getElementById('orderSentModal').classList.add('active');
+    }
+
+    function closeOrderSentModal() { document.getElementById('orderSentModal').classList.remove('active'); }
+
+    // Orders UI
+    function updateOrdersUI() {
+        const badge = document.getElementById('ordersTabBadge');
+        const empty = document.getElementById('ordersEmpty');
+        const list = document.getElementById('ordersList');
+        const summary = document.getElementById('ordersSummary');
+
+        if (myOrders.length === 0) {
+            badge.style.display = 'none';
+            empty.style.display = 'block';
+            list.innerHTML = '';
+            summary.style.display = 'none';
+            return;
+        }
+
+        badge.style.display = 'inline';
+        badge.textContent = myOrders.length;
+        empty.style.display = 'none';
+        summary.style.display = 'block';
+
+        const statusIcons = {
+            sent: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+            preparing: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>',
+            ready: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>',
+            delivered: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'
+        };
+
+        const t = uiTranslations[currentLang];
+        const statusLabelsTranslated = { sent: t.sent, preparing: t.preparing, ready: t.ready, delivered: t.delivered };
+
+        list.innerHTML = myOrders.map(order => `
+        <div class="order-item">
+          <div class="order-item-header">
+            <div class="order-item-info">
+              <h4>${getItemText(order, 'name')}</h4>
+              <p>${formatTimeAgo(order.time)}</p>
+            </div>
+            <span class="order-status ${order.status}">${statusIcons[order.status]}${statusLabelsTranslated[order.status]}</span>
+          </div>
+          <div class="order-item-details">
+            <span class="order-item-qty">${order.qty}x</span>
+            <span class="order-item-price">${formatPrice(order.price * order.qty)}</span>
+          </div>
+        </div>
+      `).join('');
+
+        const subtotal = myOrders.reduce((sum, o) => sum + (o.price * o.qty), 0);
+        document.getElementById('mySubtotal').textContent = formatPrice(subtotal);
+        document.getElementById('myServiceFee').textContent = formatPrice(subtotal * SERVICE_FEE);
+        document.getElementById('myTotal').textContent = formatPrice(subtotal + (subtotal * SERVICE_FEE));
+    }
+
+    function formatTimeAgo(date) {
+        const mins = Math.floor((new Date() - date) / 60000);
+        if (mins < 1) return 'agora';
+        if (mins < 60) return `há ${mins} min`;
+        return `há ${Math.floor(mins / 60)}h`;
+    }
+
+    // Waiter
+    function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
+    function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
+    function callWaiter() {
+        closeConfirmWaiterModal();
+        document.getElementById('waiterCalledModal').classList.add('active');
+    }
+    function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
+
+    // Table modal
+    function openTableModal() {
+        document.getElementById('tableModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderTableModal();
+    }
+    function closeTableModal() {
+        document.getElementById('tableModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function renderTableModal() {
+        const body = document.getElementById('tableModalBody');
+        let html = '';
+        let grandSubtotal = 0;
+
+        const t = uiTranslations[currentLang];
+
+        // Add current user orders
+        if (myOrders.length > 0) {
+            const myTotal = myOrders.reduce((sum, o) => sum + (o.price * o.qty), 0);
+            grandSubtotal += myTotal;
+            html += `
+          <div class="person-section">
+            <div class="person-header">
+              <div class="person-avatar">EU</div>
+              <span class="person-name">${t.you}</span>
+              <span class="person-total">${formatPrice(myTotal)}</span>
+            </div>
+            ${myOrders.map(o => `<div class="person-item"><span class="person-item-name"><span class="person-item-qty">${o.qty}x</span> ${getItemText(o, 'name')}</span><span>${formatPrice(o.price * o.qty)}</span></div>`).join('')}
+          </div>
+        `;
+        }
+
+        // Add other people
+        for (const [name, orders] of Object.entries(tableOrders)) {
+            const personTotal = orders.reduce((sum, o) => sum + o.price, 0);
+            grandSubtotal += personTotal;
+            const initials = name.split(' ').map(n => n[0]).join('');
+            html += `
+          <div class="person-section">
+            <div class="person-header">
+              <div class="person-avatar">${initials}</div>
+              <span class="person-name">${name}</span>
+              <span class="person-total">${formatPrice(personTotal)}</span>
+            </div>
+            ${orders.map(o => `<div class="person-item"><span class="person-item-name"><span class="person-item-qty">${o.qty}x</span> ${getItemText(o, 'name')}</span><span>${formatPrice(o.price)}</span></div>`).join('')}
+          </div>
+        `;
+        }
+
+        if (!html) html = `<p style="text-align: center; color: var(--muted); padding: 2rem;">${t.noOrdersYet}</p>`;
+        body.innerHTML = html;
+
+        document.getElementById('tableSubtotal').textContent = formatPrice(grandSubtotal);
+        document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
+        document.getElementById('tableGrandTotal').textContent = formatPrice(grandSubtotal + (grandSubtotal * SERVICE_FEE));
+    }
+
+    // Item modal with carousel
+    function openItemModal(itemId) {
+        const item = menuItems.find(i => i.id === itemId);
+        if (!item) return;
+        currentModalItem = item;
+        modalQty = 1;
+        currentSlide = 0;
+
+        document.getElementById('itemModalName').textContent = getItemText(item, 'name');
+        document.getElementById('itemModalPrice').textContent = formatPrice(item.price);
+        document.getElementById('itemModalDesc').textContent = getItemText(item, 'description');
+        //document.getElementById('modalQty').textContent = modalQty;
+        //document.getElementById('modalTotalPrice').textContent = formatPrice(item.price);
+
+        // Carousel
+        const track = document.getElementById('carouselTrack');
+        const dots = document.getElementById('carouselDots');
+        const images = item.images && item.images.length > 0 ? item.images : [];
+
+        if (images.length > 0) {
+            track.innerHTML = images.map(img => `<div class="carousel-slide"><img src="${img}" alt="${getItemText(item, 'name')}"></div>`).join('');
+            dots.innerHTML = images.map((_, i) => `<button class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></button>`).join('');
+            dots.style.display = images.length > 1 ? 'flex' : 'none';
+            document.querySelector('.carousel-btn.prev').style.display = images.length > 1 ? 'flex' : 'none';
+            document.querySelector('.carousel-btn.next').style.display = images.length > 1 ? 'flex' : 'none';
+        } else {
+            track.innerHTML = '<div class="carousel-slide"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--muted);"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>';
+            dots.innerHTML = '';
+            dots.style.display = 'none';
+            document.querySelector('.carousel-btn.prev').style.display = 'none';
+            document.querySelector('.carousel-btn.next').style.display = 'none';
+        }
+        track.style.transform = 'translateX(0)';
+
+        // Tags
+        const tagsEl = document.getElementById('itemModalTags');
+        tagsEl.innerHTML = (item.tags || []).map(t => `<span class="item-modal-tag ${['Popular','Favorito'].includes(t) ? 'popular' : ''}">${t}</span>`).join('');
+
+        document.getElementById('itemModalOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeItemModal() {
+        document.getElementById('itemModalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function goToSlide(index) {
+        if (!currentModalItem || !currentModalItem.images) return;
+        currentSlide = index;
+        document.getElementById('carouselTrack').style.transform = `translateX(-${index * 100}%)`;
+        document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function nextSlide() {
+        if (!currentModalItem || !currentModalItem.images) return;
+        goToSlide((currentSlide + 1) % currentModalItem.images.length);
+    }
+
+    function prevSlide() {
+        if (!currentModalItem || !currentModalItem.images) return;
+        goToSlide((currentSlide - 1 + currentModalItem.images.length) % currentModalItem.images.length);
+    }
+
+    function increaseModalQty() { modalQty++; updateModalQty(); }
+    function decreaseModalQty() { if (modalQty > 1) { modalQty--; updateModalQty(); } }
+    function updateModalQty() {
+        document.getElementById('modalQty').textContent = modalQty;
+        if (currentModalItem) document.getElementById('modalTotalPrice').textContent = formatPrice(currentModalItem.price * modalQty);
+    }
+
+    function addFromModal() {
+        if (!currentModalItem) return;
+        const existing = cart.find(c => c.id === currentModalItem.id);
+        if (existing) existing.qty += modalQty;
+        else cart.push({ ...currentModalItem, qty: modalQty });
+        updateCartUI();
+        closeItemModal();
+    }
+
+    // Simulate order status updates
+    setInterval(() => {
+        if (myOrders.length > 0) {
+            const statusOrder = ['sent', 'preparing', 'ready', 'delivered'];
+            myOrders.forEach(order => {
+                const idx = statusOrder.indexOf(order.status);
+                if (idx < statusOrder.length - 1 && Math.random() > 0.7) {
+                    order.status = statusOrder[idx + 1];
+                }
+            });
+            updateOrdersUI();
+        }
+    }, 10000);
+</script>
+</body>
+</html>

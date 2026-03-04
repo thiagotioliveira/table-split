@@ -34,7 +34,10 @@ public class ProfileModel {
   private final String hashGradientColor;
   private final String hashPrimaryShadowColor;
 
+  private final String menuLink;
+
   public ProfileModel(Restaurant restaurant) {
+    this.menuLink = String.format("/p/%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
     this.description = restaurant.getDescription();
     this.website = restaurant.getWebsite();
@@ -145,5 +148,9 @@ public class ProfileModel {
 
   public String getHashPrimaryShadowColor() {
     return hashPrimaryShadowColor;
+  }
+
+  public String getMenuLink() {
+    return menuLink;
   }
 }
