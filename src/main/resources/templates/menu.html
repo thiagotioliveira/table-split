@@ -72,6 +72,102 @@
       color: var(--muted);
       margin-top: 0.25rem;
     }
+
+    /* Image gallery upload */
+    .image-gallery-upload {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .image-upload-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .image-upload-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-upload-item .image-remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+      transition: background 0.2s;
+    }
+
+    .image-upload-item .image-remove-btn:hover {
+      background: var(--danger);
+    }
+
+    .image-upload-item.primary::after {
+      content: 'Principal';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--primary);
+      color: white;
+      font-size: 0.625rem;
+      text-align: center;
+      padding: 2px 0;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .image-upload-add {
+      width: 100px;
+      height: 100px;
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--background);
+    }
+
+    .image-upload-add:hover {
+      border-color: var(--primary);
+      background: var(--muted);
+    }
+
+    .image-upload-add svg {
+      width: 24px;
+      height: 24px;
+      color: var(--text-secondary);
+    }
+
+    .image-upload-add span {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+    }
+
+    .image-upload-input {
+      display: none;
+    }
   </style>
 </head>
 
@@ -126,7 +222,8 @@
               </button>
 
               <div class="category-item" th:data-category-id="${category.id}"
-                th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|" th:each="category : ${menu.categories}">
+                th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|"
+                th:each="category : ${menu.categories}">
                 <span class="category-name"
                   th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
                 <span class="category-count" th:text="${category.amount}">2</span>
@@ -166,13 +263,16 @@
               <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}">
                 <div class="menu-item-image">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    th:if="${item.imageUrls.isEmpty()}">
                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
                     <line x1="16" x2="22" y1="5" y2="5" />
                     <line x1="19" x2="19" y1="2" y2="8" />
                     <circle cx="9" cy="9" r="2" />
                     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                   </svg>
+                  <img th:src="${item.imageUrls.get(0) + '?w=400'}" th:alt="${item.name[#locale.language]}"
+                    th:if="${!item.imageUrls.isEmpty()}">
                 </div>
                 <div class="menu-item-content">
                   <div class="menu-item-header">
@@ -277,11 +377,13 @@
         <p id="deleteCategoryName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()" th:text="#{button.cancel}">Cancel</button>
+        <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()"
+          th:text="#{button.cancel}">Cancel</button>
         <form th:action="@{'/menu/categories/delete'}" method="post">
           <input type="hidden" name="categoryId" id="deleteCategoryId">
           <button type="submit" class="btn btn-primary"
-            style="background-color: var(--destructive); border-color: var(--destructive);" th:text="#{button.delete}">Delete</button>
+            style="background-color: var(--destructive); border-color: var(--destructive);"
+            th:text="#{button.delete}">Delete</button>
         </form>
       </div>
     </div>
@@ -298,11 +400,13 @@
         <p id="deleteItemName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteItemModal()" th:text="#{button.cancel}">Cancel</button>
+        <button type="button" class="btn btn-outline" onclick="closeDeleteItemModal()"
+          th:text="#{button.cancel}">Cancel</button>
         <form th:action="@{'/menu/items/delete'}" method="post">
           <input type="hidden" name="itemId" id="deleteItemId">
           <button type="submit" class="btn btn-primary"
-            style="background-color: var(--destructive); border-color: var(--destructive);" th:text="#{button.delete}">Delete</button>
+            style="background-color: var(--destructive); border-color: var(--destructive);"
+            th:text="#{button.delete}">Delete</button>
         </form>
       </div>
     </div>
@@ -314,7 +418,8 @@
       <div class="modal-header">
         <h3 id="itemModalTitle" th:text="#{page.menu.item.new}">New Item</h3>
       </div>
-      <form th:action="@{'/menu/items'}" method="post">
+      <form id="itemForm" th:action="@{'/menu/items'}" method="post" enctype="multipart/form-data"
+        onsubmit="prepareItemSubmit(event)">
         <input type="hidden" name="id" id="itemId">
         <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
           <!-- Language Tabs for Item -->
@@ -368,9 +473,22 @@
             </div>
           </div>
 
-          <div class="form-group" th:if="${false}">
-            <label class="form-label" for="itemImage">URL da Imagem</label>
-            <input type="text" id="itemImage" class="form-input" placeholder="https://...">
+          <div class="form-group">
+            <label class="form-label">Imagens do Item</label>
+            <p class="form-hint" style="margin-top: 0; margin-bottom: 0.5rem;">A primeira imagem será a principal.
+              Arraste para reordenar.</p>
+            <div class="image-gallery-upload" id="itemImagesGallery">
+              <!-- Images will be added here dynamically -->
+            </div>
+            <label class="image-upload-add" id="imageUploadTrigger">
+              <input type="file" class="image-upload-input" id="itemImageInput" name="newImages" accept="image/*"
+                multiple onchange="handleImageUpload(event)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Adicionar</span>
+            </label>
           </div>
 
           <div class="form-group" th:if="${false}">
@@ -523,6 +641,114 @@
       document.getElementById('categoryFields-' + lang).classList.add('active');
     }
 
+    // Item Images Gallery
+    let itemImages = []; // Array to store image URLs/data
+
+    function handleImageUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          itemImages.push({
+            file: file,
+            preview: e.target.result
+          });
+          renderImageGallery();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Reset input to allow selecting same file again
+      event.target.value = '';
+    }
+
+    function renderImageGallery() {
+      const gallery = document.getElementById('itemImagesGallery');
+      gallery.innerHTML = itemImages.map((img, index) => `
+        <div class="image-upload-item${index === 0 ? ' primary' : ''}" draggable="true" data-index="${index}">
+          <img src="${img.preview}" alt="Imagem ${index + 1}">
+          <button type="button" class="image-remove-btn" onclick="removeImage(${index})">×</button>
+        </div>
+      `).join('');
+
+      // Add drag and drop for reordering
+      initImageDragDrop();
+    }
+
+    function removeImage(index) {
+      itemImages.splice(index, 1);
+      renderImageGallery();
+    }
+
+    function initImageDragDrop() {
+      const gallery = document.getElementById('itemImagesGallery');
+      const items = gallery.querySelectorAll('.image-upload-item');
+
+      items.forEach(item => {
+        item.addEventListener('dragstart', function (e) {
+          e.dataTransfer.setData('text/plain', this.dataset.index);
+          this.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', function () {
+          this.classList.remove('dragging');
+        });
+
+        item.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          this.style.opacity = '0.5';
+        });
+
+        item.addEventListener('dragleave', function () {
+          this.style.opacity = '1';
+        });
+
+        item.addEventListener('drop', function (e) {
+          e.preventDefault();
+          this.style.opacity = '1';
+
+          const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+          const toIndex = parseInt(this.dataset.index);
+
+          if (fromIndex !== toIndex) {
+            const [movedImage] = itemImages.splice(fromIndex, 1);
+            itemImages.splice(toIndex, 0, movedImage);
+            renderImageGallery();
+          }
+        });
+      });
+    }
+
+    function clearImageGallery() {
+      itemImages = [];
+      document.getElementById('itemImagesGallery').innerHTML = '';
+      document.getElementById('itemImageInput').value = '';
+    }
+
+    function prepareItemSubmit(event) {
+      const form = document.getElementById('itemForm');
+      // Remove any previously added hidden inputs for imageIdsToKeep
+      form.querySelectorAll('input[name="imageIdsToKeep"]').forEach(input => input.remove());
+
+      const dataTransfer = new DataTransfer();
+      itemImages.forEach(img => {
+        if (img.isExisting) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'imageIdsToKeep';
+          input.value = img.id;
+          form.appendChild(input);
+        } else if (img.file) {
+          dataTransfer.items.add(img.file);
+        }
+      });
+      document.getElementById('itemImageInput').files = dataTransfer.files;
+    }
+
     // Item Modal
     function openItemModal(id, lang) {
       document.getElementById('itemModalTitle').textContent = id ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
@@ -536,6 +762,16 @@
           document.getElementById('itemId').value = filtered.id;
           document.getElementById('itemPrice').value = filtered.price;
           document.getElementById('itemCategory').value = filtered.categoryId;
+
+          // Load existing images
+          if (filtered.images) {
+            itemImages = filtered.images.map(img => ({
+              id: img.id,
+              preview: img.url,
+              isExisting: true
+            }));
+            renderImageGallery();
+          }
 
           // Fill names for each language
           Object.keys(filtered.name).forEach(langKey => {
@@ -561,8 +797,9 @@
       });
       document.getElementById('itemPrice').value = '';
       document.getElementById('itemCategory').value = '';
-      document.getElementById('itemImage').value = '';
       document.getElementById('itemTags').value = '';
+      document.getElementById('itemTags').value = '';
+      clearImageGallery();
     }
 
     function editItem(id, lang) {

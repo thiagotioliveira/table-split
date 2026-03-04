@@ -6,6 +6,13 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
+
+cloudinary:
+  cloud-name:
+  api-key:
+  api-secret:
+  root-folder: dev
+
 logging:
   level:
     ROOT: INFO

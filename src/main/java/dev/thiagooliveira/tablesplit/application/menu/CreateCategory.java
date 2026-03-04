@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.application.menu.dto.CreateCategoryCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import java.util.UUID;
 

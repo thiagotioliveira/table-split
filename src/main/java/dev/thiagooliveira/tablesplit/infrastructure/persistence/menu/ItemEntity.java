@@ -4,10 +4,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "items")
@@ -27,6 +24,9 @@ public class ItemEntity {
 
   private BigDecimal price;
 
+  @OneToMany(mappedBy = "itemId", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemImageEntity> images = new ArrayList<>();
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
@@ -42,10 +42,12 @@ public class ItemEntity {
   public Item toDomain() {
     var domain = new Item();
     domain.setId(this.id);
+    domain.setRestaurantId(this.category.getRestaurantId());
     domain.setCategoryId(this.category.getId());
     domain.setName(this.name);
     domain.setDescription(this.description);
     domain.setPrice(this.price);
+    domain.setImages(this.images.stream().map(ItemImageEntity::toDomain).toList());
     return domain;
   }
 
@@ -98,5 +100,13 @@ public class ItemEntity {
 
   public void setPrice(BigDecimal price) {
     this.price = price;
+  }
+
+  public List<ItemImageEntity> getImages() {
+    return images;
+  }
+
+  public void setImages(List<ItemImageEntity> images) {
+    this.images = images;
   }
 }

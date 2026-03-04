@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 public class ItemModel {
   private final UUID id;
   private final UUID categoryId;
+  private final List<ImageModel> images;
+  private final List<String> imageUrls;
   private final Map<String, String> categoryName;
   private final Map<String, String> name;
   private final Map<String, String> description;
@@ -24,6 +27,9 @@ public class ItemModel {
     this.description = convertMap(item.getDescription());
     this.price = item.getPrice();
     this.priceFormatted = String.format("%s %s", symbol, this.price);
+    this.images =
+        item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
+    this.imageUrls = this.images.stream().map(ImageModel::url).toList();
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -58,5 +64,13 @@ public class ItemModel {
 
   public String getPriceFormatted() {
     return priceFormatted;
+  }
+
+  public List<String> getImageUrls() {
+    return imageUrls;
+  }
+
+  public List<ImageModel> getImages() {
+    return images;
   }
 }

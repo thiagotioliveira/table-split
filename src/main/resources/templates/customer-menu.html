@@ -902,7 +902,11 @@
         <section class="category-section" th:data-category="${category.id}" th:each="category : ${customerMenu.categories}">
             <h2 class="category-title"><span th:text="${category.name[#locale.language]}">Starters</span> <span class="category-count" th:text="#{page.customer.menu.category.item.count(${category.itemsSize})}">2 items</span></h2>
             <div class="menu-item" th:attr="onclick=|openItemModal('${item.id}')|" th:each="item : ${category.items}">
-                <div class="menu-item-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+                <div class="menu-item-image">
+                    <svg th:if="${item.images.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <img th:src="${item.images.get(0).url() + '?w=400'}" th:alt="${item.name[#locale.language]}"
+                         th:if="${!item.images.isEmpty()}">
+                </div>
                 <div class="menu-item-content">
                     <div class="menu-item-header">
                         <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
@@ -1459,7 +1463,7 @@
         const images = item.images && item.images.length > 0 ? item.images : [];
 
         if (images.length > 0) {
-            track.innerHTML = images.map(img => `<div class="carousel-slide"><img src="${img}" alt="${getItemText(item, 'name')}"></div>`).join('');
+            track.innerHTML = images.map(img => `<div class="carousel-slide"><img src="${img.url}" alt="${getItemText(item, 'name')}"></div>`).join('');
             dots.innerHTML = images.map((_, i) => `<button class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></button>`).join('');
             dots.style.display = images.length > 1 ? 'flex' : 'none';
             document.querySelector('.carousel-btn.prev').style.display = images.length > 1 ? 'flex' : 'none';
