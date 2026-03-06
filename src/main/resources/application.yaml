@@ -16,4 +16,14 @@ cloudinary:
 logging:
   level:
     ROOT: INFO
+
+    org:
+      hibernate:
+        SQL: OFF
+        type:
+          descriptor:
+            sql:
+              BasicBinder: OFF
+      springframework:
+        transaction: OFF
     dev.thiagooliveira: DEBUG

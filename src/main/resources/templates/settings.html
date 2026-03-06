@@ -742,7 +742,7 @@
               <div class="form-group">
                 <label class="form-label" for="restaurantSlug" th:text="#{page.settings.form.restaurant.slug}">Id *</label>
                 <div class="slug-input-group">
-                  <span class="slug-prefix" th:text="#{app.domain}+'/'">tablesplit.com/</span>
+                  <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.com/</span>
                   <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
                          th:placeholder="#{page.settings.form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
                 </div>

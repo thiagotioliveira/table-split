@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.profile.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 
 import static dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.ZONE;
 
@@ -37,7 +37,7 @@ public class ProfileModel {
   private final String menuLink;
 
   public ProfileModel(Restaurant restaurant) {
-    this.menuLink = String.format("/p/%s/menu", restaurant.getSlug());
+    this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
     this.description = restaurant.getDescription();
     this.website = restaurant.getWebsite();

@@ -47,7 +47,7 @@ public class ItemEntity {
     domain.setName(this.name);
     domain.setDescription(this.description);
     domain.setPrice(this.price);
-    domain.setImages(this.images.stream().map(ItemImageEntity::toDomain).toList());
+    domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
     return domain;
   }
 
@@ -59,6 +59,10 @@ public class ItemEntity {
     entity.setName(domain.getName());
     entity.setDescription(domain.getDescription());
     entity.setPrice(domain.getPrice());
+    if (domain.getImages() != null) {
+      entity.setImages(
+          new ArrayList<>(domain.getImages().stream().map(ItemImageEntity::fromDomain).toList()));
+    }
     return entity;
   }
 

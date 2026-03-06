@@ -5,20 +5,16 @@ import dev.thiagooliveira.tablesplit.application.menu.dto.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.dto.ImageData;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class CreateItem {
 
   private final ImageStorage imageStorage;
-  private final ItemImageRepository itemImageRepository;
   private final ItemRepository itemRepository;
 
-  public CreateItem(
-      ImageStorage imageStorage,
-      ItemImageRepository itemImageRepository,
-      ItemRepository itemRepository) {
+  public CreateItem(ImageStorage imageStorage, ItemRepository itemRepository) {
     this.imageStorage = imageStorage;
-    this.itemImageRepository = itemImageRepository;
     this.itemRepository = itemRepository;
   }
 
@@ -31,9 +27,9 @@ public class CreateItem {
     item.setDescription(command.description());
     item.setCategoryId(command.categoryId());
     item.setPrice(command.price());
-    this.itemRepository.save(item);
+    item.setImages(new ArrayList<>());
 
-    if (command.images() != null) {
+    if (command.images() != null && command.images().newImages() != null) {
       for (ImageData i : command.images().newImages()) {
         var image = new ItemImage();
         image.setId(UUID.randomUUID());
@@ -41,8 +37,9 @@ public class CreateItem {
         image.setItemId(item.getId());
         image.setName(
             imageStorage.uploadItem(i, item.getRestaurantId(), item.getId(), image.getId()));
-        this.itemImageRepository.save(image);
+        item.getImages().add(image);
       }
     }
+    this.itemRepository.save(item);
   }
 }

@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.customer.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
@@ -15,7 +15,7 @@ public class CustomerMenuModel {
 
   public CustomerMenuModel(Restaurant restaurant, List<Category> categories, List<Item> items) {
     var symbol = CurrencyMapper.symbol(restaurant.getCurrency());
-    this.profileLink = String.format("/p/%s", restaurant.getSlug());
+    this.profileLink = String.format("/@%s", restaurant.getSlug());
     this.restaurantName = restaurant.getName();
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));
     items.forEach(i -> this.items.add(new ItemModel(i, symbol)));

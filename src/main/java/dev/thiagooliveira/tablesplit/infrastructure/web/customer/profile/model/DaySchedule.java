@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.profile.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 
 public class DaySchedule {
   private final String day;

@@ -257,8 +257,8 @@
               <h2 th:text="#{page.menu.item.all}">All items</h2>
               <p><span th:text="${menu.totalAmount}">8</span> <span th:text="#{page.menu.item.items}">items</span></p>
             </div>
-
-            <div class="menu-items-grid">
+            <p style="text-align: center; padding: 2rem;" th:if="${menu.items.isEmpty()}">Nenhum item cadastrado.</p>
+            <div class="menu-items-grid" th:if="${!menu.items.isEmpty()}">
               <!-- Item 1 -->
               <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}">
                 <div class="menu-item-image">

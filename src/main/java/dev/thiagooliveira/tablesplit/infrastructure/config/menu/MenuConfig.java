@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
-import dev.thiagooliveira.tablesplit.application.menu.ItemImageRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,19 +36,13 @@ public class MenuConfig {
 
   @Bean
   public UpdateItem updateItem(
-      GetItem getItem,
-      ImageStorage imageStorage,
-      ItemImageRepository itemImageRepository,
-      ItemRepository itemRepository) {
-    return new UpdateItem(getItem, imageStorage, itemImageRepository, itemRepository);
+      GetItem getItem, ImageStorage imageStorage, ItemRepository itemRepository) {
+    return new UpdateItem(getItem, imageStorage, itemRepository);
   }
 
   @Bean
-  public CreateItem createItem(
-      ImageStorage imageStorage,
-      ItemImageRepository itemImageRepository,
-      ItemRepository itemRepository) {
-    return new CreateItem(imageStorage, itemImageRepository, itemRepository);
+  public CreateItem createItem(ImageStorage imageStorage, ItemRepository itemRepository) {
+    return new CreateItem(imageStorage, itemRepository);
   }
 
   @Bean

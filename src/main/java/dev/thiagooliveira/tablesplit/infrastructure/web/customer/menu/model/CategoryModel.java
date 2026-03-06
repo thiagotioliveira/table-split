@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.customer.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;

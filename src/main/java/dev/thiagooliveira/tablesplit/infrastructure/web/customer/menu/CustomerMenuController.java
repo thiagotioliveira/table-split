@@ -1,9 +1,9 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.customer;
+package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.model.CustomerMenuModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/p")
+@RequestMapping
 public class CustomerMenuController {
 
   private final GetRestaurant getRestaurant;
@@ -25,7 +25,7 @@ public class CustomerMenuController {
     this.getItem = getItem;
   }
 
-  @GetMapping("/{slug}/menu")
+  @GetMapping("/@{slug}/menu")
   public String index(@PathVariable String slug, Model model) {
     var restaurant = getRestaurant.execute(slug).orElseThrow();
     var categories = getCategory.execute(restaurant.getId());

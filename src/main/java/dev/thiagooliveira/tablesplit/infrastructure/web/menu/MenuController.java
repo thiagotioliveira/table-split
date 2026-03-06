@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.domain.security.Context;
+import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.MenuModel;
@@ -26,6 +27,7 @@ public class MenuController {
   private final UpdateItem updateItem;
   private final CreateItem createItem;
   private final DeleteItem deleteItem;
+  private final TransactionalContext transactionalContext;
 
   public MenuController(
       Context context,
@@ -36,7 +38,8 @@ public class MenuController {
       GetItem getItem,
       UpdateItem updateItem,
       CreateItem createItem,
-      DeleteItem deleteItem) {
+      DeleteItem deleteItem,
+      TransactionalContext transactionalContext) {
     this.context = context;
     this.getCategory = getCategory;
     this.createCategory = createCategory;
@@ -46,6 +49,7 @@ public class MenuController {
     this.updateItem = updateItem;
     this.createItem = createItem;
     this.deleteItem = deleteItem;
+    this.transactionalContext = transactionalContext;
   }
 
   @GetMapping
@@ -83,14 +87,18 @@ public class MenuController {
   public String updateItem(
       @ModelAttribute UpdateItemModel updateItemModel, RedirectAttributes redirectAttributes) {
     if (updateItemModel.getId() == null) {
-      this.createItem.execute(
-          context.getRestaurant().getId(), updateItemModel.toCreateItemCommand());
+      this.transactionalContext.execute(
+          () ->
+              this.createItem.execute(
+                  context.getRestaurant().getId(), updateItemModel.toCreateItemCommand()));
       redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.created"));
     } else {
-      this.updateItem.execute(
-          context.getRestaurant().getId(),
-          updateItemModel.getId(),
-          updateItemModel.toUpdateItemCommand());
+      this.transactionalContext.execute(
+          () ->
+              this.updateItem.execute(
+                  context.getRestaurant().getId(),
+                  updateItemModel.getId(),
+                  updateItemModel.toUpdateItemCommand()));
       redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.updated"));
     }
     return "redirect:/menu";
