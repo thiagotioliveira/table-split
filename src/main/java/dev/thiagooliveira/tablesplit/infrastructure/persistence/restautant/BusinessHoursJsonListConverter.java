@@ -1,12 +1,12 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Collections;
 import java.util.List;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Converter
 public class BusinessHoursJsonListConverter

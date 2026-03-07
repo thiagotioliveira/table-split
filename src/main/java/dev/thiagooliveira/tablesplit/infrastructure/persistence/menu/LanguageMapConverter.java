@@ -1,11 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Map;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Converter
 public class LanguageMapConverter implements AttributeConverter<Map<Language, String>, String> {

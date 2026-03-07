@@ -17,6 +17,7 @@ public class CategoryEntity {
   private Integer numOrder;
 
   @Convert(converter = LanguageMapConverter.class)
+  @Column(columnDefinition = "TEXT")
   private Map<Language, String> name = new HashMap<>();
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)

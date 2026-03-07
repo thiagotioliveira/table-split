@@ -17,9 +17,11 @@ public class ItemEntity {
   private CategoryEntity category;
 
   @Convert(converter = LanguageMapConverter.class)
+  @Column(columnDefinition = "TEXT")
   private Map<Language, String> name = new HashMap<>();
 
   @Convert(converter = LanguageMapConverter.class)
+  @Column(columnDefinition = "TEXT")
   private Map<Language, String> description = new HashMap<>();
 
   private BigDecimal price;

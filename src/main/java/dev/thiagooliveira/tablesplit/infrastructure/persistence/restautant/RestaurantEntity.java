@@ -32,10 +32,11 @@ public class RestaurantEntity {
   private String address;
 
   @Convert(converter = CuisineTypeJsonListConverter.class)
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private List<CuisineType> cuisineType = new ArrayList<>();
 
   @Convert(converter = TagJsonListConverter.class)
+  @Column(columnDefinition = "TEXT")
   private List<Tag> tags = new ArrayList<>();
 
   @Column(nullable = false)
@@ -43,6 +44,7 @@ public class RestaurantEntity {
   private Language defaultLanguage;
 
   @Convert(converter = LanguageJsonListConverter.class)
+  @Column(columnDefinition = "TEXT")
   private List<Language> customerLanguages = new ArrayList<>();
 
   @Column(nullable = false)
@@ -55,6 +57,7 @@ public class RestaurantEntity {
   private String averagePrice;
 
   @Convert(converter = BusinessHoursJsonListConverter.class)
+  @Column(columnDefinition = "TEXT")
   private List<BusinessHours> days = new ArrayList<>();
 
   @Column(nullable = false)
