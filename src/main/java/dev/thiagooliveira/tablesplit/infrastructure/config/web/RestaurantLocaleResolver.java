@@ -1,0 +1,62 @@
+package dev.thiagooliveira.tablesplit.infrastructure.config.web;
+
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+public class RestaurantLocaleResolver extends SessionLocaleResolver {
+
+  private final GetRestaurant getRestaurant;
+  private static final Pattern SLUG_PATTERN = Pattern.compile("/@([a-zA-Z0-9.-]+)");
+
+  public RestaurantLocaleResolver(GetRestaurant getRestaurant) {
+    this.getRestaurant = getRestaurant;
+  }
+
+  @Override
+  public Locale resolveLocale(HttpServletRequest request) {
+    Locale requestedLocale = super.resolveLocale(request);
+    String slug = extractSlug(request);
+
+    if (slug == null) {
+      return requestedLocale;
+    }
+
+    return getRestaurant
+        .execute(slug)
+        .map(restaurant -> adjustLocale(requestedLocale, restaurant))
+        .orElse(requestedLocale);
+  }
+
+  private String extractSlug(HttpServletRequest request) {
+    String uri = request.getRequestURI();
+    Matcher matcher = SLUG_PATTERN.matcher(uri);
+    if (matcher.find()) {
+      return matcher.group(1);
+    }
+    return null;
+  }
+
+  Locale adjustLocale(Locale requestedLocale, Restaurant restaurant) {
+    boolean isSupported =
+        restaurant.getCustomerLanguages().stream()
+            .anyMatch(lang -> lang.name().equalsIgnoreCase(requestedLocale.getLanguage()));
+
+    if (isSupported) {
+      return requestedLocale;
+    }
+
+    // Fallback to default language
+    return Locale.forLanguageTag(restaurant.getDefaultLanguage().name());
+  }
+
+  @Override
+  public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+    super.setLocale(request, response, locale);
+  }
+}

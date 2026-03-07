@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import java.util.Locale;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,14 +8,19 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+  private final GetRestaurant getRestaurant;
+
+  public WebConfig(GetRestaurant getRestaurant) {
+    this.getRestaurant = getRestaurant;
+  }
+
   @Bean
   public LocaleResolver localeResolver() {
-    SessionLocaleResolver resolver = new SessionLocaleResolver();
+    RestaurantLocaleResolver resolver = new RestaurantLocaleResolver(getRestaurant);
     resolver.setDefaultLocale(Locale.ENGLISH);
     return resolver;
   }

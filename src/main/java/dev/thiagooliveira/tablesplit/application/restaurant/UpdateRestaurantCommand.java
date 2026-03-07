@@ -16,7 +16,7 @@ public record UpdateRestaurantCommand(
     String address,
     List<CuisineType> cuisineType,
     List<Tag> tags,
-    String defaultLanguage,
+    Language defaultLanguage,
     List<Language> customerLanguages,
     String currency,
     int serviceFee,

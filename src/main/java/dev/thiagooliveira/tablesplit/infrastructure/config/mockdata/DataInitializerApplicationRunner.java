@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.Resta
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -54,7 +55,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.getTags().add(Tag.RESERVATIONS);
     restaurant.getTags().add(Tag.GROUPS);
     restaurant.getTags().add(Tag.CARDS);
-    restaurant.setDefaultLanguage("pt-BR");
+    restaurant.setDefaultLanguage(Language.PT);
     restaurant.setCustomerLanguages(customerLanguages);
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);
@@ -118,105 +119,132 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
         restaurant.getId(), restaurant.getName(), restaurant.getCurrency(), customerLanguages);
 
     // Categorias
-    var catStarters = saveCategory(restaurant.getId(), 1, "Entradas", "Starters");
-    var catPrincipal = saveCategory(restaurant.getId(), 2, "Prato Principal", "Main Courses");
-    var catDesserts = saveCategory(restaurant.getId(), 3, "Sobremesas", "Desserts");
-    var catDrinks = saveCategory(restaurant.getId(), 4, "Bebidas", "Drinks");
+    var catStarters =
+        saveCategory(
+            restaurant.getId(), 1, Map.of(Language.PT, "Entradas", Language.EN, "Starters"));
+    var catPrincipal =
+        saveCategory(
+            restaurant.getId(),
+            2,
+            Map.of(Language.PT, "Prato Principal", Language.EN, "Main Courses"));
+    var catDesserts =
+        saveCategory(
+            restaurant.getId(), 3, Map.of(Language.PT, "Sobremesas", Language.EN, "Desserts"));
+    var catDrinks =
+        saveCategory(restaurant.getId(), 4, Map.of(Language.PT, "Bebidas", Language.EN, "Drinks"));
 
     // Itens - Entradas
     saveItem(
         catStarters,
-        "Batata-frita",
-        "French fries",
-        "Batatas selecionadas, cortadas e fritas até ficarem douradas e crocantes por fora, macias por dentro. Servidas quentinhas e levemente salgadas.",
-        "Selected potatoes, cut and fried until golden and crispy on the outside, soft on the inside. Served hot and lightly seasoned.",
+        Map.of(Language.PT, "Batata-frita", Language.EN, "French fries"),
+        Map.of(
+            Language.PT,
+            "Batatas selecionadas, cortadas e fritas até ficarem douradas e crocantes por fora, macias por dentro. Servidas quentinhas e levemente salgadas.",
+            Language.EN,
+            "Selected potatoes, cut and fried until golden and crispy on the outside, soft on the inside. Served hot and lightly seasoned."),
         new BigDecimal("10.00"));
 
     saveItem(
         catStarters,
-        "Bruschettas de Tomate",
-        "Tomato Bruschettas",
-        "Pão italiano tostado com tomates frescos, manjericão e azeite extra virgem.",
-        "Toasted Italian bread with fresh tomatoes, basil and extra virgin olive oil.",
+        Map.of(
+            Language.PT, "Bruschettas de Tomate"
+            //                , Language.EN, "Tomato Bruschettas"
+            ),
+        Map.of(
+            Language.PT,
+            "Pão italiano tostado com tomates frescos, manjericão e azeite extra virgem.",
+            Language.EN,
+            "Toasted Italian bread with fresh tomatoes, basil and extra virgin olive oil."),
         new BigDecimal("15.00"));
 
     // Itens - Prato Principal
     saveItem(
         catPrincipal,
-        "Filé Mignon ao Molho de Vinho",
-        "Filet Mignon with Wine Sauce",
-        "Medalhão de filé mignon grelhado, acompanhado de risoto de parmesão e molho de vinho tinto.",
-        "Grilled filet mignon medallion, accompanied by parmesan risotto and red wine sauce.",
+        Map.of(
+            Language.PT,
+            "Filé Mignon ao Molho de Vinho",
+            Language.EN,
+            "Filet Mignon with Wine Sauce"),
+        Map.of(
+            Language.PT,
+            "Medalhão de filé mignon grelhado, acompanhado de risoto de parmesão e molho de vinho tinto.",
+            Language.EN,
+            "Grilled filet mignon medallion, accompanied by parmesan risotto and red wine sauce."),
         new BigDecimal("45.00"));
 
     saveItem(
         catPrincipal,
-        "Bacalhau à Lagareiro",
-        "Codfish Lagareiro style",
-        "Posta de bacalhau assada com batatas a murro, alho, cebola e azeite.",
-        "Roasted cod fillet with punched potatoes, garlic, onion and olive oil.",
+        Map.of(Language.PT, "Bacalhau à Lagareiro", Language.EN, "Codfish Lagareiro style"),
+        Map.of(
+            Language.PT,
+            "Posta de bacalhau assada com batatas a murro, alho, cebola e azeite.",
+            Language.EN,
+            "Roasted cod fillet with punched potatoes, garlic, onion and olive oil."),
         new BigDecimal("38.00"));
 
     // Itens - Sobremesas
     saveItem(
         catDesserts,
-        "Petit Gâteau com Sorvete",
-        "Petit Gâteau with Ice Cream",
-        "Bolinho quente de chocolate com recheio cremoso, servido com sorvete de baunilha.",
-        "Warm chocolate cake with creamy filling, served with vanilla ice cream.",
+        Map.of(Language.PT, "Petit Gâteau com Sorvete", Language.EN, "Petit Gâteau with Ice Cream"),
+        Map.of(
+            Language.PT,
+            "Bolinho quente de chocolate com recheio cremoso, servido com sorvete de baunilha.",
+            Language.EN,
+            "Warm chocolate cake with creamy filling, served with vanilla ice cream."),
         new BigDecimal("22.00"));
 
     saveItem(
         catDesserts,
-        "Pudim de Leite Condensado",
-        "Condensed Milk Pudding",
-        "Pudim clássico e cremoso com calda de caramelo.",
-        "Classic and creamy pudding with caramel sauce.",
+        Map.of(Language.PT, "Pudim de Leite Condensado", Language.EN, "Condensed Milk Pudding"),
+        Map.of(
+            Language.PT,
+            "Pudim clássico e cremoso com calda de caramelo.",
+            Language.EN,
+            "Classic and creamy pudding with caramel sauce."),
         new BigDecimal("12.00"));
 
     // Itens - Bebidas
     saveItem(
         catDrinks,
-        "Suco de Laranja Natural",
-        "Natural Orange Juice",
-        "Suco de laranja preparado na hora com frutas selecionadas.",
-        "Freshly prepared orange juice with selected fruits.",
+        Map.of(Language.PT, "Suco de Laranja Natural", Language.EN, "Natural Orange Juice"),
+        Map.of(
+            Language.PT,
+            "Suco de laranja preparado na hora com frutas selecionadas.",
+            Language.EN,
+            "Freshly prepared orange juice with selected fruits."),
         new BigDecimal("8.00"));
 
     saveItem(
         catDrinks,
-        "Vinho Tinto Reserva",
-        "Reserva Red Wine",
-        "Vinho tinto seco de corpo médio, perfeito para acompanhar carnes vermelhas.",
-        "Medium-bodied dry red wine, perfect to accompany red meats.",
+        Map.of(Language.PT, "Vinho Tinto Reserva", Language.EN, "Reserva Red Wine"),
+        Map.of(
+            Language.PT,
+            "Vinho tinto seco de corpo médio, perfeito para acompanhar carnes vermelhas.",
+            Language.EN,
+            "Medium-bodied dry red wine, perfect to accompany red meats."),
         new BigDecimal("85.00"));
   }
 
-  private CategoryEntity saveCategory(UUID restaurantId, int order, String namePT, String nameEN) {
+  private CategoryEntity saveCategory(UUID restaurantId, int order, Map<Language, String> name) {
     var category = new CategoryEntity();
     category.setId(UUID.randomUUID());
     category.setRestaurantId(restaurantId);
     category.setNumOrder(order);
-    category.getName().put(Language.PT, namePT);
-    category.getName().put(Language.EN, nameEN);
+    category.setName(name);
 
     return this.categoryJpaRepository.save(category);
   }
 
   private void saveItem(
       CategoryEntity category,
-      String namePT,
-      String nameEN,
-      String descPT,
-      String descEN,
+      Map<Language, String> name,
+      Map<Language, String> description,
       BigDecimal price) {
     var item = new ItemEntity();
     item.setId(UUID.randomUUID());
     item.setCategory(category);
-    item.getName().put(Language.PT, namePT);
-    item.getName().put(Language.EN, nameEN);
-    item.getDescription().put(Language.PT, descPT);
-    item.getDescription().put(Language.EN, descEN);
+    item.setName(name);
+    item.setDescription(description);
     item.setPrice(price);
 
     this.itemJpaRepository.save(item);

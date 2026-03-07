@@ -39,7 +39,8 @@ public class RestaurantEntity {
   private List<Tag> tags = new ArrayList<>();
 
   @Column(nullable = false)
-  private String defaultLanguage;
+  @Enumerated(EnumType.STRING)
+  private Language defaultLanguage;
 
   @Convert(converter = LanguageJsonListConverter.class)
   private List<Language> customerLanguages = new ArrayList<>();
@@ -192,11 +193,11 @@ public class RestaurantEntity {
     this.cuisineType = cuisineType;
   }
 
-  public String getDefaultLanguage() {
+  public Language getDefaultLanguage() {
     return defaultLanguage;
   }
 
-  public void setDefaultLanguage(String defaultLanguage) {
+  public void setDefaultLanguage(Language defaultLanguage) {
     this.defaultLanguage = defaultLanguage;
   }
 

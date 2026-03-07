@@ -82,7 +82,7 @@ public class SettingsModel {
         restaurant.getTags() == null
             ? List.of()
             : restaurant.getTags().stream().map(Enum::name).toList();
-    this.defaultLanguage = restaurant.getDefaultLanguage();
+    this.defaultLanguage = restaurant.getDefaultLanguage().name();
     this.customerLanguages =
         restaurant.getCustomerLanguages() == null
             ? List.of()
@@ -123,7 +123,7 @@ public class SettingsModel {
         this.address,
         domainCuisineType,
         domainTags,
-        this.defaultLanguage,
+        Language.valueOf(this.defaultLanguage),
         domainLanguage,
         this.currency,
         this.serviceFee,
