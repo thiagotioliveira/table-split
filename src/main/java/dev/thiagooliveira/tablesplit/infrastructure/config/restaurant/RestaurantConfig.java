@@ -1,8 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
+import dev.thiagooliveira.tablesplit.application.restaurant.CreateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,13 +11,19 @@ import org.springframework.context.annotation.Configuration;
 public class RestaurantConfig {
 
   @Bean
-  public GetRestaurant getRestaurant(RestaurantRepositoryAdapter restaurantRepositoryAdapter) {
-    return new GetRestaurant(restaurantRepositoryAdapter);
+  public GetRestaurant getRestaurant(RestaurantRepository restaurantRepository) {
+    return new GetRestaurant(restaurantRepository);
   }
 
   @Bean
   public UpdateRestaurant updateRestaurant(
-      GetRestaurant getRestaurant, RestaurantRepositoryAdapter restaurantRepositoryAdapter) {
-    return new UpdateRestaurant(getRestaurant, restaurantRepositoryAdapter);
+      GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
+    return new UpdateRestaurant(getRestaurant, restaurantRepository);
+  }
+
+  @Bean
+  public CreateRestaurant createRestaurant(
+      GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
+    return new CreateRestaurant(getRestaurant, restaurantRepository);
   }
 }

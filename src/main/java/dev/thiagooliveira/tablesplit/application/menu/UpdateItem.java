@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
-import dev.thiagooliveira.tablesplit.application.menu.dto.ImageData;
-import dev.thiagooliveira.tablesplit.application.menu.dto.UpdateItemCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
+import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.ArrayList;
 import java.util.UUID;

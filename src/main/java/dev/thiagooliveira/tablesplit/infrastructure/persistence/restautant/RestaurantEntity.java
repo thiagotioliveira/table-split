@@ -15,6 +15,9 @@ public class RestaurantEntity {
   @Id private UUID id;
 
   @Column(nullable = false)
+  private UUID accountId;
+
+  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
@@ -69,6 +72,7 @@ public class RestaurantEntity {
   public Restaurant toDomain() {
     var domain = new Restaurant();
     domain.setId(this.id);
+    domain.setAccountId(this.accountId);
     domain.setName(this.name);
     domain.setSlug(this.slug);
     domain.setDescription(this.description);
@@ -92,6 +96,7 @@ public class RestaurantEntity {
   public static RestaurantEntity fromDomain(Restaurant domain) {
     var entity = new RestaurantEntity();
     entity.setId(domain.getId());
+    entity.setAccountId(domain.getAccountId());
     entity.setName(domain.getName());
     entity.setSlug(domain.getSlug());
     entity.setDescription(domain.getDescription());
@@ -130,6 +135,14 @@ public class RestaurantEntity {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 
   public String getName() {

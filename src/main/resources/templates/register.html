@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Conta - SplitTable</title>
+  <title th:text="#{app.title}">Criar Conta - TableSplit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --background: #FFFBF5;
@@ -77,20 +80,14 @@
     .auth-main {
       flex: 1;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem 1.5rem 2rem;
     }
 
     .auth-container {
       width: 100%;
-      max-width: 480px;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      max-width: 560px;
     }
 
     /* Card */
@@ -135,17 +132,19 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: pointer;
     }
 
     .step-number {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       font-weight: 600;
+      transition: all 0.3s ease;
     }
 
     .step.active .step-number {
@@ -164,11 +163,16 @@
     }
 
     .step-label {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       font-weight: 500;
+      transition: color 0.3s ease;
     }
 
     .step.active .step-label {
+      color: var(--foreground);
+    }
+
+    .step.completed .step-label {
       color: var(--foreground);
     }
 
@@ -180,10 +184,26 @@
       width: 40px;
       height: 2px;
       background: var(--border);
+      transition: background 0.3s ease;
     }
 
-    .step.completed + .step-divider {
+    .step-divider.completed {
       background: var(--success);
+    }
+
+    /* Form panels */
+    .form-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .form-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     /* Form */
@@ -227,7 +247,7 @@
 
     .form-input {
       width: 100%;
-      padding: 0.875rem 1rem 0.875rem 3rem;
+      padding: 0.875rem 1rem;
       font-size: 1rem;
       border: 2px solid var(--border);
       border-radius: var(--radius);
@@ -236,8 +256,8 @@
       transition: all 0.2s ease;
     }
 
-    .form-input.no-icon {
-      padding-left: 1rem;
+    .form-input.with-icon {
+      padding-left: 3rem;
     }
 
     .form-input:focus {
@@ -249,6 +269,21 @@
 
     .form-input::placeholder {
       color: var(--muted-foreground);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select.form-input {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 20px;
+      padding-right: 2.5rem;
     }
 
     .password-toggle {
@@ -292,25 +327,10 @@
       transition: all 0.3s ease;
     }
 
-    .strength-fill.weak {
-      width: 25%;
-      background: var(--error);
-    }
-
-    .strength-fill.fair {
-      width: 50%;
-      background: var(--warning, #F59E0B);
-    }
-
-    .strength-fill.good {
-      width: 75%;
-      background: #84CC16;
-    }
-
-    .strength-fill.strong {
-      width: 100%;
-      background: var(--success);
-    }
+    .strength-fill.weak { width: 25%; background: var(--error); }
+    .strength-fill.fair { width: 50%; background: #F59E0B; }
+    .strength-fill.good { width: 75%; background: #84CC16; }
+    .strength-fill.strong { width: 100%; background: var(--success); }
 
     .strength-text {
       font-size: 0.75rem;
@@ -365,15 +385,234 @@
       text-decoration: underline;
     }
 
-    /* Submit button */
-    .submit-btn {
+    /* Section title */
+    .form-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-section-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+    }
+
+    /* Logo upload */
+    .logo-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 16px;
+      background: var(--muted);
+      border: 3px dashed var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .logo-preview:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    .logo-preview.has-image {
+      border-style: solid;
+      border-color: var(--primary);
+    }
+
+    .logo-preview img {
       width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-preview svg {
+      width: 28px;
+      height: 28px;
+      color: var(--muted-foreground);
+      margin-bottom: 0.25rem;
+    }
+
+    .logo-preview span {
+      font-size: 0.6875rem;
+      color: var(--muted-foreground);
+    }
+
+    .logo-preview .remove-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 24px;
+      height: 24px;
+      background: var(--error);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .logo-preview.has-image:hover .remove-btn {
+      opacity: 1;
+    }
+
+    .logo-preview .remove-btn svg {
+      width: 12px;
+      height: 12px;
+      margin: 0;
+      color: white;
+    }
+
+    .logo-upload input {
+      display: none;
+    }
+
+    .logo-upload-hint {
+      font-size: 0.6875rem;
+      color: var(--muted-foreground);
+      margin-top: 0.5rem;
+    }
+
+    /* Cuisine tags */
+    .cuisine-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .cuisine-tag {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.8125rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cuisine-tag:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    .cuisine-tag.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Table setup */
+    .table-setup {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--muted);
+      border-radius: var(--radius);
+    }
+
+    .table-counter {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .counter-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+      transition: all 0.2s ease;
+    }
+
+    .counter-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .counter-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .table-info {
+      flex: 1;
+    }
+
+    .table-info strong {
+      font-size: 0.875rem;
+      color: var(--foreground);
+    }
+
+    .table-info p {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Service fee */
+    .service-fee-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .service-fee-input {
+      width: 100px;
+      text-align: center;
+    }
+
+    .service-fee-label {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Buttons */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      flex: 1;
       padding: 1rem;
       font-size: 1rem;
       font-weight: 600;
-      color: white;
-      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
-      border: none;
       border-radius: var(--radius);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -381,35 +620,52 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      font-family: inherit;
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-secondary {
+      background: var(--muted);
+      color: var(--foreground);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
+      border: none;
       box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
     }
 
-    .submit-btn:hover {
+    .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
     }
 
-    .submit-btn:disabled {
+    .btn-primary:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
     }
 
-    .submit-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-
     /* Loading */
-    .submit-btn.loading .btn-content {
+    .btn.loading .btn-content {
       display: none;
     }
 
-    .submit-btn .spinner {
+    .btn .spinner {
       display: none;
     }
 
-    .submit-btn.loading .spinner {
+    .btn.loading .spinner {
       display: block;
       width: 20px;
       height: 20px;
@@ -462,6 +718,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
+      font-family: inherit;
     }
 
     .social-btn:hover {
@@ -472,67 +729,6 @@
     .social-btn svg {
       width: 20px;
       height: 20px;
-    }
-
-    /* Footer */
-    .auth-card-footer {
-      padding: 1.5rem 2rem;
-      background: var(--muted);
-      text-align: center;
-      border-top: 1px solid var(--border);
-    }
-
-    .auth-card-footer p {
-      font-size: 0.875rem;
-      color: var(--muted-foreground);
-    }
-
-    .auth-card-footer a {
-      color: var(--primary);
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .auth-card-footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Benefits */
-    .benefits {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .benefits-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--muted-foreground);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    .benefit-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    .benefit-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8125rem;
-      color: var(--foreground);
-    }
-
-    .benefit-item svg {
-      width: 16px;
-      height: 16px;
-      color: var(--success);
-      flex-shrink: 0;
     }
 
     /* Alert */
@@ -561,7 +757,29 @@
       display: none;
     }
 
-    /* Page footer */
+    /* Footer */
+    .auth-card-footer {
+      padding: 1.5rem 2rem;
+      background: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .auth-card-footer p {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    .auth-card-footer a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .auth-card-footer a:hover {
+      text-decoration: underline;
+    }
+
     .auth-footer {
       padding: 1.5rem;
       text-align: center;
@@ -578,8 +796,13 @@
         grid-template-columns: 1fr;
       }
       
-      .benefit-list {
-        grid-template-columns: 1fr;
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+      
+      .table-setup {
+        flex-direction: column;
+        text-align: center;
       }
       
       .steps {
@@ -589,6 +812,39 @@
       .step-divider {
         display: none;
       }
+    }
+
+    /* Slug Input */
+    .slug-input-group {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .slug-prefix {
+      padding: 0.625rem 0.75rem;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+    }
+
+    .slug-input-group .form-input {
+      border-radius: 0 var(--radius) var(--radius) 0;
+      flex: 1;
+    }
+
+    .slug-hint {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      margin-top: 0.375rem;
+    }
+
+    .slug-hint.error {
+      color: var(--error);
     }
   </style>
 </head>
@@ -603,7 +859,7 @@
           <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
         </svg>
       </div>
-      <span class="logo-text">SplitTable</span>
+      <span class="logo-text" th:text="#{app.name}">TableSplit</span>
     </a>
   </header>
 
@@ -612,19 +868,19 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-card-header">
-          <h1>Crie sua conta</h1>
-          <p>Comece a usar o SplitTable gratuitamente</p>
+          <h1 id="formTitle">Crie sua conta</h1>
+          <p id="formSubtitle">Comece a usar o TableSplit gratuitamente</p>
         </div>
 
         <div class="auth-card-body">
           <!-- Steps indicator -->
           <div class="steps">
-            <div class="step active">
-              <span class="step-number">1</span>
+            <div class="step active" id="step1Indicator" onclick="goToStep(1)">
+              <span class="step-number" id="step1Number">1</span>
               <span class="step-label">Conta</span>
             </div>
-            <div class="step-divider"></div>
-            <div class="step pending">
+            <div class="step-divider" id="stepDivider"></div>
+            <div class="step pending" id="step2Indicator">
               <span class="step-number">2</span>
               <span class="step-label">Restaurante</span>
             </div>
@@ -640,199 +896,315 @@
             <span id="errorMessage">Ocorreu um erro. Tente novamente.</span>
           </div>
 
-          <form onsubmit="handleRegister(event)">
-            <div class="form-row">
-              <div class="form-group" id="firstNameGroup">
-                <label for="firstName">Nome</label>
+          <form th:action="@{'/register'}" method="post" th:object="${form}">
+            <!-- STEP 1: Account -->
+            <div class="form-panel active" id="step1Panel">
+              <div class="form-row">
+                <div class="form-group" id="firstNameGroup">
+                  <label for="firstName">Nome</label>
+                  <div class="input-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <input type="text" id="firstName" class="form-input with-icon" placeholder="Seu nome" autocomplete="given-name" required
+                      th:field="*{user.firstName}">
+                  </div>
+                  <p class="form-error">Nome é obrigatório</p>
+                </div>
+
+                <div class="form-group" id="lastNameGroup">
+                  <label for="lastName">Sobrenome</label>
+                  <input type="text" id="lastName" class="form-input" placeholder="Seu sobrenome" autocomplete="family-name" required
+                         th:field="*{user.lastName}">
+                  <p class="form-error">Sobrenome é obrigatório</p>
+                </div>
+              </div>
+
+              <div class="form-group" id="emailGroup">
+                <label for="email">Email</label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                   </svg>
-                  <input 
-                    type="text" 
-                    id="firstName" 
-                    class="form-input" 
-                    placeholder="Seu nome"
-                    autocomplete="given-name"
-                    required
-                  >
+                  <input type="email" id="email" class="form-input with-icon" placeholder="seu@email.com" autocomplete="email" required
+                         th:field="*{user.email}">
                 </div>
-                <p class="form-error">Nome é obrigatório</p>
+                <p class="form-error">Email inválido</p>
               </div>
 
-              <div class="form-group" id="lastNameGroup">
-                <label for="lastName">Sobrenome</label>
+              <div class="form-group" id="userPhoneGroup">
+                <label for="userPhone">Telefone <span class="optional">(opcional)</span></label>
                 <div class="input-wrapper">
-                  <input 
-                    type="text" 
-                    id="lastName" 
-                    class="form-input no-icon" 
-                    placeholder="Seu sobrenome"
-                    autocomplete="family-name"
-                    required
-                    style="padding-left: 1rem;"
-                  >
-                </div>
-                <p class="form-error">Sobrenome é obrigatório</p>
-              </div>
-            </div>
-
-            <div class="form-group" id="emailGroup">
-              <label for="email">Email</label>
-              <div class="input-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect width="20" height="16" x="2" y="4" rx="2"/>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
-                <input 
-                  type="email" 
-                  id="email" 
-                  class="form-input" 
-                  placeholder="seu@email.com"
-                  autocomplete="email"
-                  required
-                >
-              </div>
-              <p class="form-error">Email inválido</p>
-            </div>
-
-            <div class="form-group" id="phoneGroup">
-              <label for="phone">Telefone <span class="optional">(opcional)</span></label>
-              <div class="input-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                </svg>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  class="form-input" 
-                  placeholder="(11) 99999-9999"
-                  autocomplete="tel"
-                >
-              </div>
-            </div>
-
-            <div class="form-group" id="passwordGroup">
-              <label for="password">Senha</label>
-              <div class="input-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <input 
-                  type="password" 
-                  id="password" 
-                  class="form-input" 
-                  placeholder="Mínimo 8 caracteres"
-                  autocomplete="new-password"
-                  required
-                  oninput="checkPasswordStrength()"
-                >
-                <button type="button" class="password-toggle" onclick="togglePassword('password')">
-                  <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                    <circle cx="12" cy="12" r="3"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                   </svg>
+                  <input type="tel" id="userPhone" class="form-input with-icon" placeholder="(11) 99999-9999" autocomplete="tel"
+                         th:field="*{user.phone}">
+                </div>
+              </div>
+
+              <div class="form-group" id="passwordGroup">
+                <label for="password">Senha</label>
+                <div class="input-wrapper">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <input type="password" id="password" class="form-input with-icon" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required oninput="checkPasswordStrength()"
+                         th:field="*{user.password}">
+                  <button type="button" class="password-toggle" onclick="togglePassword('password', 'eyeIcon1')">
+                    <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="password-strength">
+                  <div class="strength-bar">
+                    <div class="strength-fill" id="strengthFill"></div>
+                  </div>
+                  <p class="strength-text" id="strengthText">Use letras, números e símbolos</p>
+                </div>
+                <p class="form-error">Senha deve ter no mínimo 8 caracteres</p>
+              </div>
+
+              <div class="form-group" id="confirmPasswordGroup">
+                <label for="confirmPassword">Confirmar senha</label>
+                <div class="input-wrapper">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <input type="password" id="confirmPassword" class="form-input with-icon" placeholder="Digite a senha novamente" autocomplete="new-password" required>
+                  <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'eyeIcon2')">
+                    <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <p class="form-error">As senhas não conferem</p>
+              </div>
+
+              <div class="terms-check" th:if="${false}">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                  Eu concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.
+                </label>
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="goToStep(2)">
+                <span class="btn-content">
+                  Dados do Restaurante
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/>
+                    <path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="divider" th:if="${false}">
+                <span>ou cadastre-se com</span>
+              </div>
+
+              <button type="button" class="social-btn" onclick="registerWithGoogle()" th:if="${false}">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Cadastrar com Google
+              </button>
+            </div>
+
+            <!-- STEP 2: Restaurant -->
+            <div class="form-panel" id="step2Panel">
+              <!-- Logo upload -->
+              <div class="logo-upload" th:if="${false}">
+                <label class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" x2="12" y1="3" y2="15"/>
+                  </svg>
+                  <span>Adicionar logo</span>
+                  <button type="button" class="remove-btn" onclick="removeLogo(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 6 6 18"/>
+                      <path d="m6 6 12 12"/>
+                    </svg>
+                  </button>
+                </label>
+                <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
+                <p class="logo-upload-hint">JPG, PNG ou SVG. Máximo 2MB.</p>
+              </div>
+
+              <!-- Basic info -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                    <path d="M7 2v20"/>
+                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                  </svg>
+                  Informações básicas
+                </h3>
+
+                <div class="form-group" id="restaurantNameGroup">
+                  <label for="restaurantName">Nome do restaurante</label>
+                  <input type="text" id="restaurantName" class="form-input" placeholder="Ex: Cantina Bella Italia" required
+                         th:field="*{restaurant.name}">
+                  <p class="form-error">Nome do restaurante é obrigatório</p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="restaurantSlug" th:text="#{page.settings.form.restaurant.slug}">Id *</label>
+                  <div class="slug-input-group">
+                    <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.com/</span>
+                    <input type="text" id="restaurantSlug" class="form-input" th:field="*{restaurant.slug}"
+                           th:placeholder="#{page.settings.form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
+                  </div>
+                  <p class="slug-hint" id="slugHint" th:text="#{page.settings.form.restaurant.slug.hint}">Use only lowercase letters,
+                    numbers, and underscores (_) or periods (.).</p>
+                  <div th:if="${#fields.hasErrors('restaurant.slug')}" th:errors="*{restaurant.slug}" style="color:red"></div>
+                </div>
+
+                <div class="form-group">
+                  <label for="description">Descrição <span class="optional">(opcional)</span></label>
+                  <textarea id="description" class="form-input" placeholder="Uma breve descrição do seu restaurante..." rows="3"
+                            th:field="*{restaurant.description}"></textarea>
+                </div>
+
+                <div class="form-group" th:if="${false}">
+                  <label>Tipo de cozinha</label>
+                  <div class="cuisine-tags" id="cuisineTags">
+                    <button type="button" class="cuisine-tag" data-value="brasileira">🇧🇷 Brasileira</button>
+                    <button type="button" class="cuisine-tag" data-value="italiana">🇮🇹 Italiana</button>
+                    <button type="button" class="cuisine-tag" data-value="japonesa">🇯🇵 Japonesa</button>
+                    <button type="button" class="cuisine-tag" data-value="mexicana">🇲🇽 Mexicana</button>
+                    <button type="button" class="cuisine-tag" data-value="arabe">🇸🇦 Árabe</button>
+                    <button type="button" class="cuisine-tag" data-value="hamburgueria">🍔 Hamburgueria</button>
+                    <button type="button" class="cuisine-tag" data-value="pizzaria">🍕 Pizzaria</button>
+                    <button type="button" class="cuisine-tag" data-value="churrascaria">🥩 Churrascaria</button>
+                    <button type="button" class="cuisine-tag" data-value="bar">🍺 Bar</button>
+                    <button type="button" class="cuisine-tag" data-value="cafeteria">☕ Cafeteria</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Contato e localização
+                </h3>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="restaurantPhone">Telefone</label>
+                    <input type="tel" id="restaurantPhone" class="form-input" placeholder="(11) 99999-9999"
+                           th:field="*{restaurant.phone}">
+                  </div>
+                  <div class="form-group">
+                    <label for="website">Website <span class="optional">(opcional)</span></label>
+                    <input type="tel" id="website" class="form-input" placeholder="(11) 99999-9999"
+                           th:field="*{restaurant.website}">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="restaurant-email">E-mail</label>
+                  <input type="email" id="restaurant-email" class="form-input" placeholder="restaurant@gmail.com"
+                         th:field="*{restaurant.email}">
+                </div>
+
+                <div class="form-group">
+                  <label for="address">Endereço</label>
+                  <input type="text" id="address" class="form-input" placeholder="Rua, número - Bairro, Cidade"
+                         th:field="*{restaurant.address}">
+                </div>
+              </div>
+
+              <!-- Setup -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <path d="M3 9h18"/>
+                    <path d="M9 21V9"/>
+                  </svg>
+                  Configuração inicial
+                </h3>
+
+                <div class="form-group" th:if="${false}">
+                  <label>Quantas mesas você tem?</label>
+                  <div class="table-setup">
+                    <div class="table-counter">
+                      <button type="button" class="counter-btn" onclick="updateTables(-1)">−</button>
+                      <span class="counter-value" id="tableCount">10</span>
+                      <button type="button" class="counter-btn" onclick="updateTables(1)">+</button>
+                    </div>
+                    <div class="table-info">
+                      <strong>mesas</strong>
+                      <p>Você poderá alterar depois</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="currency">Moeda</label>
+                    <select id="currency" class="form-input" th:field="*{restaurant.currency}">
+                      <option value="EUR">€ - Euro</option>
+                      <option value="BRL">R$ - Real Brasileiro</option>
+                      <option value="USD" th:if="${false}">$ - Dólar Americano</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="defaultLanguage">Languages</label>
+                    <select id="defaultLanguage" class="form-input" th:field="*{restaurant.defaultLanguage}">
+                      <option value="EN" selected>English (US)</option>
+                      <option value="PT">Português (Brasil)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="serviceFee">Taxa de serviço</label>
+                    <div class="service-fee-group">
+                      <input type="number" id="serviceFee" class="form-input service-fee-input" value="10" min="0" max="30"
+                             th:field="*{restaurant.serviceFee}">
+                      <span class="service-fee-label">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                  </svg>
+                  Voltar
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                  <span class="btn-content">
+                    Concluir Cadastro
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  <div class="spinner"></div>
                 </button>
               </div>
-              <div class="password-strength">
-                <div class="strength-bar">
-                  <div class="strength-fill" id="strengthFill"></div>
-                </div>
-                <p class="strength-text" id="strengthText">Use letras, números e símbolos</p>
-              </div>
-              <p class="form-error">Senha deve ter no mínimo 8 caracteres</p>
             </div>
-
-            <div class="form-group" id="confirmPasswordGroup">
-              <label for="confirmPassword">Confirmar senha</label>
-              <div class="input-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <input 
-                  type="password" 
-                  id="confirmPassword" 
-                  class="form-input" 
-                  placeholder="Digite a senha novamente"
-                  autocomplete="new-password"
-                  required
-                >
-                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
-                  <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-              <p class="form-error">As senhas não conferem</p>
-            </div>
-
-            <div class="terms-check">
-              <input type="checkbox" id="terms" required>
-              <label for="terms">
-                Eu concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a> do SplitTable.
-              </label>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">
-              <span class="btn-content">
-                Criar conta
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14"/>
-                  <path d="m12 5 7 7-7 7"/>
-                </svg>
-              </span>
-              <div class="spinner"></div>
-            </button>
           </form>
-
-          <div class="divider">
-            <span>ou cadastre-se com</span>
-          </div>
-
-          <button class="social-btn" onclick="registerWithGoogle()">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Cadastrar com Google
-          </button>
-
-          <!-- Benefits -->
-          <div class="benefits">
-            <p class="benefits-title">O que você ganha</p>
-            <div class="benefit-list">
-              <div class="benefit-item">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg>
-                <span>Cardápio digital grátis</span>
-              </div>
-              <div class="benefit-item">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg>
-                <span>QR Codes ilimitados</span>
-              </div>
-              <div class="benefit-item">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg>
-                <span>Divisão de conta automática</span>
-              </div>
-              <div class="benefit-item">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg>
-                <span>Pedidos em tempo real</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="auth-card-footer">
@@ -844,72 +1216,105 @@
 
   <!-- Footer -->
   <footer class="auth-footer">
-    <p>&copy; 2026 SplitTable. Todos os direitos reservados.</p>
+    <p th:text="#{app.footer}">&copy; 2026 TableSplit. All rights reserved.</p>
   </footer>
 
+  <script th:inline="javascript">
+    // Business Hours functions
+    const i18n = {
+      slugHint: /*[[#{page.settings.form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
+      slugInvalid: /*[[#{page.settings.form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
+      slugLength: /*[[#{page.settings.form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
+      domain: /*[[#{app.domain}]]*/ 'tablesplit.com'
+    };
+  </script>
+
   <script>
-    function togglePassword(inputId) {
-      const input = document.getElementById(inputId);
-      const eyeIcon = document.getElementById(inputId === 'password' ? 'eyeIcon1' : 'eyeIcon2');
-      
-      if (input.type === 'password') {
-        input.type = 'text';
-        eyeIcon.innerHTML = `
-          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
-          <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
-          <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
-          <line x1="2" x2="22" y1="2" y2="22"/>
-        `;
+    // Slug validation
+    function validateSlug(input) {
+      const value = input.value;
+      const hint = document.getElementById('slugHint');
+      const validPattern = /^[a-z0-9_]*$/;
+
+      // Auto-format: lowercase, replace spaces/hyphens with underscore
+      let formatted = value.toLowerCase()
+              .replace(/\s+/g, '_')
+              .replace(/-/g, '_')
+              .replace(/[^a-z0-9_]/g, '');
+
+      if (formatted !== value) {
+        input.value = formatted;
+      }
+
+      if (formatted.length === 0) {
+        hint.textContent = i18n.slugHint;
+        hint.classList.remove('error');
+      } else if (!validPattern.test(formatted)) {
+        hint.textContent = i18n.slugInvalid;
+        hint.classList.add('error');
+      } else if (formatted.length < 3) {
+        hint.textContent = i18n.slugLength;
+        hint.classList.add('error');
       } else {
-        input.type = 'password';
-        eyeIcon.innerHTML = `
-          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-          <circle cx="12" cy="12" r="3"/>
-        `;
+        hint.textContent = i18n.domain + '/' + formatted;
+        hint.classList.remove('error');
       }
     }
 
-    function checkPasswordStrength() {
-      const password = document.getElementById('password').value;
-      const fill = document.getElementById('strengthFill');
-      const text = document.getElementById('strengthText');
-      
-      let strength = 0;
-      
-      if (password.length >= 8) strength++;
-      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
-      if (password.match(/\d/)) strength++;
-      if (password.match(/[^a-zA-Z\d]/)) strength++;
-      
-      fill.className = 'strength-fill';
-      
-      if (strength === 0) {
-        fill.classList.add('');
-        text.textContent = 'Use letras, números e símbolos';
-      } else if (strength === 1) {
-        fill.classList.add('weak');
-        text.textContent = 'Senha fraca';
-      } else if (strength === 2) {
-        fill.classList.add('fair');
-        text.textContent = 'Senha razoável';
-      } else if (strength === 3) {
-        fill.classList.add('good');
-        text.textContent = 'Senha boa';
-      } else {
-        fill.classList.add('strong');
-        text.textContent = 'Senha forte!';
+    let currentStep = 1;
+    let tableCount = 10;
+    let selectedCuisines = [];
+    let logoFile = null;
+
+    // Navigation between steps
+    function goToStep(step) {
+      if (step === 2) {
+        // Validate step 1 before proceeding
+        if (!validateStep1()) return;
       }
+
+      currentStep = step;
+      
+      // Update panels
+      document.getElementById('step1Panel').classList.toggle('active', step === 1);
+      document.getElementById('step2Panel').classList.toggle('active', step === 2);
+      
+      // Update step indicators
+      const step1 = document.getElementById('step1Indicator');
+      const step2 = document.getElementById('step2Indicator');
+      const divider = document.getElementById('stepDivider');
+      const step1Number = document.getElementById('step1Number');
+      
+      if (step === 1) {
+        step1.className = 'step active';
+        step1Number.innerHTML = '1';
+        step2.className = 'step pending';
+        divider.className = 'step-divider';
+        document.getElementById('formTitle').textContent = 'Crie sua conta';
+        document.getElementById('formSubtitle').textContent = 'Comece a usar o TableSplit gratuitamente';
+      } else {
+        step1.className = 'step completed';
+        step1Number.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6 9 17l-5-5"/></svg>';
+        step2.className = 'step active';
+        divider.className = 'step-divider completed';
+        document.getElementById('formTitle').textContent = 'Configure seu restaurante';
+        document.getElementById('formSubtitle').textContent = 'Essas informações aparecerão para seus clientes';
+      }
+      
+      // Hide error alert
+      document.getElementById('errorAlert').classList.add('hidden');
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function handleRegister(event) {
-      event.preventDefault();
-      
+    function validateStep1() {
       const firstName = document.getElementById('firstName').value.trim();
       const lastName = document.getElementById('lastName').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
-      const terms = document.getElementById('terms').checked;
+      //const terms = document.getElementById('terms').checked;
       
       // Reset errors
       document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
@@ -942,33 +1347,210 @@
         hasError = true;
       }
       
-      if (!terms) {
-        document.getElementById('errorMessage').textContent = 'Você deve aceitar os termos de uso.';
-        document.getElementById('errorAlert').classList.remove('hidden');
-        hasError = true;
-      }
+      // if (!terms) {
+      //   document.getElementById('errorMessage').textContent = 'Você deve aceitar os termos de uso.';
+      //   document.getElementById('errorAlert').classList.remove('hidden');
+      //   hasError = true;
+      // }
       
-      if (hasError) return;
-      
-      // Show loading
-      const btn = document.getElementById('submitBtn');
-      btn.classList.add('loading');
-      btn.disabled = true;
-      
-      // Simulate API call
-      setTimeout(() => {
-        btn.classList.remove('loading');
-        btn.disabled = false;
-        
-        // Success - redirect to restaurant setup (step 2)
-        // window.location.href = 'register-restaurant.html';
-        alert('Conta criada! Próximo passo: configurar seu restaurante.');
-      }, 1500);
+      return !hasError;
     }
 
-    function registerWithGoogle() {
-      alert('Redirecionando para cadastro com Google...');
+    // Password visibility toggle
+    function togglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = `
+          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+          <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+          <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+          <line x1="2" x2="22" y1="2" y2="22"/>
+        `;
+      } else {
+        input.type = 'password';
+        icon.innerHTML = `
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        `;
+      }
     }
+
+    // Password strength
+    function checkPasswordStrength() {
+      const password = document.getElementById('password').value;
+      const fill = document.getElementById('strengthFill');
+      const text = document.getElementById('strengthText');
+      
+      let strength = 0;
+      
+      if (password.length >= 8) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/\d/)) strength++;
+      if (password.match(/[^a-zA-Z\d]/)) strength++;
+      
+      fill.className = 'strength-fill';
+      
+      if (strength === 0) {
+        text.textContent = 'Use letras, números e símbolos';
+      } else if (strength === 1) {
+        fill.classList.add('weak');
+        text.textContent = 'Senha fraca';
+      } else if (strength === 2) {
+        fill.classList.add('fair');
+        text.textContent = 'Senha razoável';
+      } else if (strength === 3) {
+        fill.classList.add('good');
+        text.textContent = 'Senha boa';
+      } else {
+        fill.classList.add('strong');
+        text.textContent = 'Senha forte!';
+      }
+    }
+
+    // Cuisine tags
+    document.querySelectorAll('.cuisine-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        const value = this.dataset.value;
+        
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          selectedCuisines = selectedCuisines.filter(c => c !== value);
+        } else {
+          this.classList.add('selected');
+          selectedCuisines.push(value);
+        }
+      });
+    });
+
+    // Table counter
+    function updateTables(delta) {
+      tableCount = Math.max(1, Math.min(100, tableCount + delta));
+      document.getElementById('tableCount').textContent = tableCount;
+    }
+    /*
+        // Logo upload
+        function handleLogoUpload(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          if (file.size > 2 * 1024 * 1024) {
+            alert('O arquivo deve ter no máximo 2MB');
+            return;
+          }
+
+          logoFile = file;
+          const reader = new FileReader();
+
+          reader.onload = function(e) {
+            const preview = document.getElementById('logoPreview');
+            preview.innerHTML = `
+              <img src="${e.target.result}" alt="Logo">
+              <button type="button" class="remove-btn" onclick="removeLogo(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            `;
+            preview.classList.add('has-image');
+          };
+
+          reader.readAsDataURL(file);
+        }
+
+        function removeLogo(event) {
+          event.stopPropagation();
+          logoFile = null;
+          const preview = document.getElementById('logoPreview');
+          preview.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" x2="12" y1="3" y2="15"/>
+            </svg>
+            <span>Adicionar logo</span>
+            <button type="button" class="remove-btn" onclick="removeLogo(event)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          `;
+          preview.classList.remove('has-image');
+          document.getElementById('logoInput').value = '';
+        }
+
+        // Submit form
+        function handleSubmit(event) {
+          event.preventDefault();
+
+          // Make sure we're on step 2
+          if (currentStep !== 2) {
+            goToStep(2);
+            return;
+          }
+
+          const restaurantName = document.getElementById('restaurantName').value.trim();
+
+          // Validate restaurant name
+          document.getElementById('restaurantNameGroup').classList.remove('error');
+
+          if (!restaurantName) {
+            document.getElementById('restaurantNameGroup').classList.add('error');
+            return;
+          }
+
+          // Collect all data from both steps
+          const formData = {
+            // Step 1 - Account
+            user: {
+              firstName: document.getElementById('firstName').value.trim(),
+              lastName: document.getElementById('lastName').value.trim(),
+              email: document.getElementById('email').value.trim(),
+              phone: document.getElementById('userPhone').value.trim(),
+              password: document.getElementById('password').value
+            },
+            // Step 2 - Restaurant
+            restaurant: {
+              name: restaurantName,
+              description: document.getElementById('description').value.trim(),
+              cuisines: selectedCuisines,
+              phone: document.getElementById('restaurantPhone').value.trim(),
+              whatsapp: document.getElementById('whatsapp').value.trim(),
+              address: document.getElementById('address').value.trim(),
+              tableCount: tableCount,
+              currency: document.getElementById('currency').value,
+              serviceFee: parseFloat(document.getElementById('serviceFee').value) || 10,
+              logo: logoFile
+            }
+          };
+
+          console.log('Complete registration data:', formData);
+
+          // Show loading
+          const btn = document.getElementById('submitBtn');
+          btn.classList.add('loading');
+          btn.disabled = true;
+
+          // TODO: Send to backend
+          // Simulate API call
+          setTimeout(() => {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+
+            // Success
+            alert('Cadastro realizado com sucesso!');
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        }
+
+        function registerWithGoogle() {
+          alert('Redirecionando para cadastro com Google...');
+        }
+     */
   </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.restaurant;
+package dev.thiagooliveira.tablesplit.application.restaurant.command;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;

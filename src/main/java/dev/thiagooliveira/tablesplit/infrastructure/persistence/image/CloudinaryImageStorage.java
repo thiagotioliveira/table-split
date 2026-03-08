@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.image;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
-import dev.thiagooliveira.tablesplit.application.menu.dto.ImageData;
+import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import java.io.IOException;
 import java.util.Map;

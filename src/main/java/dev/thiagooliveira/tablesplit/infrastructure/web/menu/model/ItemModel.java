@@ -5,12 +5,11 @@ import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemModel {
-  private final UUID id;
-  private final UUID categoryId;
+  private final String id;
+  private final String categoryId;
   private final List<ImageModel> images;
   private final List<String> imageUrls;
   private final Map<String, String> categoryName;
@@ -20,8 +19,8 @@ public class ItemModel {
   private final String priceFormatted;
 
   public ItemModel(Item item, Map<String, String> categoryName, String symbol) {
-    this.id = item.getId();
-    this.categoryId = item.getCategoryId();
+    this.id = item.getId().toString();
+    this.categoryId = item.getCategoryId().toString();
     this.categoryName = categoryName;
     this.name = convertMap(item.getName());
     this.description = convertMap(item.getDescription());
@@ -29,7 +28,7 @@ public class ItemModel {
     this.priceFormatted = String.format("%s %s", symbol, this.price);
     this.images =
         item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
-    this.imageUrls = this.images.stream().map(ImageModel::url).toList();
+    this.imageUrls = this.images.stream().map(ImageModel::getUrl).toList();
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -38,11 +37,11 @@ public class ItemModel {
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
   }
 
-  public UUID getId() {
+  public String getId() {
     return id;
   }
 
-  public UUID getCategoryId() {
+  public String getCategoryId() {
     return categoryId;
   }
 

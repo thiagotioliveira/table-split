@@ -2,6 +2,10 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.UserEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.UserJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.CategoryJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemEntity;
@@ -17,20 +21,26 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DataInitializerApplicationRunner implements ApplicationRunner {
 
   private final MockContext context;
+  private final AccountJpaRepository accountJpaRepository;
+  private final UserJpaRepository userJpaRepository;
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final CategoryJpaRepository categoryJpaRepository;
   private final ItemJpaRepository itemJpaRepository;
 
   public DataInitializerApplicationRunner(
       MockContext context,
+      AccountJpaRepository accountJpaRepository,
+      UserJpaRepository userJpaRepository,
       RestaurantJpaRepository restaurantJpaRepository,
       CategoryJpaRepository categoryJpaRepository,
       ItemJpaRepository itemJpaRepository) {
     this.context = context;
+    this.accountJpaRepository = accountJpaRepository;
+    this.userJpaRepository = userJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.categoryJpaRepository = categoryJpaRepository;
     this.itemJpaRepository = itemJpaRepository;
@@ -38,9 +48,24 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
+    var account = new AccountEntity();
+    account.setId(UUID.randomUUID());
+    this.accountJpaRepository.save(account);
+
+    var user = new UserEntity();
+    user.setId(UUID.randomUUID());
+    user.setFirstName("Thiago");
+    user.setLastName("Oliveira");
+    user.setPhone("+351 963 927 900");
+    user.setEmail("thiago@thiagoti.com");
+    user.setAccountId(account.getId());
+    user.setPassword("Teste#123");
+    this.userJpaRepository.save(user);
+
     var customerLanguages = List.of(Language.PT, Language.EN);
     var restaurant = new RestaurantEntity();
     restaurant.setId(UUID.randomUUID());
+    restaurant.setAccountId(account.getId());
     restaurant.setName("Restaurante Dona Maria");
     restaurant.setSlug("donamaria.restaurant");
     restaurant.setDescription(

@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.menu.dto;
+package dev.thiagooliveira.tablesplit.application.menu.command;
 
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.util.Map;

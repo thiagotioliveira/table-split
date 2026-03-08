@@ -787,6 +787,7 @@
     }
 
     function closeItemModal() {
+      console.log("testeee")
       document.getElementById('itemModal').classList.remove('active');
       // Clear all language fields
       ['PT', 'EN', 'es-ES'].forEach(lang => {
@@ -797,8 +798,8 @@
       });
       document.getElementById('itemPrice').value = '';
       document.getElementById('itemCategory').value = '';
-      document.getElementById('itemTags').value = '';
-      document.getElementById('itemTags').value = '';
+      //document.getElementById('itemTags').value = '';
+      //document.getElementById('itemTags').value = '';
       clearImageGallery();
     }
 

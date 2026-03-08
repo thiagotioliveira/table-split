@@ -1,21 +1,26 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
-import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
-public class UpdateRestaurant {
+public class CreateRestaurant {
 
   private final GetRestaurant getRestaurant;
   private final RestaurantRepository restaurantRepository;
 
-  public UpdateRestaurant(GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
+  public CreateRestaurant(GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
     this.getRestaurant = getRestaurant;
     this.restaurantRepository = restaurantRepository;
   }
 
-  public Restaurant execute(UUID restaurantId, UpdateRestaurantCommand command) {
-    var restaurant = getRestaurant.execute(restaurantId).orElseThrow();
+  public Restaurant execute(UUID accountId, CreateRestaurantCommand command) {
+    if (getRestaurant.execute(command.slug()).isPresent()) {
+      throw new RuntimeException(); // TODO
+    }
+    var restaurant = new Restaurant();
+    restaurant.setId(UUID.randomUUID());
+    restaurant.setAccountId(accountId);
     restaurant.setName(command.name());
     restaurant.setSlug(command.slug().toLowerCase().trim());
     restaurant.setDescription(command.description());

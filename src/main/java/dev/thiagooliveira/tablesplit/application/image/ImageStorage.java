@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.image;
 
-import dev.thiagooliveira.tablesplit.application.menu.dto.ImageData;
+import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import java.util.Map;
 import java.util.UUID;
 

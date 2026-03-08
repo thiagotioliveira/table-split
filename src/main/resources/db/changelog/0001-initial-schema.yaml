@@ -1,7 +1,69 @@
 databaseChangeLog:
   - changeSet:
-      id: 0001-restaurants-table
-      author: thiagooliveira
+      id: create-account-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+  - changeSet:
+      id: create-user-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_users_accounts
+  - changeSet:
+      id: create-restaurants-table
+      author: thiago.oliveira
       changes:
         - createTable:
             tableName: restaurants
@@ -11,6 +73,11 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
                     nullable: false
 #              - column:
 #                  name: created_at
@@ -114,9 +181,15 @@ databaseChangeLog:
             columns:
               - column:
                   name: slug
+        - addForeignKeyConstraint:
+            baseTableName: restaurants
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_restaurants_accounts
   - changeSet:
-      id: 0002-categories-table
-      author: thiagooliveira
+      id: create-categories-table
+      author: thiago.oliveira
       changes:
         - createTable:
             tableName: categories
@@ -148,8 +221,8 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_categories_restaurants
   - changeSet:
-      id: 0003-items-table
-      author: thiagooliveira
+      id: create-items-table
+      author: thiago.oliveira
       changes:
         - createTable:
             tableName: items
@@ -183,8 +256,8 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_items_categories
   - changeSet:
-      id: 0003-item-images-table
-      author: thiagooliveira
+      id: create-item-images-table
+      author: thiago.oliveira
       changes:
         - createTable:
             tableName: item_images

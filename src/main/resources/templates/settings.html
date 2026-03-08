@@ -945,78 +945,78 @@
               </div>
 
               <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
-                <div class="tag-suggestion" th:text="#{tags.wifi}"
+                <div class="tag-suggestion"
                      onclick="addTag('WIFI', '📶️', 'Wi-Fi Grátis')" th:classappend="${form.tags.contains('WIFI')} ? ' selected' : ''">
-                  <span>📶</span> Wi-Fi Grátis
+                  <span>📶</span> <span th:text="#{tags.wifi}">Wi-Fi Grátis</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('WINE', '🍷️', '#{section.tags.wine}')|"
+                     th:attr="onclick=|addTag('WINE', '🍷️', '#{tags.wine}')|"
                      th:classappend="${form.tags.contains('WINE')} ? ' selected' : ''">
                   <span>🍷️</span> <span th:text="#{tags.wine}">Wine</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('PARKING', '🅿', '#{section.tags.parking}')|"
+                     th:attr="onclick=|addTag('PARKING', '🅿', '#{tags.parking}')|"
                      th:classappend="${form.tags.contains('PARKING')} ? ' selected' : ''">
                   <span>🅿️</span> <span th:text="#{tags.parking}">Parking</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('ACCESSIBLE', '♿', '#{section.tags.accessible}')|"
+                     th:attr="onclick=|addTag('ACCESSIBLE', '♿', '#{tags.accessible}')|"
                      th:classappend="${form.tags.contains('ACCESSIBLE')} ? ' selected' : ''">
                   <span>♿</span> <span th:text="#{tags.accessible}">Accessible</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('DELIVERY', '🛵', '#{section.tags.delivery}')|"
+                     th:attr="onclick=|addTag('DELIVERY', '🛵', '#{tags.delivery}')|"
                      th:classappend="${form.tags.contains('DELIVERY')} ? ' selected' : ''">
                   <span>🛵</span> <span th:text="#{tags.delivery}">Delivery</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('RESERVATIONS', '📅', '#{section.tags.reservations}')|"
+                     th:attr="onclick=|addTag('RESERVATIONS', '📅', '#{tags.reservations}')|"
                      th:classappend="${form.tags.contains('RESERVATIONS')} ? ' selected' : ''">
                   <span>📅</span> <span th:text="#{tags.reservations}">Reservations</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('KIDS_SPACE', '👶', '#{section.tags.kidsspace}')|"
+                     th:attr="onclick=|addTag('KIDS_SPACE', '👶', '#{tags.kidsspace}')|"
                      th:classappend="${form.tags.contains('KIDS_SPACE')} ? ' selected' : ''">
                   <span>👶</span> <span th:text="#{tags.kidsspace}">Kids Area</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('LIVE_MUSIC', '🎵', '#{section.tags.livemusic}')|"
+                     th:attr="onclick=|addTag('LIVE_MUSIC', '🎵', '#{tags.livemusic}')|"
                      th:classappend="${form.tags.contains('LIVE_MUSIC')} ? ' selected' : ''">
                   <span>🎵</span> <span th:text="#{tags.livemusic}">Live Music</span>
                 </div>
                 <div class="tag-suggestion"
                      onclick="addTag('PET_FRIENDLY', '🐕', 'Pet Friendly')"
-                     th:attr="onclick=|addTag('PET_FRIENDLY', '🐕️', '#{section.tags.petfriendly}')|"
+                     th:attr="onclick=|addTag('PET_FRIENDLY', '🐕️', '#{tags.petfriendly}')|"
                      th:classappend="${form.tags.contains('PET_FRIENDLY')} ? ' selected' : ''">
                   <span>🐕</span> <span th:text="#{tags.petfriendly}">Pet Friendly</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('AIR_CONDITIONING', '❄️', '#{section.tags.air}')|"
+                     th:attr="onclick=|addTag('AIR_CONDITIONING', '❄️', '#{tags.air}')|"
                      th:classappend="${form.tags.contains('AIR_CONDITIONING')} ? ' selected' : ''">
                   <span>❄️</span> <span th:text="#{tags.air}">Air Conditioning</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('VEGAN', '🌱', '#{section.tags.vegan}')|"
+                     th:attr="onclick=|addTag('VEGAN', '🌱', '#{tags.vegan}')|"
                      th:classappend="${form.tags.contains('VEGAN')} ? ' selected' : ''">
                   <span>🌱</span> <span th:text="#{tags.vegan}">Vegan</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('GLUTEN_FREE', '🌾', '#{section.tags.glutenfree}')|"
+                     th:attr="onclick=|addTag('GLUTEN_FREE', '🌾', '#{tags.glutenfree}')|"
                      th:classappend="${form.tags.contains('GLUTEN_FREE')} ? ' selected' : ''">
                   <span>🌾</span> <span th:text="#{tags.glutenfree}">Gluten Free</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('ROMANTIC', '💑', '#{section.tags.romantic}')|"
+                     th:attr="onclick=|addTag('ROMANTIC', '💑', '#{tags.romantic}')|"
                      th:classappend="${form.tags.contains('ROMANTIC')} ? ' selected' : ''">
                   <span>💑</span> <span th:text="#{tags.romantic}">Romantic</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('GROUPS', '👥', '#{section.tags.groups}')|"
+                     th:attr="onclick=|addTag('GROUPS', '👥', '#{tags.groups}')|"
                      th:classappend="${form.tags.contains('GROUPS')} ? ' selected' : ''">
                   <span>👥</span> <span th:text="#{tags.groups}">Groups</span>
                 </div>
                 <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('CARDS', '💳', '#{section.tags.cards}')|"
+                     th:attr="onclick=|addTag('CARDS', '💳', '#{tags.cards}')|"
                      th:classappend="${form.tags.contains('CARDS')} ? ' selected' : ''">
                   <span>💳</span> <span th:text="#{tags.cards}">Cards</span>
                 </div>

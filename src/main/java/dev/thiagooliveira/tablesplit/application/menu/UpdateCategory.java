@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.dto.UpdateCategoryCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.UpdateCategoryCommand;
 import java.util.UUID;
 
 public class UpdateCategory {

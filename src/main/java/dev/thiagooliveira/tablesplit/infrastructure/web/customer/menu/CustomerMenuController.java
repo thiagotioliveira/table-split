@@ -30,7 +30,8 @@ public class CustomerMenuController {
     var restaurant = getRestaurant.execute(slug).orElseThrow();
     var categories = getCategory.execute(restaurant.getId());
     var items = getItem.execute(restaurant.getId());
-    model.addAttribute("customerMenu", new CustomerMenuModel(restaurant, categories, items));
+    CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, items);
+    model.addAttribute("customerMenu", menuModel);
     return "customer-menu";
   }
 }

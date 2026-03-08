@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public class Restaurant {
   private UUID id;
+  private UUID accountId;
   private String name;
   private String slug;
   private String description;
@@ -124,6 +125,14 @@ public class Restaurant {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 
   public String getName() {

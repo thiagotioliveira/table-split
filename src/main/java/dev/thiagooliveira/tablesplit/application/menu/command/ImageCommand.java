@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.menu.dto;
+package dev.thiagooliveira.tablesplit.application.menu.command;
 
 import java.util.List;
 import java.util.UUID;

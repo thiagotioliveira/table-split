@@ -6,12 +6,11 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.ImageModel;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemModel {
-  private final UUID id;
-  private final UUID categoryId;
+  private final String id;
+  private final String categoryId;
   private final List<ImageModel> images;
   private final Map<String, String> name;
   private final Map<String, String> description;
@@ -19,8 +18,8 @@ public class ItemModel {
   private final String priceFormatted;
 
   public ItemModel(Item item, String symbol) {
-    this.id = item.getId();
-    this.categoryId = item.getCategoryId();
+    this.id = item.getId().toString();
+    this.categoryId = item.getCategoryId().toString();
     this.images =
         item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
     this.name = convertMap(item.getName());
@@ -35,11 +34,11 @@ public class ItemModel {
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
   }
 
-  public UUID getId() {
+  public String getId() {
     return id;
   }
 
-  public UUID getCategoryId() {
+  public String getCategoryId() {
     return categoryId;
   }
 

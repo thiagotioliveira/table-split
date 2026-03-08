@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.menu.dto;
+package dev.thiagooliveira.tablesplit.application.menu.command;
 
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.math.BigDecimal;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public record CreateItemCommand(
+public record UpdateItemCommand(
     UUID categoryId,
     List<UUID> imageIdsToKeep,
     ImageCommand images,

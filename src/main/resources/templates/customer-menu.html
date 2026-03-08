@@ -904,7 +904,7 @@
             <div class="menu-item" th:attr="onclick=|openItemModal('${item.id}')|" th:each="item : ${category.items}">
                 <div class="menu-item-image">
                     <svg th:if="${item.images.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                    <img th:src="${item.images.get(0).url() + '?w=400'}" th:alt="${item.name[#locale.language]}"
+                    <img th:src="${item.images.get(0).url + '?w=400'}" th:alt="${item.name[#locale.language]}"
                          th:if="${!item.images.isEmpty()}">
                 </div>
                 <div class="menu-item-content">
@@ -1073,55 +1073,55 @@
 <script>
     // Current language
     let currentLang = 'pt';
-
-    // UI translations
-    const uiTranslations = {
-        'pt-BR': {
-            menu: 'Cardápio', myOrders: 'Meus Pedidos', all: 'Todos', starters: 'Entradas',
-            mains: 'Pratos Principais', drinks: 'Bebidas', desserts: 'Sobremesas',
-            searchPlaceholder: 'Buscar no cardápio...', waiter: 'Garçom', add: 'Adicionar',
-            yourOrder: 'Seu Pedido', subtotal: 'Subtotal', serviceFee: 'Taxa de serviço',
-            total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
-            preparing: 'Em preparo', ready: 'Pronto', delivered: 'Entregue',
-            callWaiter: 'Chamar Garçom?', waiterComing: 'Um garçom virá atendê-lo.',
-            orderSent: 'Pedido Enviado!', orderReceived: 'Seu pedido foi recebido pela cozinha.',
-            noOrders: 'Nenhum pedido ainda', ordersAppear: 'Seus pedidos aparecerão aqui',
-            yourConsumption: 'Resumo do seu consumo', tableAccount: 'Conta Completa',
-            tableSubtotal: 'Subtotal da Mesa', tableTotal: 'Total da Mesa', you: 'Você'
-        },
-        'en-US': {
-            menu: 'Menu', myOrders: 'My Orders', all: 'All', starters: 'Starters',
-            mains: 'Main Courses', drinks: 'Drinks', desserts: 'Desserts',
-            searchPlaceholder: 'Search menu...', waiter: 'Waiter', add: 'Add',
-            yourOrder: 'Your Order', subtotal: 'Subtotal', serviceFee: 'Service fee',
-            total: 'Total', confirmOrder: 'Confirm Order', sent: 'Sent',
-            preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered',
-            callWaiter: 'Call Waiter?', waiterComing: 'A waiter will assist you shortly.',
-            orderSent: 'Order Sent!', orderReceived: 'Your order was received by the kitchen.',
-            noOrders: 'No orders yet', ordersAppear: 'Your orders will appear here',
-            yourConsumption: 'Your consumption summary', tableAccount: 'Full Bill',
-            tableSubtotal: 'Table Subtotal', tableTotal: 'Table Total', you: 'You'
-        },
-        'es-ES': {
-            menu: 'Menú', myOrders: 'Mis Pedidos', all: 'Todos', starters: 'Entrantes',
-            mains: 'Platos Principales', drinks: 'Bebidas', desserts: 'Postres',
-            searchPlaceholder: 'Buscar en el menú...', waiter: 'Camarero', add: 'Añadir',
-            yourOrder: 'Tu Pedido', subtotal: 'Subtotal', serviceFee: 'Cargo por servicio',
-            total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
-            preparing: 'Preparando', ready: 'Listo', delivered: 'Entregado',
-            callWaiter: '¿Llamar camarero?', waiterComing: 'Un camarero vendrá a atenderte.',
-            orderSent: '¡Pedido Enviado!', orderReceived: 'Tu pedido fue recibido por la cocina.',
-            noOrders: 'Sin pedidos aún', ordersAppear: 'Tus pedidos aparecerán aquí',
-            yourConsumption: 'Resumen de tu consumo', tableAccount: 'Cuenta Completa',
-            tableSubtotal: 'Subtotal de la Mesa', tableTotal: 'Total de la Mesa', you: 'Tú'
-        }
-    };
-
+    /*
+        // UI translations
+        const uiTranslations = {
+            'pt-BR': {
+                menu: 'Cardápio', myOrders: 'Meus Pedidos', all: 'Todos', starters: 'Entradas',
+                mains: 'Pratos Principais', drinks: 'Bebidas', desserts: 'Sobremesas',
+                searchPlaceholder: 'Buscar no cardápio...', waiter: 'Garçom', add: 'Adicionar',
+                yourOrder: 'Seu Pedido', subtotal: 'Subtotal', serviceFee: 'Taxa de serviço',
+                total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
+                preparing: 'Em preparo', ready: 'Pronto', delivered: 'Entregue',
+                callWaiter: 'Chamar Garçom?', waiterComing: 'Um garçom virá atendê-lo.',
+                orderSent: 'Pedido Enviado!', orderReceived: 'Seu pedido foi recebido pela cozinha.',
+                noOrders: 'Nenhum pedido ainda', ordersAppear: 'Seus pedidos aparecerão aqui',
+                yourConsumption: 'Resumo do seu consumo', tableAccount: 'Conta Completa',
+                tableSubtotal: 'Subtotal da Mesa', tableTotal: 'Total da Mesa', you: 'Você'
+            },
+            'en-US': {
+                menu: 'Menu', myOrders: 'My Orders', all: 'All', starters: 'Starters',
+                mains: 'Main Courses', drinks: 'Drinks', desserts: 'Desserts',
+                searchPlaceholder: 'Search menu...', waiter: 'Waiter', add: 'Add',
+                yourOrder: 'Your Order', subtotal: 'Subtotal', serviceFee: 'Service fee',
+                total: 'Total', confirmOrder: 'Confirm Order', sent: 'Sent',
+                preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered',
+                callWaiter: 'Call Waiter?', waiterComing: 'A waiter will assist you shortly.',
+                orderSent: 'Order Sent!', orderReceived: 'Your order was received by the kitchen.',
+                noOrders: 'No orders yet', ordersAppear: 'Your orders will appear here',
+                yourConsumption: 'Your consumption summary', tableAccount: 'Full Bill',
+                tableSubtotal: 'Table Subtotal', tableTotal: 'Table Total', you: 'You'
+            },
+            'es-ES': {
+                menu: 'Menú', myOrders: 'Mis Pedidos', all: 'Todos', starters: 'Entrantes',
+                mains: 'Platos Principales', drinks: 'Bebidas', desserts: 'Postres',
+                searchPlaceholder: 'Buscar en el menú...', waiter: 'Camarero', add: 'Añadir',
+                yourOrder: 'Tu Pedido', subtotal: 'Subtotal', serviceFee: 'Cargo por servicio',
+                total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
+                preparing: 'Preparando', ready: 'Listo', delivered: 'Entregado',
+                callWaiter: '¿Llamar camarero?', waiterComing: 'Un camarero vendrá a atenderte.',
+                orderSent: '¡Pedido Enviado!', orderReceived: 'Tu pedido fue recibido por la cocina.',
+                noOrders: 'Sin pedidos aún', ordersAppear: 'Tus pedidos aparecerán aquí',
+                yourConsumption: 'Resumen de tu consumo', tableAccount: 'Cuenta Completa',
+                tableSubtotal: 'Subtotal de la Mesa', tableTotal: 'Total de la Mesa', you: 'Tú'
+            }
+        };
+    */
     // Helper to get item text in current language
     function getItemText(item, field) {
         return item[field][currentLang] || item[field]['pt'];
     }
-
+/*
     // Language selector functions
     function toggleLangDropdown() {
         document.getElementById('langDropdown').classList.toggle('active');
@@ -1206,7 +1206,7 @@
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(tab + 'Tab').classList.add('active');
     }
-
+*/
     // Category selection
     function selectCategory(category, btn) {
         document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -1224,7 +1224,7 @@
             item.style.display = (name.includes(query) || query === '') ? 'flex' : 'none';
         });
     }
-
+/*
     // Cart functions
     function addToCart(itemId) {
         const item = menuItems[itemId];
@@ -1253,11 +1253,11 @@
         updateCartUI();
         closeCart();
     }
-
+*/
     function formatPrice(value) {
         return 'R$ ' + value.toFixed(2).replace('.', ',');
     }
-
+/*
     function updateCartUI() {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -1383,7 +1383,7 @@
         document.getElementById('waiterCalledModal').classList.add('active');
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
-
+*/
     // Table modal
     function openTableModal() {
         document.getElementById('tableModal').classList.add('active');
@@ -1522,7 +1522,7 @@
         updateCartUI();
         closeItemModal();
     }
-
+/*
     // Simulate order status updates
     setInterval(() => {
         if (myOrders.length > 0) {
@@ -1536,6 +1536,7 @@
             updateOrdersUI();
         }
     }, 10000);
+ */
 </script>
 </body>
 </html>

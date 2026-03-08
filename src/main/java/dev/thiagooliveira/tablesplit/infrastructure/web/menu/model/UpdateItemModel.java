@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 
-import dev.thiagooliveira.tablesplit.application.menu.dto.CreateItemCommand;
-import dev.thiagooliveira.tablesplit.application.menu.dto.ImageCommand;
-import dev.thiagooliveira.tablesplit.application.menu.dto.ImageData;
-import dev.thiagooliveira.tablesplit.application.menu.dto.UpdateItemCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
+import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.io.IOException;
 import java.math.BigDecimal;
