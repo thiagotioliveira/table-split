@@ -14,10 +14,10 @@ public class GetCategory {
   }
 
   public List<Category> execute(UUID restaurantId) {
-    return this.categoryRepository.getAll(restaurantId);
+    return this.categoryRepository.findAll(restaurantId);
   }
 
   public Optional<Category> execute(UUID restaurantId, UUID categoryId) {
-    return this.categoryRepository.getById(categoryId);
+    return this.categoryRepository.findById(categoryId);
   }
 }

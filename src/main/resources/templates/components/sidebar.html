@@ -26,7 +26,7 @@
     <nav class="sidebar-nav">
         <ul>
             <li>
-                <a href="/dashboard" class="nav-item" th:if="${false}">
+                <a href="/dashboard" class="nav-item" th:classappend="${module.name() == 'DASHBOARD'} ? ' active'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
                     <span>Dashboard</span>
                 </a>
@@ -65,10 +65,28 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="/login" class="btn btn-ghost" style="width: 100%; justify-content: flex-start;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-            <span style="margin-left: 0.75rem;" th:text="#{nav.logout}">Logout</span>
-        </a>
+        <div class="user-menu-container" id="userMenuContainer">
+            <button class="user-menu-trigger" onclick="toggleUserMenu()">
+                <div class="user-avatar">TO</div>
+                <div class="user-details">
+                    <div class="user-name" th:text="${context.user.name}">Thiago Oliveira</div>
+                    <div class="user-email" th:text="${context.user.email}">thiago.oliveira@email.com</div>
+                </div>
+                <svg class="user-menu-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            </button>
+            <div class="user-submenu">
+                <a href="user-profile.html" class="user-submenu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Perfil do Usuário
+                </a>
+                <div class="user-submenu-divider"></div>
+                <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;"></form>
+                <a href="#" onclick="document.getElementById('logoutForm').submit()" class="user-submenu-item danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    Sair
+                </a>
+            </div>
+        </div>
     </div>
 </aside>
 
@@ -103,6 +121,12 @@
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('open');
         document.body.style.overflow = '';
+    }
+
+    // User Menu
+    function toggleUserMenu() {
+        const container = document.getElementById('userMenuContainer');
+        container.classList.toggle('open');
     }
 </script>
 

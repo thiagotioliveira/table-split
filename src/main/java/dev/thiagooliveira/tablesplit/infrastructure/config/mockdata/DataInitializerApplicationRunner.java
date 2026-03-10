@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.UserEntity;
@@ -19,9 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
-//@Component
+// @Component
 public class DataInitializerApplicationRunner implements ApplicationRunner {
 
   private final MockContext context;
@@ -141,7 +140,15 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant = this.restaurantJpaRepository.save(restaurant);
 
     context.initContext(
-        restaurant.getId(), restaurant.getName(), restaurant.getCurrency(), customerLanguages);
+        account.getId(),
+        user.getId(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getEmail(),
+        restaurant.getId(),
+        restaurant.getName(),
+        restaurant.getCurrency(),
+        customerLanguages);
 
     // Categorias
     var catStarters =

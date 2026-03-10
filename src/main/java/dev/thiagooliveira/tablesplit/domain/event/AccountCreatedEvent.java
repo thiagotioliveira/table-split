@@ -1,27 +1,62 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
-import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.UUID;
 
-public class AccountCreatedEvent implements DomainEvent {
+public class AccountCreatedEvent
+    implements DomainEvent<AccountCreatedEvent.AccountCreatedEventDetails> {
   private final UUID accountId;
-  private final RestaurantData restaurantData;
+  private final AccountCreatedEventDetails details;
 
-  public AccountCreatedEvent(UUID accountId, RestaurantData restaurantData) {
+  public AccountCreatedEvent(UUID accountId, AccountCreatedEventDetails details) {
     this.accountId = accountId;
-    this.restaurantData = restaurantData;
+    this.details = details;
   }
 
+  @Override
   public UUID getAccountId() {
     return accountId;
   }
 
-  public RestaurantData getRestaurantData() {
-    return restaurantData;
+  @Override
+  public AccountCreatedEventDetails getDetails() {
+    return this.details;
   }
 
-  public static class RestaurantData {
+  public static class AccountCreatedEventDetails {
+    private final RestaurantDetails restaurantDetails;
+
+    public AccountCreatedEventDetails(
+        String name,
+        String slug,
+        String description,
+        String phone,
+        String email,
+        String website,
+        String address,
+        Language defaultLanguage,
+        String currency,
+        int serviceFee) {
+      this.restaurantDetails =
+          new RestaurantDetails(
+              name,
+              slug,
+              description,
+              phone,
+              email,
+              website,
+              address,
+              defaultLanguage,
+              currency,
+              serviceFee);
+    }
+
+    public RestaurantDetails getRestaurantDetails() {
+      return restaurantDetails;
+    }
+  }
+
+  public static class RestaurantDetails {
     private final String name;
     private final String slug;
     private final String description;
@@ -33,17 +68,27 @@ public class AccountCreatedEvent implements DomainEvent {
     private final String currency;
     private final int serviceFee;
 
-    public RestaurantData(CreateRestaurantCommand command) {
-      this.name = command.name();
-      this.slug = command.slug();
-      this.description = command.description();
-      this.phone = command.phone();
-      this.email = command.email();
-      this.website = command.website();
-      this.address = command.address();
-      this.defaultLanguage = command.defaultLanguage();
-      this.currency = command.currency();
-      this.serviceFee = command.serviceFee();
+    public RestaurantDetails(
+        String name,
+        String slug,
+        String description,
+        String phone,
+        String email,
+        String website,
+        String address,
+        Language defaultLanguage,
+        String currency,
+        int serviceFee) {
+      this.name = name;
+      this.slug = slug;
+      this.description = description;
+      this.phone = phone;
+      this.email = email;
+      this.website = website;
+      this.address = address;
+      this.defaultLanguage = defaultLanguage;
+      this.currency = currency;
+      this.serviceFee = serviceFee;
     }
 
     public String getName() {

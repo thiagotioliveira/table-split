@@ -17,14 +17,14 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
-  public List<Category> getAll(UUID restaurantId) {
+  public List<Category> findAll(UUID restaurantId) {
     return this.categoryJpaRepository.findAllByRestaurantIdOrderByNumOrder(restaurantId).stream()
         .map(CategoryEntity::toDomain)
         .toList();
   }
 
   @Override
-  public Optional<Category> getById(UUID categoryId) {
+  public Optional<Category> findById(UUID categoryId) {
     return this.categoryJpaRepository.findById(categoryId).map(CategoryEntity::toDomain);
   }
 
@@ -36,5 +36,20 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   @Override
   public void delete(UUID categoryId) {
     this.categoryJpaRepository.deleteById(categoryId);
+  }
+
+  @Override
+  public long count() {
+    return this.categoryJpaRepository.count();
+  }
+
+  @Override
+  public long countActive() {
+    return this.categoryJpaRepository.count(); // TODO
+  }
+
+  @Override
+  public long countInactive() {
+    return 0; // TODO
   }
 }

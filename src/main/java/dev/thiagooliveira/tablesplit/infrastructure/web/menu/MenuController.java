@@ -1,14 +1,16 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
-import dev.thiagooliveira.tablesplit.domain.security.Context;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.MenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateCategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateItemModel;
 import java.util.UUID;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/menu")
 public class MenuController {
 
-  private final Context context;
   private final GetCategory getCategory;
   private final CreateCategory createCategory;
   private final UpdateCategory updateCategory;
@@ -30,7 +31,6 @@ public class MenuController {
   private final TransactionalContext transactionalContext;
 
   public MenuController(
-      Context context,
       GetCategory getCategory,
       CreateCategory createCategory,
       UpdateCategory updateCategory,
@@ -40,7 +40,6 @@ public class MenuController {
       CreateItem createItem,
       DeleteItem deleteItem,
       TransactionalContext transactionalContext) {
-    this.context = context;
     this.getCategory = getCategory;
     this.createCategory = createCategory;
     this.updateCategory = updateCategory;
@@ -53,30 +52,40 @@ public class MenuController {
   }
 
   @GetMapping
-  public String index(Model model) {
+  public String index(Authentication auth, Model model) {
+    var context = (UserContext) auth.getPrincipal();
     var categories = this.getCategory.execute(context.getRestaurant().getId());
     var items = this.getItem.execute(context.getRestaurant().getId());
     model.addAttribute("module", Module.MENU);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
-    model.addAttribute("context", context);
+    model.addAttribute("context", new ContextModel(context));
     return "menu";
   }
 
   @PostMapping("/categories")
   public String updateCategory(
+      Authentication auth,
       @ModelAttribute UpdateCategoryModel updateCategoryModel,
       RedirectAttributes redirectAttributes) {
+    var context = (UserContext) auth.getPrincipal();
     if (updateCategoryModel.getId() == null) {
-      this.createCategory.execute(
-          context.getRestaurant().getId(), updateCategoryModel.toCreateCategoryCommand());
+      this.transactionalContext.execute(
+          () ->
+              this.createCategory.execute(
+                  context.getAccountId(),
+                  context.getRestaurant().getId(),
+                  updateCategoryModel.toCreateCategoryCommand()));
       redirectAttributes.addFlashAttribute(
           "alert", AlertModel.success("alert.menu.category.created"));
     } else {
-      this.updateCategory.execute(
-          context.getRestaurant().getId(),
-          updateCategoryModel.getId(),
-          updateCategoryModel.toUpdateCategoryCommand());
+      this.transactionalContext.execute(
+          () ->
+              this.updateCategory.execute(
+                  context.getAccountId(),
+                  context.getRestaurant().getId(),
+                  updateCategoryModel.getId(),
+                  updateCategoryModel.toUpdateCategoryCommand()));
       redirectAttributes.addFlashAttribute(
           "alert", AlertModel.success("alert.menu.category.updated"));
     }
@@ -85,17 +94,23 @@ public class MenuController {
 
   @PostMapping("/items")
   public String updateItem(
-      @ModelAttribute UpdateItemModel updateItemModel, RedirectAttributes redirectAttributes) {
+      Authentication auth,
+      @ModelAttribute UpdateItemModel updateItemModel,
+      RedirectAttributes redirectAttributes) {
+    var context = (UserContext) auth.getPrincipal();
     if (updateItemModel.getId() == null) {
       this.transactionalContext.execute(
           () ->
               this.createItem.execute(
-                  context.getRestaurant().getId(), updateItemModel.toCreateItemCommand()));
+                  context.getAccountId(),
+                  context.getRestaurant().getId(),
+                  updateItemModel.toCreateItemCommand()));
       redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.created"));
     } else {
       this.transactionalContext.execute(
           () ->
               this.updateItem.execute(
+                  context.getAccountId(),
                   context.getRestaurant().getId(),
                   updateItemModel.getId(),
                   updateItemModel.toUpdateItemCommand()));
@@ -106,16 +121,23 @@ public class MenuController {
 
   @PostMapping("/categories/delete")
   public String deleteCategory(
-      @RequestParam UUID categoryId, RedirectAttributes redirectAttributes) {
-    this.deleteCategory.execute(context.getRestaurant().getId(), categoryId);
+      Authentication auth, @RequestParam UUID categoryId, RedirectAttributes redirectAttributes) {
+    var context = (UserContext) auth.getPrincipal();
+    this.transactionalContext.execute(
+        () ->
+            this.deleteCategory.execute(
+                context.getAccountId(), context.getRestaurant().getId(), categoryId));
     redirectAttributes.addFlashAttribute(
         "alert", AlertModel.success("alert.menu.category.deleted"));
     return "redirect:/menu";
   }
 
   @PostMapping("/items/delete")
-  public String deleteItem(@RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
-    this.deleteItem.execute(itemId);
+  public String deleteItem(
+      Authentication auth, @RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
+    var context = (UserContext) auth.getPrincipal();
+    this.transactionalContext.execute(
+        () -> this.deleteItem.execute(context.getAccountId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
     return "redirect:/menu";
   }

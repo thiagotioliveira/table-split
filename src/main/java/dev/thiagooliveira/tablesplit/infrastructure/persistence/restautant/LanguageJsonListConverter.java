@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Collections;

@@ -3,11 +3,14 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.security.Context;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.settings.model.SettingsModel;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,28 +24,32 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/settings")
 public class SettingsController {
 
-  private final Context context;
+  private final TransactionalContext transactionalContext;
   private final GetRestaurant getRestaurant;
   private final UpdateRestaurant updateRestaurant;
 
   public SettingsController(
-      Context context, GetRestaurant getRestaurant, UpdateRestaurant updateRestaurant) {
-    this.context = context;
+      TransactionalContext transactionalContext,
+      GetRestaurant getRestaurant,
+      UpdateRestaurant updateRestaurant) {
+    this.transactionalContext = transactionalContext;
     this.getRestaurant = getRestaurant;
     this.updateRestaurant = updateRestaurant;
   }
 
   @GetMapping
-  public String index(Model model) {
+  public String index(Authentication auth, Model model) {
+    var context = (UserContext) auth.getPrincipal();
     var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
     model.addAttribute("module", Module.SETTINGS);
-    model.addAttribute("context", context);
+    model.addAttribute("context", new ContextModel(context));
     model.addAttribute("form", new SettingsModel(restaurant));
     return "settings";
   }
 
   @PostMapping
   public String postSettings(
+      Authentication auth,
       @Valid @ModelAttribute("form") SettingsModel form,
       BindingResult bindingResult,
       Model model,
@@ -50,13 +57,16 @@ public class SettingsController {
     if (bindingResult.hasErrors()) {
       return "settings";
     }
-    var restaurant = updateRestaurant.execute(context.getRestaurant().getId(), form.toCommand());
+    var context = (UserContext) auth.getPrincipal();
+    var restaurant =
+        this.transactionalContext.execute(
+            () -> updateRestaurant.execute(context.getRestaurant().getId(), form.toCommand()));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.settings.saved"));
-    updateContext(restaurant);
+    updateContext(context, restaurant);
     return "redirect:/settings";
   }
 
-  private void updateContext(Restaurant restaurant) {
+  private void updateContext(UserContext context, Restaurant restaurant) {
     context.getRestaurant().setName(restaurant.getName());
     context.getRestaurant().setCurrency(restaurant.getCurrency());
     context.getRestaurant().setCustomerLanguages(restaurant.getCustomerLanguages());

@@ -1,26 +1,28 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
+import dev.thiagooliveira.tablesplit.domain.event.ItemUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class UpdateItem {
-
-  private final GetItem getItem;
+  private final EventPublisher eventPublisher;
   private final ImageStorage imageStorage;
   private final ItemRepository itemRepository;
 
-  public UpdateItem(GetItem getItem, ImageStorage imageStorage, ItemRepository itemRepository) {
-    this.getItem = getItem;
+  public UpdateItem(
+      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
+    this.eventPublisher = eventPublisher;
     this.imageStorage = imageStorage;
     this.itemRepository = itemRepository;
   }
 
-  public void execute(UUID restaurantId, UUID itemId, UpdateItemCommand command) {
-    var item = this.getItem.execute(restaurantId, itemId).orElseThrow();
+  public void execute(UUID accountId, UUID restaurantId, UUID itemId, UpdateItemCommand command) {
+    var item = this.itemRepository.findById(itemId).orElseThrow();
     item.setPrice(command.price());
     item.setDescription(command.description());
     item.setName(command.name());
@@ -55,5 +57,11 @@ public class UpdateItem {
       }
     }
     this.itemRepository.save(item);
+
+    var total = this.itemRepository.count();
+    var totalActive = this.itemRepository.countActive();
+    var totalInactive = this.itemRepository.countInactive();
+    this.eventPublisher.publishEvent(
+        new ItemUpdatedEvent(accountId, item, total, totalActive, totalInactive));
   }
 }

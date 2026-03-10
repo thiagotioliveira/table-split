@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.application.restaurant.command;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.util.List;
 
 public record CreateRestaurantCommand(

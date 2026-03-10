@@ -7,11 +7,17 @@ import java.util.UUID;
 
 public interface ItemRepository {
 
-  Optional<Item> getById(UUID id);
+  Optional<Item> findById(UUID id);
 
-  List<Item> getAll(UUID restaurantId);
+  List<Item> findAll(UUID restaurantId);
 
   void save(Item item);
 
   void delete(UUID itemId);
+
+  long count();
+
+  long countActive();
+
+  long countInactive();
 }

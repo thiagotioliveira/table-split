@@ -21,23 +21,23 @@ public class AccountCreatedEventListener {
 
   @EventListener
   public void on(AccountCreatedEvent event) {
-    var restaurant = event.getRestaurantData();
+    var restaurantDetails = event.getDetails().getRestaurantDetails();
     this.createRestaurant.execute(
         event.getAccountId(),
         new CreateRestaurantCommand(
-            restaurant.getName(),
-            restaurant.getSlug(),
-            restaurant.getDescription(),
-            restaurant.getWebsite(),
-            restaurant.getPhone(),
-            restaurant.getEmail(),
-            restaurant.getAddress(),
+            restaurantDetails.getName(),
+            restaurantDetails.getSlug(),
+            restaurantDetails.getDescription(),
+            restaurantDetails.getWebsite(),
+            restaurantDetails.getPhone(),
+            restaurantDetails.getEmail(),
+            restaurantDetails.getAddress(),
             List.of(),
             List.of(),
-            restaurant.getDefaultLanguage(),
-            List.of(restaurant.getDefaultLanguage()),
-            restaurant.getCurrency(),
-            restaurant.getServiceFee(),
+            restaurantDetails.getDefaultLanguage(),
+            List.of(restaurantDetails.getDefaultLanguage()),
+            restaurantDetails.getCurrency(),
+            restaurantDetails.getServiceFee(),
             "20-50", // TODO
             List.of(
                 new BusinessHours(

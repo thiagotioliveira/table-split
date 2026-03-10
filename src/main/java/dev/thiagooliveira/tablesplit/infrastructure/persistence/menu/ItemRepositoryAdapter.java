@@ -17,12 +17,12 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
-  public Optional<Item> getById(UUID id) {
+  public Optional<Item> findById(UUID id) {
     return this.itemJpaRepository.findById(id).map(ItemEntity::toDomain);
   }
 
   @Override
-  public List<Item> getAll(UUID restaurantId) {
+  public List<Item> findAll(UUID restaurantId) {
     return this.itemJpaRepository.findAllByCategoryRestaurantId(restaurantId).stream()
         .map(ItemEntity::toDomain)
         .toList();
@@ -36,5 +36,20 @@ public class ItemRepositoryAdapter implements ItemRepository {
   @Override
   public void delete(UUID itemId) {
     this.itemJpaRepository.deleteById(itemId);
+  }
+
+  @Override
+  public long count() {
+    return this.itemJpaRepository.count();
+  }
+
+  @Override
+  public long countActive() {
+    return this.itemJpaRepository.count(); // TODO
+  }
+
+  @Override
+  public long countInactive() {
+    return 0; // TODO
   }
 }

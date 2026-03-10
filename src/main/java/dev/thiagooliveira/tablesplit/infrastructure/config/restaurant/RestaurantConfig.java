@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.CreateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
@@ -17,13 +18,13 @@ public class RestaurantConfig {
 
   @Bean
   public UpdateRestaurant updateRestaurant(
-      GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
-    return new UpdateRestaurant(getRestaurant, restaurantRepository);
+      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
+    return new UpdateRestaurant(eventPublisher, restaurantRepository);
   }
 
   @Bean
   public CreateRestaurant createRestaurant(
-      GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
-    return new CreateRestaurant(getRestaurant, restaurantRepository);
+      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
+    return new CreateRestaurant(eventPublisher, restaurantRepository);
   }
 }

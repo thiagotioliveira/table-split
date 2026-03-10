@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;

@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.security;
 
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.List;
 import java.util.UUID;
 

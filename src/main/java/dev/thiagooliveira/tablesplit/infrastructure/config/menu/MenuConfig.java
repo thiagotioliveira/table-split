@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import org.springframework.context.annotation.Bean;
@@ -14,19 +15,21 @@ public class MenuConfig {
   }
 
   @Bean
-  public CreateCategory createCategory(CategoryRepository categoryRepository) {
-    return new CreateCategory(categoryRepository);
+  public CreateCategory createCategory(
+      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
+    return new CreateCategory(eventPublisher, categoryRepository);
   }
 
   @Bean
   public UpdateCategory updateCategory(
-      GetCategory getCategory, CategoryRepository categoryRepository) {
-    return new UpdateCategory(getCategory, categoryRepository);
+      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
+    return new UpdateCategory(eventPublisher, categoryRepository);
   }
 
   @Bean
-  public DeleteCategory deleteCategory(CategoryRepository categoryRepository) {
-    return new DeleteCategory(categoryRepository);
+  public DeleteCategory deleteCategory(
+      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
+    return new DeleteCategory(eventPublisher, categoryRepository);
   }
 
   @Bean
@@ -36,17 +39,18 @@ public class MenuConfig {
 
   @Bean
   public UpdateItem updateItem(
-      GetItem getItem, ImageStorage imageStorage, ItemRepository itemRepository) {
-    return new UpdateItem(getItem, imageStorage, itemRepository);
+      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
+    return new UpdateItem(eventPublisher, imageStorage, itemRepository);
   }
 
   @Bean
-  public CreateItem createItem(ImageStorage imageStorage, ItemRepository itemRepository) {
-    return new CreateItem(imageStorage, itemRepository);
+  public CreateItem createItem(
+      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
+    return new CreateItem(eventPublisher, imageStorage, itemRepository);
   }
 
   @Bean
-  public DeleteItem deleteItem(ItemRepository itemRepository) {
-    return new DeleteItem(itemRepository);
+  public DeleteItem deleteItem(EventPublisher eventPublisher, ItemRepository itemRepository) {
+    return new DeleteItem(eventPublisher, itemRepository);
   }
 }

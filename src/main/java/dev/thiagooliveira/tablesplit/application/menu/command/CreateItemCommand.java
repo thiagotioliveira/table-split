@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu.command;
 
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;

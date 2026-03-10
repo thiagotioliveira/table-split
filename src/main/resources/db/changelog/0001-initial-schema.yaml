@@ -289,3 +289,55 @@ databaseChangeLog:
             referencedTableName: items
             referencedColumnNames: id
             constraintName: fk_item_images_item
+  - changeSet:
+      id: create-dashboard
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: dashboards
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attributes
+                  type: TEXT
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_dashboards_user_id
+            tableName: dashboards
+            unique: true
+            columns:
+              - column:
+                  name: user_id
+        - addForeignKeyConstraint:
+            baseTableName: dashboards
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_dashboards_accounts
+        - addForeignKeyConstraint:
+            baseTableName: dashboards
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_dashboards_users

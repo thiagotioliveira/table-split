@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.menu;
 
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.Map;
 import java.util.UUID;
 

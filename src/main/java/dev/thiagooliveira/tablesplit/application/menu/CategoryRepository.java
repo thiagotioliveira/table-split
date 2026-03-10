@@ -7,11 +7,17 @@ import java.util.UUID;
 
 public interface CategoryRepository {
 
-  List<Category> getAll(UUID restaurantId);
+  List<Category> findAll(UUID restaurantId);
 
-  Optional<Category> getById(UUID categoryId);
+  Optional<Category> findById(UUID categoryId);
 
   void save(Category category);
 
   void delete(UUID categoryId);
+
+  long count();
+
+  long countActive();
+
+  long countInactive();
 }

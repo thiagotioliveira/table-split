@@ -4,7 +4,7 @@ import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;

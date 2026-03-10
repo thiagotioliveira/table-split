@@ -1,8 +1,10 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
+import dev.thiagooliveira.tablesplit.domain.event.ItemCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.ArrayList;
@@ -10,15 +12,18 @@ import java.util.UUID;
 
 public class CreateItem {
 
+  private final EventPublisher eventPublisher;
   private final ImageStorage imageStorage;
   private final ItemRepository itemRepository;
 
-  public CreateItem(ImageStorage imageStorage, ItemRepository itemRepository) {
+  public CreateItem(
+      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
+    this.eventPublisher = eventPublisher;
     this.imageStorage = imageStorage;
     this.itemRepository = itemRepository;
   }
 
-  public void execute(UUID restaurantId, CreateItemCommand command) {
+  public void execute(UUID accountId, UUID restaurantId, CreateItemCommand command) {
 
     var item = new Item();
     item.setId(UUID.randomUUID());
@@ -41,5 +46,11 @@ public class CreateItem {
       }
     }
     this.itemRepository.save(item);
+
+    var total = this.itemRepository.count();
+    var totalActive = this.itemRepository.countActive();
+    var totalInactive = this.itemRepository.countInactive();
+    this.eventPublisher.publishEvent(
+        new ItemCreatedEvent(accountId, item, total, totalActive, totalInactive));
   }
 }

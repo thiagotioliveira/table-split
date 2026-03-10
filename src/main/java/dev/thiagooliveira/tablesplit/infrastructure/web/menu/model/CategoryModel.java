@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import java.util.Map;
 import java.util.stream.Collectors;
 

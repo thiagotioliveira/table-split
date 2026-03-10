@@ -1,3 +1,9 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
-public interface DomainEvent {}
+import java.util.UUID;
+
+public interface DomainEvent<T> {
+  UUID getAccountId();
+
+  T getDetails();
+}

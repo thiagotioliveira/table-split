@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateCategoryCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateCategoryCommand;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;

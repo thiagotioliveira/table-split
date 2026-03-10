@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

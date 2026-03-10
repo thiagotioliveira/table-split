@@ -1,22 +1,31 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateCategoryCommand;
+import dev.thiagooliveira.tablesplit.domain.event.CategoryUpdatedEvent;
 import java.util.UUID;
 
 public class UpdateCategory {
 
-  private final GetCategory getCategory;
+  private final EventPublisher eventPublisher;
   private final CategoryRepository categoryRepository;
 
-  public UpdateCategory(GetCategory getCategory, CategoryRepository categoryRepository) {
-    this.getCategory = getCategory;
+  public UpdateCategory(EventPublisher eventPublisher, CategoryRepository categoryRepository) {
+    this.eventPublisher = eventPublisher;
     this.categoryRepository = categoryRepository;
   }
 
-  public void execute(UUID restaurantId, UUID categoryId, UpdateCategoryCommand command) {
-    var category = this.getCategory.execute(restaurantId, categoryId).orElseThrow();
+  public void execute(
+      UUID accountId, UUID restaurantId, UUID categoryId, UpdateCategoryCommand command) {
+    var category = this.categoryRepository.findById(categoryId).orElseThrow();
     category.setOrder(command.order());
     category.setName(command.name());
     this.categoryRepository.save(category);
+
+    var total = this.categoryRepository.count();
+    var totalActive = this.categoryRepository.countActive();
+    var totalInactive = this.categoryRepository.countInactive();
+    this.eventPublisher.publishEvent(
+        new CategoryUpdatedEvent(accountId, categoryId, total, totalActive, totalInactive));
   }
 }

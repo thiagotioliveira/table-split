@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 
 public class RestaurantModel {
   private String name;

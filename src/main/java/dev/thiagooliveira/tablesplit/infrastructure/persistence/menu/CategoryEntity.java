@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.persistence.*;
 import java.util.*;
 

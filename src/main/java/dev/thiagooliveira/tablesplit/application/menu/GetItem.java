@@ -14,10 +14,10 @@ public class GetItem {
   }
 
   public List<Item> execute(UUID restaurantId) {
-    return this.itemRepository.getAll(restaurantId);
+    return this.itemRepository.findAll(restaurantId);
   }
 
   public Optional<Item> execute(UUID restaurantId, UUID itemId) {
-    return this.itemRepository.getById(itemId);
+    return this.itemRepository.findById(itemId);
   }
 }

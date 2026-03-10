@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.ImageModel;
 import java.math.BigDecimal;
 import java.util.List;

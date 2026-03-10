@@ -1,21 +1,24 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
 public class UpdateRestaurant {
 
-  private final GetRestaurant getRestaurant;
+  private final EventPublisher eventPublisher;
   private final RestaurantRepository restaurantRepository;
 
-  public UpdateRestaurant(GetRestaurant getRestaurant, RestaurantRepository restaurantRepository) {
-    this.getRestaurant = getRestaurant;
+  public UpdateRestaurant(
+      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
+    this.eventPublisher = eventPublisher;
     this.restaurantRepository = restaurantRepository;
   }
 
   public Restaurant execute(UUID restaurantId, UpdateRestaurantCommand command) {
-    var restaurant = getRestaurant.execute(restaurantId).orElseThrow();
+    var restaurant = this.restaurantRepository.findById(restaurantId).orElseThrow();
     restaurant.setName(command.name());
     restaurant.setSlug(command.slug().toLowerCase().trim());
     restaurant.setDescription(command.description());
@@ -34,6 +37,7 @@ public class UpdateRestaurant {
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurantRepository.save(restaurant);
+    this.eventPublisher.publishEvent(new RestaurantUpdatedEvent(restaurant));
     return restaurant;
   }
 }

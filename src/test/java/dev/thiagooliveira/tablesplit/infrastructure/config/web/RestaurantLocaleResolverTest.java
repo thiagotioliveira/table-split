@@ -3,8 +3,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;

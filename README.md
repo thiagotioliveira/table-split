@@ -1,5 +1,4 @@
 # table-split
 
 TODO
-
-#2 - Aplicar Spring Security
+#1 - Quando clica fora do modal, ele fecha, gerando incosistencias

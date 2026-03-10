@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.account.UserPassword;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.UserCreatedEvent;
 import java.util.UUID;
 
 public class CreateAccount {
@@ -23,7 +24,7 @@ public class CreateAccount {
     this.userRepository = userRepository;
   }
 
-  public Account execute(CreateAccountCommand command) {
+  public User execute(CreateAccountCommand command) {
     var userCommand = command.user();
     if (this.userRepository.findByEmail(userCommand.email()).isPresent()) {
       throw new RuntimeException(); // TODO
@@ -33,21 +34,34 @@ public class CreateAccount {
     account.setId(UUID.randomUUID());
     this.accountRepository.save(account);
 
-    var newUser = new UserPassword();
-    newUser.setUser(new User());
-    newUser.getUser().setId(UUID.randomUUID());
-    newUser.getUser().setFirstName(userCommand.firstName());
-    newUser.getUser().setLastName(userCommand.lastName());
-    newUser.getUser().setEmail(userCommand.email());
-    newUser.getUser().setPhone(userCommand.phone());
-    newUser.getUser().setAccountId(account.getId());
-    newUser.setPassword(userCommand.password());
-    this.userRepository.save(newUser);
+    var userPass = new UserPassword();
+    userPass.setUser(new User());
+    userPass.getUser().setId(UUID.randomUUID());
+    userPass.getUser().setFirstName(userCommand.firstName());
+    userPass.getUser().setLastName(userCommand.lastName());
+    userPass.getUser().setEmail(userCommand.email());
+    userPass.getUser().setPhone(userCommand.phone());
+    userPass.getUser().setAccountId(account.getId());
+    userPass.setPassword(userCommand.password());
+    this.userRepository.save(userPass);
+
+    this.eventPublisher.publishEvent(new UserCreatedEvent(account.getId(), userPass.getUser()));
 
     this.eventPublisher.publishEvent(
         new AccountCreatedEvent(
-            account.getId(), new AccountCreatedEvent.RestaurantData(command.restaurant())));
+            account.getId(),
+            new AccountCreatedEvent.AccountCreatedEventDetails(
+                command.restaurant().name(),
+                command.restaurant().slug(),
+                command.restaurant().description(),
+                command.restaurant().phone(),
+                command.restaurant().email(),
+                command.restaurant().website(),
+                command.restaurant().address(),
+                command.restaurant().defaultLanguage(),
+                command.restaurant().currency(),
+                command.restaurant().serviceFee())));
 
-    return account;
+    return userPass.getUser();
   }
 }

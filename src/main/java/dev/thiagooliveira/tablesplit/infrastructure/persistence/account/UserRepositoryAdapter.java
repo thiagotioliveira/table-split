@@ -3,7 +3,9 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.account.UserPassword;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,5 +30,12 @@ public class UserRepositoryAdapter implements UserRepository {
   @Override
   public Optional<User> findByEmail(String email) {
     return this.userJpaRepository.findByEmail(email).map(UserEntity::toDomain);
+  }
+
+  @Override
+  public List<User> findByAccountId(UUID accountId) {
+    return this.userJpaRepository.findByAccountId(accountId).stream()
+        .map(UserEntity::toDomain)
+        .toList();
   }
 }

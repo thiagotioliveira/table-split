@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
-import dev.thiagooliveira.tablesplit.domain.vo.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrar - SplitTable</title>
+  <title th:text="#{app.title}">Entrar - SplitTable</title>
   <style>
     :root {
       --background: #FFFBF5;
@@ -464,7 +464,7 @@
           <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
         </svg>
       </div>
-      <span class="logo-text">SplitTable</span>
+      <span class="logo-text" th:text="#{app.name}">SplitTable</span>
     </a>
   </header>
 
@@ -488,7 +488,7 @@
             <span id="errorMessage">Email ou senha incorretos.</span>
           </div>
 
-          <form onsubmit="handleLogin(event)">
+          <form th:action="@{/login}" method="post">
             <div class="form-group" id="emailGroup">
               <label for="email">Email</label>
               <div class="input-wrapper">
@@ -498,7 +498,8 @@
                 </svg>
                 <input 
                   type="email" 
-                  id="email" 
+                  id="email"
+                  name="username"
                   class="form-input" 
                   placeholder="seu@email.com"
                   autocomplete="email"
@@ -517,7 +518,8 @@
                 </svg>
                 <input 
                   type="password" 
-                  id="password" 
+                  id="password"
+                  name="password"
                   class="form-input" 
                   placeholder="••••••••"
                   autocomplete="current-password"
@@ -553,11 +555,11 @@
             </button>
           </form>
 
-          <div class="divider">
+          <div class="divider" th:if="${false}">
             <span>ou continue com</span>
           </div>
 
-          <button class="social-btn" onclick="loginWithGoogle()">
+          <button class="social-btn" onclick="loginWithGoogle()" th:if="${false}">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -601,7 +603,7 @@
         `;
       }
     }
-
+/*
     function handleLogin(event) {
       event.preventDefault();
       
@@ -654,7 +656,7 @@
     function loginWithGoogle() {
       // In real implementation, redirect to OAuth
       alert('Redirecionando para login com Google...');
-    }
+    }*/
   </script>
 </body>
 </html>

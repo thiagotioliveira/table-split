@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserModel {
   private String firstName;
@@ -9,9 +10,13 @@ public class UserModel {
   private String phone;
   private String password;
 
-  public CreateUserCommand toCommand() {
+  public CreateUserCommand toCommand(PasswordEncoder passwordEncoder) {
     return new CreateUserCommand(
-        this.firstName, this.lastName, this.email, this.phone, this.password);
+        this.firstName,
+        this.lastName,
+        this.email,
+        this.phone,
+        passwordEncoder.encode(this.password));
   }
 
   public String getFirstName() {

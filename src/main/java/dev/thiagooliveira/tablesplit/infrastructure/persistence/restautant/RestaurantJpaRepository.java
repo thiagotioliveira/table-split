@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity, UUID> {
 
   Optional<RestaurantEntity> findBySlug(String slug);
+
+  Optional<RestaurantEntity> findByAccountId(UUID accountId);
 }

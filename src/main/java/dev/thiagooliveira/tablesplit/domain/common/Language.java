@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.domain.vo;
+package dev.thiagooliveira.tablesplit.domain.common;
 
 public enum Language {
   PT("pt-BR"),
