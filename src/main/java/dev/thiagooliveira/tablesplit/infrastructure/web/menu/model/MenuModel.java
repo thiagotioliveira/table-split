@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.CurrencyMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,8 +15,8 @@ public class MenuModel {
   private final List<CategoryModel> categories;
   private final List<ItemModel> items;
 
-  public MenuModel(List<Category> categories, List<Item> items, String currency) {
-    var symbol = CurrencyMapper.symbol(currency);
+  public MenuModel(List<Category> categories, List<Item> items, Currency currency) {
+    var symbol = currency.getSymbol();
     this.categories =
         categories.stream()
             .map(

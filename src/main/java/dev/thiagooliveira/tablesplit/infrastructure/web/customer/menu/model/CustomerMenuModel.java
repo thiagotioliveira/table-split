@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.CurrencyMapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class CustomerMenuModel {
   private final List<ItemModel> items = new ArrayList<>();
 
   public CustomerMenuModel(Restaurant restaurant, List<Category> categories, List<Item> items) {
-    var symbol = CurrencyMapper.symbol(restaurant.getCurrency());
+    var symbol = restaurant.getCurrency().getSymbol();
     this.profileLink = String.format("/@%s", restaurant.getSlug());
     this.restaurantName = restaurant.getName();
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));

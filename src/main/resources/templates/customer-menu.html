@@ -828,37 +828,37 @@
             </div>
             <span class="restaurant-name" th:text="${customerMenu.restaurantName}">Cantina Bella Italia</span>
         </div>
-        <div class="header-actions" th:if="${false}">
+        <div class="header-actions">
             <!-- Language Selector -->
             <div class="lang-selector">
                 <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">
-                    <span id="currentLangFlag">🇵🇹</span>
+                    <span id="currentLangFlag" th:if="${#locale.language == 'pt'}">🇵🇹</span>
+                    <span id="currentLangFlag" th:if="${#locale.language == 'en'}">🇬🇧</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
                 <div class="lang-dropdown" id="langDropdown">
-                    <button class="lang-option active" onclick="selectLang('pt-BR', '🇵🇹', 'Português')">
-                        <span class="flag">🇵🇹</span>
-                        <span>Português</span>
-                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </button>
-                    <button class="lang-option" onclick="selectLang('en-US', '🇬🇧', 'English')">
-                        <span class="flag">🇬🇧</span>
-                        <span>English</span>
-                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </button>
-                    <button class="lang-option" onclick="selectLang('es-ES', '🇪🇸', 'Español')" th:if="${false}">
-                        <span class="flag">🇪🇸</span>
-                        <span>Español</span>
-                        <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </button>
+                    <a href="?lang=pt" style="text-decoration: none;">
+                        <button type="button" class="lang-option" th:classappend="${#locale.language == 'pt'} ? ' active'">
+                            <span class="flag">🇵🇹</span>
+                            <span>Português</span>
+                            <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </button>
+                    </a>
+                    <a href="?lang=en" style="text-decoration: none;">
+                        <button class="lang-option" th:classappend="${#locale.language == 'en'} ? ' active'">
+                            <span class="flag">🇬🇧</span>
+                            <span>English</span>
+                            <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </button>
+                    </a>
                 </div>
             </div>
 
-            <button class="table-badge" onclick="openTableModal()">
+            <button class="table-badge" onclick="openTableModal()" th:if="${false}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg>
                 Mesa 2
             </button>
-            <button class="waiter-btn" onclick="confirmCallWaiter()">
+            <button class="waiter-btn" onclick="confirmCallWaiter()" th:if="${false}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                 Garçom
             </button>
@@ -883,7 +883,7 @@
 <div id="menuTab" class="tab-content active">
     <!-- Categories -->
     <div class="categories-nav">
-        <button class="category-btn active" onclick="selectCategory('all', this)">All</button>
+        <button class="category-btn active" onclick="selectCategory('all', this)" th:text="#{page.customer.menu.category.all}">All</button>
         <button class="category-btn"
                 th:attr="onclick=|selectCategory('${category.id}', this)|"
                 th:text="${category.name[#locale.language]}"
@@ -1121,12 +1121,12 @@
     function getItemText(item, field) {
         return item[field][currentLang] || item[field]['pt'];
     }
-/*
+
     // Language selector functions
     function toggleLangDropdown() {
         document.getElementById('langDropdown').classList.toggle('active');
     }
-
+/*
     function selectLang(lang, flag, name) {
         currentLang = lang;
         document.getElementById('currentLangFlag').textContent = flag;
@@ -1383,7 +1383,7 @@
         document.getElementById('waiterCalledModal').classList.add('active');
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
-*/
+
     // Table modal
     function openTableModal() {
         document.getElementById('tableModal').classList.add('active');
@@ -1442,7 +1442,7 @@
         document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
         document.getElementById('tableGrandTotal').textContent = formatPrice(grandSubtotal + (grandSubtotal * SERVICE_FEE));
     }
-
+*/
     // Item modal with carousel
     function openItemModal(itemId) {
         const item = menuItems.find(i => i.id === itemId);

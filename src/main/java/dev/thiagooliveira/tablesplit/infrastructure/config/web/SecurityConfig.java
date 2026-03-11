@@ -48,7 +48,8 @@ public class SecurityConfig {
             auth ->
                 auth
                     // Recursos públicos
-                    .requestMatchers("/css/**", "/", "/login", "/register", "/h2-console/**")
+                    .requestMatchers(
+                        "/css/**", "/", "/login", "/register", "/h2-console/**", "/@**", "/@**/**")
                     .permitAll()
 
                     // Qualquer /@{algo} público

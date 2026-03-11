@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class RestaurantCreatedEvent
     private final String email;
     private final String website;
     private final String address;
-    private final String currency;
+    private final Currency currency;
     private final int serviceFee;
 
     public RestaurantCreatedEventDetails(Restaurant restaurant) {
@@ -80,7 +81,7 @@ public class RestaurantCreatedEvent
       return address;
     }
 
-    public String getCurrency() {
+    public Currency getCurrency() {
       return currency;
     }
 

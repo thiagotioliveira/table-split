@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountEntity;
@@ -80,7 +81,7 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.getTags().add(Tag.GROUPS);
     restaurant.getTags().add(Tag.CARDS);
     restaurant.setCustomerLanguages(customerLanguages);
-    restaurant.setCurrency("EUR");
+    restaurant.setCurrency(Currency.EUR);
     restaurant.setServiceFee(10);
     restaurant.setAveragePrice("20-50");
     restaurant

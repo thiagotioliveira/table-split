@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.restaurant.command;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
@@ -17,7 +18,7 @@ public record UpdateRestaurantCommand(
     List<CuisineType> cuisineType,
     List<Tag> tags,
     List<Language> customerLanguages,
-    String currency,
+    Currency currency,
     int serviceFee,
     String averagePrice,
     List<BusinessHours> days,

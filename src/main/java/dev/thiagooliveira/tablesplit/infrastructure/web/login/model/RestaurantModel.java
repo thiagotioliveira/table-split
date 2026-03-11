@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 
 public class RestaurantModel {
   private String name;
@@ -10,7 +11,7 @@ public class RestaurantModel {
   private String email;
   private String website;
   private String address;
-  private String currency;
+  private Currency currency;
   private int serviceFee = 10;
 
   public CreateRestaurantCommand toCommand() {
@@ -82,11 +83,11 @@ public class RestaurantModel {
     this.address = address;
   }
 
-  public String getCurrency() {
+  public Currency getCurrency() {
     return currency;
   }
 
-  public void setCurrency(String currency) {
+  public void setCurrency(Currency currency) {
     this.currency = currency;
   }
 

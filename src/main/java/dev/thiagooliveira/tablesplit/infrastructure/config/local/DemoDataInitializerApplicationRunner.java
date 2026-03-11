@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import org.springframework.boot.ApplicationArguments;
@@ -48,7 +49,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                         "contato@donamaria.com.br",
                         "https://donamaria.com.br",
                         "Rua das Flores, 123 - Centro",
-                        "EUR",
+                        Currency.EUR,
                         10))));
   }
 }

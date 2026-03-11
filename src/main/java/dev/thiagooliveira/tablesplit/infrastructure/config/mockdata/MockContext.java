@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.mockdata;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.security.Context;
 import dev.thiagooliveira.tablesplit.domain.security.RestaurantContext;
@@ -22,7 +23,7 @@ public class MockContext implements Context {
       String userEmail,
       UUID restaurantId,
       String restaurantName,
-      String currency,
+      Currency currency,
       List<Language> customerLanguages) {
     this.accountId = accountId;
     this.userContext = new UserContext(userId, userFirstName, userLastname, userEmail);

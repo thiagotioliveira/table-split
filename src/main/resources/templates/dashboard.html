@@ -677,7 +677,8 @@
                 <ul class="recent-list" th:each="item : ${dashboard.items.list}">
                     <li class="recent-item">
                         <div class="recent-item-img">
-                            <img th:src="${item.imageUrl + '?w=100&h=100&fit=crop'}" alt="">
+                            <img th:if="${item.imageUrl != null && !item.imageUrl.isEmpty()}" th:src="${item.imageUrl + '?w=100&h=100&fit=crop'}" alt="">
+                            <svg th:if="${item.imageUrl == null || item.imageUrl.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                         </div>
                         <div class="recent-item-info">
                             <div class="recent-item-name" th:text="${item.name[#locale.language]}">Lasanha Bolonhesa</div>

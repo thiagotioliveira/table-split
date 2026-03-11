@@ -4,7 +4,6 @@ import dev.thiagooliveira.tablesplit.application.dashboard.DashboardRepository;
 import dev.thiagooliveira.tablesplit.domain.dashboard.v1.RestaurantAttributes;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.CurrencyMapper;
 import java.util.UUID;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ public class RestaurantEventListener {
         event.getDetails().getName(),
         event.getDetails().getAddress(),
         event.getDetails().getSlug(),
-        CurrencyMapper.symbol(event.getDetails().getCurrency()));
+        event.getDetails().getCurrency().getSymbol());
   }
 
   @EventListener
@@ -37,7 +36,7 @@ public class RestaurantEventListener {
         event.getDetails().getName(),
         event.getDetails().getAddress(),
         event.getDetails().getSlug(),
-        CurrencyMapper.symbol(event.getDetails().getCurrency()));
+        event.getDetails().getCurrency().getSymbol());
   }
 
   private void updateDashboard(

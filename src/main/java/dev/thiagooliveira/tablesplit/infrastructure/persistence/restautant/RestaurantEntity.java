@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import jakarta.persistence.*;
@@ -47,7 +48,8 @@ public class RestaurantEntity {
   private List<Language> customerLanguages = new ArrayList<>();
 
   @Column(nullable = false)
-  private String currency;
+  @Enumerated(EnumType.STRING)
+  private Currency currency;
 
   @Column(nullable = false)
   private int serviceFee;
@@ -211,11 +213,11 @@ public class RestaurantEntity {
     this.customerLanguages = customerLanguages;
   }
 
-  public String getCurrency() {
+  public Currency getCurrency() {
     return currency;
   }
 
-  public void setCurrency(String currency) {
+  public void setCurrency(Currency currency) {
     this.currency = currency;
   }
 

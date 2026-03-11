@@ -277,7 +277,8 @@
                 <div class="menu-item-content">
                   <div class="menu-item-header">
                     <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
-                    <span class="menu-item-price" th:text="${item.priceFormatted}">R$ 28,90</span>
+                    <div class="menu-item-price">
+                      <span th:text="${menu.currencySymbol}">€</span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">28,90</span></div>
                   </div>
                   <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com
                     tomate, manjericão e azeite</p>

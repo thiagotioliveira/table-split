@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.settings.model;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import jakarta.validation.constraints.*;
@@ -82,7 +83,7 @@ public class SettingsModel {
         restaurant.getCustomerLanguages() == null
             ? List.of()
             : restaurant.getCustomerLanguages().stream().map(Enum::name).toList();
-    this.currency = restaurant.getCurrency();
+    this.currency = restaurant.getCurrency().name();
     this.serviceFee = restaurant.getServiceFee();
     this.averagePrice = restaurant.getAveragePrice();
     this.days =
@@ -119,7 +120,7 @@ public class SettingsModel {
         domainCuisineType,
         domainTags,
         domainLanguage,
-        this.currency,
+        Currency.valueOf(this.currency),
         this.serviceFee,
         this.averagePrice,
         domainDays,

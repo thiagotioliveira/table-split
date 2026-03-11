@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import java.util.UUID;
 
 public class AccountCreatedEvent
@@ -33,7 +34,7 @@ public class AccountCreatedEvent
         String email,
         String website,
         String address,
-        String currency,
+        Currency currency,
         int serviceFee) {
       this.restaurantDetails =
           new RestaurantDetails(
@@ -53,7 +54,7 @@ public class AccountCreatedEvent
     private final String email;
     private final String website;
     private final String address;
-    private final String currency;
+    private final Currency currency;
     private final int serviceFee;
 
     public RestaurantDetails(
@@ -64,7 +65,7 @@ public class AccountCreatedEvent
         String email,
         String website,
         String address,
-        String currency,
+        Currency currency,
         int serviceFee) {
       this.name = name;
       this.slug = slug;
@@ -105,7 +106,7 @@ public class AccountCreatedEvent
       return address;
     }
 
-    public String getCurrency() {
+    public Currency getCurrency() {
       return currency;
     }
 

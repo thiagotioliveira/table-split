@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
+import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -20,7 +21,7 @@ public class Restaurant {
   private List<CuisineType> cuisineType;
   private List<Tag> tags;
   private List<Language> customerLanguages;
-  private String currency;
+  private Currency currency;
   private int serviceFee;
   private String averagePrice;
   private List<BusinessHours> days;
@@ -214,11 +215,11 @@ public class Restaurant {
     this.customerLanguages = customerLanguages;
   }
 
-  public String getCurrency() {
+  public Currency getCurrency() {
     return currency;
   }
 
-  public void setCurrency(String currency) {
+  public void setCurrency(Currency currency) {
     this.currency = currency;
   }
 

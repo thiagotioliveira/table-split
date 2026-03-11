@@ -5,7 +5,6 @@ import static dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.ZONE;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.CurrencyMapper;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -16,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProfileModel {
-  private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
   private final String name;
   private final String description;
@@ -43,7 +42,7 @@ public class ProfileModel {
     this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
     String[] values = restaurant.getAveragePrice().split("-");
-    var symbol = CurrencyMapper.symbol(restaurant.getCurrency());
+    var symbol = restaurant.getCurrency().getSymbol();
     this.averagePrice = String.format("%s %s - %s %s", symbol, values[0], symbol, values[1]);
     this.email = restaurant.getEmail();
     this.address = restaurant.getAddress();
