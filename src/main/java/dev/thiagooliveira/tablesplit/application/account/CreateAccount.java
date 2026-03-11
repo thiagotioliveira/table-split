@@ -42,6 +42,7 @@ public class CreateAccount {
     userPass.getUser().setEmail(userCommand.email());
     userPass.getUser().setPhone(userCommand.phone());
     userPass.getUser().setAccountId(account.getId());
+    userPass.getUser().setLanguage(userCommand.language());
     userPass.setPassword(userCommand.password());
     this.userRepository.save(userPass);
 
@@ -58,7 +59,6 @@ public class CreateAccount {
                 command.restaurant().email(),
                 command.restaurant().website(),
                 command.restaurant().address(),
-                command.restaurant().defaultLanguage(),
                 command.restaurant().currency(),
                 command.restaurant().serviceFee())));
 

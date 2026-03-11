@@ -19,7 +19,6 @@ public class Restaurant {
   private String address;
   private List<CuisineType> cuisineType;
   private List<Tag> tags;
-  private Language defaultLanguage;
   private List<Language> customerLanguages;
   private String currency;
   private int serviceFee;
@@ -205,14 +204,6 @@ public class Restaurant {
 
   public void setTags(List<Tag> tags) {
     this.tags = tags;
-  }
-
-  public Language getDefaultLanguage() {
-    return defaultLanguage;
-  }
-
-  public void setDefaultLanguage(Language defaultLanguage) {
-    this.defaultLanguage = defaultLanguage;
   }
 
   public List<Language> getCustomerLanguages() {

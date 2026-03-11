@@ -19,7 +19,7 @@ public class ItemModel {
 
   public ItemModel(Item item, String symbol) {
     this.id = item.getId().toString();
-    this.categoryId = item.getCategoryId().toString();
+    this.categoryId = item.getCategory().getId().toString();
     this.images =
         item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
     this.name = convertMap(item.getName());

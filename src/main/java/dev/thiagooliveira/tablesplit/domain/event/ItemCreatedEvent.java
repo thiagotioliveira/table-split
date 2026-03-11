@@ -34,6 +34,7 @@ public class ItemCreatedEvent implements DomainEvent<ItemCreatedEvent.ItemCreate
 
   public static class ItemCreatedEventDetails {
     private final UUID categoryId;
+    private final Map<Language, String> categoryName;
     private final Map<Language, String> name;
     private final String imageUrl;
     private final BigDecimal price;
@@ -42,7 +43,8 @@ public class ItemCreatedEvent implements DomainEvent<ItemCreatedEvent.ItemCreate
     private final long totalInactive;
 
     public ItemCreatedEventDetails(Item item, long total, long totalActive, long totalInactive) {
-      this.categoryId = item.getCategoryId();
+      this.categoryId = item.getCategory().getId();
+      this.categoryName = item.getCategory().getName();
       this.name = item.getName();
       this.price = item.getPrice();
       this.imageUrl = item.getImages().isEmpty() ? "" : item.getImages().getFirst().getName();
@@ -53,6 +55,10 @@ public class ItemCreatedEvent implements DomainEvent<ItemCreatedEvent.ItemCreate
 
     public UUID getCategoryId() {
       return categoryId;
+    }
+
+    public Map<Language, String> getCategoryName() {
+      return categoryName;
     }
 
     public Map<Language, String> getName() {

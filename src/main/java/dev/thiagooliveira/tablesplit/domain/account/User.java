@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.UUID;
 
 public class User {
@@ -9,6 +10,7 @@ public class User {
   private String lastName;
   private String email;
   private String phone;
+  private Language language;
 
   public UUID getId() {
     return id;
@@ -56,5 +58,13 @@ public class User {
 
   public void setPhone(String phone) {
     this.phone = phone;
+  }
+
+  public Language getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(Language language) {
+    this.language = language;
   }
 }

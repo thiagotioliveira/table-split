@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.domain.event.ItemCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ public class CreateItem {
     item.setName(command.name());
     item.setRestaurantId(restaurantId);
     item.setDescription(command.description());
-    item.setCategoryId(command.categoryId());
+    item.setCategory(new Category());
+    item.getCategory().setId(command.categoryId());
     item.setPrice(command.price());
     item.setImages(new ArrayList<>());
 
@@ -45,7 +47,8 @@ public class CreateItem {
         item.getImages().add(image);
       }
     }
-    this.itemRepository.save(item);
+
+    item = this.itemRepository.save(item);
 
     var total = this.itemRepository.count();
     var totalActive = this.itemRepository.countActive();

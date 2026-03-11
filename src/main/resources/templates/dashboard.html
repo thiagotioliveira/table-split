@@ -525,7 +525,7 @@
         <div class="dashboard-body">
             <!-- Welcome -->
             <div class="welcome-section">
-                <h1><span th:text="#{page.dashboard.welcome}">Hi</span>, <span th:text="${dashboard.getAttributes().getUserFirstName()}">João</span>! 👋</h1>
+                <h1><span th:text="#{page.dashboard.welcome}">Hi</span>, <span th:text="${dashboard.user.firstName}">João</span>! 👋</h1>
                 <p th:text="#{page.dashboard.welcome.hint}">Manage your menu and restaurant settings.</p>
             </div>
 
@@ -539,14 +539,14 @@
                     </svg>
                 </div>
                 <div class="restaurant-info">
-                    <h2 class="restaurant-name" th:text="${dashboard.attributes.restaurantName}">Cantina Bella Italia</h2>
+                    <h2 class="restaurant-name" th:text="${dashboard.restaurant.name}">Cantina Bella Italia</h2>
                     <div class="restaurant-meta">
             <div class="restaurant-meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                 <circle cx="12" cy="10" r="3"/>
               </svg>
-              <span th:text="${dashboard.attributes.restaurantAddress}">São Paulo, SP</span>
+              <span th:text="${dashboard.restaurant.address}">São Paulo, SP</span>
             </div>
                         <span class="restaurant-meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -559,7 +559,7 @@
                     </div>
                 </div>
                 <div class="restaurant-actions">
-                    <a th:href="${'/@' + dashboard.attributes.restaurantSlug}" class="btn btn-outline" target="_blank">
+                    <a th:href="${'/@' + dashboard.restaurant.slug}" class="btn btn-outline" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                             <polyline points="15 3 21 3 21 9"/>
@@ -581,7 +581,7 @@
                 </div>
                 <div class="public-link-content">
                     <div class="public-link-label" th:text="#{page.dashboard.label.menu.online}">Your menu is online!</div>
-                    <div class="public-link-url"><span th:text="#{app.domain}">tablesplit.com</span>/@<span th:text="${dashboard.attributes.restaurantSlug}"></span></div>
+                    <div class="public-link-url"><span th:text="#{app.domain}">tablesplit.com</span>/@<span th:text="${dashboard.restaurant.slug}"></span></div>
                 </div>
                 <div class="public-link-actions">
                     <button class="btn-icon" title="Copiar link" onclick="copyLink()">
@@ -652,58 +652,38 @@
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.category}">Categories</div>
-                    <div class="stat-value" th:text="${dashboard.attributes.totalCategories}">4</div>
+                    <div class="stat-value" th:text="${dashboard.categories.total}">4</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items}">Items</div>
-                    <div class="stat-value highlight" th:text="${dashboard.attributes.totalItems}">18</div>
+                    <div class="stat-value highlight" th:text="${dashboard.items.total}">18</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.active}">Active</div>
-                    <div class="stat-value" th:text="${dashboard.attributes.totalItemsActive}">16</div>
+                    <div class="stat-value" th:text="${dashboard.items.totalActive}">16</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.inactive}">Inactive</div>
-                    <div class="stat-value" th:text="${dashboard.attributes.totalItemsInactive}">2</div>
+                    <div class="stat-value" th:text="${dashboard.items.totalInactive}">2</div>
                 </div>
             </div>
 
             <!-- Recent Items -->
-            <div class="recent-section">
+            <div class="recent-section" th:if="${!dashboard.items.list.isEmpty()}">
                 <div class="recent-header">
                     <h3>Itens Recentes</h3>
-                    <a href="menu.html" class="btn btn-ghost">Ver todos</a>
+                    <a href="/menu" class="btn btn-ghost">Ver todos</a>
                 </div>
-                <ul class="recent-list">
+                <ul class="recent-list" th:each="item : ${dashboard.items.list}">
                     <li class="recent-item">
                         <div class="recent-item-img">
-                            <img src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=100&h=100&fit=crop" alt="">
+                            <img th:src="${item.imageUrl + '?w=100&h=100&fit=crop'}" alt="">
                         </div>
                         <div class="recent-item-info">
-                            <div class="recent-item-name">Lasanha Bolonhesa</div>
-                            <div class="recent-item-category">Pratos Principais</div>
+                            <div class="recent-item-name" th:text="${item.name[#locale.language]}">Lasanha Bolonhesa</div>
+                            <div class="recent-item-category" th:text="${item.categoryName[#locale.language]}">Pratos Principais</div>
                         </div>
-                        <div class="recent-item-price">R$ 58,00</div>
-                    </li>
-                    <li class="recent-item">
-                        <div class="recent-item-img">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=100&h=100&fit=crop" alt="">
-                        </div>
-                        <div class="recent-item-info">
-                            <div class="recent-item-name">Pizza Margherita</div>
-                            <div class="recent-item-category">Pizzas</div>
-                        </div>
-                        <div class="recent-item-price">R$ 49,00</div>
-                    </li>
-                    <li class="recent-item">
-                        <div class="recent-item-img">
-                            <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=100&h=100&fit=crop" alt="">
-                        </div>
-                        <div class="recent-item-info">
-                            <div class="recent-item-name">Tiramisù</div>
-                            <div class="recent-item-category">Sobremesas</div>
-                        </div>
-                        <div class="recent-item-price">R$ 28,00</div>
+                        <div class="recent-item-price"><span th:text="${dashboard.restaurant.currencySymbol}"></span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></div>
                     </li>
                 </ul>
             </div>
@@ -712,7 +692,7 @@
 </body>
 <script th:inline="javascript">
     const domain = /*[[#{app.domain}]]*/[];
-    const attributes = /*[[${dashboard.attributes}]]*/[];
+    const restaurant = /*[[${dashboard.restaurant}]]*/[];
 
     const i18n = {
         labelLinkCopied: /*[[#{page.dashboard.label.link.copied}]]*/ 'Link Copied',
@@ -722,16 +702,16 @@
 <script>
     // Public link functions
     function copyLink() {
-        navigator.clipboard.writeText('https://'+domain+'/@'+attributes.restaurantSlug);
+        navigator.clipboard.writeText('https://'+domain+'/@'+restaurant.slug);
         alert(i18n.labelLinkCopied);
     }
 
     function shareLink() {
         if (navigator.share) {
             navigator.share({
-                title: attributes.restaurantName,
+                title: restaurant.name,
                 text: i18n.labelCheckoutMenu,
-                url: 'https://'+domain+'/@'+attributes.restaurantSlug
+                url: 'https://'+domain+'/@'+restaurant.slug
             });
         } else {
             copyLink();

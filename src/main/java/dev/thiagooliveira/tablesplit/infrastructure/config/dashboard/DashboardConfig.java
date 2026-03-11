@@ -15,7 +15,7 @@ public class DashboardConfig {
     return new CreateDashboard(dashboardRepository);
   }
 
-  @Bean
+  //  @Bean
   public UpdateDashboard updateDashboard(DashboardRepository dashboardRepository) {
     return new UpdateDashboard(dashboardRepository);
   }

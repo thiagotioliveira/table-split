@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.listener.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.CreateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
@@ -34,8 +35,7 @@ public class AccountCreatedEventListener {
             restaurantDetails.getAddress(),
             List.of(),
             List.of(),
-            restaurantDetails.getDefaultLanguage(),
-            List.of(restaurantDetails.getDefaultLanguage()),
+            List.of(Language.PT, Language.EN),
             restaurantDetails.getCurrency(),
             restaurantDetails.getServiceFee(),
             "20-50", // TODO

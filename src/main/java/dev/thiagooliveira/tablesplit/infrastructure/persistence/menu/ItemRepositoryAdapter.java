@@ -29,8 +29,8 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
-  public void save(Item item) {
-    this.itemJpaRepository.save(ItemEntity.fromDomain(item));
+  public Item save(Item item) {
+    return this.itemJpaRepository.save(ItemEntity.fromDomain(item)).toDomain();
   }
 
   @Override

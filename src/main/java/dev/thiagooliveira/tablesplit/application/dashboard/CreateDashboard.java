@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.dashboard;
 import dev.thiagooliveira.tablesplit.application.dashboard.command.CreateDashboardCommand;
 import dev.thiagooliveira.tablesplit.domain.dashboard.Dashboard;
 import dev.thiagooliveira.tablesplit.domain.dashboard.v1.DefaultDashboardAttributes;
+import dev.thiagooliveira.tablesplit.domain.dashboard.v1.UserAttributes;
 import java.util.UUID;
 
 public class CreateDashboard {
@@ -13,16 +14,18 @@ public class CreateDashboard {
     this.dashboardRepository = dashboardRepository;
   }
 
-  public void execute(UUID accountId, UUID userId, CreateDashboardCommand command) {
-    if (this.dashboardRepository.findByUserId(userId).isPresent()) {
+  public void execute(CreateDashboardCommand command) {
+    if (this.dashboardRepository.findByUserId(command.userId()).isPresent()) {
       throw new RuntimeException(); // TODO
     }
     var dashboard = new Dashboard();
     dashboard.setId(UUID.randomUUID());
-    dashboard.setAccountId(accountId);
-    dashboard.setUserId(userId);
-    dashboard.setAttributes(new DefaultDashboardAttributes());
-    dashboard.getAttributes().setUserFirstName(command.userFirstName());
+    dashboard.setAccountId(command.accountId());
+    dashboard.setUserId(command.userId());
+    dashboard.setAttributes(
+        new DefaultDashboardAttributes(
+            new UserAttributes(
+                command.userId(), command.firstName(), command.lastName(), command.email())));
     this.dashboardRepository.save(dashboard);
   }
 }

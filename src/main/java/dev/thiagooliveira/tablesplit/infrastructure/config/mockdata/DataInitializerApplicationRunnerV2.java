@@ -42,7 +42,8 @@ public class DataInitializerApplicationRunnerV2 implements ApplicationRunner {
                             "Oliveira",
                             "thiago@thiagoti.com",
                             "+351 963 927 988",
-                            "Test#123"),
+                            "Test#123",
+                            Language.PT),
                         new CreateRestaurantCommand(
                             "Dona Maria",
                             slug,
@@ -51,7 +52,6 @@ public class DataInitializerApplicationRunnerV2 implements ApplicationRunner {
                             "contato@donamaria.com.br",
                             "https://donamaria.com.br",
                             "Rua das Flores, 123 - Centro",
-                            Language.PT,
                             "EUR",
                             10))));
 

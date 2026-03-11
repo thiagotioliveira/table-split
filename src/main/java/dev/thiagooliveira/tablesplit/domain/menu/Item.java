@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Item {
   private UUID id;
   private UUID restaurantId;
-  private UUID categoryId;
+  private Category category;
   private List<ItemImage> images;
   private Map<Language, String> name;
   private Map<Language, String> description;
@@ -31,12 +31,12 @@ public class Item {
     this.restaurantId = restaurantId;
   }
 
-  public UUID getCategoryId() {
-    return categoryId;
+  public Category getCategory() {
+    return category;
   }
 
-  public void setCategoryId(UUID categoryId) {
-    this.categoryId = categoryId;
+  public void setCategory(Category category) {
+    this.category = category;
   }
 
   public Map<Language, String> getName() {

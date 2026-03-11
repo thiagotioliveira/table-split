@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.event.ItemUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -26,7 +27,8 @@ public class UpdateItem {
     item.setPrice(command.price());
     item.setDescription(command.description());
     item.setName(command.name());
-    item.setCategoryId(command.categoryId());
+    item.setCategory(new Category());
+    item.getCategory().setId(command.categoryId());
 
     var imageIdsToKeep =
         command.imageIdsToKeep() == null ? new ArrayList<>() : command.imageIdsToKeep();
@@ -56,7 +58,7 @@ public class UpdateItem {
         item.getImages().add(image);
       }
     }
-    this.itemRepository.save(item);
+    item = this.itemRepository.save(item);
 
     var total = this.itemRepository.count();
     var totalActive = this.itemRepository.countActive();

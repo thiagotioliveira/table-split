@@ -22,7 +22,10 @@ public class MenuModel {
             .map(
                 c ->
                     new CategoryModel(
-                        c, items.stream().filter(i -> i.getCategoryId().equals(c.getId())).count()))
+                        c,
+                        items.stream()
+                            .filter(i -> i.getCategory().getId().equals(c.getId()))
+                            .count()))
             .toList();
     this.items =
         items.stream()
@@ -31,7 +34,7 @@ public class MenuModel {
                     new ItemModel(
                         i,
                         categories.stream()
-                            .filter(c -> c.getId().equals(i.getCategoryId()))
+                            .filter(c -> c.getId().equals(i.getCategory().getId()))
                             .map(c -> convertMap(c.getName()))
                             .findFirst()
                             .orElseThrow(),

@@ -18,8 +18,11 @@ public class UserEventListener {
   @EventListener
   public void on(UserCreatedEvent event) {
     this.createDashboard.execute(
-        event.getAccountId(),
-        event.getUserId(),
-        new CreateDashboardCommand(event.getDetails().getFirstName()));
+        new CreateDashboardCommand(
+            event.getAccountId(),
+            event.getUserId(),
+            event.getDetails().getFirstName(),
+            event.getDetails().getLastName(),
+            event.getDetails().getEmail()));
   }
 }

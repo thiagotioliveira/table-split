@@ -11,7 +11,7 @@ public interface ItemRepository {
 
   List<Item> findAll(UUID restaurantId);
 
-  void save(Item item);
+  Item save(Item item);
 
   void delete(UUID itemId);
 

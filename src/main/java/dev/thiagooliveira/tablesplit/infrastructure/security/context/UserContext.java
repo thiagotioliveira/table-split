@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ public class UserContext implements UserDetails {
   private final String email;
   private final String password;
   private final String role;
+  private final Language language;
   private final RestaurantContext restaurant;
 
   public UserContext(
@@ -25,11 +27,13 @@ public class UserContext implements UserDetails {
       String lastName,
       String email,
       String password,
+      Language language,
       RestaurantContext restaurant) {
     this.accountId = accountId;
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.language = language;
     this.name = String.format("%s %s", this.firstName, this.lastName);
     this.email = email;
     this.password = password;
@@ -78,6 +82,10 @@ public class UserContext implements UserDetails {
 
   public UUID getId() {
     return id;
+  }
+
+  public Language getLanguage() {
+    return language;
   }
 
   public String getFirstName() {

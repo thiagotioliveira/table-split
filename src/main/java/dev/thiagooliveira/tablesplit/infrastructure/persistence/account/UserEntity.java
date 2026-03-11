@@ -2,10 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.account.UserPassword;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
+import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,6 +30,10 @@ public class UserEntity {
   @Column(nullable = false)
   private String password;
 
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Language language;
+
   public static UserEntity fromDomain(UserPassword domain) {
     var entity = new UserEntity();
     entity.setId(domain.getUser().getId());
@@ -41,6 +43,7 @@ public class UserEntity {
     entity.setFirstName(domain.getUser().getFirstName());
     entity.setLastName(domain.getUser().getLastName());
     entity.setPhone(domain.getUser().getPhone());
+    entity.setLanguage(domain.getUser().getLanguage());
     return entity;
   }
 
@@ -52,6 +55,7 @@ public class UserEntity {
     entity.setFirstName(domain.getFirstName());
     entity.setLastName(domain.getLastName());
     entity.setPhone(domain.getPhone());
+    entity.setLanguage(domain.getLanguage());
     return entity;
   }
 
@@ -132,5 +136,13 @@ public class UserEntity {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Language getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(Language language) {
+    this.language = language;
   }
 }

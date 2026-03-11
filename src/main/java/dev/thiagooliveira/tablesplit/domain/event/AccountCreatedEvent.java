@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.util.UUID;
 
 public class AccountCreatedEvent
@@ -34,21 +33,11 @@ public class AccountCreatedEvent
         String email,
         String website,
         String address,
-        Language defaultLanguage,
         String currency,
         int serviceFee) {
       this.restaurantDetails =
           new RestaurantDetails(
-              name,
-              slug,
-              description,
-              phone,
-              email,
-              website,
-              address,
-              defaultLanguage,
-              currency,
-              serviceFee);
+              name, slug, description, phone, email, website, address, currency, serviceFee);
     }
 
     public RestaurantDetails getRestaurantDetails() {
@@ -64,7 +53,6 @@ public class AccountCreatedEvent
     private final String email;
     private final String website;
     private final String address;
-    private final Language defaultLanguage;
     private final String currency;
     private final int serviceFee;
 
@@ -76,7 +64,6 @@ public class AccountCreatedEvent
         String email,
         String website,
         String address,
-        Language defaultLanguage,
         String currency,
         int serviceFee) {
       this.name = name;
@@ -86,7 +73,6 @@ public class AccountCreatedEvent
       this.email = email;
       this.website = website;
       this.address = address;
-      this.defaultLanguage = defaultLanguage;
       this.currency = currency;
       this.serviceFee = serviceFee;
     }
@@ -117,10 +103,6 @@ public class AccountCreatedEvent
 
     public String getAddress() {
       return address;
-    }
-
-    public Language getDefaultLanguage() {
-      return defaultLanguage;
     }
 
     public String getCurrency() {

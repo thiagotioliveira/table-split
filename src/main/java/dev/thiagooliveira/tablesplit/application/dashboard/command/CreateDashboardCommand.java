@@ -1,3 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.dashboard.command;
 
-public record CreateDashboardCommand(String userFirstName) {}
+import java.util.UUID;
+
+public record CreateDashboardCommand(
+    UUID accountId, UUID userId, String firstName, String lastName, String email) {}

@@ -20,7 +20,7 @@ public class ItemModel {
 
   public ItemModel(Item item, Map<String, String> categoryName, String symbol) {
     this.id = item.getId().toString();
-    this.categoryId = item.getCategoryId().toString();
+    this.categoryId = item.getCategory().getId().toString();
     this.categoryName = categoryName;
     this.name = convertMap(item.getName());
     this.description = convertMap(item.getDescription());

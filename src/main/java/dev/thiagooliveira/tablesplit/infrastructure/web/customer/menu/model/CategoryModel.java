@@ -19,7 +19,7 @@ public class CategoryModel {
     this.id = category.getId();
     this.name = convertMap(category.getName());
     items.stream()
-        .filter(i -> i.getCategoryId().equals(category.getId()))
+        .filter(i -> i.getCategory().getId().equals(category.getId()))
         .forEach(i -> this.items.add(new ItemModel(i, symbol)));
     this.itemsSize = this.items.size();
   }

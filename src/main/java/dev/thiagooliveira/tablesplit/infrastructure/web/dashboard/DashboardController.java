@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.dashboard.GetDashboard;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.DashboardModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ public class DashboardController {
     var dashboard = this.getDashboard.execute(context.getId()).orElseThrow(); // TODO
     model.addAttribute("module", Module.DASHBOARD);
     model.addAttribute("context", new ContextModel(context));
-    model.addAttribute("dashboard", dashboard);
+    model.addAttribute("dashboard", new DashboardModel(dashboard.getAttributes()));
     return "dashboard";
   }
 }

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -45,7 +46,11 @@ public class ItemEntity {
     var domain = new Item();
     domain.setId(this.id);
     domain.setRestaurantId(this.category.getRestaurantId());
-    domain.setCategoryId(this.category.getId());
+    domain.setCategory(new Category());
+    domain.getCategory().setId(this.category.getId());
+    domain.getCategory().setName(this.category.getName());
+    domain.getCategory().setRestaurantId(this.category.getRestaurantId());
+    domain.getCategory().setOrder(this.category.getNumOrder());
     domain.setName(this.name);
     domain.setDescription(this.description);
     domain.setPrice(this.price);
@@ -57,7 +62,7 @@ public class ItemEntity {
     var entity = new ItemEntity();
     entity.setId(domain.getId());
     entity.setCategory(new CategoryEntity());
-    entity.getCategory().setId(domain.getCategoryId());
+    entity.getCategory().setId(domain.getCategory().getId());
     entity.setName(domain.getName());
     entity.setDescription(domain.getDescription());
     entity.setPrice(domain.getPrice());

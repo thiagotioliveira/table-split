@@ -79,7 +79,6 @@ public class DataInitializerApplicationRunner implements ApplicationRunner {
     restaurant.getTags().add(Tag.RESERVATIONS);
     restaurant.getTags().add(Tag.GROUPS);
     restaurant.getTags().add(Tag.CARDS);
-    restaurant.setDefaultLanguage(Language.PT);
     restaurant.setCustomerLanguages(customerLanguages);
     restaurant.setCurrency("EUR");
     restaurant.setServiceFee(10);

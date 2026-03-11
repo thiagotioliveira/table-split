@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserModel {
@@ -9,6 +10,7 @@ public class UserModel {
   private String email;
   private String phone;
   private String password;
+  private String language;
 
   public CreateUserCommand toCommand(PasswordEncoder passwordEncoder) {
     return new CreateUserCommand(
@@ -16,7 +18,8 @@ public class UserModel {
         this.lastName,
         this.email,
         this.phone,
-        passwordEncoder.encode(this.password));
+        passwordEncoder.encode(this.password),
+        Language.valueOf(this.language));
   }
 
   public String getFirstName() {
@@ -57,5 +60,13 @@ public class UserModel {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
   }
 }

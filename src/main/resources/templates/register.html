@@ -945,6 +945,14 @@
                 </div>
               </div>
 
+              <div class="form-group">
+                <label for="defaultLanguage">Languages</label>
+                <select id="defaultLanguage" class="form-input" th:field="*{user.language}">
+                  <option value="EN" selected>English</option>
+                  <option value="PT">Português</option>
+                </select>
+              </div>
+
               <div class="form-group" id="passwordGroup">
                 <label for="password">Senha</label>
                 <div class="input-wrapper">
@@ -1164,13 +1172,6 @@
                       <option value="EUR">€ - Euro</option>
                       <option value="BRL">R$ - Real Brasileiro</option>
                       <option value="USD" th:if="${false}">$ - Dólar Americano</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="defaultLanguage">Languages</label>
-                    <select id="defaultLanguage" class="form-input" th:field="*{restaurant.defaultLanguage}">
-                      <option value="EN" selected>English (US)</option>
-                      <option value="PT">Português (Brasil)</option>
                     </select>
                   </div>
                   <div class="form-group">

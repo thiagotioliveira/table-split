@@ -1,12 +1,17 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 public class RestaurantLocaleResolver extends SessionLocaleResolver {
@@ -24,7 +29,15 @@ public class RestaurantLocaleResolver extends SessionLocaleResolver {
     String slug = extractSlug(request);
 
     if (slug == null) {
-      return requestedLocale;
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
+      if (authenticated) {
+        var context =
+            (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return Locale.forLanguageTag(context.getLanguage().name());
+      } else {
+        return Locale.forLanguageTag(Language.PT.name());
+      }
     }
 
     return getRestaurant
@@ -52,7 +65,7 @@ public class RestaurantLocaleResolver extends SessionLocaleResolver {
     }
 
     // Fallback to default language
-    return Locale.forLanguageTag(restaurant.getDefaultLanguage().name());
+    return Locale.forLanguageTag(restaurant.getCustomerLanguages().getFirst().name());
   }
 
   @Override

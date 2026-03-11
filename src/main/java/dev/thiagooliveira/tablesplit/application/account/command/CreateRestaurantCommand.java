@@ -1,7 +1,5 @@
 package dev.thiagooliveira.tablesplit.application.account.command;
 
-import dev.thiagooliveira.tablesplit.domain.common.Language;
-
 public record CreateRestaurantCommand(
     String name,
     String slug,
@@ -10,6 +8,5 @@ public record CreateRestaurantCommand(
     String email,
     String website,
     String address,
-    Language defaultLanguage,
     String currency,
     int serviceFee) {}

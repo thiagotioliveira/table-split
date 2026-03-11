@@ -42,10 +42,6 @@ public class RestaurantEntity {
   @Column(columnDefinition = "TEXT")
   private List<Tag> tags = new ArrayList<>();
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Language defaultLanguage;
-
   @Convert(converter = LanguageJsonListConverter.class)
   @Column(columnDefinition = "TEXT")
   private List<Language> customerLanguages = new ArrayList<>();
@@ -82,7 +78,6 @@ public class RestaurantEntity {
     domain.setAddress(this.address);
     domain.setCuisineType(this.cuisineType);
     domain.setTags(this.tags);
-    domain.setDefaultLanguage(this.defaultLanguage);
     domain.setCustomerLanguages(this.customerLanguages);
     domain.setCurrency(this.currency);
     domain.setServiceFee(this.serviceFee);
@@ -106,7 +101,6 @@ public class RestaurantEntity {
     entity.setAddress(domain.getAddress());
     entity.setCuisineType(domain.getCuisineType());
     entity.setTags(domain.getTags());
-    entity.setDefaultLanguage(domain.getDefaultLanguage());
     entity.setCustomerLanguages(domain.getCustomerLanguages());
     entity.setCurrency(domain.getCurrency());
     entity.setServiceFee(domain.getServiceFee());
@@ -207,14 +201,6 @@ public class RestaurantEntity {
 
   public void setCuisineType(List<CuisineType> cuisineType) {
     this.cuisineType = cuisineType;
-  }
-
-  public Language getDefaultLanguage() {
-    return defaultLanguage;
-  }
-
-  public void setDefaultLanguage(Language defaultLanguage) {
-    this.defaultLanguage = defaultLanguage;
   }
 
   public List<Language> getCustomerLanguages() {

@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 
 public class RestaurantModel {
   private String name;
@@ -11,7 +10,6 @@ public class RestaurantModel {
   private String email;
   private String website;
   private String address;
-  private String defaultLanguage;
   private String currency;
   private int serviceFee = 10;
 
@@ -24,7 +22,6 @@ public class RestaurantModel {
         this.email,
         this.website,
         this.address,
-        Language.valueOf(this.defaultLanguage),
         this.currency,
         this.serviceFee);
   }
@@ -83,14 +80,6 @@ public class RestaurantModel {
 
   public void setAddress(String address) {
     this.address = address;
-  }
-
-  public String getDefaultLanguage() {
-    return defaultLanguage;
-  }
-
-  public void setDefaultLanguage(String defaultLanguage) {
-    this.defaultLanguage = defaultLanguage;
   }
 
   public String getCurrency() {

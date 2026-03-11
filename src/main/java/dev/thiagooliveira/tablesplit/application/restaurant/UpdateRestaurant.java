@@ -27,7 +27,6 @@ public class UpdateRestaurant {
     restaurant.setEmail(command.email());
     restaurant.setAddress(command.address());
     restaurant.setCuisineType(command.cuisineType());
-    restaurant.setDefaultLanguage(command.defaultLanguage());
     restaurant.setCustomerLanguages(command.customerLanguages());
     restaurant.setTags(command.tags());
     restaurant.setCurrency(command.currency());

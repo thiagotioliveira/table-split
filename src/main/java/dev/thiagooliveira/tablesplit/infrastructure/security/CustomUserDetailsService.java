@@ -32,6 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         user.getLastName(),
         user.getEmail(),
         user.getPassword(),
+        user.getLanguage(),
         new RestaurantContext(
             restaurant.getId(),
             restaurant.getName(),

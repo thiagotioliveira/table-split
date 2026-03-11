@@ -16,7 +16,6 @@ public record CreateRestaurantCommand(
     String address,
     List<CuisineType> cuisineType,
     List<Tag> tags,
-    Language defaultLanguage,
     List<Language> customerLanguages,
     String currency,
     int serviceFee,
