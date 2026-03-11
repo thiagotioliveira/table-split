@@ -1031,7 +1031,7 @@
               <p th:text="#{page.settings.section.languages.description}">Configure the languages available for your customers</p>
             </div>
             <div class="settings-section-body">
-              <div class="form-group">
+              <div class="form-group" th:if="${false}">
                 <label class="form-label" for="primaryLanguage" th:text="#{page.settings.form.language.primary}">Primary Language
                   *</label>
                 <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;"
@@ -1349,7 +1349,7 @@
 
           <!-- Footer Actions -->
           <div class="settings-footer">
-            <button class="btn btn-outline" th:text="#{button.cancel}">Cancel</button>
+            <button type="button" class="btn btn-outline" th:text="#{button.cancel}">Cancel</button>
             <button class="btn btn-primary" type="submit" th:text="#{button.save}">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
