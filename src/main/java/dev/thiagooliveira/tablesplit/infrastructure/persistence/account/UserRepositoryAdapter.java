@@ -28,6 +28,11 @@ public class UserRepositoryAdapter implements UserRepository {
   }
 
   @Override
+  public Optional<User> findById(UUID userId) {
+    return this.userJpaRepository.findById(userId).map(UserEntity::toDomain);
+  }
+
+  @Override
   public Optional<User> findByEmail(String email) {
     return this.userJpaRepository.findByEmail(email).map(UserEntity::toDomain);
   }

@@ -11,13 +11,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UserContext implements UserDetails {
   private final UUID id;
   private final UUID accountId;
-  private final String firstName;
-  private final String lastName;
-  private final String name;
-  private final String email;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private Language language;
   private final String password;
   private final String role;
-  private final Language language;
   private final RestaurantContext restaurant;
 
   public UserContext(
@@ -34,7 +33,6 @@ public class UserContext implements UserDetails {
     this.firstName = firstName;
     this.lastName = lastName;
     this.language = language;
-    this.name = String.format("%s %s", this.firstName, this.lastName);
     this.email = email;
     this.password = password;
     this.role = "RESTAURANT_ADMIN";
@@ -96,10 +94,6 @@ public class UserContext implements UserDetails {
     return lastName;
   }
 
-  public String getName() {
-    return name;
-  }
-
   public String getEmail() {
     return email;
   }
@@ -110,5 +104,21 @@ public class UserContext implements UserDetails {
 
   public RestaurantContext getRestaurant() {
     return restaurant;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public void setLanguage(Language language) {
+    this.language = language;
   }
 }

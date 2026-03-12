@@ -11,6 +11,7 @@ public class User {
   private String email;
   private String phone;
   private Language language;
+  private String password;
 
   public UUID getId() {
     return id;
@@ -66,5 +67,13 @@ public class User {
 
   public void setLanguage(Language language) {
     this.language = language;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

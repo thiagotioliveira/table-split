@@ -56,6 +56,7 @@ public class UserEntity {
     entity.setLastName(domain.getLastName());
     entity.setPhone(domain.getPhone());
     entity.setLanguage(domain.getLanguage());
+    entity.setPassword(domain.getPassword());
     return entity;
   }
 
@@ -67,6 +68,7 @@ public class UserEntity {
     user.setLastName(this.lastName);
     user.setFirstName(this.firstName);
     user.setId(this.id);
+    user.setPassword(this.getPassword());
     return user;
   }
 

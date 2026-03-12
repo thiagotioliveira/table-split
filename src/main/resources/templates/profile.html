@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{page.user.profile.header.title}">User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Profile specific styles */
+        .profile-layout {
+            max-width: 640px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .profile-avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .profile-avatar-edit:hover {
+            background: var(--background-secondary);
+            border-color: var(--primary);
+        }
+
+        .profile-avatar-edit svg {
+            width: 14px;
+            height: 14px;
+            color: var(--muted);
+        }
+
+        .profile-info h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info p {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* Sections */
+        .profile-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .profile-section-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-section-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        .profile-section-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .profile-section-body {
+            padding: 1.5rem;
+        }
+
+        /* Language Selector */
+        .language-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .language-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .language-option input {
+            display: none;
+        }
+
+        .language-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .language-option.selected .language-radio {
+            border-color: var(--primary);
+        }
+
+        .language-option.selected .language-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .language-flag {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .language-details {
+            flex: 1;
+        }
+
+        .language-name {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+
+        .language-region {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        /* Form */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9375rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--background);
+            color: var(--foreground);
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-input::placeholder {
+            color: var(--muted);
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.375rem;
+        }
+
+        /* Password Section */
+        .password-requirements {
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .password-requirements h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.375rem;
+        }
+
+        .password-requirements li:last-child {
+            margin-bottom: 0;
+        }
+
+        .password-requirements li svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .password-requirements li.valid {
+            color: var(--green);
+        }
+
+        .password-requirements li.valid svg {
+            color: var(--green);
+        }
+
+        /* Password input with toggle */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-input {
+            padding-right: 3rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: var(--foreground);
+        }
+
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Strength bar */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.375rem;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+
+        .strength-fill.weak { width: 25%; background: var(--destructive); }
+        .strength-fill.fair { width: 50%; background: var(--orange); }
+        .strength-fill.good { width: 75%; background: #84CC16; }
+        .strength-fill.strong { width: 100%; background: var(--green); }
+
+        .strength-text {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        /* Section Footer */
+        .profile-section-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--background-secondary);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Alert */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .alert svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .alert-success {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .alert-message {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .alert.hidden {
+            display: none;
+        }
+
+        /* User Menu in Sidebar */
+        .user-menu-container {
+            position: relative;
+        }
+
+        .user-menu-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            width: 100%;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .user-menu-trigger:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .user-avatar-sm {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-menu-arrow {
+            color: var(--muted);
+            transition: transform 0.2s;
+        }
+
+        .user-menu-container.open .user-menu-arrow {
+            transform: rotate(180deg);
+        }
+
+        .user-submenu {
+            position: absolute;
+            bottom: calc(100% + 0.5rem);
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .user-menu-container.open .user-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-submenu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+
+        .user-submenu-item:first-child {
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .user-submenu-item:last-child {
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .user-submenu-item:hover {
+            background: var(--background-secondary);
+        }
+
+        .user-submenu-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .user-submenu-item.danger {
+            color: var(--destructive);
+        }
+
+        .user-submenu-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .user-submenu-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-submenu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.25rem 0;
+        }
+
+
+        /* Validation Errors */
+        .form-input.error,
+        .language-option.error {
+            border-color: var(--destructive) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        .form-error {
+            font-size: 0.75rem;
+            color: var(--destructive);
+            margin-top: 0.375rem;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-label .required {
+            color: var(--destructive);
+            margin-left: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:insert="~{components/sidebar :: sidebar(#{page.user.profile.header.title})}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="dashboard-body">
+            <div class="profile-layout">
+
+                <div th:replace="~{components/alert :: alert}"></div>
+
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span th:text="${(context.user.firstName.substring(0, 1) + context.user.lastName.substring(0, 1)).toUpperCase()}">JC</span>
+                        <label class="profile-avatar-edit" for="avatarInput" th:if="${false}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                        </label>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;" th:if="${false}">
+                    </div>
+                    <div class="profile-info">
+                        <h2 th:text="${context.user.name}">João Carlos</h2>
+                        <p th:text="${context.user.email}">joao@email.com</p>
+                    </div>
+                </div>
+
+                <form th:action="@{'/profile'}" method="post" th:object="${user}">
+                    <!-- Language Section -->
+                    <div class="profile-section">
+                        <div class="profile-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                            <h3>Idioma do Sistema <span class="required">*</span></h3>
+                        </div>
+                        <div class="profile-section-body">
+                            <div class="language-options">
+                                <label class="language-option" th:classappend="${user.language == 'PT'} ? ' selected'" th:append onclick="selectLanguage(this, 'pt-BR')">
+                                    <input type="radio" value="PT" th:field="*{language}">
+                                    <div class="language-radio"></div>
+                                    <span class="language-flag">🇵🇹</span>
+                                    <div class="language-details">
+                                        <div class="language-name">Português</div>
+                                        <div class="language-region">Europeu</div>
+                                    </div>
+                                </label>
+                                <label class="language-option" th:classappend="${user.language == 'EN'} ? ' selected'"  onclick="selectLanguage(this, 'en-US')">
+                                    <input type="radio" value="EN" th:field="*{language}">
+                                    <div class="language-radio"></div>
+                                    <span class="language-flag">🇬🇧</span>
+                                    <div class="language-details">
+                                        <div class="language-name">English</div>
+                                        <div class="language-region">Great Britain</div>
+                                    </div>
+                                </label>
+                                <label class="language-option" onclick="selectLanguage(this, 'es-ES')" th:if="${false}">
+                                    <input type="radio" name="language" value="es-ES">
+                                    <div class="language-radio"></div>
+                                    <span class="language-flag">🇪🇸</span>
+                                    <div class="language-details">
+                                        <div class="language-name">Español</div>
+                                        <div class="language-region">España</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Info Section -->
+                    <div class="profile-section">
+                        <div class="profile-section-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <h3>Informações Pessoais</h3>
+                        </div>
+
+                        <div class="profile-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="firstName">Primeiro Nome<span class="required">*</span></label>
+                                    <input type="text" id="firstName" class="form-input" value="João" placeholder="Seu primeiro nome" th:field="*{firstName}">
+                                    <p class="form-error" id="firstNameError">Por favor, informe seu primeiro nome</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="lastName">Último Nome<span class="required">*</span></label>
+                                    <input type="text" id="lastName" class="form-input" value="Carlos" placeholder="Seu último nome" th:field="*{lastName}">
+                                    <p class="form-error" id="lastNameError">Por favor, informe seu último nome</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email<span class="required">*</span></label>
+                                <input type="email" id="email" class="form-input" value="joao@email.com" placeholder="seu@email.com" th:field="*{email}">
+                                <p class="form-error" id="emailError">Por favor, informe um email válido</p>
+                                <p class="form-hint">Usado para login e notificações</p>
+                            </div>
+                        </div>
+                        <div class="profile-section-footer">
+                            <button type="button" class="btn btn-outline">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" onclick="return savePersonalInfo()">Salvar Alterações</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Password Section -->
+                <div class="profile-section">
+                    <div class="profile-section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <h3>Alterar Senha</h3>
+                    </div>
+                    <div class="profile-section-body">
+                        <div class="form-group">
+                            <label class="form-label" for="currentPassword">Senha Atual</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="currentPassword" class="form-input" placeholder="Digite sua senha atual">
+                                <button type="button" class="password-toggle" onclick="togglePassword('currentPassword', this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="newPassword">Nova Senha</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="newPassword" class="form-input" placeholder="Digite a nova senha" oninput="checkPasswordStrength()">
+                                <button type="button" class="password-toggle" onclick="togglePassword('newPassword', this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="strengthFill"></div>
+                                </div>
+                                <p class="strength-text" id="strengthText">Use letras, números e símbolos</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">Confirmar Nova Senha</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirme a nova senha">
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="password-requirements">
+                            <h4>Requisitos da senha</h4>
+                            <ul>
+                                <li id="reqLength">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                    Mínimo de 8 caracteres
+                                </li>
+                                <li id="reqUpper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                    Uma letra maiúscula
+                                </li>
+                                <li id="reqLower">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                    Uma letra minúscula
+                                </li>
+                                <li id="reqNumber">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                    Um número
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="profile-section-footer">
+                        <button class="btn btn-outline" onclick="resetPassword()">Cancelar</button>
+                        <button class="btn btn-primary" onclick="changePassword()">Alterar Senha</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Language selection
+        function selectLanguage(element, lang) {
+            document.querySelectorAll('.language-option').forEach(opt => {
+                opt.classList.remove('selected');
+                opt.classList.remove('error');
+                opt.querySelector('input').checked = false;
+            });
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+
+            // Save to localStorage
+            localStorage.setItem('userLanguage', lang);
+
+            //showSuccessAlert();
+        }
+
+        // Password visibility toggle
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const svg = button.querySelector('svg');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                svg.innerHTML = `
+          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+          <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+          <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+          <line x1="2" x2="22" y1="2" y2="22"/>
+        `;
+            } else {
+                input.type = 'password';
+                svg.innerHTML = `
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        `;
+            }
+        }
+
+        // Password strength checker
+        function checkPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+
+            // Check requirements
+            const hasLength = password.length >= 8;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+
+            updateRequirement('reqLength', hasLength);
+            updateRequirement('reqUpper', hasUpper);
+            updateRequirement('reqLower', hasLower);
+            updateRequirement('reqNumber', hasNumber);
+
+            // Calculate strength
+            let strength = 0;
+            if (hasLength) strength++;
+            if (hasUpper) strength++;
+            if (hasLower) strength++;
+            if (hasNumber) strength++;
+
+            fill.className = 'strength-fill';
+
+            if (strength === 0) {
+                text.textContent = 'Use letras, números e símbolos';
+            } else if (strength === 1) {
+                fill.classList.add('weak');
+                text.textContent = 'Senha fraca';
+            } else if (strength === 2) {
+                fill.classList.add('fair');
+                text.textContent = 'Senha razoável';
+            } else if (strength === 3) {
+                fill.classList.add('good');
+                text.textContent = 'Senha boa';
+            } else {
+                fill.classList.add('strong');
+                text.textContent = 'Senha forte!';
+            }
+        }
+
+        function updateRequirement(id, valid) {
+            const el = document.getElementById(id);
+            const svg = el.querySelector('svg');
+
+            if (valid) {
+                el.classList.add('valid');
+                svg.innerHTML = '<path d="M20 6 9 17l-5-5"/>';
+            } else {
+                el.classList.remove('valid');
+                svg.innerHTML = '<circle cx="12" cy="12" r="10"/>';
+            }
+        }
+
+        // Personal Info
+        function savePersonalInfo() {
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const email = document.getElementById('email');
+            const selectedLanguage = document.querySelector('.language-option.selected');
+
+            // Clear previous errors
+            clearValidationErrors();
+
+            let hasError = false;
+            const errors = [];
+
+            // Validate First Name
+            if (!firstName.value.trim()) {
+                firstName.classList.add('error');
+                document.getElementById('firstNameError').classList.add('show');
+                errors.push('Primeiro Nome');
+                hasError = true;
+            }
+
+            // Validate Last Name
+            if (!lastName.value.trim()) {
+                lastName.classList.add('error');
+                document.getElementById('lastNameError').classList.add('show');
+                errors.push('Último Nome');
+                hasError = true;
+            }
+
+            // Validate Email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+                email.classList.add('error');
+                document.getElementById('emailError').classList.add('show');
+                errors.push('Email');
+                hasError = true;
+            }
+
+            // Validate Language
+            if (!selectedLanguage) {
+                document.querySelectorAll('.language-option').forEach(opt => {
+                    opt.classList.add('error');
+                });
+                errors.push('Idioma');
+                hasError = true;
+            }
+            /*
+            if (hasError) {
+                alert('Por favor, preencha os campos obrigatórios:\n• ' + errors.join('\n• '));
+                return ;
+            }*/
+
+            //showSuccessAlert();
+            return !hasError;
+        }
+
+        function clearValidationErrors() {
+            // Clear input errors
+            document.querySelectorAll('.form-input.error').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Clear error messages
+            document.querySelectorAll('.form-error.show').forEach(error => {
+                error.classList.remove('show');
+            });
+
+            // Clear language errors
+            document.querySelectorAll('.language-option.error').forEach(opt => {
+                opt.classList.remove('error');
+            });
+        }
+
+        // Clear error on input
+        document.getElementById('firstName').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('firstNameError').classList.remove('show');
+        });
+
+        document.getElementById('lastName').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('lastNameError').classList.remove('show');
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById('emailError').classList.remove('show');
+        });
+
+        // Password
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (!current) {
+                alert('Digite sua senha atual');
+                return;
+            }
+
+            if (newPass.length < 8) {
+                alert('A nova senha deve ter no mínimo 8 caracteres');
+                return;
+            }
+
+            if (newPass !== confirm) {
+                alert('As senhas não conferem');
+                return;
+            }
+
+            console.log('Changing password...');
+            resetPassword();
+            //showSuccessAlert();
+        }
+
+        function resetPassword() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            checkPasswordStrength();
+        }
+    </script>
+</body>
+</html>

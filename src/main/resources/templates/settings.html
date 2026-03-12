@@ -700,11 +700,12 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <div th:insert="~{components/alert}"></div>
 
     <div class="dashboard-body">
       <form th:action="@{/settings}" th:object="${form}" method="post">
         <div class="settings-layout">
+
+          <div th:replace="~{components/alert :: alert}"></div>
 
           <!-- Basic Information -->
           <div class="settings-section">
