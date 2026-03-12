@@ -8,14 +8,19 @@
 
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
+    <!-- Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Recolher menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+
     <div class="sidebar-header" style="display: flex; align-items: center; justify-content: space-between;">
         <a href="/dashboard" class="logo">
             <div class="logo-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
             </div>
-            <div>
-                <span class="logo-text" style="font-size: 1rem;" th:text="#{app.name}">TableSplit</span>
-                <span style="display: block; font-size: 0.75rem; color: var(--muted);" th:text="${context.restaurant.name}">My Restaurant</span>
+            <div class="logo-text">
+                <span style="font-size: 1rem;" th:text="#{app.name}">TableSplit</span>
+                <span style="display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; background: none; -webkit-background-clip: unset; -webkit-text-fill-color: var(--muted); background-clip: unset;" th:text="${context.restaurant.name}">My Restaurant</span>
             </div>
         </a>
         <button class="sidebar-close" onclick="closeSidebar()">
@@ -29,18 +34,21 @@
                 <a href="/dashboard" class="nav-item" th:classappend="${module.name() == 'DASHBOARD'} ? ' active'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
                     <span>Dashboard</span>
+                    <span class="nav-tooltip">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="/tables" class="nav-item" th:if="${false}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
                     <span>Mesas</span>
+                    <span class="nav-tooltip">Mesas</span>
                 </a>
             </li>
             <li>
                 <a href="/menu" class="nav-item" th:classappend="${module.name() == 'MENU'} ? ' active'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
                     <span th:text="#{nav.menu}">Menu</span>
+                    <span class="nav-tooltip" th:text="#{nav.menu}">Menu</span>
                 </a>
             </li>
             <li>
@@ -59,6 +67,7 @@
                 <a href="/settings" class="nav-item" th:classappend="${module.name() == 'SETTINGS'} ? ' active'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                     <span th:text="#{nav.settings}">Settings</span>
+                    <span class="nav-tooltip" th:text="#{nav.settings}">Settings</span>
                 </a>
             </li>
         </ul>
@@ -123,11 +132,51 @@
         document.body.style.overflow = '';
     }
 
+    // Sidebar Toggle (collapse/expand)
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+
+        if (mainContent) {
+            mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+        }
+
+        // Save preference to localStorage
+        localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+    }
+
     // User Menu
     function toggleUserMenu() {
         const container = document.getElementById('userMenuContainer');
         container.classList.toggle('open');
     }
+
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('userMenuContainer');
+        if (container && !container.contains(e.target)) {
+            container.classList.remove('open');
+        }
+    });
+
+    // Initialize sidebar state from localStorage
+    function initSidebarState() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        if (isCollapsed && window.innerWidth >= 1024) {
+            sidebar.classList.add('collapsed');
+            if (mainContent) {
+                mainContent.classList.add('sidebar-collapsed');
+            }
+        }
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', initSidebarState);
+
 </script>
 
 </html>
