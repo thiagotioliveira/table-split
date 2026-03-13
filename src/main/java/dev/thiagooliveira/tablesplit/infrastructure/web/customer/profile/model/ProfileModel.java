@@ -1,12 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 
-import static dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.ZONE;
-
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class ProfileModel {
 
   private final String menuLink;
 
-  public ProfileModel(Restaurant restaurant) {
+  public ProfileModel(Restaurant restaurant, ZoneId zoneId) {
     this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
     this.description = restaurant.getDescription();
@@ -50,7 +49,7 @@ public class ProfileModel {
         restaurant.getTags() == null
             ? List.of()
             : restaurant.getTags().stream().map(Enum::name).toList();
-    var now = ZonedDateTime.now(ZONE);
+    var now = ZonedDateTime.now(zoneId);
     this.open = restaurant.isOpen(now);
     this.nextOpeningOrClosingHours = restaurant.getNextOpeningOrClosing(now);
 

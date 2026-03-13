@@ -21,11 +21,11 @@ public class UserProfileModel {
 
   public UserProfileModel() {}
 
-  public UserProfileModel(UserContext userContext) {
-    this.firstName = userContext.getFirstName();
-    this.lastName = userContext.getLastName();
-    this.email = userContext.getEmail();
-    this.language = userContext.getLanguage().name();
+  public UserProfileModel(UserContext context) {
+    this.firstName = context.getFirstName();
+    this.lastName = context.getLastName();
+    this.email = context.getEmail();
+    this.language = context.getLanguage().name();
   }
 
   public UpdateUserCommand toCommand() {

@@ -1,15 +1,16 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
+import java.time.ZoneId;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class RegisterModel {
   private UserModel user = new UserModel();
   private RestaurantModel restaurant = new RestaurantModel();
 
-  public CreateAccountCommand toCommand(PasswordEncoder passwordEncoder) {
+  public CreateAccountCommand toCommand(PasswordEncoder passwordEncoder, ZoneId zone) {
     return new CreateAccountCommand(
-        this.user.toCommand(passwordEncoder), this.getRestaurant().toCommand());
+        this.user.toCommand(passwordEncoder), this.getRestaurant().toCommand(), zone);
   }
 
   public UserModel getUser() {

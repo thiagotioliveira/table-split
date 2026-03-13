@@ -13,10 +13,13 @@ cloudinary:
   api-secret:
   root-folder: dev
 
+app:
+  time:
+    zone-id: Europe/Lisbon
+
 logging:
   level:
     ROOT: INFO
-
     org:
       hibernate:
         SQL: OFF

@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 
 import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -23,16 +24,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
+  private final Time time;
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder passwordEncoder;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
 
   public RegisterController(
+      Time time,
       AuthenticationManager authenticationManager,
       PasswordEncoder passwordEncoder,
       TransactionalContext transactionalContext,
       CreateAccount createAccount) {
+    this.time = time;
     this.authenticationManager = authenticationManager;
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
@@ -52,7 +56,9 @@ public class RegisterController {
       HttpServletRequest request) {
     var user =
         this.transactionalContext.execute(
-            () -> this.createAccount.execute(registerModel.toCommand(passwordEncoder)));
+            () ->
+                this.createAccount.execute(
+                    registerModel.toCommand(passwordEncoder, time.getZoneId())));
     var token =
         new UsernamePasswordAuthenticationToken(
             user.getEmail(), registerModel.getUser().getPassword());

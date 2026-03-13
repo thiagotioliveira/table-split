@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
 import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.account.User;
-import dev.thiagooliveira.tablesplit.domain.account.UserPassword;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,11 +14,6 @@ public class UserRepositoryAdapter implements UserRepository {
 
   public UserRepositoryAdapter(UserJpaRepository userJpaRepository) {
     this.userJpaRepository = userJpaRepository;
-  }
-
-  @Override
-  public void save(UserPassword userPassword) {
-    this.userJpaRepository.save(UserEntity.fromDomain(userPassword));
   }
 
   @Override

@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.security;
 
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.account.UserJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.RestaurantContext;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
+import dev.thiagooliveira.tablesplit.application.account.UserRepository;
+import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,32 +11,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private final UserJpaRepository userJpaRepository;
-  private final RestaurantJpaRepository restaurantJpaRepository;
+  private final AccountRepository accountRepository;
+  private final UserRepository userRepository;
+  private final RestaurantRepository restaurantRepository;
 
   public CustomUserDetailsService(
-      UserJpaRepository userJpaRepository, RestaurantJpaRepository restaurantJpaRepository) {
-    this.userJpaRepository = userJpaRepository;
-    this.restaurantJpaRepository = restaurantJpaRepository;
+      AccountRepository accountRepository,
+      UserRepository userRepository,
+      RestaurantRepository restaurantRepository) {
+    this.accountRepository = accountRepository;
+    this.userRepository = userRepository;
+    this.restaurantRepository = restaurantRepository;
   }
 
   @Override
-  public UserContext loadUserByUsername(String email) throws UsernameNotFoundException {
-    var user = this.userJpaRepository.findByEmail(email).orElseThrow(); // TODO
+  public AccountContext loadUserByUsername(String email) throws UsernameNotFoundException {
+    var user = this.userRepository.findByEmail(email).orElseThrow(); // TODO
+    var account = this.accountRepository.findById(user.getAccountId()).orElseThrow(); // TODO
     var restaurant =
-        this.restaurantJpaRepository.findByAccountId(user.getAccountId()).orElseThrow(); // TODO
-    return new UserContext(
-        user.getAccountId(),
-        user.getId(),
-        user.getFirstName(),
-        user.getLastName(),
-        user.getEmail(),
-        user.getPassword(),
-        user.getLanguage(),
-        new RestaurantContext(
-            restaurant.getId(),
-            restaurant.getName(),
-            restaurant.getCurrency(),
-            restaurant.getCustomerLanguages()));
+        this.restaurantRepository.findByAccountId(user.getAccountId()).orElseThrow(); // TODO
+    return new AccountContext(account, user, restaurant);
   }
 }

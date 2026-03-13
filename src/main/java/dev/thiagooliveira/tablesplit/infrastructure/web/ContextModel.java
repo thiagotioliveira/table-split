@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.core.Authentication;
@@ -13,16 +13,18 @@ public class ContextModel {
   private final RestaurantContextModel restaurant;
 
   public ContextModel(Authentication auth) {
-    var context = (UserContext) auth.getPrincipal();
+    var account = (AccountContext) auth.getPrincipal();
+    var user = account.getUser();
+    var restaurant = account.getRestaurant();
     this.user =
         new UserContextModel(
-            context.getId(), context.getFirstName(), context.getLastName(), context.getEmail());
+            user.getId(), user.getFirstName(), user.getLastName(), user.getEmail());
     this.restaurant =
         new RestaurantContextModel(
-            context.getRestaurant().getId(),
-            context.getRestaurant().getName(),
-            context.getRestaurant().getCurrency(),
-            context.getRestaurant().getCustomerLanguages());
+            restaurant.getId(),
+            restaurant.getName(),
+            restaurant.getCurrency(),
+            restaurant.getCustomerLanguages());
   }
 
   public UserContextModel getUser() {

@@ -21,6 +21,11 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   }
 
   @Override
+  public Optional<Restaurant> findByAccountId(UUID accountId) {
+    return this.restaurantJpaRepository.findByAccountId(accountId).map(RestaurantEntity::toDomain);
+  }
+
+  @Override
   public Optional<Restaurant> findBySlug(String slug) {
     return this.restaurantJpaRepository.findBySlug(slug).map(RestaurantEntity::toDomain);
   }

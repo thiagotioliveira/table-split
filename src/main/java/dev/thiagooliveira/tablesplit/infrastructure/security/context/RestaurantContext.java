@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,12 +12,11 @@ public class RestaurantContext {
   private Currency currency;
   private List<Language> customerLanguages;
 
-  public RestaurantContext(
-      UUID id, String name, Currency currency, List<Language> customerLanguages) {
-    this.id = id;
-    this.name = name;
-    this.currency = currency;
-    this.customerLanguages = customerLanguages;
+  public RestaurantContext(Restaurant restaurant) {
+    this.id = restaurant.getId();
+    this.name = restaurant.getName();
+    this.currency = restaurant.getCurrency();
+    this.customerLanguages = restaurant.getCustomerLanguages();
   }
 
   public UUID getId() {

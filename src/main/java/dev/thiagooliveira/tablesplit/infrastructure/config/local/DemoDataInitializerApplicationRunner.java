@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.account.command.CreateUserComma
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,14 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
 
+  private final Time time;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
   private final PasswordEncoder passwordEncoder;
 
   public DemoDataInitializerApplicationRunner(
+      Time time,
       TransactionalContext transactionalContext,
       CreateAccount createAccount,
       PasswordEncoder passwordEncoder) {
+    this.time = time;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
     this.passwordEncoder = passwordEncoder;
@@ -50,6 +54,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                         "https://donamaria.com.br",
                         "Rua das Flores, 123 - Centro",
                         Currency.EUR,
-                        10))));
+                        10),
+                    time.getZoneId())));
   }
 }

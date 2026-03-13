@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
@@ -57,7 +57,7 @@ public class SettingsController {
     if (bindingResult.hasErrors()) {
       return "settings";
     }
-    var context = (UserContext) auth.getPrincipal();
+    var context = (AccountContext) auth.getPrincipal();
     var restaurant =
         this.transactionalContext.execute(
             () -> updateRestaurant.execute(context.getRestaurant().getId(), form.toCommand()));
@@ -66,7 +66,7 @@ public class SettingsController {
     return "redirect:/settings";
   }
 
-  private void updateContext(UserContext context, Restaurant restaurant) {
+  private void updateContext(AccountContext context, Restaurant restaurant) {
     context.getRestaurant().setName(restaurant.getName());
     context.getRestaurant().setCurrency(restaurant.getCurrency());
     context.getRestaurant().setCustomerLanguages(restaurant.getCustomerLanguages());

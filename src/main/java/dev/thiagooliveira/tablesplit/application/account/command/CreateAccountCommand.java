@@ -1,3 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.account.command;
 
-public record CreateAccountCommand(CreateUserCommand user, CreateRestaurantCommand restaurant) {}
+import java.time.ZoneId;
+
+public record CreateAccountCommand(
+    CreateUserCommand user, CreateRestaurantCommand restaurant, ZoneId zone) {}

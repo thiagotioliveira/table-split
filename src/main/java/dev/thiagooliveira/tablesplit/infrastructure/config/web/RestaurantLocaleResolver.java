@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Locale;
@@ -33,8 +33,8 @@ public class RestaurantLocaleResolver extends SessionLocaleResolver {
       boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
       if (authenticated) {
         var context =
-            (UserContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Locale.forLanguageTag(context.getLanguage().name());
+            (AccountContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return Locale.forLanguageTag(context.getUser().getLanguage().name());
       } else {
         return Locale.forLanguageTag(Language.PT.name());
       }

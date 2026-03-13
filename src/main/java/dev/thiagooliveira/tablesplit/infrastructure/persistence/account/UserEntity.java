@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
+import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.User;
-import dev.thiagooliveira.tablesplit.domain.account.UserPassword;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import jakarta.persistence.*;
 import java.util.Objects;
@@ -34,18 +34,9 @@ public class UserEntity {
   @Enumerated(EnumType.STRING)
   private Language language;
 
-  public static UserEntity fromDomain(UserPassword domain) {
-    var entity = new UserEntity();
-    entity.setId(domain.getUser().getId());
-    entity.setEmail(domain.getUser().getEmail());
-    entity.setPassword(domain.getPassword());
-    entity.setAccountId(domain.getUser().getAccountId());
-    entity.setFirstName(domain.getUser().getFirstName());
-    entity.setLastName(domain.getUser().getLastName());
-    entity.setPhone(domain.getUser().getPhone());
-    entity.setLanguage(domain.getUser().getLanguage());
-    return entity;
-  }
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
   public static UserEntity fromDomain(User domain) {
     var entity = new UserEntity();
@@ -57,6 +48,7 @@ public class UserEntity {
     entity.setPhone(domain.getPhone());
     entity.setLanguage(domain.getLanguage());
     entity.setPassword(domain.getPassword());
+    entity.setRole(domain.getRole());
     return entity;
   }
 
@@ -69,6 +61,8 @@ public class UserEntity {
     user.setFirstName(this.firstName);
     user.setId(this.id);
     user.setPassword(this.getPassword());
+    user.setLanguage(this.getLanguage());
+    user.setRole(this.role);
     return user;
   }
 
@@ -146,5 +140,13 @@ public class UserEntity {
 
   public void setLanguage(Language language) {
     this.language = language;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
   }
 }

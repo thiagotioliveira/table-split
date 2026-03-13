@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
@@ -68,12 +68,12 @@ public class MenuController {
       Authentication auth,
       @ModelAttribute UpdateCategoryModel updateCategoryModel,
       RedirectAttributes redirectAttributes) {
-    var context = (UserContext) auth.getPrincipal();
+    var context = (AccountContext) auth.getPrincipal();
     if (updateCategoryModel.getId() == null) {
       this.transactionalContext.execute(
           () ->
               this.createCategory.execute(
-                  context.getAccountId(),
+                  context.getId(),
                   context.getRestaurant().getId(),
                   updateCategoryModel.toCreateCategoryCommand()));
       redirectAttributes.addFlashAttribute(
@@ -82,7 +82,7 @@ public class MenuController {
       this.transactionalContext.execute(
           () ->
               this.updateCategory.execute(
-                  context.getAccountId(),
+                  context.getId(),
                   context.getRestaurant().getId(),
                   updateCategoryModel.getId(),
                   updateCategoryModel.toUpdateCategoryCommand()));
@@ -97,12 +97,12 @@ public class MenuController {
       Authentication auth,
       @ModelAttribute UpdateItemModel updateItemModel,
       RedirectAttributes redirectAttributes) {
-    var context = (UserContext) auth.getPrincipal();
+    var context = (AccountContext) auth.getPrincipal();
     if (updateItemModel.getId() == null) {
       this.transactionalContext.execute(
           () ->
               this.createItem.execute(
-                  context.getAccountId(),
+                  context.getId(),
                   context.getRestaurant().getId(),
                   updateItemModel.toCreateItemCommand()));
       redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.created"));
@@ -110,7 +110,7 @@ public class MenuController {
       this.transactionalContext.execute(
           () ->
               this.updateItem.execute(
-                  context.getAccountId(),
+                  context.getId(),
                   context.getRestaurant().getId(),
                   updateItemModel.getId(),
                   updateItemModel.toUpdateItemCommand()));
@@ -122,11 +122,11 @@ public class MenuController {
   @PostMapping("/categories/delete")
   public String deleteCategory(
       Authentication auth, @RequestParam UUID categoryId, RedirectAttributes redirectAttributes) {
-    var context = (UserContext) auth.getPrincipal();
+    var context = (AccountContext) auth.getPrincipal();
     this.transactionalContext.execute(
         () ->
             this.deleteCategory.execute(
-                context.getAccountId(), context.getRestaurant().getId(), categoryId));
+                context.getId(), context.getRestaurant().getId(), categoryId));
     redirectAttributes.addFlashAttribute(
         "alert", AlertModel.success("alert.menu.category.deleted"));
     return "redirect:/menu";
@@ -135,9 +135,8 @@ public class MenuController {
   @PostMapping("/items/delete")
   public String deleteItem(
       Authentication auth, @RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
-    var context = (UserContext) auth.getPrincipal();
-    this.transactionalContext.execute(
-        () -> this.deleteItem.execute(context.getAccountId(), itemId));
+    var context = (AccountContext) auth.getPrincipal();
+    this.transactionalContext.execute(() -> this.deleteItem.execute(context.getId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
     return "redirect:/menu";
   }

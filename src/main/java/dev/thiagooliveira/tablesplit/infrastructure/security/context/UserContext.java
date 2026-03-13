@@ -1,81 +1,27 @@
 package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 
+import dev.thiagooliveira.tablesplit.domain.account.Role;
+import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserContext implements UserDetails {
+public class UserContext {
   private final UUID id;
-  private final UUID accountId;
   private String firstName;
   private String lastName;
   private String email;
   private Language language;
-  private final String password;
-  private final String role;
-  private final RestaurantContext restaurant;
+  private String password;
+  private final Role role;
 
-  public UserContext(
-      UUID accountId,
-      UUID id,
-      String firstName,
-      String lastName,
-      String email,
-      String password,
-      Language language,
-      RestaurantContext restaurant) {
-    this.accountId = accountId;
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.language = language;
-    this.email = email;
-    this.password = password;
-    this.role = "RESTAURANT_ADMIN";
-    this.restaurant = restaurant;
-  }
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_" + role));
-  }
-
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-  @Override
-  public String getUsername() {
-    return email;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
-
-  public UUID getAccountId() {
-    return accountId;
+  public UserContext(User user) {
+    this.id = user.getId();
+    this.firstName = user.getFirstName();
+    this.lastName = user.getLastName();
+    this.language = user.getLanguage();
+    this.email = user.getEmail();
+    this.password = user.getPassword();
+    this.role = user.getRole();
   }
 
   public UUID getId() {
@@ -98,12 +44,8 @@ public class UserContext implements UserDetails {
     return email;
   }
 
-  public String getRole() {
+  public Role getRole() {
     return role;
-  }
-
-  public RestaurantContext getRestaurant() {
-    return restaurant;
   }
 
   public void setFirstName(String firstName) {
@@ -120,5 +62,13 @@ public class UserContext implements UserDetails {
 
   public void setLanguage(Language language) {
     this.language = language;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 }
