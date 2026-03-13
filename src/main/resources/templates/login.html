@@ -473,8 +473,8 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-card-header">
-          <h1>Bem-vindo de volta!</h1>
-          <p>Entre na sua conta para gerenciar seu restaurante</p>
+          <h1 th:text="#{page.login.welcome}">Welcome back!</h1>
+          <p th:text="#{page.login.welcome.hint}">Log in to your account to manage your restaurant.</p>
         </div>
 
         <div class="auth-card-body">
@@ -510,7 +510,7 @@
             </div>
 
             <div class="form-group" id="passwordGroup">
-              <label for="password">Senha</label>
+              <label for="password" th:text="#{page.login.password}">Password</label>
               <div class="input-wrapper">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
@@ -544,13 +544,13 @@
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn">
-              <span class="btn-content">
-                Entrar
+              <div class="btn-content">
+                <span th:text="#{page.login.button.login}">Login</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M5 12h14"/>
                   <path d="m12 5 7 7-7 7"/>
                 </svg>
-              </span>
+              </div>
               <div class="spinner"></div>
             </button>
           </form>
@@ -571,7 +571,7 @@
         </div>
 
         <div class="auth-card-footer">
-          <p>Não tem uma conta? <a href="/register">Cadastre-se grátis</a></p>
+          <p><span th:text="#{page.login.label.without.account}">Don't have an account?</span> <a href="/register" th:text="#{page.login.label.register}">Sign up for free</a></p>
         </div>
       </div>
     </div>
@@ -579,7 +579,7 @@
 
   <!-- Footer -->
   <footer class="auth-footer">
-    <p>&copy; 2026 SplitTable. Todos os direitos reservados.</p>
+    <p th:text="#{app.footer}">&copy; 2026 TableSplit. All rights reserved.</p>
   </footer>
 
   <script>
