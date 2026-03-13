@@ -30,10 +30,10 @@ public class UserProfileController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = (UserContext) auth.getPrincipal();
+    var context = new ContextModel(auth);
     model.addAttribute("module", Module.USER_PROFILE);
-    model.addAttribute("context", new ContextModel(context));
-    model.addAttribute("user", new UserProfileModel(context));
+    model.addAttribute("context", context);
+    model.addAttribute("user", new UserProfileModel((UserContext) auth.getPrincipal()));
     return "profile";
   }
 

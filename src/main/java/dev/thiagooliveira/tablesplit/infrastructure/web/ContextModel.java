@@ -5,13 +5,15 @@ import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.core.Authentication;
 
 public class ContextModel {
 
   private final UserContextModel user;
   private final RestaurantContextModel restaurant;
 
-  public ContextModel(UserContext context) {
+  public ContextModel(Authentication auth) {
+    var context = (UserContext) auth.getPrincipal();
     this.user =
         new UserContextModel(
             context.getId(), context.getFirstName(), context.getLastName(), context.getEmail());

@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard;
 
 import dev.thiagooliveira.tablesplit.application.dashboard.GetDashboard;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.DashboardModel;
@@ -23,10 +22,10 @@ public class DashboardController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    UserContext context = (UserContext) auth.getPrincipal();
-    var dashboard = this.getDashboard.execute(context.getId()).orElseThrow(); // TODO
+    var context = new ContextModel(auth);
+    var dashboard = this.getDashboard.execute(context.getUser().getId()).orElseThrow(); // TODO
     model.addAttribute("module", Module.DASHBOARD);
-    model.addAttribute("context", new ContextModel(context));
+    model.addAttribute("context", context);
     model.addAttribute("dashboard", new DashboardModel(dashboard.getAttributes()));
     return "dashboard";
   }
