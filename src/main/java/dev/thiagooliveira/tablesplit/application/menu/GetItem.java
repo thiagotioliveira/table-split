@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class GetItem {
@@ -13,11 +13,19 @@ public class GetItem {
     this.itemRepository = itemRepository;
   }
 
-  public List<Item> execute(UUID restaurantId) {
-    return this.itemRepository.findAll(restaurantId);
+  public List<Item> execute(UUID restaurantId, List<Language> languages) {
+    return this.itemRepository.findAll(restaurantId, languages);
   }
 
-  public Optional<Item> execute(UUID restaurantId, UUID itemId) {
-    return this.itemRepository.findById(itemId);
+  public long count(UUID restaurantId) {
+    return this.itemRepository.count(restaurantId);
+  }
+
+  public long countActive(UUID restaurantId) {
+    return this.itemRepository.countActive(restaurantId);
+  }
+
+  public long countInactive(UUID restaurantId) {
+    return this.itemRepository.countInactive(restaurantId);
   }
 }

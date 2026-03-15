@@ -3,8 +3,7 @@ package dev.thiagooliveira.tablesplit.domain.event;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import java.util.UUID;
 
-public class AccountCreatedEvent
-    implements DomainEvent<AccountCreatedEvent.AccountCreatedEventDetails> {
+public class AccountCreatedEvent implements DomainEvent {
   private final UUID accountId;
   private final AccountCreatedEventDetails details;
 
@@ -18,7 +17,6 @@ public class AccountCreatedEvent
     return accountId;
   }
 
-  @Override
   public AccountCreatedEventDetails getDetails() {
     return this.details;
   }

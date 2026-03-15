@@ -16,11 +16,6 @@ public class DeleteItem {
 
   public void execute(UUID accountId, UUID itemId) {
     this.itemRepository.delete(itemId);
-
-    var total = this.itemRepository.count();
-    var totalActive = this.itemRepository.countActive();
-    var totalInactive = this.itemRepository.countInactive();
-    this.eventPublisher.publishEvent(
-        new ItemDeletedEvent(accountId, itemId, total, totalActive, totalInactive));
+    this.eventPublisher.publishEvent(new ItemDeletedEvent(accountId, itemId));
   }
 }

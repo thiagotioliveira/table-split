@@ -16,11 +16,6 @@ public class DeleteCategory {
 
   public void execute(UUID accountId, UUID restaurantId, UUID categoryId) {
     this.categoryRepository.delete(categoryId);
-
-    var total = this.categoryRepository.count();
-    var totalActive = this.categoryRepository.countActive();
-    var totalInactive = this.categoryRepository.countInactive();
-    this.eventPublisher.publishEvent(
-        new CategoryDeletedEvent(accountId, categoryId, total, totalActive, totalInactive));
+    this.eventPublisher.publishEvent(new CategoryDeletedEvent(accountId, categoryId));
   }
 }

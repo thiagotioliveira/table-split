@@ -1,9 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.dashboard.v1.ItemAttributes;
+import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,11 +14,11 @@ public class ItemModel {
   private final long totalActive;
   private final long totalInactive;
 
-  public ItemModel(ItemAttributes attributes) {
-    this.list = new ArrayList<>(attributes.getList().stream().map(Item::new).toList());
-    this.total = attributes.getTotal();
-    this.totalActive = attributes.getTotalActive();
-    this.totalInactive = attributes.getTotalInactive();
+  public ItemModel(List<Item> list, long total, long totalActive, long totalInactive) {
+    this.list = list;
+    this.total = total;
+    this.totalActive = totalActive;
+    this.totalInactive = totalInactive;
   }
 
   public long getTotal() {
@@ -52,12 +51,12 @@ public class ItemModel {
     private String imageUrl;
     private BigDecimal price;
 
-    public Item(ItemAttributes.Item item) {
+    public Item(dev.thiagooliveira.tablesplit.domain.menu.Item item) {
       this.id = item.getId();
-      this.categoryId = item.getCategoryId();
-      this.categoryName = convertMap(item.getCategoryName());
+      this.categoryId = item.getCategory().getId();
+      this.categoryName = convertMap(item.getCategory().getName());
       this.name = convertMap(item.getName());
-      this.imageUrl = item.getImageUrl();
+      this.imageUrl = item.getImages().isEmpty() ? "" : item.getImages().getFirst().getName();
       this.price = item.getPrice();
     }
 

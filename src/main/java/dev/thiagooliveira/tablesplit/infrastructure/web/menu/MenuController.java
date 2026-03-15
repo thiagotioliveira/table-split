@@ -54,8 +54,9 @@ public class MenuController {
   @GetMapping
   public String index(Authentication auth, Model model) {
     var context = new ContextModel(auth);
-    var categories = this.getCategory.execute(context.getRestaurant().getId());
-    var items = this.getItem.execute(context.getRestaurant().getId());
+    var languages = context.getRestaurant().getCustomerLanguages();
+    var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
+    var items = this.getItem.execute(context.getRestaurant().getId(), languages);
     model.addAttribute("module", Module.MENU);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));

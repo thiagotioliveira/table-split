@@ -3,6 +3,10 @@ spring:
     name: table-split
   datasource:
     url: jdbc:h2:mem:table-split
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
   messages:
     basename: messages
     encoding: UTF-8
@@ -22,11 +26,11 @@ logging:
     ROOT: INFO
     org:
       hibernate:
-        SQL: OFF
+        SQL: DEBUG
         type:
           descriptor:
             sql:
-              BasicBinder: OFF
+              BasicBinder: TRACE
       springframework:
         transaction: OFF
     dev.thiagooliveira: DEBUG

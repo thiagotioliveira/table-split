@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -16,9 +16,12 @@ public class CategoryEntity {
 
   private Integer numOrder;
 
-  @Convert(converter = LanguageMapConverter.class)
-  @Column(columnDefinition = "TEXT")
-  private Map<Language, String> name = new HashMap<>();
+  @Column(nullable = false)
+  private boolean active;
+
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "name_localized_text_id")
+  private LocalizedTextEntity name;
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemEntity> items = new ArrayList<>();
@@ -28,7 +31,7 @@ public class CategoryEntity {
     domain.setId(this.id);
     domain.setRestaurantId(this.restaurantId);
     domain.setOrder(this.numOrder);
-    domain.setName(this.name);
+    domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
     return domain;
   }
 
@@ -37,7 +40,8 @@ public class CategoryEntity {
     entity.setId(domain.getId());
     entity.setRestaurantId(domain.getRestaurantId());
     entity.setNumOrder(domain.getOrder());
-    entity.setName(domain.getName());
+    entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
+    entity.setActive(true);
     return entity;
   }
 
@@ -69,11 +73,11 @@ public class CategoryEntity {
     this.restaurantId = restaurantId;
   }
 
-  public Map<Language, String> getName() {
+  public LocalizedTextEntity getName() {
     return name;
   }
 
-  public void setName(Map<Language, String> name) {
+  public void setName(LocalizedTextEntity name) {
     this.name = name;
   }
 
@@ -83,5 +87,13 @@ public class CategoryEntity {
 
   public void setNumOrder(Integer numOrder) {
     this.numOrder = numOrder;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 }

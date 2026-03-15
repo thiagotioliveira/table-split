@@ -1,5 +1,7 @@
 package dev.thiagooliveira.tablesplit.domain.common;
 
+import java.util.Locale;
+
 public enum Language {
   PT("pt-BR"),
   EN("en-US");
@@ -12,5 +14,17 @@ public enum Language {
 
   public String getLabel() {
     return label;
+  }
+
+  public static Language fromLocale(Locale locale) {
+    if (locale == null || locale.getLanguage() == null) {
+      return EN;
+    }
+    for (Language language : values()) {
+      if (language.name().equalsIgnoreCase(locale.getLanguage())) {
+        return language;
+      }
+    }
+    return EN;
   }
 }

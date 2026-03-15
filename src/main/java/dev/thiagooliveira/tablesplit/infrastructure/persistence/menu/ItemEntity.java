@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -17,15 +17,18 @@ public class ItemEntity {
   @JoinColumn(name = "category_id", nullable = false)
   private CategoryEntity category;
 
-  @Convert(converter = LanguageMapConverter.class)
-  @Column(columnDefinition = "TEXT")
-  private Map<Language, String> name = new HashMap<>();
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "name_localized_text_id")
+  private LocalizedTextEntity name;
 
-  @Convert(converter = LanguageMapConverter.class)
-  @Column(columnDefinition = "TEXT")
-  private Map<Language, String> description = new HashMap<>();
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "description_localized_text_id")
+  private LocalizedTextEntity description;
 
   private BigDecimal price;
+
+  @Column(nullable = false)
+  private boolean active;
 
   @OneToMany(mappedBy = "itemId", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemImageEntity> images = new ArrayList<>();
@@ -48,11 +51,17 @@ public class ItemEntity {
     domain.setRestaurantId(this.category.getRestaurantId());
     domain.setCategory(new Category());
     domain.getCategory().setId(this.category.getId());
-    domain.getCategory().setName(this.category.getName());
+    domain
+        .getCategory()
+        .setName(
+            this.category.getName() != null
+                ? this.category.getName().getTranslations()
+                : new HashMap<>());
     domain.getCategory().setRestaurantId(this.category.getRestaurantId());
     domain.getCategory().setOrder(this.category.getNumOrder());
-    domain.setName(this.name);
-    domain.setDescription(this.description);
+    domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
+    domain.setDescription(
+        this.description != null ? this.description.getTranslations() : new HashMap<>());
     domain.setPrice(this.price);
     domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
     return domain;
@@ -63,9 +72,10 @@ public class ItemEntity {
     entity.setId(domain.getId());
     entity.setCategory(new CategoryEntity());
     entity.getCategory().setId(domain.getCategory().getId());
-    entity.setName(domain.getName());
-    entity.setDescription(domain.getDescription());
+    entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
+    entity.setDescription(LocalizedTextEntity.fromMap(domain.getDescription()));
     entity.setPrice(domain.getPrice());
+    entity.setActive(true);
     if (domain.getImages() != null) {
       entity.setImages(
           new ArrayList<>(domain.getImages().stream().map(ItemImageEntity::fromDomain).toList()));
@@ -89,19 +99,19 @@ public class ItemEntity {
     this.category = category;
   }
 
-  public Map<Language, String> getName() {
+  public LocalizedTextEntity getName() {
     return name;
   }
 
-  public void setName(Map<Language, String> name) {
+  public void setName(LocalizedTextEntity name) {
     this.name = name;
   }
 
-  public Map<Language, String> getDescription() {
+  public LocalizedTextEntity getDescription() {
     return description;
   }
 
-  public void setDescription(Map<Language, String> description) {
+  public void setDescription(LocalizedTextEntity description) {
     this.description = description;
   }
 
@@ -119,5 +129,13 @@ public class ItemEntity {
 
   public void setImages(List<ItemImageEntity> images) {
     this.images = images;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 }

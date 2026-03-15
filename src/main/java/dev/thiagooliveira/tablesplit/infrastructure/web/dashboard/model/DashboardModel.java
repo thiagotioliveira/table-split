@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
 
-import dev.thiagooliveira.tablesplit.domain.dashboard.v1.DefaultDashboardAttributes;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 
 public class DashboardModel {
   private final UserModel user;
@@ -8,11 +8,11 @@ public class DashboardModel {
   private final CategoryModel categories;
   private final ItemModel items;
 
-  public DashboardModel(DefaultDashboardAttributes attributes) {
-    this.user = new UserModel(attributes.getUser());
-    this.restaurant = new RestaurantModel(attributes.getRestaurant());
-    this.categories = new CategoryModel(attributes.getCategories());
-    this.items = new ItemModel(attributes.getItems());
+  public DashboardModel(AccountContext accountContext, CategoryModel categories, ItemModel items) {
+    this.user = new UserModel(accountContext.getUser());
+    this.restaurant = new RestaurantModel(accountContext.getRestaurant());
+    this.categories = categories;
+    this.items = items;
   }
 
   public UserModel getUser() {

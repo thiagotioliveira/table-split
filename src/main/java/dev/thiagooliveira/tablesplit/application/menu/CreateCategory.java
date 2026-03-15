@@ -24,10 +24,6 @@ public class CreateCategory {
     category.setName(command.name());
     this.categoryRepository.save(category);
 
-    var total = this.categoryRepository.count();
-    var totalActive = this.categoryRepository.countActive();
-    var totalInactive = this.categoryRepository.countInactive();
-    this.eventPublisher.publishEvent(
-        new CategoryCreatedEvent(accountId, category.getId(), total, totalActive, totalInactive));
+    this.eventPublisher.publishEvent(new CategoryCreatedEvent(accountId, category.getId()));
   }
 }

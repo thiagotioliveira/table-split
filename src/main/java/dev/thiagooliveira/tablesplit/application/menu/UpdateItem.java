@@ -60,10 +60,6 @@ public class UpdateItem {
     }
     item = this.itemRepository.save(item);
 
-    var total = this.itemRepository.count();
-    var totalActive = this.itemRepository.countActive();
-    var totalInactive = this.itemRepository.countInactive();
-    this.eventPublisher.publishEvent(
-        new ItemUpdatedEvent(accountId, item, total, totalActive, totalInactive));
+    this.eventPublisher.publishEvent(new ItemUpdatedEvent(accountId, item.getId()));
   }
 }

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.util.List;
 import java.util.Optional;
@@ -9,15 +10,15 @@ public interface ItemRepository {
 
   Optional<Item> findById(UUID id);
 
-  List<Item> findAll(UUID restaurantId);
+  List<Item> findAll(UUID restaurantId, List<Language> languages);
 
   Item save(Item item);
 
   void delete(UUID itemId);
 
-  long count();
+  long count(UUID restaurantId);
 
-  long countActive();
+  long countActive(UUID restaurantId);
 
-  long countInactive();
+  long countInactive(UUID restaurantId);
 }

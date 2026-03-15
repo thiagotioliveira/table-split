@@ -208,6 +208,43 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_restaurants_accounts
   - changeSet:
+      id: create-localized-texts-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: localized_texts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createTable:
+            tableName: localized_text_translations
+            columns:
+              - column:
+                  name: localized_text_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: localized_text_translations
+            baseColumnNames: localized_text_id
+            referencedTableName: localized_texts
+            referencedColumnNames: id
+            constraintName: fk_localized_text_translations_texts
+  - changeSet:
       id: create-categories-table
       author: thiago.oliveira
       changes:
@@ -232,14 +269,31 @@ databaseChangeLog:
                     nullable: false
                   defaultValue: "0"
               - column:
-                  name: name
-                  type: TEXT
+                  name: name_localized_text_id
+                  type: UUID
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: name_localized_text_id
+            referencedTableName: localized_texts
+            referencedColumnNames: id
+            constraintName: fk_categories_name_localized_texts
         - addForeignKeyConstraint:
             baseTableName: categories
             baseColumnNames: restaurant_id
             referencedTableName: restaurants
             referencedColumnNames: id
             constraintName: fk_categories_restaurants
+        - createIndex:
+            indexName: idx_categories_restaurant_id
+            tableName: categories
+            columns:
+              - column:
+                  name: restaurant_id
   - changeSet:
       id: create-items-table
       author: thiago.oliveira
@@ -259,22 +313,39 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: name
-                  type: TEXT
+                  name: name_localized_text_id
+                  type: UUID
               - column:
-                  name: description
-                  type: TEXT
+                  name: description_localized_text_id
+                  type: UUID
               - column:
                   name: price
                   type: decimal
                   constraints:
                     nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: true
         - addForeignKeyConstraint:
             baseTableName: items
             baseColumnNames: category_id
             referencedTableName: categories
             referencedColumnNames: id
             constraintName: fk_items_categories
+        - addForeignKeyConstraint:
+            baseTableName: items
+            baseColumnNames: name_localized_text_id
+            referencedTableName: localized_texts
+            referencedColumnNames: id
+            constraintName: fk_items_name_localized_texts
+        - addForeignKeyConstraint:
+            baseTableName: items
+            baseColumnNames: description_localized_text_id
+            referencedTableName: localized_texts
+            referencedColumnNames: id
+            constraintName: fk_items_description_localized_texts
   - changeSet:
       id: create-item-images-table
       author: thiago.oliveira
@@ -309,55 +380,3 @@ databaseChangeLog:
             referencedTableName: items
             referencedColumnNames: id
             constraintName: fk_item_images_item
-  - changeSet:
-      id: create-dashboard
-      author: thiago.oliveira
-      changes:
-        - createTable:
-            tableName: dashboards
-            columns:
-              - column:
-                  name: id
-                  type: uuid
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: account_id
-                  type: UUID
-                  constraints:
-                    nullable: false
-              - column:
-                  name: user_id
-                  type: UUID
-                  constraints:
-                    nullable: false
-              - column:
-                  name: content_type
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: attributes
-                  type: TEXT
-                  constraints:
-                    nullable: false
-        - createIndex:
-            indexName: idx_dashboards_user_id
-            tableName: dashboards
-            unique: true
-            columns:
-              - column:
-                  name: user_id
-        - addForeignKeyConstraint:
-            baseTableName: dashboards
-            baseColumnNames: account_id
-            referencedTableName: accounts
-            referencedColumnNames: id
-            constraintName: fk_dashboards_accounts
-        - addForeignKeyConstraint:
-            baseTableName: dashboards
-            baseColumnNames: user_id
-            referencedTableName: users
-            referencedColumnNames: id
-            constraintName: fk_dashboards_users

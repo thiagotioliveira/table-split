@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
 
-import dev.thiagooliveira.tablesplit.domain.dashboard.v1.RestaurantAttributes;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.RestaurantContext;
 import java.util.UUID;
 
 public class RestaurantModel {
@@ -10,12 +10,12 @@ public class RestaurantModel {
   private String slug;
   private String currencySymbol;
 
-  public RestaurantModel(RestaurantAttributes attributes) {
-    this.id = attributes.getId();
-    this.name = attributes.getName();
-    this.address = attributes.getAddress();
-    this.slug = attributes.getSlug();
-    this.currencySymbol = attributes.getCurrencySymbol();
+  public RestaurantModel(RestaurantContext restaurant) {
+    this.id = restaurant.getId();
+    this.name = restaurant.getName();
+    this.address = restaurant.getAddress();
+    this.slug = restaurant.getSlug();
+    this.currencySymbol = restaurant.getCurrency().getSymbol();
   }
 
   public UUID getId() {
@@ -48,5 +48,9 @@ public class RestaurantModel {
 
   public String getCurrencySymbol() {
     return currencySymbol;
+  }
+
+  public void setCurrencySymbol(String currencySymbol) {
+    this.currencySymbol = currencySymbol;
   }
 }

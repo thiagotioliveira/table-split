@@ -21,11 +21,6 @@ public class UpdateCategory {
     category.setOrder(command.order());
     category.setName(command.name());
     this.categoryRepository.save(category);
-
-    var total = this.categoryRepository.count();
-    var totalActive = this.categoryRepository.countActive();
-    var totalInactive = this.categoryRepository.countInactive();
-    this.eventPublisher.publishEvent(
-        new CategoryUpdatedEvent(accountId, categoryId, total, totalActive, totalInactive));
+    this.eventPublisher.publishEvent(new CategoryUpdatedEvent(accountId, categoryId));
   }
 }

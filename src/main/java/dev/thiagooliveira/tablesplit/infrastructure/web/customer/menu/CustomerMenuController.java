@@ -3,7 +3,9 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
+import java.util.Locale;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +28,11 @@ public class CustomerMenuController {
   }
 
   @GetMapping("/@{slug}/menu")
-  public String index(@PathVariable String slug, Model model) {
+  public String index(@PathVariable String slug, Model model, Locale locale) {
     var restaurant = getRestaurant.execute(slug).orElseThrow();
-    var categories = getCategory.execute(restaurant.getId());
-    var items = getItem.execute(restaurant.getId());
+    var requestLanguages = java.util.List.of(Language.fromLocale(locale));
+    var categories = getCategory.execute(restaurant.getId(), requestLanguages);
+    var items = getItem.execute(restaurant.getId(), requestLanguages);
     CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, items);
     model.addAttribute("customerMenu", menuModel);
     return "customer-menu";

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +23,28 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
-  public List<Item> findAll(UUID restaurantId) {
-    return this.itemJpaRepository.findAllByCategoryRestaurantId(restaurantId).stream()
-        .map(ItemEntity::toDomain)
-        .toList();
+  public List<Item> findAll(UUID restaurantId, List<Language> languages) {
+    var projections =
+        this.itemJpaRepository.findAllByCategoryRestaurantIdAndLanguages(restaurantId, languages);
+    java.util.Map<UUID, Item> itemMap = new java.util.LinkedHashMap<>();
+    for (var projection : projections) {
+      var domain =
+          itemMap.computeIfAbsent(
+              projection.item().getId(),
+              id -> {
+                var i = projection.item().toDomain();
+                i.setName(new java.util.HashMap<>());
+                i.setDescription(new java.util.HashMap<>());
+                return i;
+              });
+      if (projection.nameTranslation() != null) {
+        domain.getName().put(projection.language(), projection.nameTranslation());
+      }
+      if (projection.descriptionTranslation() != null) {
+        domain.getDescription().put(projection.language(), projection.descriptionTranslation());
+      }
+    }
+    return new java.util.ArrayList<>(itemMap.values());
   }
 
   @Override
@@ -39,17 +58,17 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
-  public long count() {
-    return this.itemJpaRepository.count();
+  public long count(UUID restaurantId) {
+    return this.itemJpaRepository.countByCategoryRestaurantId(restaurantId);
   }
 
   @Override
-  public long countActive() {
-    return this.itemJpaRepository.count(); // TODO
+  public long countActive(UUID restaurantId) {
+    return this.itemJpaRepository.countByCategoryRestaurantIdAndActiveTrue(restaurantId);
   }
 
   @Override
-  public long countInactive() {
-    return 0; // TODO
+  public long countInactive(UUID restaurantId) {
+    return this.itemJpaRepository.countByCategoryRestaurantIdAndActiveFalse(restaurantId);
   }
 }

@@ -41,7 +41,7 @@ public class CreateRestaurant {
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurantRepository.save(restaurant);
-    this.eventPublisher.publishEvent(new RestaurantCreatedEvent(accountId, restaurant));
+    this.eventPublisher.publishEvent(new RestaurantCreatedEvent(restaurant));
     return restaurant;
   }
 }

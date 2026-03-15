@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
 
-import dev.thiagooliveira.tablesplit.domain.dashboard.v1.UserAttributes;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.UserContext;
 import java.util.UUID;
 
 public class UserModel {
@@ -10,7 +10,7 @@ public class UserModel {
   private final String lastName;
   private final String email;
 
-  public UserModel(UserAttributes user) {
+  public UserModel(UserContext user) {
     this.id = user.getId();
     this.firstName = user.getFirstName();
     this.lastName = user.getLastName();
