@@ -49,7 +49,7 @@ public class SecurityConfig {
                 auth
                     // Recursos públicos
                     .requestMatchers(
-                        "/css/**", "/", "/login", "/register", "/h2-console/**", "/@**", "/@**/**")
+                        "/css/**", "/", "/login", "/register", "/h2-console/**", "/@**", "/@**/**", "/websocket-test", "/ws/**")
                     .permitAll()
 
                     // Qualquer /@{algo} público
