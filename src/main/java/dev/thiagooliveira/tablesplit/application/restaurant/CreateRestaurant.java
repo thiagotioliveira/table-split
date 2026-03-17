@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class CreateRestaurant {
 
   public Restaurant execute(UUID accountId, CreateRestaurantCommand command) {
     if (this.restaurantRepository.findBySlug(command.slug()).isPresent()) {
-      throw new RuntimeException(); // TODO
+      throw new SlugAlreadyExist();
     }
     var restaurant = new Restaurant();
     restaurant.setId(UUID.randomUUID());

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 
+import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,5 +14,12 @@ public class GlobalExceptionHandler {
     model.addAttribute("message", ex.getMessage());
     model.addAttribute("errorType", ex.getClass().getSimpleName());
     return "404";
+  }
+
+  @ExceptionHandler(InfrastructureException.class)
+  public String handleInfrastructureException(InfrastructureException ex, Model model) {
+    model.addAttribute("message", ex.getMessage());
+    model.addAttribute("errorType", ex.getClass().getSimpleName());
+    return "500";
   }
 }

@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard;
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
@@ -35,7 +36,9 @@ public class DashboardController {
   public String index(Authentication auth, Model model) {
     var context = (AccountContext) auth.getPrincipal();
     var restaurant =
-        this.getRestaurant.execute(context.getRestaurant().getId()).orElseThrow(); // TODO
+        this.getRestaurant
+            .execute(context.getRestaurant().getId())
+            .orElseThrow(() -> new InfrastructureException("error.restaurant.not.found"));
     model.addAttribute("module", Module.DASHBOARD);
     model.addAttribute("context", new ContextModel(auth));
     model.addAttribute(

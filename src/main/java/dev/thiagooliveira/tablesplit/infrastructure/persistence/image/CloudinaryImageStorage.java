@@ -63,7 +63,7 @@ public class CloudinaryImageStorage implements ImageStorage {
     try {
       return cloudinary.uploader().destroy(imageId, ObjectUtils.emptyMap());
     } catch (IOException e) {
-      throw new InfrastructureException("error.image.item.upload", e);
+      throw new InfrastructureException("error.image.item.delete", e);
     }
   }
 }

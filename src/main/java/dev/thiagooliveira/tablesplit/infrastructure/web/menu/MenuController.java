@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
+import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -10,6 +11,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.MenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateCategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateItemModel;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/menu")
 public class MenuController {
+
+  private static final Logger log = LoggerFactory.getLogger(MenuController.class);
 
   private final GetCategory getCategory;
   private final CreateCategory createCategory;
@@ -139,6 +144,14 @@ public class MenuController {
     var context = (AccountContext) auth.getPrincipal();
     this.transactionalContext.execute(() -> this.deleteItem.execute(context.getId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
+    return "redirect:/menu";
+  }
+
+  @ExceptionHandler(InfrastructureException.class)
+  public String handleInfrastructureException(
+      InfrastructureException ex, RedirectAttributes redirectAttributes) {
+    log.error("An InfrastructureException occurred.", ex);
+    redirectAttributes.addFlashAttribute("alert", AlertModel.error(ex.getMessage()));
     return "redirect:/menu";
   }
 }

@@ -731,32 +731,6 @@
       height: 20px;
     }
 
-    /* Alert */
-    .alert {
-      padding: 1rem;
-      border-radius: var(--radius);
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      font-size: 0.875rem;
-    }
-
-    .alert svg {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-
-    .alert.error {
-      background: #FEE2E2;
-      color: var(--error);
-    }
-
-    .alert.hidden {
-      display: none;
-    }
-
     /* Footer */
     .auth-card-footer {
       padding: 1.5rem 2rem;
@@ -886,15 +860,7 @@
             </div>
           </div>
 
-          <!-- Alert -->
-          <div class="alert error hidden" id="errorAlert">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="m15 9-6 6"/>
-              <path d="m9 9 6 6"/>
-            </svg>
-            <span id="errorMessage">Ocorreu um erro. Tente novamente.</span>
-          </div>
+          <div th:replace="~{components/alert :: alert}"></div>
 
           <form th:action="@{'/register'}" method="post" th:object="${form}">
             <!-- STEP 1: Account -->
@@ -1303,7 +1269,7 @@
       }
       
       // Hide error alert
-      document.getElementById('errorAlert').classList.add('hidden');
+      //document.getElementById('errorAlert').classList.add('hidden');
       
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1319,7 +1285,7 @@
       
       // Reset errors
       document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
-      document.getElementById('errorAlert').classList.add('hidden');
+      //document.getElementById('errorAlert').classList.add('hidden');
       
       let hasError = false;
       

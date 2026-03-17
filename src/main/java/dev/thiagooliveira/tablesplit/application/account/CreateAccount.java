@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
+import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
@@ -26,10 +27,10 @@ public class CreateAccount {
     this.userRepository = userRepository;
   }
 
-  public User execute(CreateAccountCommand command) {
+  public User execute(CreateAccountCommand command) throws UserAlreadyRegisteredException {
     var userCommand = command.user();
     if (this.userRepository.findByEmail(userCommand.email()).isPresent()) {
-      throw new RuntimeException(); // TODO
+      throw new UserAlreadyRegisteredException();
     }
 
     var account = new Account();

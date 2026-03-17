@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +22,8 @@ public class LoginController {
         (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     if (exception != null) {
 
-      if (exception instanceof BadCredentialsException) {
+      if (exception instanceof BadCredentialsException
+          || exception instanceof UsernameNotFoundException) {
         model.addAttribute("alert", AlertModel.error("error.login.bad.credentials"));
       } else if (exception instanceof LockedException) {
         model.addAttribute("alert", AlertModel.error("error.login.account.locked"));

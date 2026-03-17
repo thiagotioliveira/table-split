@@ -1,8 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 
 import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
+import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
+import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
+import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -15,10 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -71,5 +71,20 @@ public class RegisterController {
     HttpSession session = request.getSession(true);
     session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     return "redirect:/dashboard";
+  }
+
+  @ExceptionHandler(UserAlreadyRegisteredException.class)
+  public String handleUserAlreadyRegisteredException(
+      UserAlreadyRegisteredException ex, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute(
+        "alert", AlertModel.error("error.register.user.already.registered"));
+    return "redirect:/register";
+  }
+
+  @ExceptionHandler(SlugAlreadyExist.class)
+  public String handleSlugAlreadyExist(SlugAlreadyExist ex, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute(
+        "alert", AlertModel.error("error.register.restaurant.slug.already.exist"));
+    return "redirect:/register";
   }
 }
