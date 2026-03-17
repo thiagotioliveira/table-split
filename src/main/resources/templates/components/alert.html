@@ -1,6 +1,6 @@
 <div th:fragment="alert">
 
-<style th:if="${alert != null}">
+<style th:if="${alert != null && alert.type == 'success'}">
     /* Alert */
     .alert {
         display: flex;
@@ -41,13 +41,41 @@
     }
 </style>
 
-<div class="alert mb-1" role="alert" th:if="${false && alert != null}"
+<style th:if="${alert != null && alert.type == 'danger'}">
+    /* Alert message */
+    .alert {
+        padding: 1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .alert svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    .alert.error {
+        background: #FEE2E2;
+        color: var(--error);
+    }
+
+    .alert.hidden {
+        display: none;
+    }
+</style>
+
+<div class="alert mb-1" role="alert" th:if="${false && alert != null && alert.type == 'success'}"
      th:classappend="${alert.getType() == 'success' ? 'alert-success' : (alert.getType() == 'error' ? 'alert-danger' : 'alert-warning')}"
      th:text="#{${alert.getMessage()}}">
 </div>
 
 <!-- Success Alert -->
-<div class="alert alert-success hidden" id="successAlert" th:if="${alert != null}">
+<div class="alert alert-success hidden" id="successAlert" th:if="${alert != null && alert.type == 'success'}">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
     <div class="alert-content">
         <div class="alert-title">Alterações salvas!</div>
@@ -55,9 +83,19 @@
     </div>
 </div>
 
+<!-- Error Alert -->
+<div class="alert error" id="errorAlert" th:if="${alert != null && alert.type == 'danger'}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="m15 9-6 6"/>
+        <path d="m9 9 6 6"/>
+    </svg>
+    <span id="errorMessage" th:text="#{${alert.getMessage()}}">User and/or password invalid.</span>
+</div>
+
 <script th:inline="javascript">
     // Success alert
-    const showAlert = /*[[${alert != null}]]*/false;
+    const shouldShowSuccessAlert = /*[[${alert != null && alert.type == 'success'}]]*/false;
 
     // Success alert
     function showSuccessAlert() {
@@ -69,7 +107,7 @@
         }, 6000);
     }
 
-    if(showAlert) {
+    if(shouldShowSuccessAlert) {
         document.addEventListener('DOMContentLoaded', showSuccessAlert);
     }
 </script>

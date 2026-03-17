@@ -4,7 +4,7 @@ public class AlertModel {
   private final String message;
   private final String type;
 
-  public AlertModel(String message, String type) {
+  private AlertModel(String message, String type) {
     this.message = message;
     this.type = type;
   }
