@@ -33,6 +33,14 @@ public class UserProfileModel {
         this.firstName, this.lastName, this.email, Language.valueOf(this.language));
   }
 
+  public String getName() {
+    return String.format("%s %s", this.firstName, this.lastName);
+  }
+
+  public String getAvatar() {
+    return String.format("%s%s", this.firstName.charAt(0), this.lastName.charAt(0)).toUpperCase();
+  }
+
   public String getFirstName() {
     return firstName;
   }
