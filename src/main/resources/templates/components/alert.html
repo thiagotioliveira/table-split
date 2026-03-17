@@ -78,8 +78,8 @@
 <div class="alert alert-success hidden" id="successAlert" th:if="${alert != null && alert.type == 'success'}">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
     <div class="alert-content">
-        <div class="alert-title">Alterações salvas!</div>
-        <div class="alert-message" th:text="#{${alert.getMessage()}}">Suas informações foram atualizadas com sucesso.</div>
+        <div class="alert-title" th:text="#{alert.title}">Saved changes!</div>
+        <div class="alert-message" th:text="#{${alert.getMessage()}}">Saved successfully!</div>
     </div>
 </div>
 
