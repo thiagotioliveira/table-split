@@ -8,9 +8,13 @@ public class DashboardModel {
   private final CategoryModel categories;
   private final ItemModel items;
 
-  public DashboardModel(AccountContext accountContext, CategoryModel categories, ItemModel items) {
+  public DashboardModel(
+      AccountContext accountContext,
+      RestaurantModel restaurant,
+      CategoryModel categories,
+      ItemModel items) {
     this.user = new UserModel(accountContext.getUser());
-    this.restaurant = new RestaurantModel(accountContext.getRestaurant());
+    this.restaurant = restaurant;
     this.categories = categories;
     this.items = items;
   }

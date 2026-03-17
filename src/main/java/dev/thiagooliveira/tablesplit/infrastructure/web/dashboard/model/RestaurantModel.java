@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
 
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.RestaurantContext;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
 public class RestaurantModel {
@@ -10,7 +10,7 @@ public class RestaurantModel {
   private String slug;
   private String currencySymbol;
 
-  public RestaurantModel(RestaurantContext restaurant) {
+  public RestaurantModel(Restaurant restaurant) {
     this.id = restaurant.getId();
     this.name = restaurant.getName();
     this.address = restaurant.getAddress();

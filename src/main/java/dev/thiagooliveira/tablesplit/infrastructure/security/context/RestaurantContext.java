@@ -9,7 +9,6 @@ import java.util.UUID;
 public class RestaurantContext {
   private final UUID id;
   private String name;
-  private String address;
   private String slug;
   private Currency currency;
   private List<Language> customerLanguages;
@@ -17,7 +16,6 @@ public class RestaurantContext {
   public RestaurantContext(Restaurant restaurant) {
     this.id = restaurant.getId();
     this.name = restaurant.getName();
-    this.address = restaurant.getAddress();
     this.slug = restaurant.getSlug();
     this.currency = restaurant.getCurrency();
     this.customerLanguages = restaurant.getCustomerLanguages();
@@ -49,14 +47,6 @@ public class RestaurantContext {
 
   public void setCustomerLanguages(List<Language> customerLanguages) {
     this.customerLanguages = customerLanguages;
-  }
-
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
   }
 
   public String getSlug() {
