@@ -61,7 +61,9 @@ public class AccountCreatedEventListener {
                     false,
                     List.of(new Period("10:00", "23:00"))),
                 new BusinessHours(
-                    DayOfWeek.SATURDAY.name().toLowerCase(), false, List.of(new Period("10:00", "23:00"))),
+                    DayOfWeek.SATURDAY.name().toLowerCase(),
+                    false,
+                    List.of(new Period("10:00", "23:00"))),
                 new BusinessHours(DayOfWeek.SUNDAY.name().toLowerCase(), true, List.of())),
             "#EA580C", // TODO
             "#FFEDD5" // TODO

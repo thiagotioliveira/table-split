@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.Localized
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "items")
@@ -31,7 +32,7 @@ public class ItemEntity {
   private boolean active;
 
   @OneToMany(mappedBy = "itemId", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ItemImageEntity> images = new ArrayList<>();
+  private Set<ItemImageEntity> images = new HashSet<>();
 
   @Override
   public boolean equals(Object o) {
@@ -78,7 +79,10 @@ public class ItemEntity {
     entity.setActive(true);
     if (domain.getImages() != null) {
       entity.setImages(
-          new ArrayList<>(domain.getImages().stream().map(ItemImageEntity::fromDomain).toList()));
+          new HashSet<>(
+              domain.getImages().stream()
+                  .map(ItemImageEntity::fromDomain)
+                  .collect(Collectors.toSet())));
     }
     return entity;
   }
@@ -123,11 +127,11 @@ public class ItemEntity {
     this.price = price;
   }
 
-  public List<ItemImageEntity> getImages() {
+  public Set<ItemImageEntity> getImages() {
     return images;
   }
 
-  public void setImages(List<ItemImageEntity> images) {
+  public void setImages(Set<ItemImageEntity> images) {
     this.images = images;
   }
 

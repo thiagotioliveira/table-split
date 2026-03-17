@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CloudinaryImageStorage implements ImageStorage {
-
+  private static final String PATH = "%s/accounts/%s/restaurants/%s/items/%s";
   private final Cloudinary cloudinary;
   private final String rootFolder;
 
@@ -24,7 +24,8 @@ public class CloudinaryImageStorage implements ImageStorage {
   }
 
   @Override
-  public String uploadItem(ImageData image, UUID restaurantId, UUID itemId, UUID imageId) {
+  public String uploadItem(
+      ImageData image, UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
     try {
       Map uploadResult =
           cloudinary
@@ -33,7 +34,7 @@ public class CloudinaryImageStorage implements ImageStorage {
                   image.content(),
                   Map.of(
                       "folder",
-                      String.format("%s/restaurants/%s/items/%s", rootFolder, restaurantId, itemId),
+                      folder(rootFolder, accountId, restaurantId, itemId),
                       "public_id",
                       String.format("%s", imageId),
                       "overwrite",
@@ -47,14 +48,18 @@ public class CloudinaryImageStorage implements ImageStorage {
   }
 
   @Override
-  public Map deleteItem(UUID restaurantId, UUID itemId, UUID imageId) {
+  public Map deleteItem(UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
     String publicId =
-        String.format("%s/restaurants/%s/items/%s/%s", rootFolder, restaurantId, itemId, imageId);
+        String.format("%s/%s", folder(rootFolder, accountId, restaurantId, itemId), imageId);
     return deleteItem(publicId);
   }
 
-  @Override
-  public Map deleteItem(String imageId) {
+  private static String folder(String rootFolder, UUID accountId, UUID restaurantId, UUID itemId) {
+    return String.format(
+        "%s/accounts/%s/restaurants/%s/items/%s", rootFolder, accountId, restaurantId, itemId);
+  }
+
+  private Map deleteItem(String imageId) {
     try {
       return cloudinary.uploader().destroy(imageId, ObjectUtils.emptyMap());
     } catch (IOException e) {

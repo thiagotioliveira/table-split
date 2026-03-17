@@ -17,20 +17,17 @@ public class LoginController {
 
   @GetMapping("/login")
   public String login(HttpServletRequest request, Model model) {
-    Exception exception = (Exception) request.getSession()
-            .getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+    Exception exception =
+        (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     if (exception != null) {
 
       if (exception instanceof BadCredentialsException) {
         model.addAttribute("alert", AlertModel.error("error.login.bad.credentials"));
-      }
-      else if (exception instanceof LockedException) {
+      } else if (exception instanceof LockedException) {
         model.addAttribute("alert", AlertModel.error("error.login.account.locked"));
-      }
-      else if (exception instanceof DisabledException) {
+      } else if (exception instanceof DisabledException) {
         model.addAttribute("alert", AlertModel.error("error.login.account.disabled"));
-      }
-      else {
+      } else {
         model.addAttribute("alert", AlertModel.error("error.login.generic"));
       }
     }

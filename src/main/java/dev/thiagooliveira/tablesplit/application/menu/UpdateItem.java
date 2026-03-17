@@ -37,7 +37,7 @@ public class UpdateItem {
         .removeIf(
             img -> {
               if (!imageIdsToKeep.contains(img.getId())) {
-                imageStorage.deleteItem(restaurantId, itemId, img.getId());
+                imageStorage.deleteItem(accountId, restaurantId, itemId, img.getId());
                 return true;
               }
               return false;
@@ -54,7 +54,8 @@ public class UpdateItem {
         image.setMain(!hasMain && command.images().newImages().indexOf(i) == 0);
         image.setItemId(item.getId());
         image.setName(
-            imageStorage.uploadItem(i, item.getRestaurantId(), item.getId(), image.getId()));
+            imageStorage.uploadItem(
+                i, accountId, item.getRestaurantId(), item.getId(), image.getId()));
         item.getImages().add(image);
       }
     }

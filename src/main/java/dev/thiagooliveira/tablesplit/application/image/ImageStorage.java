@@ -6,9 +6,7 @@ import java.util.UUID;
 
 public interface ImageStorage {
 
-  String uploadItem(ImageData image, UUID restaurantId, UUID itemId, UUID imageId);
+  String uploadItem(ImageData image, UUID accountId, UUID restaurantId, UUID itemId, UUID imageId);
 
-  Map deleteItem(UUID restaurantId, UUID itemId, UUID imageId);
-
-  Map deleteItem(String imageId);
+  Map deleteItem(UUID accountId, UUID restaurantId, UUID itemId, UUID imageId);
 }

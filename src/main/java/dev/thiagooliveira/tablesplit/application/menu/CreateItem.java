@@ -43,7 +43,8 @@ public class CreateItem {
         image.setMain(false);
         image.setItemId(item.getId());
         image.setName(
-            imageStorage.uploadItem(i, item.getRestaurantId(), item.getId(), image.getId()));
+            imageStorage.uploadItem(
+                i, accountId, item.getRestaurantId(), item.getId(), image.getId()));
         item.getImages().add(image);
       }
     }
