@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;

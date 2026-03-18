@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.menu;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
@@ -6,10 +6,11 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.MenuModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateCategoryModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.menu.model.UpdateItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.MenuModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.UpdateCategoryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.UpdateItemModel;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/menu")
+@ManagerModule(Module.MENU)
 public class MenuController {
 
   private static final Logger log = LoggerFactory.getLogger(MenuController.class);
@@ -62,10 +64,8 @@ public class MenuController {
     var languages = context.getRestaurant().getCustomerLanguages();
     var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
     var items = this.getItem.execute(context.getRestaurant().getId(), languages);
-    model.addAttribute("module", Module.MENU);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
-    model.addAttribute("context", context);
     return "menu";
   }
 

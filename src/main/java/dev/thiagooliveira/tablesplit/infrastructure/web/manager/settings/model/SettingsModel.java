@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.settings.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings.model;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;

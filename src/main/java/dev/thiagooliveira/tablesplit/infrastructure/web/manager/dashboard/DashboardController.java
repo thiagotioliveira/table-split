@@ -1,16 +1,16 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard;
 
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
-import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.CategoryModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.DashboardModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.ItemModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model.RestaurantModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model.CategoryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model.DashboardModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model.ItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model.RestaurantModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/dashboard")
+@ManagerModule(Module.DASHBOARD)
 public class DashboardController {
 
   private final GetRestaurant getRestaurant;
@@ -39,8 +40,6 @@ public class DashboardController {
         this.getRestaurant
             .execute(context.getRestaurant().getId())
             .orElseThrow(() -> new InfrastructureException("error.restaurant.not.found"));
-    model.addAttribute("module", Module.DASHBOARD);
-    model.addAttribute("context", new ContextModel(auth));
     model.addAttribute(
         "dashboard",
         new DashboardModel(

@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.account.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.account.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.UpdateUserCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;

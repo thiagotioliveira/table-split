@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.account;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.account;
 
 import dev.thiagooliveira.tablesplit.application.account.UpdatePassword;
 import dev.thiagooliveira.tablesplit.application.account.UpdateUser;
@@ -6,10 +6,10 @@ import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureExce
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.account.model.UserPasswordModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.account.model.UserProfileModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.account.model.UserPasswordModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.account.model.UserProfileModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/profile")
+@ManagerModule(Module.USER_PROFILE)
 public class UserProfileController {
 
   private final TransactionalContext transactionalContext;
@@ -39,9 +40,6 @@ public class UserProfileController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = new ContextModel(auth);
-    model.addAttribute("module", Module.USER_PROFILE);
-    model.addAttribute("context", context);
     model.addAttribute(
         "user", new UserProfileModel(((AccountContext) auth.getPrincipal()).getUser()));
     model.addAttribute("password", new UserPasswordModel());

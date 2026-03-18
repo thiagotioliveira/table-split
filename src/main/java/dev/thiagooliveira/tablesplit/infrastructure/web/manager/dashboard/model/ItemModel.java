@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;

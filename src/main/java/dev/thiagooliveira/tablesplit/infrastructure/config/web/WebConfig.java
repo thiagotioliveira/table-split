@@ -1,6 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import dev.thiagooliveira.tablesplit.infrastructure.web.handler.ManagerModuleInterceptor;
+import java.util.Arrays;
 import java.util.Locale;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +16,11 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 public class WebConfig implements WebMvcConfigurer {
 
   private final GetRestaurant getRestaurant;
+  private final ManagerModuleInterceptor managerModuleInterceptor;
 
-  public WebConfig(GetRestaurant getRestaurant) {
+  public WebConfig(GetRestaurant getRestaurant, ManagerModuleInterceptor managerModuleInterceptor) {
     this.getRestaurant = getRestaurant;
+    this.managerModuleInterceptor = managerModuleInterceptor;
   }
 
   @Bean
@@ -35,5 +40,9 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(localeChangeInterceptor());
+    registry
+        .addInterceptor(managerModuleInterceptor)
+        .addPathPatterns(
+            Arrays.stream(Module.values()).map(m -> String.format("/%s/**", m.getView())).toList());
   }
 }

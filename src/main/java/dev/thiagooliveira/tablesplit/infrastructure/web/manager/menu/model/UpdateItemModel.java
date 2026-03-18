@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.menu.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;

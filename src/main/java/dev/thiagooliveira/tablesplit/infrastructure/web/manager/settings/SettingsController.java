@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.settings;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
@@ -7,8 +7,9 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.settings.model.SettingsModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings.model.SettingsModel;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/settings")
+@ManagerModule(Module.SETTINGS)
 public class SettingsController {
 
   private final TransactionalContext transactionalContext;

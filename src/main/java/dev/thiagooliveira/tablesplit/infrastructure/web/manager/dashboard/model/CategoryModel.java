@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.dashboard.model;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model;
 
 public class CategoryModel {
   private final long total;
