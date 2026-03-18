@@ -11,6 +11,8 @@ public class ContextModel {
 
   private final UserContextModel user;
   private final RestaurantContextModel restaurant;
+  private final List<Module> sidebarModules;
+  private final List<Module> footerModules;
 
   public ContextModel(Authentication auth) {
     var account = (AccountContext) auth.getPrincipal();
@@ -25,6 +27,8 @@ public class ContextModel {
             restaurant.getName(),
             restaurant.getCurrency(),
             restaurant.getCustomerLanguages());
+    this.sidebarModules = account.getSidebarModules();
+    this.footerModules = account.getFooterModules();
   }
 
   public UserContextModel getUser() {
@@ -33,6 +37,14 @@ public class ContextModel {
 
   public RestaurantContextModel getRestaurant() {
     return restaurant;
+  }
+
+  public List<Module> getSidebarModules() {
+    return sidebarModules;
+  }
+
+  public List<Module> getFooterModules() {
+    return footerModules;
   }
 
   public static class UserContextModel {

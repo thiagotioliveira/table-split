@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,8 @@ public class AccountContext implements UserDetails {
   private final Plan plan;
   private final UserContext user;
   private final RestaurantContext restaurant;
+  private final List<Module> sidebarModules;
+  private final List<Module> footerModules;
 
   public AccountContext(Account account, User user, Restaurant restaurant) {
     this.id = account.getId();
@@ -25,6 +28,8 @@ public class AccountContext implements UserDetails {
     this.plan = account.getPlan();
     this.user = new UserContext(user);
     this.restaurant = new RestaurantContext(restaurant);
+    this.sidebarModules = Module.sidebarModules(account.getPlan());
+    this.footerModules = Module.footerModules(account.getPlan());
   }
 
   @Override
@@ -80,5 +85,13 @@ public class AccountContext implements UserDetails {
 
   public RestaurantContext getRestaurant() {
     return restaurant;
+  }
+
+  public List<Module> getSidebarModules() {
+    return sidebarModules;
+  }
+
+  public List<Module> getFooterModules() {
+    return footerModules;
   }
 }
