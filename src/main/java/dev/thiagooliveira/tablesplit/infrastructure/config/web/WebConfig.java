@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.Locale;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
@@ -44,5 +46,13 @@ public class WebConfig implements WebMvcConfigurer {
         .addInterceptor(managerModuleInterceptor)
         .addPathPatterns(
             Arrays.stream(Module.values()).map(m -> String.format("/%s/**", m.getView())).toList());
+  }
+
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+        .addResourceHandler("/sw.js")
+        .addResourceLocations("classpath:/static/")
+        .setCacheControl(CacheControl.noCache());
   }
 }

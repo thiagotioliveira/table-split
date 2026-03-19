@@ -842,8 +842,8 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-card-header">
-          <h1 id="formTitle">Crie sua conta</h1>
-          <p id="formSubtitle">Comece a usar o TableSplit gratuitamente</p>
+          <h1 id="formTitle" th:text="#{page.register.create.account.title}">Create your account</h1>
+          <p id="formSubtitle" th:text="#{page.register.create.account.subtitle}">Start using TableSplit for free</p>
         </div>
 
         <div class="auth-card-body">
@@ -851,12 +851,12 @@
           <div class="steps">
             <div class="step active" id="step1Indicator" onclick="goToStep(1)">
               <span class="step-number" id="step1Number">1</span>
-              <span class="step-label">Conta</span>
+              <span class="step-label" th:text="#{page.register.step.account}">Account</span>
             </div>
             <div class="step-divider" id="stepDivider"></div>
             <div class="step pending" id="step2Indicator">
               <span class="step-number">2</span>
-              <span class="step-label">Restaurante</span>
+              <span class="step-label" th:text="#{page.register.step.restaurant}">Restaurant</span>
             </div>
           </div>
 
@@ -867,23 +867,23 @@
             <div class="form-panel active" id="step1Panel">
               <div class="form-row">
                 <div class="form-group" id="firstNameGroup">
-                  <label for="firstName">Nome</label>
+                  <label for="firstName" th:text="#{page.register.step.account.firstname}">First Name</label>
                   <div class="input-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                       <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    <input type="text" id="firstName" class="form-input with-icon" placeholder="Seu nome" autocomplete="given-name" required
+                    <input type="text" id="firstName" class="form-input with-icon" th:placeholder="#{page.register.step.account.firstname.placeholder}" autocomplete="given-name" required
                       th:field="*{user.firstName}">
                   </div>
-                  <p class="form-error">Nome é obrigatório</p>
+                  <p class="form-error" th:text="#{page.register.step.account.firstname.error}">Name is required</p>
                 </div>
 
                 <div class="form-group" id="lastNameGroup">
-                  <label for="lastName">Sobrenome</label>
-                  <input type="text" id="lastName" class="form-input" placeholder="Seu sobrenome" autocomplete="family-name" required
+                  <label for="lastName" th:text="#{page.register.step.account.lastname}">Last Name</label>
+                  <input type="text" id="lastName" class="form-input" th:placeholder="#{page.register.step.account.lastname.placeholder}" autocomplete="family-name" required
                          th:field="*{user.lastName}">
-                  <p class="form-error">Sobrenome é obrigatório</p>
+                  <p class="form-error" th:text="#{page.register.step.account.lastname.error}">Last name is required</p>
                 </div>
               </div>
 
@@ -894,39 +894,39 @@
                     <rect width="20" height="16" x="2" y="4" rx="2"/>
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                   </svg>
-                  <input type="email" id="email" class="form-input with-icon" placeholder="seu@email.com" autocomplete="email" required
+                  <input type="email" id="email" class="form-input with-icon" th:placeholder="#{page.register.step.account.email.placeholder}" autocomplete="email" required
                          th:field="*{user.email}">
                 </div>
-                <p class="form-error">Email inválido</p>
+                <p class="form-error" th:text="#{page.register.step.account.email.error}">Email invalid</p>
               </div>
 
               <div class="form-group" id="userPhoneGroup">
-                <label for="userPhone">Telefone <span class="optional">(opcional)</span></label>
+                <label for="userPhone"><span th:text="#{page.register.step.account.phone}">Telefone</span> <span class="optional" th:text="#{page.register.step.account.phone.optional}">(optional)</span></label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                   </svg>
-                  <input type="tel" id="userPhone" class="form-input with-icon" placeholder="(11) 99999-9999" autocomplete="tel"
+                  <input type="tel" id="userPhone" class="form-input with-icon" th:placeholder="#{page.register.step.account.phone.placeholder}" autocomplete="tel"
                          th:field="*{user.phone}">
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="defaultLanguage">Languages</label>
+                <label for="defaultLanguage" th:text="#{page.register.step.account.language}">Languages</label>
                 <select id="defaultLanguage" class="form-input" th:field="*{user.language}">
-                  <option value="EN" selected>English</option>
-                  <option value="PT">Português</option>
+                  <option value="EN" selected th:text="#{page.register.step.account.language.en}">English</option>
+                  <option value="PT" th:text="#{page.register.step.account.language.pt}">Portuguese</option>
                 </select>
               </div>
 
               <div class="form-group" id="passwordGroup">
-                <label for="password">Senha</label>
+                <label for="password" th:text="#{page.register.step.account.password}">Password</label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
-                  <input type="password" id="password" class="form-input with-icon" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required oninput="checkPasswordStrength()"
+                  <input type="password" id="password" class="form-input with-icon" th:placeholder="#{page.register.step.account.password.placeholder}" autocomplete="new-password" required oninput="checkPasswordStrength()"
                          th:field="*{user.password}">
                   <button type="button" class="password-toggle" onclick="togglePassword('password', 'eyeIcon1')">
                     <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -939,19 +939,19 @@
                   <div class="strength-bar">
                     <div class="strength-fill" id="strengthFill"></div>
                   </div>
-                  <p class="strength-text" id="strengthText">Use letras, números e símbolos</p>
+                  <p class="strength-text" id="strengthText" th:text="#{page.register.step.account.password.hint}">Use letters, numbers and symbols</p>
                 </div>
-                <p class="form-error">Senha deve ter no mínimo 8 caracteres</p>
+                <p class="form-error" th:text="#{page.register.step.account.password.error}">The password must be at least 8 characters long</p>
               </div>
 
               <div class="form-group" id="confirmPasswordGroup">
-                <label for="confirmPassword">Confirmar senha</label>
+                <label for="confirmPassword" th:text="#{page.register.step.account.password2}">Confirm password</label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
-                  <input type="password" id="confirmPassword" class="form-input with-icon" placeholder="Digite a senha novamente" autocomplete="new-password" required>
+                  <input type="password" id="confirmPassword" class="form-input with-icon" th:placeholder="#{page.register.step.account.password2.placeholder}" autocomplete="new-password" required>
                   <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'eyeIcon2')">
                     <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -959,7 +959,7 @@
                     </svg>
                   </button>
                 </div>
-                <p class="form-error">As senhas não conferem</p>
+                <p class="form-error" th:text="#{page.register.step.account.password2.error}">The passwords don't match</p>
               </div>
 
               <div class="terms-check" th:if="${false}">
@@ -1175,7 +1175,7 @@
         </div>
 
         <div class="auth-card-footer">
-          <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+          <p><span th:text="#{page.register.footer.already.have.account}">Do you already have an account?</span> <a href="/login" th:text="#{page.register.footer.do.login}">Log in</a></p>
         </div>
       </div>
     </div>

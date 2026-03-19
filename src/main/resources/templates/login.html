@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{app.title}">Entrar - SplitTable</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#f97316">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TableSplit">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/images/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/icon-192x192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/icon-72x72.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/icon-72x72.png">
   <style>
     :root {
       --background: #FFFBF5;
@@ -619,5 +636,7 @@
       alert('Redirecionando para login com Google...');
     }*/
   </script>
+  <!-- PWA Install Helper -->
+  <script src="/pwa-install.js"></script>
 </body>
 </html>
