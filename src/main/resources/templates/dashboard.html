@@ -519,7 +519,7 @@
     </style>
 </head>
 <body>
-    <div th:insert="~{components/sidebar :: sidebar(#{page.dashboard.header.title})}"></div>
+    <div th:insert="~{components/sidebar :: sidebar(#{page.dashboard.header.title}, ~{})}"></div>
     <!-- Main Content -->
     <main class="main-content">
         <div class="dashboard-body">
@@ -637,6 +637,23 @@
                     <div class="action-content">
                         <h3 th:text="#{page.dashboard.label.settings}">Configurações</h3>
                         <p th:text="#{page.dashboard.label.settings.hint}">Update your information, schedules, and contact details.</p>
+                    </div>
+                </a>
+
+                <a href="/tables" class="action-card">
+                    <div class="action-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="5" height="5" x="3" y="3" rx="1"></rect>
+                            <rect width="5" height="5" x="16" y="3" rx="1"></rect>
+                            <rect width="5" height="5" x="3" y="16" rx="1"></rect>
+                            <rect width="5" height="5" x="16" y="16" rx="1"></rect>
+                            <path d="M21 16V8a5 5 0 0 0-5-5H8"></path>
+                            <path d="M3 8v8a5 5 0 0 0 5 5h8"></path>
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3 th:text="#{page.dashboard.label.tables}">Mesas</h3>
+                        <p th:text="#{page.dashboard.label.tables.hint}">Manage active tables and orders.</p>
                     </div>
                 </a>
             </div>

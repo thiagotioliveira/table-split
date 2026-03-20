@@ -19,7 +19,7 @@ const STATIC_ASSETS = [
 const CACHE_PAGES = [
   '/dashboard',
   '/menu',
-  '/orders',
+  '/tables',
   '/settings',
   '/profile'
 ];

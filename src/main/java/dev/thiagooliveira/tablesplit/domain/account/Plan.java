@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.domain.account;
 import java.util.Set;
 
 public enum Plan {
-  LITE(Set.of(Module.DASHBOARD, Module.MENU, Module.SETTINGS, Module.USER_PROFILE));
+  LITE(Set.of(Module.DASHBOARD, Module.MENU, Module.SETTINGS, Module.USER_PROFILE, Module.TABLES));
 
   private final Set<Module> modules;
 

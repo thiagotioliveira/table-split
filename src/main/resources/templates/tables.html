@@ -1,0 +1,3357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Garçom - TableSplit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* User Menu in Sidebar */
+        .user-menu-container {
+            position: relative;
+        }
+
+        .user-menu-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            width: 100%;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .user-menu-trigger:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-menu-arrow {
+            color: var(--muted);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .user-menu-container.open .user-menu-arrow {
+            transform: rotate(180deg);
+        }
+
+        .user-submenu {
+            position: absolute;
+            bottom: calc(100% + 0.5rem);
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .user-menu-container.open .user-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-submenu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+
+        .user-submenu-item:first-child {
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .user-submenu-item:last-child {
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .user-submenu-item:hover {
+            background: var(--background-secondary);
+        }
+
+        .user-submenu-item.danger {
+            color: var(--destructive);
+        }
+
+        .user-submenu-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .user-submenu-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-submenu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.25rem 0;
+        }
+
+        /* Collapsed sidebar - show only avatar */
+        .sidebar.collapsed .user-menu-trigger {
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .sidebar.collapsed .user-details,
+        .sidebar.collapsed .user-menu-arrow {
+            display: none;
+        }
+
+        .sidebar.collapsed .user-submenu {
+            left: 100%;
+            bottom: 0;
+            right: auto;
+            min-width: 180px;
+            margin-left: 0.5rem;
+        }
+
+        /* Waiter Layout - Two Panel */
+        .waiter-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            height: calc(100vh - 73px);
+        }
+
+        /* Tables Panel */
+        .tables-panel {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tables-panel-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tables-panel-header h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .tables-panel-header p {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .waiter-info-bar {
+            padding: 0.75rem 1.25rem;
+            background: var(--background-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .waiter-info-bar .waiter-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .waiter-info-bar .waiter-details .name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .waiter-info-bar .waiter-details .shift {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .tables-filter {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-btn .count {
+            background: rgba(0,0,0,0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .filter-btn.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .add-table-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 0.75rem;
+            padding: 0.6rem 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-table-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .tables-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .table-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .table-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .table-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .table-card.status-free {
+            border-left: 4px solid var(--green);
+        }
+
+        .table-card.status-occupied {
+            border-left: 4px solid var(--primary);
+        }
+
+        .table-card.status-waiting {
+            border-left: 4px solid #eab308;
+        }
+
+        .table-card.status-bill {
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .table-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-number {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .table-status {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .table-status.free {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .table-status.occupied {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .table-status.waiting {
+            background: rgba(234, 179, 8, 0.1);
+            color: #ca8a04;
+        }
+
+        .table-status.bill {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+        }
+
+        .table-card-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .table-total {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Main Panel */
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--background);
+        }
+
+        .main-panel-header {
+            padding: 1rem 1.5rem;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .selected-table-info h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .selected-table-info p {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .action-btn.success {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+
+        .action-btn.purple {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        /* Notifications Bell */
+        .notifications-bell {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .notifications-bell:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .notifications-bell svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .notifications-bell .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--destructive);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .notifications-bell.has-urgent {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            width: 320px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+        }
+
+        .notifications-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .notifications-panel-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-panel-header h4 {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clear-notifications {
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .notifications-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: var(--background-secondary);
+        }
+
+        .notification-item.unread {
+            background: var(--primary-light);
+        }
+
+        .notification-item.urgent {
+            border-left: 3px solid var(--destructive);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .notification-icon.urgent {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-content .title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .notification-content .message {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .notification-content .time {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 0.25rem;
+        }
+
+        .notifications-panel-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .view-all-notifications {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Main Panel Body */
+        .main-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* No Table Selected State */
+        .no-table-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .no-table-selected svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+        }
+
+        .no-table-selected h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .no-table-selected p {
+            font-size: 0.9rem;
+        }
+
+        /* Table Detail */
+        .table-detail {
+            display: none;
+        }
+
+        .table-detail.active {
+            display: block;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-action-card {
+            background: var(--card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .quick-action-card svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quick-action-card span {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Clients Section */
+        .clients-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h3 {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .client-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .client-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .client-name svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        .client-subtotal {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .client-orders {
+            margin-bottom: 1rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .order-qty {
+            background: var(--background-secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .order-item-name {
+            font-weight: 500;
+        }
+
+        .order-item-note {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-style: italic;
+            display: block;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+        }
+
+        .order-item-status {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+        }
+
+        .order-item-status.pending {
+            background: rgba(234, 179, 8, 0.1);
+            color: #ca8a04;
+        }
+
+        .order-item-status.preparing {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .order-item-status.ready {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .order-item-status.delivered {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .add-order-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .add-order-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Bill Summary */
+        .bill-summary {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .bill-summary h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .bill-row.total {
+            border-top: 2px solid var(--border);
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .bill-row.total span:last-child {
+            color: var(--primary);
+        }
+
+        /* Sidebar Collapsed State */
+        @media (min-width: 1024px) {
+            .main-content.sidebar-collapsed {
+                margin-left: 4.5rem;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .waiter-content {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .waiter-content {
+                grid-template-columns: 1fr;
+            }
+
+            .tables-panel {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 300px;
+                z-index: 200;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .tables-panel.open {
+                transform: translateX(0);
+            }
+
+            .tables-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 199;
+            }
+
+            .tables-overlay.active {
+                display: block;
+            }
+
+            .show-tables-btn {
+                display: flex;
+            }
+
+            .header-actions .action-btn span {
+                display: none;
+            }
+
+            .header-actions .action-btn {
+                padding: 0.5rem;
+            }
+        }
+
+        .show-tables-btn {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tables-panel-close {
+            display: none;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .tables-panel-close {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            padding: 1rem;
+        }
+
+        #itemCustomizeModal {
+            z-index: 1100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal.large {
+            max-width: 700px;
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--destructive);
+            border-color: var(--destructive);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .modal-btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .modal-btn:hover {
+            background: var(--background-secondary);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .modal-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .modal-btn.success {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+
+        .modal-btn.danger {
+            background: var(--destructive);
+            color: white;
+            border-color: var(--destructive);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.6rem 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Menu Items Grid */
+        .menu-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .menu-filter-btn {
+            padding: 0.4rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .menu-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.25rem;
+        }
+
+        .menu-item-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .menu-item-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .menu-item-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-item-price {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Order Items List */
+        .order-items-section {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .order-items-section h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .order-items-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-item-qty {
+            background: var(--primary);
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .order-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .order-item-customizations {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            padding-left: 2rem;
+        }
+
+        /* Item Customization Modal */
+        .item-customize-modal {
+            max-width: 400px;
+        }
+
+        .item-customize-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .item-customize-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-customize-info .price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .question-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .question-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .question-label .required {
+            color: var(--destructive);
+            font-size: 0.7rem;
+        }
+
+        .question-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .question-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--background);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .question-option:hover {
+            border-color: var(--primary);
+        }
+
+        .question-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .question-option .extra-price {
+            font-size: 0.7rem;
+            color: var(--success);
+            margin-left: 0.25rem;
+        }
+
+        .item-qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+        }
+
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .qty-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .remove-item-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: var(--destructive);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .order-total-row span:last-child {
+            color: var(--primary);
+        }
+
+        /* Client Payment Cards */
+        .client-payment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .client-payment-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .client-payment-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .client-payment-info {
+            flex: 1;
+        }
+
+        .client-payment-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .client-payment-items {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .client-payment-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .payment-method-option {
+            position: relative;
+        }
+
+        .payment-method-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .payment-method-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .payment-method-option input:checked + label {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Bill Modal */
+        .bill-clients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bill-client-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+        }
+
+        .bill-summary-section {
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .bill-summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .bill-summary-row.total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-top: 2px solid var(--border);
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .bill-summary-row.total span:last-child {
+            color: var(--primary);
+        }
+
+        /* All Notifications Modal */
+        .all-notification-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .all-notification-item.urgent {
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .all-notification-item .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--background-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .all-notification-item .notification-icon.urgent {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+        }
+
+        .all-notification-item .notification-details {
+            flex: 1;
+        }
+
+        .all-notification-item .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .all-notification-item .message {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .all-notification-item .time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.25rem;
+        }
+
+        .all-notification-item .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Reservation Cards */
+        .reservations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .reservation-card {
+            padding: 1rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reservation-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .reservation-info p {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .reservation-time {
+            text-align: right;
+        }
+
+        .reservation-time .time {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .reservation-time .guests {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* History List */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 1rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-item-date {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .history-item-total {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .history-item-details {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* Modal Large */
+        .modal.large {
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+        }
+
+        /* Reservations List */
+        .reservations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .reservation-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .reservation-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .reservation-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .reservation-time {
+            text-align: right;
+        }
+
+        .reservation-time .time {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .reservation-time .guests {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* All Notifications List */
+        .all-notification-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .all-notification-item:hover {
+            background: var(--background-secondary);
+        }
+
+        .all-notification-item .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .all-notification-item .notif-icon.waiter {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .all-notification-item .notif-icon.bill {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .all-notification-item .notif-content {
+            flex: 1;
+        }
+
+        .all-notification-item .notif-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .all-notification-item .notif-text {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .all-notification-item .notif-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .all-notification-item .notif-dismiss {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .all-notification-item .notif-dismiss:hover {
+            background: var(--destructive);
+            color: white;
+        }
+
+        /* Bill Client Row */
+        .bill-clients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bill-client-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+        }
+
+        /* Mobile Tables Toggle Button */
+        .tables-toggle-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .tables-toggle-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--destructive);
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .tables-toggle-btn {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{components/sidebar :: sidebar(#{page.table.header.title}, ~{::tablesButton})}"></div>
+<!-- fragmento local -->
+<div th:remove="all">
+    <div th:fragment="tablesButton">
+        <button class="tables-toggle-btn" onclick="openTablesPanel()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+            <span class="badge">12</span>
+        </button>
+    </div>
+</div>
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Header -->
+    <header class="dashboard-header" th:if="${false}">
+        <div class="dashboard-header-content">
+            <div class="flex items-center gap-3">
+                <button class="hamburger-btn" onclick="openSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+                <button class="tables-toggle-btn" onclick="openTablesPanel()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                    <span class="badge">12</span>
+                </button>
+                <div class="lg-hidden flex items-center gap-3">
+                    <div class="logo-icon" style="width: 2rem; height: 2rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                    </div>
+                    <span style="font-weight: 700;">TableSplit</span>
+                </div>
+            </div>
+            <h1 class="hidden lg-block" style="font-size: 1.25rem; font-weight: 600;" th:if="${false}">Painel do Garçom</h1>
+            <div class="flex items-center gap-3" th:if="${false}">
+                <!-- Notifications Bell -->
+                <div style="position: relative;">
+                    <button class="notifications-bell has-urgent" id="notificationsBell" onclick="toggleNotifications()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="badge" id="notificationsBadge">3</span>
+                    </button>
+
+                    <div class="notifications-panel" id="notificationsPanel">
+                        <div class="notifications-panel-header">
+                            <h4>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                Chamadas de Garçom
+                            </h4>
+                            <button class="clear-notifications" onclick="clearAllNotifications()">Limpar tudo</button>
+                        </div>
+                        <div class="notifications-list" id="notificationsList">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="notifications-panel-footer">
+                            <a href="#" class="view-all-notifications" onclick="openAllNotificationsModal(); return false;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                Ver todas as notificações
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-body" style="padding: 0;">
+        <!-- Tables Overlay (Mobile) -->
+        <div class="tables-overlay" id="tablesOverlay" onclick="closeTablesPanel()"></div>
+
+        <div class="waiter-content">
+            <!-- Tables Panel -->
+            <aside class="tables-panel" id="tablesPanel">
+                <button class="tables-panel-close" onclick="closeTablesPanel()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+
+                <div class="tables-panel-header" th:if="${false}">
+                    <h2>Minhas Mesas</h2>
+                    <p>12 mesas atribuídas</p>
+                </div>
+
+                <div class="waiter-info-bar" th:if="${false}">
+                    <div class="waiter-avatar">CS</div>
+                    <div class="waiter-details">
+                        <div class="name">Carlos Silva</div>
+                        <div class="shift">Turno: 18:00 - 02:00</div>
+                    </div>
+                </div>
+
+                <div class="tables-filter">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterTables('all')">
+                            Todas <span class="count" th:text="${count}">12</span>
+                        </button>
+                        <button class="filter-btn" onclick="filterTables('free')">
+                            Livres <span class="count" th:text="${countAvailable}">4</span>
+                        </button>
+                        <button class="filter-btn" onclick="filterTables('occupied')">
+                            Ocupadas <span class="count" th:text="${countOccupied}">6</span>
+                        </button>
+                    </div>
+                    <button class="add-table-btn" onclick="openNewTableModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        Nova Mesa
+                    </button>
+                </div>
+
+                <div class="tables-list" id="tablesList">
+                    <!-- Dynamic Tables List -->
+                    <div th:each="table : ${tables}" 
+                         class="table-card" 
+                         th:classappend="|status-${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}|" 
+                         th:data-table="${table.cod}" 
+                         th:data-status="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
+                         th:onclick="selectTable(this.getAttribute('data-table'))">
+                        <div class="table-card-header">
+                            <span class="table-number" th:text="${'Mesa ' + table.cod}">Mesa 01</span>
+                            <span class="table-status" 
+                                  th:classappend="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
+                                  th:text="${table.status.name() == 'AVAILABLE' ? 'Livre' : 'Ocupada'}">Status</span>
+                        </div>
+                        <div class="table-card-info">
+                            <span th:if="${table.status.name() == 'AVAILABLE'}">Disponível</span>
+                            <span th:if="${table.status.name() == 'OCCUPIED'}">Em uso</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Panel -->
+            <div class="main-panel">
+                <div class="main-panel-header" id="mainPanelHeader">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="show-tables-btn" onclick="openTablesPanel()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                            Ver Mesas
+                        </button>
+                        <div class="selected-table-info" id="selectedTableInfo">
+                            <h2>Selecione uma mesa</h2>
+                            <p>Clique em uma mesa na lista para gerenciá-la</p>
+                        </div>
+                    </div>
+                    <div class="header-actions" id="headerActions" style="display: none;">
+                        <button class="action-btn primary" onclick="openOrderModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            <span>Novo Pedido</span>
+                        </button>
+                        <button class="action-btn purple" onclick="openBillModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span>Ver Conta</span>
+                        </button>
+                        <button class="action-btn success" onclick="openCloseTableModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Fechar Mesa</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="main-panel-body">
+                    <!-- Estado: Nenhuma mesa selecionada -->
+                    <div class="no-table-selected" id="noTableSelected">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        <h3>Nenhuma mesa selecionada</h3>
+                        <p>Selecione uma mesa na lista para ver os pedidos e gerenciar</p>
+                    </div>
+
+                    <!-- Detalhe da Mesa -->
+                    <div class="table-detail" id="tableDetail">
+                        <!-- Quick Actions para mesa livre -->
+                        <div class="quick-actions" id="quickActionsEmpty" style="display: none;">
+                            <div class="quick-action-card" onclick="openOrderModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>Abrir Mesa</span>
+                            </div>
+                            <div class="quick-action-card" onclick="openReservationsModal()" th:if="${false}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span>Ver Reservas</span>
+                            </div>
+                        </div>
+
+                        <!-- Clientes e Pedidos -->
+                        <div class="clients-section" id="clientsSection">
+                            <div class="section-header">
+                                <h3>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    Clientes na Mesa
+                                </h3>
+                            </div>
+
+                            <!-- Cliente 1 -->
+                            <div class="client-card" data-client="1">
+                                <div class="client-header">
+                    <span class="client-name">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      João Silva
+                    </span>
+                                    <span class="client-subtotal">R$ 87,50</span>
+                                </div>
+                                <div class="client-orders">
+                                    <div class="order-item">
+                                        <div class="order-item-info">
+                                            <span class="order-qty">1</span>
+                                            <div>
+                                                <span class="order-item-name">Filé à Parmegiana</span>
+                                                <span class="order-item-note">Sem cebola</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="order-item-price">R$ 54,90</span>
+                                            <span class="order-item-status ready">Pronto</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="order-item-info">
+                                            <span class="order-qty">2</span>
+                                            <div>
+                                                <span class="order-item-name">Refrigerante Lata</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="order-item-price">R$ 12,00</span>
+                                            <span class="order-item-status delivered">Entregue</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="order-item-info">
+                                            <span class="order-qty">1</span>
+                                            <div>
+                                                <span class="order-item-name">Pudim</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="order-item-price">R$ 14,60</span>
+                                            <span class="order-item-status preparing">Preparando</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="add-order-btn" onclick="openOrderModal('João Silva')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                    Adicionar pedido para João
+                                </button>
+                            </div>
+
+                            <!-- Cliente 2 -->
+                            <div class="client-card" data-client="2">
+                                <div class="client-header">
+                    <span class="client-name">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      Maria Oliveira
+                    </span>
+                                    <span class="client-subtotal">R$ 68,00</span>
+                                </div>
+                                <div class="client-orders">
+                                    <div class="order-item">
+                                        <div class="order-item-info">
+                                            <span class="order-qty">1</span>
+                                            <div>
+                                                <span class="order-item-name">Risoto de Camarão</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="order-item-price">R$ 52,00</span>
+                                            <span class="order-item-status delivered">Entregue</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="order-item-info">
+                                            <span class="order-qty">1</span>
+                                            <div>
+                                                <span class="order-item-name">Suco Natural</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="order-item-price">R$ 10,00</span>
+                                            <span class="order-item-status delivered">Entregue</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="add-order-btn" onclick="openOrderModal('Maria Oliveira')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                    Adicionar pedido para Maria
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Resumo da Conta -->
+                        <div class="bill-summary">
+                            <h3>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                Resumo da Conta
+                            </h3>
+                            <div class="bill-row">
+                                <span>Subtotal</span>
+                                <span>R$ 155,50</span>
+                            </div>
+                            <div class="bill-row">
+                                <span>Taxa de serviço (10%)</span>
+                                <span>R$ 15,55</span>
+                            </div>
+                            <div class="bill-row total">
+                                <span>Total</span>
+                                <span>R$ 171,05</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // =====================
+    // Sidebar Navigation
+    // =====================
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    // Collapsible sidebar
+    function toggleSidebarCollapse() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+    }
+
+    function initSidebarState() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            document.getElementById('sidebar').classList.add('collapsed');
+            document.querySelector('.main-content').classList.add('sidebar-collapsed');
+        }
+    }
+
+    // User Menu
+    function toggleUserMenu() {
+        document.getElementById('userMenuContainer').classList.toggle('open');
+    }
+
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const userMenu = document.getElementById('userMenuContainer');
+        if (userMenu && !userMenu.contains(e.target)) {
+            userMenu.classList.remove('open');
+        }
+    });
+
+    // =====================
+    // Tables Panel (Mobile)
+    // =====================
+    function openTablesPanel() {
+        document.getElementById('tablesPanel').classList.add('open');
+        document.getElementById('tablesOverlay').classList.add('active');
+    }
+
+    function closeTablesPanel() {
+        document.getElementById('tablesPanel').classList.remove('open');
+        document.getElementById('tablesOverlay').classList.remove('active');
+    }
+
+    // =====================
+    // Table Selection
+    // =====================
+    let selectedTable = null;
+
+    function selectTable(tableId) {
+        // Remove previous selection
+        document.querySelectorAll('.table-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Select new table
+        const card = document.querySelector(`.table-card[data-table="${tableId}"]`);
+        if (card) {
+            card.classList.add('selected');
+            selectedTable = tableId;
+
+            const status = card.dataset.status;
+            const tableNumber = card.querySelector('.table-number').textContent;
+
+            // Update header info
+            const info = document.getElementById('selectedTableInfo');
+            info.innerHTML = `
+          <h2>${tableNumber}</h2>
+          <p>${getStatusText(status)}</p>
+        `;
+
+            // Show/hide elements based on status
+            document.getElementById('noTableSelected').style.display = 'none';
+            document.getElementById('tableDetail').classList.add('active');
+
+            if (status === 'free') {
+                document.getElementById('quickActionsEmpty').style.display = 'grid';
+                document.getElementById('clientsSection').style.display = 'none';
+                document.querySelector('.bill-summary').style.display = 'none';
+                document.getElementById('headerActions').style.display = 'none';
+            } else {
+                document.getElementById('quickActionsEmpty').style.display = 'none';
+                document.getElementById('clientsSection').style.display = 'block';
+                document.querySelector('.bill-summary').style.display = 'block';
+                document.getElementById('headerActions').style.display = 'flex';
+            }
+
+            // Close mobile panel
+            closeTablesPanel();
+        }
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            free: 'Mesa livre - Pronta para novos clientes',
+            occupied: 'Mesa ocupada - Clientes consumindo',
+            waiting: 'Pedidos prontos aguardando entrega',
+            bill: 'Cliente solicitou a conta'
+        };
+        return texts[status] || '';
+    }
+
+    // =====================
+    // Filter Tables
+    // =====================
+    function filterTables(status) {
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.closest('.filter-btn').classList.add('active');
+
+        // Filter cards
+        document.querySelectorAll('.table-card').forEach(card => {
+            if (status === 'all') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = card.dataset.status === status ? 'block' : 'none';
+            }
+        });
+    }
+
+    // =====================
+    // Notifications
+    // =====================
+    const notifications = [
+        { id: 1, table: 'Mesa 04', message: 'Chamou o garçom', time: '2 min', urgent: true },
+        { id: 2, table: 'Mesa 07', message: 'Pediu a conta', time: '5 min', urgent: false },
+        { id: 3, table: 'Mesa 03', message: 'Pedido pronto para entrega', time: '8 min', urgent: false }
+    ];
+
+    function toggleNotifications() {
+        const panel = document.getElementById('notificationsPanel');
+        panel.classList.toggle('active');
+    }
+
+    function renderNotifications() {
+        const list = document.getElementById('notificationsList');
+        if (notifications.length === 0) {
+            list.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--muted);">Nenhuma notificação</div>';
+            return;
+        }
+
+        list.innerHTML = notifications.map(n => `
+        <div class="notification-item ${n.urgent ? 'urgent unread' : ''}">
+          <div class="notification-icon ${n.urgent ? 'urgent' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div class="notification-content">
+            <div class="title">${n.table}</div>
+            <div class="message">${n.message}</div>
+            <div class="time">Há ${n.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearAllNotifications() {
+        notifications.length = 0;
+        renderNotifications();
+        document.getElementById('notificationsBadge').textContent = '0';
+        document.getElementById('notificationsBell').classList.remove('has-urgent');
+    }
+
+    // Close notifications when clicking outside
+    document.addEventListener('click', function(e) {
+        const bell = document.getElementById('notificationsBell');
+        const panel = document.getElementById('notificationsPanel');
+        if (panel && bell && !bell.contains(e.target) && !panel.contains(e.target)) {
+            panel.classList.remove('active');
+        }
+    });
+
+    // =====================
+    // Modal Functions (Placeholders)
+    // =====================
+    function openOrderModal(clientName) {
+        document.getElementById('newOrderModal').classList.add('active');
+        document.getElementById('orderClientName').textContent = clientName || 'Novo Cliente';
+        document.getElementById('orderTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+    }
+
+    function closeOrderModal() {
+        document.getElementById('newOrderModal').classList.remove('active');
+    }
+
+    function openBillModal() {
+        document.getElementById('billModal').classList.add('active');
+        document.getElementById('billTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+    }
+
+    function closeBillModal() {
+        document.getElementById('billModal').classList.remove('active');
+    }
+
+    function openCloseTableModal() {
+        document.getElementById('closeTableModal').classList.add('active');
+        document.getElementById('closeTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+    }
+
+    function closeCloseTableModal() {
+        document.getElementById('closeTableModal').classList.remove('active');
+    }
+
+    function confirmCloseTable() {
+        alert('Mesa fechada com sucesso!');
+        closeCloseTableModal();
+    }
+
+    function openReservationsModal() {
+        document.getElementById('reservationsModal').classList.add('active');
+    }
+
+    function closeReservationsModal() {
+        document.getElementById('reservationsModal').classList.remove('active');
+    }
+
+    function openNewTableModal() {
+        document.getElementById('newTableModal').classList.add('active');
+    }
+
+    function closeNewTableModal() {
+        document.getElementById('newTableModal').classList.remove('active');
+    }
+
+    function createNewTable() {
+        const clientCount = document.getElementById('newTableClients').value;
+        const tableNumber = document.getElementById('newTableNumber').value;
+        alert(`Mesa ${tableNumber} aberta com ${clientCount} cliente(s)!`);
+        closeNewTableModal();
+    }
+
+    function openPartialPaymentModal() {
+        document.getElementById('partialPaymentModal').classList.add('active');
+        updatePartialTotal();
+    }
+
+    function closePartialPaymentModal() {
+        document.getElementById('partialPaymentModal').classList.remove('active');
+    }
+
+    function toggleClientPayment(checkbox) {
+        updatePartialTotal();
+    }
+
+    function updatePartialTotal() {
+        let total = 0;
+        document.querySelectorAll('.client-payment-check:checked').forEach(cb => {
+            total += parseFloat(cb.dataset.value);
+        });
+        document.getElementById('partialPaymentTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function processPartialPayment() {
+        const method = document.querySelector('input[name="partialPayMethod"]:checked')?.value;
+        if (!method) {
+            alert('Selecione um método de pagamento');
+            return;
+        }
+        alert(`Pagamento parcial processado via ${method}!`);
+        closePartialPaymentModal();
+    }
+
+    function openHistoryModal() {
+        document.getElementById('historyModal').classList.add('active');
+        document.getElementById('historyTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+    }
+
+    function closeHistoryModal() {
+        document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function openAllNotificationsModal() {
+        document.getElementById('notificationsPanel').classList.remove('active');
+        document.getElementById('allNotificationsModal').classList.add('active');
+    }
+
+    function closeAllNotificationsModal() {
+        document.getElementById('allNotificationsModal').classList.remove('active');
+    }
+
+    function dismissNotification(id) {
+        const idx = notifications.findIndex(n => n.id === id);
+        if (idx > -1) {
+            notifications.splice(idx, 1);
+            renderNotifications();
+            renderAllNotifications();
+            document.getElementById('notificationsBadge').textContent = notifications.length;
+            if (!notifications.some(n => n.urgent)) {
+                document.getElementById('notificationsBell').classList.remove('has-urgent');
+            }
+        }
+    }
+
+    function renderAllNotifications() {
+        const list = document.getElementById('allNotificationsList');
+        if (notifications.length === 0) {
+            list.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--muted);">Nenhuma notificação pendente</div>';
+            return;
+        }
+        list.innerHTML = notifications.map(n => `
+        <div class="all-notification-item ${n.urgent ? 'urgent' : ''}">
+          <div class="notification-icon ${n.urgent ? 'urgent' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div class="notification-details">
+            <div class="title">${n.table}</div>
+            <div class="message">${n.message}</div>
+            <div class="time">Há ${n.time}</div>
+          </div>
+          <div class="notification-actions">
+            <button class="action-btn primary" onclick="selectTableFromNotification(${n.id})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              Ir para mesa
+            </button>
+            <button class="action-btn" onclick="dismissNotification(${n.id})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectTableFromNotification(notificationId) {
+        const notification = notifications.find(n => n.id === notificationId);
+        if (notification) {
+            const tableNum = parseInt(notification.table.replace('Mesa ', ''));
+            selectTable(tableNum);
+            closeAllNotificationsModal();
+            dismissNotification(notificationId);
+        }
+    }
+
+    // Menu items for orders
+    const menuItems = [
+        {
+            id: 1,
+            name: 'Filé Mignon',
+            price: 89.90,
+            category: 'Pratos',
+            questions: [
+                {
+                    id: 'q1',
+                    label: 'Ponto da carne',
+                    type: 'single',
+                    required: true,
+                    options: [
+                        { id: 'mal', label: 'Mal passado', price: 0 },
+                        { id: 'aoponto', label: 'Ao ponto', price: 0 },
+                        { id: 'bem', label: 'Bem passado', price: 0 }
+                    ]
+                },
+                {
+                    id: 'q2',
+                    label: 'Molho',
+                    type: 'single',
+                    required: false,
+                    options: [
+                        { id: 'sem', label: 'Sem molho', price: 0 },
+                        { id: 'madeira', label: 'Madeira', price: 0 },
+                        { id: 'gorgonzola', label: 'Gorgonzola', price: 5.00 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 2,
+            name: 'Picanha',
+            price: 79.90,
+            category: 'Pratos',
+            questions: [
+                {
+                    id: 'q1',
+                    label: 'Ponto da carne',
+                    type: 'single',
+                    required: true,
+                    options: [
+                        { id: 'mal', label: 'Mal passado', price: 0 },
+                        { id: 'aoponto', label: 'Ao ponto', price: 0 },
+                        { id: 'bem', label: 'Bem passado', price: 0 }
+                    ]
+                },
+                {
+                    id: 'q2',
+                    label: 'Acompanhamento extra',
+                    type: 'multiple',
+                    required: false,
+                    options: [
+                        { id: 'farofa', label: 'Farofa', price: 5.00 },
+                        { id: 'vinagrete', label: 'Vinagrete', price: 3.00 },
+                        { id: 'arroz', label: 'Arroz extra', price: 6.00 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 3,
+            name: 'Salmão Grelhado',
+            price: 72.00,
+            category: 'Pratos',
+            questions: [
+                {
+                    id: 'q1',
+                    label: 'Acompanhamento',
+                    type: 'single',
+                    required: true,
+                    options: [
+                        { id: 'legumes', label: 'Legumes grelhados', price: 0 },
+                        { id: 'arroz', label: 'Arroz branco', price: 0 },
+                        { id: 'pure', label: 'Purê de batatas', price: 0 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 4,
+            name: 'Caipirinha',
+            price: 18.00,
+            category: 'Bebidas',
+            questions: [
+                {
+                    id: 'q1',
+                    label: 'Fruta',
+                    type: 'single',
+                    required: true,
+                    options: [
+                        { id: 'limao', label: 'Limão', price: 0 },
+                        { id: 'morango', label: 'Morango', price: 3.00 },
+                        { id: 'maracuja', label: 'Maracujá', price: 2.00 },
+                        { id: 'kiwi', label: 'Kiwi', price: 3.00 }
+                    ]
+                },
+                {
+                    id: 'q2',
+                    label: 'Açúcar',
+                    type: 'single',
+                    required: false,
+                    options: [
+                        { id: 'normal', label: 'Normal', price: 0 },
+                        { id: 'menos', label: 'Pouco açúcar', price: 0 },
+                        { id: 'sem', label: 'Sem açúcar', price: 0 }
+                    ]
+                }
+            ]
+        },
+        { id: 5, name: 'Cerveja', price: 12.00, category: 'Bebidas', questions: [] },
+        { id: 6, name: 'Refrigerante', price: 8.00, category: 'Bebidas', questions: [] },
+        {
+            id: 7,
+            name: 'Petit Gateau',
+            price: 28.00,
+            category: 'Sobremesas',
+            questions: [
+                {
+                    id: 'q1',
+                    label: 'Sorvete',
+                    type: 'single',
+                    required: true,
+                    options: [
+                        { id: 'creme', label: 'Creme', price: 0 },
+                        { id: 'baunilha', label: 'Baunilha', price: 0 },
+                        { id: 'chocolate', label: 'Chocolate', price: 0 }
+                    ]
+                },
+                {
+                    id: 'q2',
+                    label: 'Quer calda extra?',
+                    type: 'single',
+                    required: false,
+                    options: [
+                        { id: 'nao', label: 'Não', price: 0 },
+                        { id: 'sim', label: 'Sim', price: 4.00 }
+                    ]
+                }
+            ]
+        },
+        { id: 8, name: 'Pudim', price: 16.00, category: 'Sobremesas', questions: [] }
+    ];
+
+    let orderItems = [];
+    let currentCustomizeItem = null;
+    let customizeAnswers = {};
+    let customizeQty = 1;
+
+    function filterMenuItems(category) {
+        document.querySelectorAll('.menu-filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const items = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
+        renderMenuItems(items);
+    }
+
+    function renderMenuItems(items) {
+        const grid = document.getElementById('menuItemsGrid');
+        grid.innerHTML = items.map(item => `
+        <div class="menu-item-card" onclick="addToOrder(${item.id})">
+          <div class="menu-item-name">${item.name}</div>
+          <div class="menu-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+        </div>
+      `).join('');
+    }
+
+    function addToOrder(itemId) {
+        const item = menuItems.find(i => i.id === itemId);
+
+        // If item has questions, show customization modal
+        if (item.questions && item.questions.length > 0) {
+            openItemCustomizeModal(item);
+        } else {
+            // Add directly without customization
+            addItemToOrderList(item, 1, {}, 0);
+        }
+    }
+
+    function openItemCustomizeModal(item) {
+        currentCustomizeItem = item;
+        customizeAnswers = {};
+        customizeQty = 1;
+
+        document.getElementById('customizeItemName').textContent = item.name;
+        document.getElementById('customizeItemPrice').textContent = `R$ ${item.price.toFixed(2).replace('.', ',')}`;
+        document.getElementById('customizeQtyDisplay').textContent = '1';
+
+        // Render questions
+        const container = document.getElementById('customizeQuestionsContainer');
+        container.innerHTML = item.questions.map(q => `
+        <div class="question-group" data-question-id="${q.id}">
+          <div class="question-label">
+            ${q.label}
+            ${q.required ? '<span class="required">*obrigatório</span>' : ''}
+          </div>
+          <div class="question-options">
+            ${q.options.map(opt => `
+              <div class="question-option"
+                   data-question="${q.id}"
+                   data-option="${opt.id}"
+                   data-price="${opt.price}"
+                   data-type="${q.type}"
+                   onclick="selectCustomizeOption(this, '${q.id}', '${opt.id}', ${opt.price}, '${q.type}')">
+                ${opt.label}
+                ${opt.price > 0 ? `<span class="extra-price">+R$ ${opt.price.toFixed(2).replace('.', ',')}</span>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+        updateCustomizeTotal();
+        document.getElementById('itemCustomizeModal').classList.add('active');
+    }
+
+    function closeItemCustomizeModal() {
+        document.getElementById('itemCustomizeModal').classList.remove('active');
+        currentCustomizeItem = null;
+        customizeAnswers = {};
+        customizeQty = 1;
+    }
+
+    function selectCustomizeOption(el, questionId, optionId, price, type) {
+        if (type === 'single') {
+            // Single select - deselect others in same question
+            document.querySelectorAll(`.question-option[data-question="${questionId}"]`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            el.classList.add('selected');
+            customizeAnswers[questionId] = { optionId, price, label: el.textContent.trim().split('+')[0].trim() };
+        } else {
+            // Multiple select - toggle
+            el.classList.toggle('selected');
+            if (!customizeAnswers[questionId]) {
+                customizeAnswers[questionId] = [];
+            }
+            if (el.classList.contains('selected')) {
+                customizeAnswers[questionId].push({ optionId, price, label: el.textContent.trim().split('+')[0].trim() });
+            } else {
+                customizeAnswers[questionId] = customizeAnswers[questionId].filter(a => a.optionId !== optionId);
+            }
+        }
+        updateCustomizeTotal();
+    }
+
+    function updateCustomizeQty(delta) {
+        customizeQty = Math.max(1, customizeQty + delta);
+        document.getElementById('customizeQtyDisplay').textContent = customizeQty;
+        updateCustomizeTotal();
+    }
+
+    function updateCustomizeTotal() {
+        if (!currentCustomizeItem) return;
+        let extrasPrice = 0;
+        Object.values(customizeAnswers).forEach(answer => {
+            if (Array.isArray(answer)) {
+                answer.forEach(a => extrasPrice += a.price);
+            } else if (answer && answer.price) {
+                extrasPrice += answer.price;
+            }
+        });
+        const total = (currentCustomizeItem.price + extrasPrice) * customizeQty;
+        document.getElementById('customizeTotalPrice').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function confirmCustomizeItem() {
+        if (!currentCustomizeItem) return;
+
+        // Validate required questions
+        for (const q of currentCustomizeItem.questions) {
+            if (q.required && !customizeAnswers[q.id]) {
+                alert(`Por favor, selecione: ${q.label}`);
+                return;
+            }
+            if (q.required && Array.isArray(customizeAnswers[q.id]) && customizeAnswers[q.id].length === 0) {
+                alert(`Por favor, selecione: ${q.label}`);
+                return;
+            }
+        }
+
+        // Calculate extras price
+        let extrasPrice = 0;
+        Object.values(customizeAnswers).forEach(answer => {
+            if (Array.isArray(answer)) {
+                answer.forEach(a => extrasPrice += a.price);
+            } else if (answer && answer.price) {
+                extrasPrice += answer.price;
+            }
+        });
+
+        addItemToOrderList(currentCustomizeItem, customizeQty, { ...customizeAnswers }, extrasPrice);
+        closeItemCustomizeModal();
+    }
+
+    function addItemToOrderList(item, qty, answers, extrasPrice) {
+        // Generate a unique key based on item and answers
+        const answersKey = JSON.stringify(answers);
+        const cartKey = `${item.id}-${answersKey}`;
+
+        const existing = orderItems.find(o => o.cartKey === cartKey);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            // Format answers for display
+            let answersText = [];
+            Object.entries(answers).forEach(([qId, answer]) => {
+                if (Array.isArray(answer)) {
+                    answer.forEach(a => answersText.push(a.label));
+                } else if (answer && answer.label) {
+                    answersText.push(answer.label);
+                }
+            });
+
+            orderItems.push({
+                ...item,
+                qty,
+                cartKey,
+                answers,
+                extrasPrice,
+                answersText: answersText.join(', ')
+            });
+        }
+        renderOrderItems();
+    }
+
+    function removeFromOrder(cartKey) {
+        const idx = orderItems.findIndex(o => o.cartKey === cartKey);
+        if (idx > -1) {
+            if (orderItems[idx].qty > 1) {
+                orderItems[idx].qty--;
+            } else {
+                orderItems.splice(idx, 1);
+            }
+        }
+        renderOrderItems();
+    }
+
+    function renderOrderItems() {
+        const list = document.getElementById('orderItemsList');
+        if (orderItems.length === 0) {
+            list.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--muted);">Nenhum item adicionado</div>';
+            document.getElementById('orderTotal').textContent = 'R$ 0,00';
+            return;
+        }
+
+        let total = 0;
+        list.innerHTML = orderItems.map(item => {
+            const unitPrice = item.price + (item.extrasPrice || 0);
+            const subtotal = unitPrice * item.qty;
+            total += subtotal;
+            return `
+          <div class="order-item-row">
+            <div class="order-item-info">
+              <span class="order-item-qty">${item.qty}x</span>
+              <div>
+                <span class="order-item-name">${item.name}</span>
+                ${item.answersText ? `<div class="order-item-customizations">${item.answersText}</div>` : ''}
+              </div>
+            </div>
+            <div class="order-item-actions">
+              <span class="order-item-price">R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+              <button class="remove-item-btn" onclick="removeFromOrder('${item.cartKey}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+        }).join('');
+
+        document.getElementById('orderTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function submitOrder() {
+        if (orderItems.length === 0) {
+            alert('Adicione itens ao pedido');
+            return;
+        }
+        const notes = document.getElementById('orderNotes').value;
+        alert(`Pedido enviado com ${orderItems.length} item(s)!`);
+        orderItems = [];
+        renderOrderItems();
+        closeOrderModal();
+    }
+
+    // =====================
+    // Initialize
+    // =====================
+    initSidebarState();
+    renderNotifications();
+</script>
+
+<!-- Item Customize Modal -->
+<div class="modal-overlay" id="itemCustomizeModal">
+    <div class="modal item-customize-modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Personalizar Item
+            </h3>
+            <button class="modal-close" onclick="closeItemCustomizeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="item-customize-header">
+                <div class="item-customize-info">
+                    <h4 id="customizeItemName">Filé Mignon</h4>
+                    <div class="price" id="customizeItemPrice">R$ 89,90</div>
+                </div>
+            </div>
+
+            <div id="customizeQuestionsContainer">
+                <!-- Questions rendered by JS -->
+            </div>
+
+            <div class="item-qty-selector">
+                <button class="qty-btn" onclick="updateCustomizeQty(-1)">−</button>
+                <span class="qty-display" id="customizeQtyDisplay">1</span>
+                <button class="qty-btn" onclick="updateCustomizeQty(1)">+</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeItemCustomizeModal()">Cancelar</button>
+            <button class="modal-btn success" onclick="confirmCustomizeItem()">
+                Adicionar • <span id="customizeTotalPrice">R$ 89,90</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Nova Mesa Modal -->
+<div class="modal-overlay" id="newTableModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Criar Nova Mesa
+            </h3>
+            <button class="modal-close" onclick="closeNewTableModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <form th:action="@{/tables/create}" th:method="post" th:object="${createTableForm}">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Código da Mesa (2 dígitos)</label>
+                    <input type="text" class="form-input" th:field="*{cod}" placeholder="Ex: 13" required pattern="[0-9]{2}" maxlength="2">
+                    <div class="field-error" th:if="${#fields.hasErrors('cod')}" th:errors="*{cod}">Erro</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn" onclick="closeNewTableModal()">Cancelar</button>
+                <button type="submit" class="modal-btn primary">Criar Mesa</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Novo Pedido Modal -->
+<div class="modal-overlay" id="newOrderModal">
+    <div class="modal large">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Novo Pedido - <span id="orderTableNumber">Mesa 02</span>
+            </h3>
+            <button class="modal-close" onclick="closeOrderModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Cliente: <strong id="orderClientName">João</strong></label>
+            </div>
+            <div class="menu-filters">
+                <button class="menu-filter-btn active" onclick="filterMenuItems('all')">Todos</button>
+                <button class="menu-filter-btn" onclick="filterMenuItems('Pratos')">Pratos</button>
+                <button class="menu-filter-btn" onclick="filterMenuItems('Bebidas')">Bebidas</button>
+                <button class="menu-filter-btn" onclick="filterMenuItems('Sobremesas')">Sobremesas</button>
+            </div>
+            <div class="menu-items-grid" id="menuItemsGrid">
+                <!-- Populated by JS -->
+            </div>
+            <div class="order-items-section">
+                <h4>Itens do Pedido</h4>
+                <div class="order-items-list" id="orderItemsList">
+                    <div style="padding: 2rem; text-align: center; color: var(--muted);">Nenhum item adicionado</div>
+                </div>
+                <div class="order-total-row">
+                    <span>Total</span>
+                    <span id="orderTotal">R$ 0,00</span>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Observações do Pedido</label>
+                <textarea class="form-input" id="orderNotes" rows="2" placeholder="Ex: Sem cebola, bem passado..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeOrderModal()">Cancelar</button>
+            <button class="modal-btn success" onclick="submitOrder()">Enviar Pedido</button>
+        </div>
+    </div>
+</div>
+
+<!-- Ver Conta Modal -->
+<div class="modal-overlay" id="billModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                Conta - <span id="billTableNumber">Mesa 02</span>
+            </h3>
+            <button class="modal-close" onclick="closeBillModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="bill-clients-list">
+                <div class="bill-client-row">
+                    <div>
+                        <div style="font-weight: 600;">João</div>
+                        <div style="font-size: 0.8rem; color: var(--muted);">Filé Mignon, 2x Caipirinha</div>
+                    </div>
+                    <div style="font-weight: 600;">R$ 125,90</div>
+                </div>
+                <div class="bill-client-row">
+                    <div>
+                        <div style="font-weight: 600;">Maria</div>
+                        <div style="font-size: 0.8rem; color: var(--muted);">Salmão, Refrigerante</div>
+                    </div>
+                    <div style="font-weight: 600;">R$ 80,00</div>
+                </div>
+                <div class="bill-client-row">
+                    <div>
+                        <div style="font-weight: 600;">Pedro</div>
+                        <div style="font-size: 0.8rem; color: var(--muted);">Picanha, Cerveja</div>
+                    </div>
+                    <div style="font-weight: 600;">R$ 91,90</div>
+                </div>
+            </div>
+            <div class="bill-summary-section">
+                <div class="bill-summary-row">
+                    <span>Subtotal</span>
+                    <span>R$ 297,80</span>
+                </div>
+                <div class="bill-summary-row">
+                    <span>Taxa de serviço (10%)</span>
+                    <span>R$ 29,78</span>
+                </div>
+                <div class="bill-summary-row total">
+                    <span>Total</span>
+                    <span>R$ 327,58</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeBillModal()">Fechar</button>
+            <button class="modal-btn" onclick="closeBillModal(); openPartialPaymentModal();">Pagar Parcial</button>
+            <button class="modal-btn success" onclick="closeBillModal(); openCloseTableModal();">Fechar Conta</button>
+        </div>
+    </div>
+</div>
+
+<!-- Fechar Mesa Modal -->
+<div class="modal-overlay" id="closeTableModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                Fechar <span id="closeTableNumber">Mesa 02</span>
+            </h3>
+            <button class="modal-close" onclick="closeCloseTableModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align: center; padding: 1rem 0;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">R$ 327,58</div>
+                <div style="color: var(--muted);">Valor total da conta</div>
+            </div>
+            <div class="form-group">
+                <label>Método de Pagamento</label>
+                <div class="payment-methods">
+                    <div class="payment-method-option">
+                        <input type="radio" name="closePayMethod" id="closePix" value="pix">
+                        <label for="closePix">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+                            PIX
+                        </label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="closePayMethod" id="closeCredit" value="credit" checked>
+                        <label for="closeCredit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                            Crédito
+                        </label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="closePayMethod" id="closeDebit" value="debit">
+                        <label for="closeDebit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                            Débito
+                        </label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="closePayMethod" id="closeCash" value="cash">
+                        <label for="closeCash">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                            Dinheiro
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeCloseTableModal()">Cancelar</button>
+            <button class="modal-btn success" onclick="confirmCloseTable()">Confirmar Pagamento</button>
+        </div>
+    </div>
+</div>
+
+<!-- Pagar Parcial Modal -->
+<div class="modal-overlay" id="partialPaymentModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Pagamento Parcial
+            </h3>
+            <button class="modal-close" onclick="closePartialPaymentModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1rem; color: var(--muted);">Selecione os clientes que irão pagar:</p>
+            <div class="client-payment-list">
+                <div class="client-payment-card">
+                    <input type="checkbox" class="client-payment-check" data-value="125.90" onchange="toggleClientPayment(this)">
+                    <div class="client-payment-info">
+                        <div class="client-payment-name">João</div>
+                        <div class="client-payment-items">Filé Mignon, 2x Caipirinha</div>
+                    </div>
+                    <div class="client-payment-value">R$ 125,90</div>
+                </div>
+                <div class="client-payment-card">
+                    <input type="checkbox" class="client-payment-check" data-value="80.00" onchange="toggleClientPayment(this)">
+                    <div class="client-payment-info">
+                        <div class="client-payment-name">Maria</div>
+                        <div class="client-payment-items">Salmão, Refrigerante</div>
+                    </div>
+                    <div class="client-payment-value">R$ 80,00</div>
+                </div>
+                <div class="client-payment-card">
+                    <input type="checkbox" class="client-payment-check" data-value="91.90" onchange="toggleClientPayment(this)">
+                    <div class="client-payment-info">
+                        <div class="client-payment-name">Pedro</div>
+                        <div class="client-payment-items">Picanha, Cerveja</div>
+                    </div>
+                    <div class="client-payment-value">R$ 91,90</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--primary-light); border-radius: var(--radius); display: flex; justify-content: space-between; font-weight: 600;">
+                <span>Total Selecionado:</span>
+                <span id="partialPaymentTotal">R$ 0,00</span>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Método de Pagamento</label>
+                <div class="payment-methods">
+                    <div class="payment-method-option">
+                        <input type="radio" name="partialPayMethod" id="partialPix" value="pix">
+                        <label for="partialPix">PIX</label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="partialPayMethod" id="partialCredit" value="credit">
+                        <label for="partialCredit">Crédito</label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="partialPayMethod" id="partialDebit" value="debit">
+                        <label for="partialDebit">Débito</label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" name="partialPayMethod" id="partialCash" value="cash">
+                        <label for="partialCash">Dinheiro</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closePartialPaymentModal()">Cancelar</button>
+            <button class="modal-btn success" onclick="processPartialPayment()">Processar Pagamento</button>
+        </div>
+    </div>
+</div>
+
+<!-- Histórico Modal -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Histórico - <span id="historyTableNumber">Mesa 02</span>
+            </h3>
+            <button class="modal-close" onclick="closeHistoryModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Filtrar por Data</label>
+                <input type="date" class="form-input" id="historyDateFilter">
+            </div>
+            <div class="history-list">
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span class="history-item-date">Hoje, 19:45</span>
+                        <span class="history-item-total">R$ 187,50</span>
+                    </div>
+                    <div class="history-item-details">3 clientes • Filé Mignon, Picanha, 4x Caipirinha</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span class="history-item-date">Ontem, 20:30</span>
+                        <span class="history-item-total">R$ 245,00</span>
+                    </div>
+                    <div class="history-item-details">4 clientes • 2x Salmão, Picanha, 6x Cerveja</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span class="history-item-date">15/01, 21:00</span>
+                        <span class="history-item-total">R$ 156,80</span>
+                    </div>
+                    <div class="history-item-details">2 clientes • Filé Mignon, Salmão, 2x Refrigerante</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeHistoryModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Reservas Modal -->
+<div class="modal-overlay" id="reservationsModal">
+    <div class="modal large">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                Reservas de Hoje
+            </h3>
+            <button class="modal-close" onclick="closeReservationsModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" class="form-input" id="reservationsDateFilter" value="2025-01-18">
+            </div>
+            <div class="reservations-list">
+                <div class="reservation-card">
+                    <div class="reservation-info">
+                        <h4>João Silva</h4>
+                        <p>Mesa 05 • (11) 99999-1234</p>
+                    </div>
+                    <div class="reservation-time">
+                        <div class="time">19:00</div>
+                        <div class="guests">4 pessoas</div>
+                    </div>
+                </div>
+                <div class="reservation-card">
+                    <div class="reservation-info">
+                        <h4>Maria Santos</h4>
+                        <p>Mesa 08 • (11) 99999-5678</p>
+                    </div>
+                    <div class="reservation-time">
+                        <div class="time">20:00</div>
+                        <div class="guests">2 pessoas</div>
+                    </div>
+                </div>
+                <div class="reservation-card">
+                    <div class="reservation-info">
+                        <h4>Pedro Costa</h4>
+                        <p>Mesa 12 • (11) 99999-9012</p>
+                    </div>
+                    <div class="reservation-time">
+                        <div class="time">20:30</div>
+                        <div class="guests">6 pessoas</div>
+                    </div>
+                </div>
+                <div class="reservation-card">
+                    <div class="reservation-info">
+                        <h4>Ana Oliveira</h4>
+                        <p>Mesa 03 • (11) 99999-3456</p>
+                    </div>
+                    <div class="reservation-time">
+                        <div class="time">21:00</div>
+                        <div class="guests">3 pessoas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeReservationsModal()">Fechar</button>
+            <a href="reservations.html" class="modal-btn primary">Ver Todas Reservas</a>
+        </div>
+    </div>
+</div>
+
+<!-- Todas as Notificações Modal -->
+<div class="modal-overlay" id="allNotificationsModal">
+    <div class="modal large">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Todas as Notificações
+            </h3>
+            <button class="modal-close" onclick="closeAllNotificationsModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+            <div id="allNotificationsList">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn danger" onclick="clearAllNotifications(); closeAllNotificationsModal();">Limpar Todas</button>
+            <button class="modal-btn" onclick="closeAllNotificationsModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize menu items grid when order modal opens
+    document.getElementById('newOrderModal').addEventListener('transitionend', function(e) {
+        if (this.classList.contains('active') && e.propertyName === 'opacity') {
+            renderMenuItems(menuItems);
+        }
+    });
+
+    // Render all notifications on modal open
+    document.getElementById('allNotificationsModal').addEventListener('transitionend', function(e) {
+        if (this.classList.contains('active') && e.propertyName === 'opacity') {
+            renderAllNotifications();
+        }
+    });
+</script>
+</body>
+</html>

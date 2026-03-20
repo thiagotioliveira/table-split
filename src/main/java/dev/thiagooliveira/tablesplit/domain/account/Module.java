@@ -4,5 +4,6 @@ public enum Module {
   DASHBOARD,
   MENU,
   SETTINGS,
-  USER_PROFILE
+  USER_PROFILE,
+  TABLES
 }
