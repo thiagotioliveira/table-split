@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
 import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,6 +61,7 @@ public class SecurityConfig {
                         "/sw.js",
                         "/favicon.ico",
                         "/images/**",
+                        "/@**",
                         "/@**/**",
                         "/h2-console/**")
                     .permitAll()
@@ -68,7 +71,10 @@ public class SecurityConfig {
                     .permitAll()
 
                     // Recursos protegidos
-                    .requestMatchers("/menu/**", "/settings/**", "/dashboard/**")
+                    .requestMatchers(
+                        Arrays.stream(Module.values())
+                            .map(m -> String.format("/%s/**", m.getView()))
+                            .toArray(String[]::new))
                     .authenticated()
 
                     // Qualquer outra requisição exige autenticação

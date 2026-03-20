@@ -741,7 +741,7 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantSlug" th:text="#{page.settings.form.restaurant.slug}">Id *</label>
+                <label class="form-label" for="restaurantSlug"><span th:text="#{page.settings.form.restaurant.slug}">Id</span> <span class="required">*</span></label>
                 <div class="slug-input-group">
                   <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.com/</span>
                   <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
@@ -753,8 +753,7 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantName" th:text="#{page.settings.form.restaurant.name.required}">Restaurant
-                  Name *</label>
+                <label class="form-label" for="restaurantName"><span th:text="#{page.settings.form.restaurant.name.required}">Restaurant Name</span> <span class="required">*</span></label>
                 <input type="text" id="restaurantName" class="form-input" value="Cantina Bella Italia"
                   th:placeholder="#{page.settings.form.restaurant.name.placeholder}" th:field="*{name}">
                 <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red"></div>
@@ -783,7 +782,7 @@
                   <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color:red"></div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="restaurantEmail" th:text="#{page.settings.form.restaurant.email}">Email *</label>
+                  <label class="form-label" for="restaurantEmail"><span th:text="#{page.settings.form.restaurant.email}">Email</span> <span class="required">*</span></label>
                   <input type="email" id="restaurantEmail" class="form-input" maxlength="254" th:field="*{email}"
                     th:placeholder="#{page.settings.form.restaurant.email.placeholder}">
                   <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></div>
@@ -1053,7 +1052,7 @@
               </div>
 
               <div class="form-group" style="margin-top: 1.5rem;">
-                <label class="form-label" th:text="#{page.settings.form.language.available}">Languages Available for Customers</label>
+                <label class="form-label"><span th:text="#{page.settings.form.language.available}">Languages Available for Customers</span> <span class="required">*</span></label>
                 <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem;"
                   th:text="#{page.settings.form.language.available.hint}">Select the languages that will be available in the digital
                   menu</p>
@@ -1143,7 +1142,7 @@
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label" for="currency" th:text="#{page.settings.form.currency}">Currency</label>
+                  <label class="form-label" for="currency"><span th:text="#{page.settings.form.currency}">Currency</span> <span class="required">*</span></label>
                   <select id="currency" class="form-select" th:field="*{currency}">
                     <option value="EUR" selected th:text="#{page.settings.form.currency.eur}">€ (Euro)</option>
                     <option value="BRL" th:text="#{page.settings.form.currency.brl}">R$ (Real)</option>
@@ -1153,7 +1152,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="serviceFee" th:text="#{page.settings.form.service.fee}">Service Fee</label>
+                  <label class="form-label" for="serviceFee"><span th:text="#{page.settings.form.service.fee}">Service Fee</span> <span class="required">*</span></label>
                   <div class="input-with-addon">
                     <input type="number" id="serviceFee" class="form-input" th:field="*{serviceFee}" min="0" max="100"
                       step="1">
@@ -1163,7 +1162,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="averagePrice" th:text="#{page.settings.form.average.price}">Average Price</label>
+                  <label class="form-label" for="averagePrice"><span th:text="#{page.settings.form.average.price}">Average Price</span> <span class="required">*</span></label>
                   <div class="input-with-addon">
                     <select id="averagePrice" class="form-select" th:field="*{averagePrice}">
                       <option value="1-20" selected>$ 1 - $ 20</option>

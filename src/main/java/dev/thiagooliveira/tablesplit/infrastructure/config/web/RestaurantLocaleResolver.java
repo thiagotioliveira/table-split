@@ -31,8 +31,7 @@ public class RestaurantLocaleResolver extends SessionLocaleResolver {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
       if (authenticated) {
-        var context =
-            (AccountContext) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var context = (AccountContext) authentication.getPrincipal();
         return Locale.forLanguageTag(context.getUser().getLanguage().name());
       } else {
         return requestedLocale;

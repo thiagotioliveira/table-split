@@ -21,7 +21,7 @@ const CACHE_PAGES = [
   '/menu',
   '/orders',
   '/settings',
-  '/reservations'
+  '/profile'
 ];
 
 // Instalação - cacheia arquivos estáticos
