@@ -16,7 +16,7 @@ public class CreateCategory {
     this.categoryRepository = categoryRepository;
   }
 
-  public void execute(UUID accountId, UUID restaurantId, CreateCategoryCommand command) {
+  public Category execute(UUID accountId, UUID restaurantId, CreateCategoryCommand command) {
     var category = new Category();
     category.setId(UUID.randomUUID());
     category.setRestaurantId(restaurantId);
@@ -25,5 +25,6 @@ public class CreateCategory {
     this.categoryRepository.save(category);
 
     this.eventPublisher.publishEvent(new CategoryCreatedEvent(accountId, category.getId()));
+    return category;
   }
 }

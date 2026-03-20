@@ -33,6 +33,8 @@ public class OrderItemEntity {
   @Column(nullable = false)
   private BigDecimal unitPrice;
 
+  @Column private String note;
+
   public OrderItemEntity() {}
 
   public OrderItem toDomain() {
@@ -43,6 +45,7 @@ public class OrderItemEntity {
     domain.setCustomerName(this.customerName);
     domain.setQuantity(this.quantity);
     domain.setUnitPrice(this.unitPrice);
+    domain.setNote(this.note);
     return domain;
   }
 
@@ -55,6 +58,7 @@ public class OrderItemEntity {
     entity.setCustomerName(domain.getCustomerName());
     entity.setQuantity(domain.getQuantity());
     entity.setUnitPrice(domain.getUnitPrice());
+    entity.setNote(domain.getNote());
     return entity;
   }
 
@@ -112,5 +116,13 @@ public class OrderItemEntity {
 
   public void setUnitPrice(BigDecimal unitPrice) {
     this.unitPrice = unitPrice;
+  }
+
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 }

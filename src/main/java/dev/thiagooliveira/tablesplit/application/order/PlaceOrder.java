@@ -35,7 +35,7 @@ public class PlaceOrder {
     Order order =
         orderRepository
             .findActiveOrderByTableId(table.getId())
-            .orElseGet(() -> openTable.execute(request.getRestaurantId(), request.getTableCod()));
+            .orElseGet(() -> openTable.execute(table.getId()));
 
     for (OrderItemRequest itemRequest : request.getItems()) {
       Item item =
@@ -43,7 +43,7 @@ public class PlaceOrder {
               .findById(itemRequest.getItemId())
               .orElseThrow(
                   () -> new IllegalArgumentException("Item not found: " + itemRequest.getItemId()));
-      order.addItem(item, itemRequest.getQuantity(), request.getCustomerName());
+      order.addItem(item, itemRequest.getQuantity(), "João Silva", itemRequest.getNote());
     }
 
     orderRepository.save(order);

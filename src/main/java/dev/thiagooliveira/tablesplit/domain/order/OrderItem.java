@@ -14,16 +14,18 @@ public class OrderItem {
   private String customerName;
   private int quantity;
   private BigDecimal unitPrice;
+  private String note;
 
   public OrderItem() {}
 
-  public OrderItem(Item item, int quantity, String customerName) {
+  public OrderItem(Item item, int quantity, String customerName, String note) {
     this.id = UUID.randomUUID();
     this.itemId = item.getId();
     this.name = item.getName();
     this.customerName = customerName;
     this.quantity = quantity;
     this.unitPrice = item.getPrice();
+    this.note = note;
   }
 
   public UUID getId() {
@@ -76,5 +78,13 @@ public class OrderItem {
 
   public BigDecimal getTotalPrice() {
     return unitPrice.multiply(BigDecimal.valueOf(quantity));
+  }
+
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 }

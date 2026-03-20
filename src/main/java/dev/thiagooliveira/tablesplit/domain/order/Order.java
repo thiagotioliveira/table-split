@@ -26,11 +26,11 @@ public class Order {
     this.openedAt = ZonedDateTime.now();
   }
 
-  public void addItem(Item item, int quantity, String customerName) {
+  public void addItem(Item item, int quantity, String customerName, String note) {
     if (this.status != OrderStatus.OPEN) {
       throw new IllegalStateException("Cannot add items to a non-open order");
     }
-    this.items.add(new OrderItem(item, quantity, customerName));
+    this.items.add(new OrderItem(item, quantity, customerName, note));
   }
 
   public BigDecimal calculateTotal() {

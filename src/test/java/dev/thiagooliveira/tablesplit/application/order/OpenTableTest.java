@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class OpenTableTest {
 
@@ -34,17 +33,16 @@ class OpenTableTest {
   @Test
   void shouldOpenTableSuccessfully_whenTableIsAvailable() {
     UUID restaurantId = UUID.randomUUID();
-    String tableCod = "T1";
-    Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
+    UUID tableId = UUID.randomUUID();
+    Table table = new Table(tableId, restaurantId, "01");
 
-    when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
-        .thenReturn(Optional.of(table));
+    when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    Order result = openTable.execute(restaurantId, tableCod);
+    Order result = openTable.execute(tableId);
 
     assertNotNull(result);
     assertEquals(restaurantId, result.getRestaurantId());
-    assertEquals(table.getId(), result.getTableId());
+    assertEquals(tableId, result.getTableId());
     assertEquals(OrderStatus.OPEN, result.getStatus());
     assertEquals(TableStatus.OCCUPIED, table.getStatus());
 
@@ -54,37 +52,14 @@ class OpenTableTest {
   }
 
   @Test
-  void shouldCreateTableAndOpenOrder_whenTableDoesNotExist() {
-    UUID restaurantId = UUID.randomUUID();
-    String tableCod = "T-NEW";
-
-    when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
-        .thenReturn(Optional.empty());
-
-    Order result = openTable.execute(restaurantId, tableCod);
-
-    assertNotNull(result);
-
-    ArgumentCaptor<Table> tableCaptor = ArgumentCaptor.forClass(Table.class);
-    verify(tableRepository, atLeastOnce()).save(tableCaptor.capture());
-    Table createdTable = tableCaptor.getValue();
-
-    assertEquals(tableCod, createdTable.getCod());
-    assertEquals(TableStatus.OCCUPIED, createdTable.getStatus());
-    assertEquals(createdTable.getId(), result.getTableId());
-  }
-
-  @Test
   void shouldThrowTableAlreadyOccupied_whenTableIsOccupied() {
-    UUID restaurantId = UUID.randomUUID();
-    String tableCod = "T1";
-    Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
+    UUID tableId = UUID.randomUUID();
+    Table table = new Table(tableId, UUID.randomUUID(), "01");
     table.occupy();
 
-    when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
-        .thenReturn(Optional.of(table));
+    when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    assertThrows(TableAlreadyOccupied.class, () -> openTable.execute(restaurantId, tableCod));
+    assertThrows(TableAlreadyOccupied.class, () -> openTable.execute(tableId));
 
     verify(orderRepository, never()).save(any());
   }

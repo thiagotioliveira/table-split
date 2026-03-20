@@ -3,3 +3,5 @@ databaseChangeLog:
       file: classpath:/db/changelog/0001-initial-schema.yaml
   - include:
       file: classpath:/db/changelog/0002-order-module.yaml
+  - include:
+      file: classpath:/db/changelog/0003-add-order-item-note.yaml

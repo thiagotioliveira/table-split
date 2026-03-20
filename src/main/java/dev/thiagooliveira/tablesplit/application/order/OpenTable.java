@@ -23,11 +23,11 @@ public class OpenTable {
     this.eventPublisher = eventPublisher;
   }
 
-  public Order execute(UUID restaurantId, String tableCod) {
+  public Order execute(UUID tableId) {
     Table table =
         tableRepository
-            .findByRestaurantIdAndCod(restaurantId, tableCod)
-            .orElseGet(() -> createTable(restaurantId, tableCod));
+            .findById(tableId)
+            .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
 
     if (table.getStatus() == TableStatus.OCCUPIED) {
       throw new TableAlreadyOccupied();
@@ -36,17 +36,11 @@ public class OpenTable {
     table.occupy();
     tableRepository.save(table);
 
-    Order order = new Order(UUID.randomUUID(), restaurantId, table.getId());
+    Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId());
     orderRepository.save(order);
 
     eventPublisher.publishEvent(new TableOpenedEvent(order, table));
 
     return order;
-  }
-
-  private Table createTable(UUID restaurantId, String tableCod) {
-    Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
-    tableRepository.save(table);
-    return table;
   }
 }

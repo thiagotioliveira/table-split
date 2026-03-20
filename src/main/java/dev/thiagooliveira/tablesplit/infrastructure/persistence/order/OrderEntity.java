@@ -43,7 +43,7 @@ public class OrderEntity {
     domain.setOpenedAt(this.openedAt);
     domain.setClosedAt(this.closedAt);
     if (this.items != null) {
-      domain.setItems(this.items.stream().map(OrderItemEntity::toDomain).toList());
+      domain.setItems(new ArrayList<>(this.items.stream().map(OrderItemEntity::toDomain).toList()));
     }
     return domain;
   }

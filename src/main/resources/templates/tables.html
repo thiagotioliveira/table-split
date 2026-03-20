@@ -9,6 +9,139 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        /* New Order Modal Styles */
+        .menu-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .menu-item-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .menu-item-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .menu-item-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.4rem;
+        }
+
+        .menu-item-price {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .menu-filter-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .menu-filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .order-items-section {
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .order-items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .cart-item-note {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 0;
+            font-style: italic;
+        }
+
+        .cart-item-note:focus {
+            outline: none;
+            color: var(--foreground);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .qty-val {
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
         /* User Menu in Sidebar */
         .user-menu-container {
             position: relative;
@@ -697,9 +830,12 @@
             border: 2px dashed var(--border);
             border-radius: var(--radius-lg);
             padding: 2rem;
-            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .quick-action-card:hover {
@@ -1909,8 +2045,11 @@
     </header>
 
     <div class="dashboard-body" style="padding: 0;">
+        <div th:replace="~{components/alert :: alert}"></div>
         <!-- Tables Overlay (Mobile) -->
         <div class="tables-overlay" id="tablesOverlay" onclick="closeTablesPanel()"></div>
+
+        <form id="openTableForm" th:action="@{/tables/open-dummy}" method="post" style="display: none;"></form>
 
         <div class="waiter-content">
             <!-- Tables Panel -->
@@ -1952,12 +2091,12 @@
 
                 <div class="tables-list" id="tablesList">
                     <!-- Dynamic Tables List -->
-                    <div th:each="table : ${tables}" 
-                         class="table-card" 
-                         th:classappend="|status-${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}|" 
-                         th:data-table="${table.cod}" 
-                         th:data-status="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
-                         th:onclick="selectTable(this.getAttribute('data-table'))">
+                     <div th:each="table : ${tables}" 
+                          class="table-card" 
+                          th:classappend="|status-${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}|" 
+                          th:data-table="${table.id}" 
+                          th:data-status="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
+                          th:onclick="selectTable(this.getAttribute('data-table'))">
                         <div class="table-card-header">
                             <span class="table-number" th:text="${'Mesa ' + table.cod}">Mesa 01</span>
                             <span class="table-status" 
@@ -1981,11 +2120,14 @@
                             Ver Mesas
                         </button>
                         <div class="selected-table-info" id="selectedTableInfo">
-                            <h2>Selecione uma mesa</h2>
-                            <p>Clique em uma mesa na lista para gerenciá-la</p>
+                            <h2 th:if="${selectedTableObj == null}">Selecione uma mesa</h2>
+                            <p th:if="${selectedTableObj == null}">Clique em uma mesa na lista para gerenciá-la</p>
+                            
+                            <h2 th:if="${selectedTableObj != null}" th:text="${'Mesa ' + selectedTableObj.cod}">Mesa XX</h2>
+                            <p th:if="${selectedTableObj != null}" th:text="${orderLoaded ? 'Mesa ocupada - Clientes consumindo' : 'Mesa livre - Pronta para novos clientes'}">Status</p>
                         </div>
                     </div>
-                    <div class="header-actions" id="headerActions" style="display: none;">
+                    <div class="header-actions" id="headerActions" th:style="${orderLoaded} ? 'display: flex;' : 'display: none;'">
                         <button class="action-btn primary" onclick="openOrderModal()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                             <span>Novo Pedido</span>
@@ -2003,7 +2145,7 @@
 
                 <div class="main-panel-body">
                     <!-- Estado: Nenhuma mesa selecionada -->
-                    <div class="no-table-selected" id="noTableSelected">
+                    <div class="no-table-selected" id="noTableSelected" th:style="${selectedTableObj == null} ? 'display: flex;' : 'display: none;'">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                         </svg>
@@ -2012,10 +2154,10 @@
                     </div>
 
                     <!-- Detalhe da Mesa -->
-                    <div class="table-detail" id="tableDetail">
+                    <div class="table-detail" id="tableDetail" th:classappend="${selectedTableObj != null} ? 'active' : ''" th:style="${selectedTableObj != null} ? 'display: block;' : 'display: none;'">
                         <!-- Quick Actions para mesa livre -->
-                        <div class="quick-actions" id="quickActionsEmpty" style="display: none;">
-                            <div class="quick-action-card" onclick="openOrderModal()">
+                        <div class="quick-actions" id="quickActionsEmpty" th:style="${selectedTableObj != null && !orderLoaded} ? 'display: grid;' : 'display: none;'">
+                            <div class="quick-action-card" onclick="openTable()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Abrir Mesa</span>
                             </div>
@@ -2026,7 +2168,7 @@
                         </div>
 
                         <!-- Clientes e Pedidos -->
-                        <div class="clients-section" id="clientsSection">
+                        <div class="clients-section" id="clientsSection" th:style="${orderLoaded} ? 'display: block;' : 'display: none;'">
                             <div class="section-header">
                                 <h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -2034,120 +2176,59 @@
                                 </h3>
                             </div>
 
-                            <!-- Cliente 1 -->
-                            <div class="client-card" data-client="1">
+                            <!-- Dynamic Clients Section -->
+                            <div class="client-card" th:each="client : ${clients}">
                                 <div class="client-header">
-                    <span class="client-name">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      João Silva
-                    </span>
-                                    <span class="client-subtotal">R$ 87,50</span>
+                                    <span class="client-name">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <span th:text="${client.key}">Cliente</span>
+                                    </span>
+                                    <span class="client-subtotal" th:text="${'R$ ' + #numbers.formatDecimal(#aggregates.sum(client.value.![totalPrice]), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                                 </div>
                                 <div class="client-orders">
-                                    <div class="order-item">
+                                    <div class="order-item" th:each="item : ${client.value}">
                                         <div class="order-item-info">
-                                            <span class="order-qty">1</span>
+                                            <span class="order-qty" th:text="${item.quantity}">1</span>
                                             <div>
-                                                <span class="order-item-name">Filé à Parmegiana</span>
-                                                <span class="order-item-note">Sem cebola</span>
+                                                <span class="order-item-name" th:text="${item.name}">Item</span>
+                                                <span class="order-item-note" th:if="${item.note != null && !item.note.empty}" th:text="${item.note}">Nota</span>
                                             </div>
                                         </div>
                                         <div>
-                                            <span class="order-item-price">R$ 54,90</span>
-                                            <span class="order-item-status ready">Pronto</span>
-                                        </div>
-                                    </div>
-                                    <div class="order-item">
-                                        <div class="order-item-info">
-                                            <span class="order-qty">2</span>
-                                            <div>
-                                                <span class="order-item-name">Refrigerante Lata</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="order-item-price">R$ 12,00</span>
-                                            <span class="order-item-status delivered">Entregue</span>
-                                        </div>
-                                    </div>
-                                    <div class="order-item">
-                                        <div class="order-item-info">
-                                            <span class="order-qty">1</span>
-                                            <div>
-                                                <span class="order-item-name">Pudim</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="order-item-price">R$ 14,60</span>
-                                            <span class="order-item-status preparing">Preparando</span>
+                                            <span class="order-item-price" th:text="${'R$ ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                                         </div>
                                     </div>
                                 </div>
-                                <button class="add-order-btn" onclick="openOrderModal('João Silva')">
+                                <button class="add-order-btn" th:attr="onclick=|openOrderModal('${client.key}')|">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                    Adicionar pedido para João
+                                    Adicionar pedido para <span th:text="${client.key}">Cliente</span>
                                 </button>
                             </div>
 
-                            <!-- Cliente 2 -->
-                            <div class="client-card" data-client="2">
-                                <div class="client-header">
-                    <span class="client-name">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      Maria Oliveira
-                    </span>
-                                    <span class="client-subtotal">R$ 68,00</span>
-                                </div>
-                                <div class="client-orders">
-                                    <div class="order-item">
-                                        <div class="order-item-info">
-                                            <span class="order-qty">1</span>
-                                            <div>
-                                                <span class="order-item-name">Risoto de Camarão</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="order-item-price">R$ 52,00</span>
-                                            <span class="order-item-status delivered">Entregue</span>
-                                        </div>
-                                    </div>
-                                    <div class="order-item">
-                                        <div class="order-item-info">
-                                            <span class="order-qty">1</span>
-                                            <div>
-                                                <span class="order-item-name">Suco Natural</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="order-item-price">R$ 10,00</span>
-                                            <span class="order-item-status delivered">Entregue</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="add-order-btn" onclick="openOrderModal('Maria Oliveira')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                    Adicionar pedido para Maria
-                                </button>
+                            <div th:if="${clients == null || clients.empty}" style="padding: 2rem; text-align: center; color: var(--muted);">
+                                Nenhum item pedido nesta mesa ainda.
                             </div>
+
                         </div>
 
                         <!-- Resumo da Conta -->
-                        <div class="bill-summary">
+                        <div class="bill-summary" th:if="${orderLoaded}">
                             <h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                                 Resumo da Conta
                             </h3>
                             <div class="bill-row">
                                 <span>Subtotal</span>
-                                <span>R$ 155,50</span>
-                            </div>
-                            <div class="bill-row">
-                                <span>Taxa de serviço (10%)</span>
-                                <span>R$ 15,55</span>
+                                <span th:text="${'R$ ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                             </div>
                             <div class="bill-row total">
-                                <span>Total</span>
-                                <span>R$ 171,05</span>
+                                <span>Total da Mesa</span>
+                                <span th:text="${'R$ ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                             </div>
+                            <button class="close-table-btn" onclick="openCloseTableModal()" th:if="${false}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></svg>
+                                Fechar Mesa
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2155,6 +2236,10 @@
         </div>
     </div>
 </main>
+
+<script th:inline="javascript">
+    const menuItems = /*[[${menuItems}]]*/[];
+</script>
 
 <script>
     // =====================
@@ -2219,6 +2304,11 @@
     let selectedTable = null;
 
     function selectTable(tableId) {
+        if (selectedTable === tableId) return;
+        window.location.href = `/tables?selectedTableId=${tableId}`;
+    }
+
+    function initializeSelectedTable(tableId) {
         // Remove previous selection
         document.querySelectorAll('.table-card').forEach(card => {
             card.classList.remove('selected');
@@ -2229,32 +2319,6 @@
         if (card) {
             card.classList.add('selected');
             selectedTable = tableId;
-
-            const status = card.dataset.status;
-            const tableNumber = card.querySelector('.table-number').textContent;
-
-            // Update header info
-            const info = document.getElementById('selectedTableInfo');
-            info.innerHTML = `
-          <h2>${tableNumber}</h2>
-          <p>${getStatusText(status)}</p>
-        `;
-
-            // Show/hide elements based on status
-            document.getElementById('noTableSelected').style.display = 'none';
-            document.getElementById('tableDetail').classList.add('active');
-
-            if (status === 'free') {
-                document.getElementById('quickActionsEmpty').style.display = 'grid';
-                document.getElementById('clientsSection').style.display = 'none';
-                document.querySelector('.bill-summary').style.display = 'none';
-                document.getElementById('headerActions').style.display = 'none';
-            } else {
-                document.getElementById('quickActionsEmpty').style.display = 'none';
-                document.getElementById('clientsSection').style.display = 'block';
-                document.querySelector('.bill-summary').style.display = 'block';
-                document.getElementById('headerActions').style.display = 'flex';
-            }
 
             // Close mobile panel
             closeTablesPanel();
@@ -2345,14 +2409,163 @@
     // =====================
     // Modal Functions (Placeholders)
     // =====================
+    let cart = {};
+
     function openOrderModal(clientName) {
         document.getElementById('newOrderModal').classList.add('active');
-        document.getElementById('orderClientName').textContent = clientName || 'Novo Cliente';
-        document.getElementById('orderTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+        //document.getElementById('orderClientName').textContent = clientName || 'Novo Cliente';
+        const card = document.querySelector(`.table-card[data-table="${selectedTable}"]`);
+        const tableNumber = card ? card.querySelector('.table-number').textContent : '';
+        document.getElementById('orderTableNumber').textContent = selectedTable ? tableNumber : '';
+        
+        // Reset cart when opening
+        cart = {};
+        updateCartUI();
     }
 
     function closeOrderModal() {
         document.getElementById('newOrderModal').classList.remove('active');
+    }
+
+    function addToCart(itemId, name, price) {
+        if (cart[itemId]) {
+            cart[itemId].quantity += 1;
+        } else {
+            cart[itemId] = {
+                name: name,
+                price: price,
+                quantity: 1,
+                note: ''
+            };
+        }
+        updateCartUI();
+    }
+
+    function updateCartQuantity(itemId, delta) {
+        if (!cart[itemId]) return;
+        cart[itemId].quantity += delta;
+        if (cart[itemId].quantity <= 0) {
+            delete cart[itemId];
+        }
+        updateCartUI();
+    }
+
+    function updateCartNote(itemId, note) {
+        if (cart[itemId]) {
+            cart[itemId].note = note;
+        }
+    }
+
+    function updateCartUI() {
+        const list = document.getElementById('orderItemsList');
+        const items = Object.keys(cart);
+        
+        if (items.length === 0) {
+            list.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem;">Selecione itens do menu</div>';
+            document.getElementById('orderTotal').textContent = 'R$ 0,00';
+            document.getElementById('submitOrderBtn').disabled = true;
+            return;
+        }
+
+        let total = 0;
+        list.innerHTML = items.map(id => {
+            const item = cart[id];
+            total += item.price * item.quantity;
+            return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <input type="text" class="cart-item-note" placeholder="Adicionar nota..." 
+                               value="${item.note}" onchange="updateCartNote('${id}', this.value)">
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="menu-item-price" style="margin-right: 0.5rem;">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
+                        <button class="qty-btn" onclick="updateCartQuantity('${id}', -1)">-</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateCartQuantity('${id}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('orderTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        document.getElementById('submitOrderBtn').disabled = false;
+    }
+
+
+    function filterMenuItems(category, lang) {
+        document.querySelectorAll('.menu-filter-btn').forEach(btn => btn.classList.remove('active'));
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+
+        const items = category === 'all' ? menuItems : menuItems.filter(i => i.categoryId === category);
+        renderMenuItems(items, lang);
+    }
+
+    function renderMenuItems(items, lang) {
+        const grid = document.getElementById('menuItemsGrid');
+        grid.innerHTML = items.map(item => {
+            const itemName = item.name[lang] || Object.values(item.name)[0];
+            return `
+                <div class="menu-item-card" onclick="addToCart('${item.id}', '${itemName}', ${item.price})">
+                  <div class="menu-item-name">${itemName}</div>
+                  <div class="menu-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    function prepareOrderSubmission(form) {
+        if (Object.keys(cart).length === 0) {
+            alert('Por favor, adicione pelo menos um item ao pedido.');
+            return false;
+        }
+
+        form.action = `/tables/${selectedTable}/order`;
+        
+        const container = document.getElementById('hiddenOrderItems');
+        container.innerHTML = '';
+        
+        Object.keys(cart).forEach((id, index) => {
+            const item = cart[id];
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = `items[${index}].itemId`;
+            idInput.value = id;
+            container.appendChild(idInput);
+            
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'hidden';
+            qtyInput.name = `items[${index}].quantity`;
+            qtyInput.value = item.quantity;
+            container.appendChild(qtyInput);
+            
+            if (item.note) {
+                const noteInput = document.createElement('input');
+                noteInput.type = 'hidden';
+                noteInput.name = `items[${index}].note`;
+                noteInput.value = item.note;
+                container.appendChild(noteInput);
+            }
+        });
+
+        const submitBtn = document.getElementById('submitOrderBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+        
+        return true;
+    }
+
+    function openTable() {
+        if (!selectedTable) {
+            alert('Erro: Nenhuma mesa selecionada.');
+            return;
+        }
+        console.log('Abrindo mesa:', selectedTable);
+        const form = document.getElementById('openTableForm');
+        form.action = `/tables/${selectedTable}/open`;
+        form.submit();
     }
 
     function openBillModal() {
@@ -2394,13 +2607,6 @@
         document.getElementById('newTableModal').classList.remove('active');
     }
 
-    function createNewTable() {
-        const clientCount = document.getElementById('newTableClients').value;
-        const tableNumber = document.getElementById('newTableNumber').value;
-        alert(`Mesa ${tableNumber} aberta com ${clientCount} cliente(s)!`);
-        closeNewTableModal();
-    }
-
     function openPartialPaymentModal() {
         document.getElementById('partialPaymentModal').classList.add('active');
         updatePartialTotal();
@@ -2408,10 +2614,6 @@
 
     function closePartialPaymentModal() {
         document.getElementById('partialPaymentModal').classList.remove('active');
-    }
-
-    function toggleClientPayment(checkbox) {
-        updatePartialTotal();
     }
 
     function updatePartialTotal() {
@@ -2502,439 +2704,17 @@
         }
     }
 
-    // Menu items for orders
-    const menuItems = [
-        {
-            id: 1,
-            name: 'Filé Mignon',
-            price: 89.90,
-            category: 'Pratos',
-            questions: [
-                {
-                    id: 'q1',
-                    label: 'Ponto da carne',
-                    type: 'single',
-                    required: true,
-                    options: [
-                        { id: 'mal', label: 'Mal passado', price: 0 },
-                        { id: 'aoponto', label: 'Ao ponto', price: 0 },
-                        { id: 'bem', label: 'Bem passado', price: 0 }
-                    ]
-                },
-                {
-                    id: 'q2',
-                    label: 'Molho',
-                    type: 'single',
-                    required: false,
-                    options: [
-                        { id: 'sem', label: 'Sem molho', price: 0 },
-                        { id: 'madeira', label: 'Madeira', price: 0 },
-                        { id: 'gorgonzola', label: 'Gorgonzola', price: 5.00 }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: 'Picanha',
-            price: 79.90,
-            category: 'Pratos',
-            questions: [
-                {
-                    id: 'q1',
-                    label: 'Ponto da carne',
-                    type: 'single',
-                    required: true,
-                    options: [
-                        { id: 'mal', label: 'Mal passado', price: 0 },
-                        { id: 'aoponto', label: 'Ao ponto', price: 0 },
-                        { id: 'bem', label: 'Bem passado', price: 0 }
-                    ]
-                },
-                {
-                    id: 'q2',
-                    label: 'Acompanhamento extra',
-                    type: 'multiple',
-                    required: false,
-                    options: [
-                        { id: 'farofa', label: 'Farofa', price: 5.00 },
-                        { id: 'vinagrete', label: 'Vinagrete', price: 3.00 },
-                        { id: 'arroz', label: 'Arroz extra', price: 6.00 }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 3,
-            name: 'Salmão Grelhado',
-            price: 72.00,
-            category: 'Pratos',
-            questions: [
-                {
-                    id: 'q1',
-                    label: 'Acompanhamento',
-                    type: 'single',
-                    required: true,
-                    options: [
-                        { id: 'legumes', label: 'Legumes grelhados', price: 0 },
-                        { id: 'arroz', label: 'Arroz branco', price: 0 },
-                        { id: 'pure', label: 'Purê de batatas', price: 0 }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 4,
-            name: 'Caipirinha',
-            price: 18.00,
-            category: 'Bebidas',
-            questions: [
-                {
-                    id: 'q1',
-                    label: 'Fruta',
-                    type: 'single',
-                    required: true,
-                    options: [
-                        { id: 'limao', label: 'Limão', price: 0 },
-                        { id: 'morango', label: 'Morango', price: 3.00 },
-                        { id: 'maracuja', label: 'Maracujá', price: 2.00 },
-                        { id: 'kiwi', label: 'Kiwi', price: 3.00 }
-                    ]
-                },
-                {
-                    id: 'q2',
-                    label: 'Açúcar',
-                    type: 'single',
-                    required: false,
-                    options: [
-                        { id: 'normal', label: 'Normal', price: 0 },
-                        { id: 'menos', label: 'Pouco açúcar', price: 0 },
-                        { id: 'sem', label: 'Sem açúcar', price: 0 }
-                    ]
-                }
-            ]
-        },
-        { id: 5, name: 'Cerveja', price: 12.00, category: 'Bebidas', questions: [] },
-        { id: 6, name: 'Refrigerante', price: 8.00, category: 'Bebidas', questions: [] },
-        {
-            id: 7,
-            name: 'Petit Gateau',
-            price: 28.00,
-            category: 'Sobremesas',
-            questions: [
-                {
-                    id: 'q1',
-                    label: 'Sorvete',
-                    type: 'single',
-                    required: true,
-                    options: [
-                        { id: 'creme', label: 'Creme', price: 0 },
-                        { id: 'baunilha', label: 'Baunilha', price: 0 },
-                        { id: 'chocolate', label: 'Chocolate', price: 0 }
-                    ]
-                },
-                {
-                    id: 'q2',
-                    label: 'Quer calda extra?',
-                    type: 'single',
-                    required: false,
-                    options: [
-                        { id: 'nao', label: 'Não', price: 0 },
-                        { id: 'sim', label: 'Sim', price: 4.00 }
-                    ]
-                }
-            ]
-        },
-        { id: 8, name: 'Pudim', price: 16.00, category: 'Sobremesas', questions: [] }
-    ];
-
-    let orderItems = [];
-    let currentCustomizeItem = null;
-    let customizeAnswers = {};
-    let customizeQty = 1;
-
-    function filterMenuItems(category) {
-        document.querySelectorAll('.menu-filter-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-
-        const items = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
-        renderMenuItems(items);
-    }
-
-    function renderMenuItems(items) {
-        const grid = document.getElementById('menuItemsGrid');
-        grid.innerHTML = items.map(item => `
-        <div class="menu-item-card" onclick="addToOrder(${item.id})">
-          <div class="menu-item-name">${item.name}</div>
-          <div class="menu-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
-        </div>
-      `).join('');
-    }
-
-    function addToOrder(itemId) {
-        const item = menuItems.find(i => i.id === itemId);
-
-        // If item has questions, show customization modal
-        if (item.questions && item.questions.length > 0) {
-            openItemCustomizeModal(item);
-        } else {
-            // Add directly without customization
-            addItemToOrderList(item, 1, {}, 0);
-        }
-    }
-
-    function openItemCustomizeModal(item) {
-        currentCustomizeItem = item;
-        customizeAnswers = {};
-        customizeQty = 1;
-
-        document.getElementById('customizeItemName').textContent = item.name;
-        document.getElementById('customizeItemPrice').textContent = `R$ ${item.price.toFixed(2).replace('.', ',')}`;
-        document.getElementById('customizeQtyDisplay').textContent = '1';
-
-        // Render questions
-        const container = document.getElementById('customizeQuestionsContainer');
-        container.innerHTML = item.questions.map(q => `
-        <div class="question-group" data-question-id="${q.id}">
-          <div class="question-label">
-            ${q.label}
-            ${q.required ? '<span class="required">*obrigatório</span>' : ''}
-          </div>
-          <div class="question-options">
-            ${q.options.map(opt => `
-              <div class="question-option"
-                   data-question="${q.id}"
-                   data-option="${opt.id}"
-                   data-price="${opt.price}"
-                   data-type="${q.type}"
-                   onclick="selectCustomizeOption(this, '${q.id}', '${opt.id}', ${opt.price}, '${q.type}')">
-                ${opt.label}
-                ${opt.price > 0 ? `<span class="extra-price">+R$ ${opt.price.toFixed(2).replace('.', ',')}</span>` : ''}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-
-        updateCustomizeTotal();
-        document.getElementById('itemCustomizeModal').classList.add('active');
-    }
-
-    function closeItemCustomizeModal() {
-        document.getElementById('itemCustomizeModal').classList.remove('active');
-        currentCustomizeItem = null;
-        customizeAnswers = {};
-        customizeQty = 1;
-    }
-
-    function selectCustomizeOption(el, questionId, optionId, price, type) {
-        if (type === 'single') {
-            // Single select - deselect others in same question
-            document.querySelectorAll(`.question-option[data-question="${questionId}"]`).forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            el.classList.add('selected');
-            customizeAnswers[questionId] = { optionId, price, label: el.textContent.trim().split('+')[0].trim() };
-        } else {
-            // Multiple select - toggle
-            el.classList.toggle('selected');
-            if (!customizeAnswers[questionId]) {
-                customizeAnswers[questionId] = [];
-            }
-            if (el.classList.contains('selected')) {
-                customizeAnswers[questionId].push({ optionId, price, label: el.textContent.trim().split('+')[0].trim() });
-            } else {
-                customizeAnswers[questionId] = customizeAnswers[questionId].filter(a => a.optionId !== optionId);
-            }
-        }
-        updateCustomizeTotal();
-    }
-
-    function updateCustomizeQty(delta) {
-        customizeQty = Math.max(1, customizeQty + delta);
-        document.getElementById('customizeQtyDisplay').textContent = customizeQty;
-        updateCustomizeTotal();
-    }
-
-    function updateCustomizeTotal() {
-        if (!currentCustomizeItem) return;
-        let extrasPrice = 0;
-        Object.values(customizeAnswers).forEach(answer => {
-            if (Array.isArray(answer)) {
-                answer.forEach(a => extrasPrice += a.price);
-            } else if (answer && answer.price) {
-                extrasPrice += answer.price;
-            }
-        });
-        const total = (currentCustomizeItem.price + extrasPrice) * customizeQty;
-        document.getElementById('customizeTotalPrice').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-    }
-
-    function confirmCustomizeItem() {
-        if (!currentCustomizeItem) return;
-
-        // Validate required questions
-        for (const q of currentCustomizeItem.questions) {
-            if (q.required && !customizeAnswers[q.id]) {
-                alert(`Por favor, selecione: ${q.label}`);
-                return;
-            }
-            if (q.required && Array.isArray(customizeAnswers[q.id]) && customizeAnswers[q.id].length === 0) {
-                alert(`Por favor, selecione: ${q.label}`);
-                return;
-            }
-        }
-
-        // Calculate extras price
-        let extrasPrice = 0;
-        Object.values(customizeAnswers).forEach(answer => {
-            if (Array.isArray(answer)) {
-                answer.forEach(a => extrasPrice += a.price);
-            } else if (answer && answer.price) {
-                extrasPrice += answer.price;
-            }
-        });
-
-        addItemToOrderList(currentCustomizeItem, customizeQty, { ...customizeAnswers }, extrasPrice);
-        closeItemCustomizeModal();
-    }
-
-    function addItemToOrderList(item, qty, answers, extrasPrice) {
-        // Generate a unique key based on item and answers
-        const answersKey = JSON.stringify(answers);
-        const cartKey = `${item.id}-${answersKey}`;
-
-        const existing = orderItems.find(o => o.cartKey === cartKey);
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            // Format answers for display
-            let answersText = [];
-            Object.entries(answers).forEach(([qId, answer]) => {
-                if (Array.isArray(answer)) {
-                    answer.forEach(a => answersText.push(a.label));
-                } else if (answer && answer.label) {
-                    answersText.push(answer.label);
-                }
-            });
-
-            orderItems.push({
-                ...item,
-                qty,
-                cartKey,
-                answers,
-                extrasPrice,
-                answersText: answersText.join(', ')
-            });
-        }
-        renderOrderItems();
-    }
-
-    function removeFromOrder(cartKey) {
-        const idx = orderItems.findIndex(o => o.cartKey === cartKey);
-        if (idx > -1) {
-            if (orderItems[idx].qty > 1) {
-                orderItems[idx].qty--;
-            } else {
-                orderItems.splice(idx, 1);
-            }
-        }
-        renderOrderItems();
-    }
-
-    function renderOrderItems() {
-        const list = document.getElementById('orderItemsList');
-        if (orderItems.length === 0) {
-            list.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--muted);">Nenhum item adicionado</div>';
-            document.getElementById('orderTotal').textContent = 'R$ 0,00';
-            return;
-        }
-
-        let total = 0;
-        list.innerHTML = orderItems.map(item => {
-            const unitPrice = item.price + (item.extrasPrice || 0);
-            const subtotal = unitPrice * item.qty;
-            total += subtotal;
-            return `
-          <div class="order-item-row">
-            <div class="order-item-info">
-              <span class="order-item-qty">${item.qty}x</span>
-              <div>
-                <span class="order-item-name">${item.name}</span>
-                ${item.answersText ? `<div class="order-item-customizations">${item.answersText}</div>` : ''}
-              </div>
-            </div>
-            <div class="order-item-actions">
-              <span class="order-item-price">R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
-              <button class="remove-item-btn" onclick="removeFromOrder('${item.cartKey}')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-              </button>
-            </div>
-          </div>
-        `;
-        }).join('');
-
-        document.getElementById('orderTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-    }
-
-    function submitOrder() {
-        if (orderItems.length === 0) {
-            alert('Adicione itens ao pedido');
-            return;
-        }
-        const notes = document.getElementById('orderNotes').value;
-        alert(`Pedido enviado com ${orderItems.length} item(s)!`);
-        orderItems = [];
-        renderOrderItems();
-        closeOrderModal();
-    }
-
     // =====================
     // Initialize
     // =====================
     initSidebarState();
-    renderNotifications();
+    //renderNotifications();
+
+    const initialTableId = '[[${selectedTable}]]';
+    if (initialTableId && initialTableId !== 'null' && initialTableId !== '') {
+        initializeSelectedTable(initialTableId);
+    }
 </script>
-
-<!-- Item Customize Modal -->
-<div class="modal-overlay" id="itemCustomizeModal">
-    <div class="modal item-customize-modal">
-        <div class="modal-header">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                Personalizar Item
-            </h3>
-            <button class="modal-close" onclick="closeItemCustomizeModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="item-customize-header">
-                <div class="item-customize-info">
-                    <h4 id="customizeItemName">Filé Mignon</h4>
-                    <div class="price" id="customizeItemPrice">R$ 89,90</div>
-                </div>
-            </div>
-
-            <div id="customizeQuestionsContainer">
-                <!-- Questions rendered by JS -->
-            </div>
-
-            <div class="item-qty-selector">
-                <button class="qty-btn" onclick="updateCustomizeQty(-1)">−</button>
-                <span class="qty-display" id="customizeQtyDisplay">1</span>
-                <button class="qty-btn" onclick="updateCustomizeQty(1)">+</button>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-btn" onclick="closeItemCustomizeModal()">Cancelar</button>
-            <button class="modal-btn success" onclick="confirmCustomizeItem()">
-                Adicionar • <span id="customizeTotalPrice">R$ 89,90</span>
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- Nova Mesa Modal -->
 <div class="modal-overlay" id="newTableModal">
     <div class="modal">
@@ -2965,48 +2745,61 @@
 
 <!-- Novo Pedido Modal -->
 <div class="modal-overlay" id="newOrderModal">
-    <div class="modal large">
-        <div class="modal-header">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                Novo Pedido - <span id="orderTableNumber">Mesa 02</span>
-            </h3>
-            <button class="modal-close" onclick="closeOrderModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Cliente: <strong id="orderClientName">João</strong></label>
+    <div class="modal">
+        <form id="orderForm" method="post" onsubmit="return prepareOrderSubmission(this)">
+            <div class="modal-header">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    Novo Pedido - <span id="orderTableNumber">Mesa 01</span>
+                </h3>
+                <button type="button" class="modal-close" onclick="closeOrderModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
             </div>
-            <div class="menu-filters">
-                <button class="menu-filter-btn active" onclick="filterMenuItems('all')">Todos</button>
-                <button class="menu-filter-btn" onclick="filterMenuItems('Pratos')">Pratos</button>
-                <button class="menu-filter-btn" onclick="filterMenuItems('Bebidas')">Bebidas</button>
-                <button class="menu-filter-btn" onclick="filterMenuItems('Sobremesas')">Sobremesas</button>
-            </div>
-            <div class="menu-items-grid" id="menuItemsGrid">
-                <!-- Populated by JS -->
-            </div>
-            <div class="order-items-section">
-                <h4>Itens do Pedido</h4>
-                <div class="order-items-list" id="orderItemsList">
-                    <div style="padding: 2rem; text-align: center; color: var(--muted);">Nenhum item adicionado</div>
+            <div class="modal-body">
+                <!-- Select Client (Hidden for now as requested) -->
+                <div style="display: none;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Cliente</label>
+                    <input type="text" name="customerName" value="CUSTOMER" class="modal-input" placeholder="Nome do cliente">
                 </div>
-                <div class="order-total-row">
-                    <span>Total</span>
-                    <span id="orderTotal">R$ 0,00</span>
+
+                <div class="menu-categories" id="menuCategories">
+                    <button type="button" class="menu-filter-btn active" onclick="filterMenuItems('all', '${#locale.language}')">Todos</button>
+                    <button type="button" th:each="category : ${categories}" 
+                            class="menu-filter-btn"
+                            th:text="${category.name[#locale.language]}"
+                            th:attr="onclick=|filterMenuItems('${category.id}', '${#locale.language}')|">
+                        Categoria
+                    </button>
+                </div>
+
+                <div class="menu-items-grid" id="menuItemsGrid">
+                    <div th:each="item : ${menuItems}" 
+                         class="menu-item-card" 
+                         th:data-category="${item.categoryId}"
+                         th:attr="onclick=|addToCart('${item.id}', '${item.name[#locale.language]}', ${item.price})|">
+                        <div class="menu-item-name" th:text="${item.name[#locale.language]}">Nome do Item</div>
+                        <div class="menu-item-price" th:text="${#numbers.formatCurrency(item.price)}">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div class="order-items-section">
+                    <h4 style="margin-bottom: 0.5rem;">Itens Selecionados</h4>
+                    <div class="order-items-list" id="orderItemsList">
+                        <div style="padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem;">Selecione itens do menu</div>
+                    </div>
+                    <div id="hiddenOrderItems"></div>
+                    <div class="order-summary-row" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-weight: 700;">
+                        <span>Total do Pedido</span>
+                        <span id="orderTotal">R$ 0,00</span>
+                    </div>
                 </div>
             </div>
-            <div class="form-group" style="margin-top: 1rem;">
-                <label>Observações do Pedido</label>
-                <textarea class="form-input" id="orderNotes" rows="2" placeholder="Ex: Sem cebola, bem passado..."></textarea>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn" onclick="closeOrderModal()">Cancelar</button>
+                <button type="submit" class="modal-btn success" id="submitOrderBtn" disabled>Enviar Pedido</button>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-btn" onclick="closeOrderModal()">Cancelar</button>
-            <button class="modal-btn success" onclick="submitOrder()">Enviar Pedido</button>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -3340,6 +3133,7 @@
 
 <script>
     // Initialize menu items grid when order modal opens
+    /*
     document.getElementById('newOrderModal').addEventListener('transitionend', function(e) {
         if (this.classList.contains('active') && e.propertyName === 'opacity') {
             renderMenuItems(menuItems);
@@ -3352,6 +3146,7 @@
             renderAllNotifications();
         }
     });
+    */
 </script>
 </body>
 </html>

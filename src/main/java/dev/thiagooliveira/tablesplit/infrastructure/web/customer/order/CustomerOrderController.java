@@ -37,7 +37,7 @@ public class CustomerOrderController {
     placeOrderRequest.setCustomerName(request.getCustomerName());
     placeOrderRequest.setItems(
         request.getItems().stream()
-            .map(i -> new OrderItemRequest(i.getItemId(), i.getQuantity()))
+            .map(i -> new OrderItemRequest(i.getItemId(), i.getQuantity(), null))
             .collect(Collectors.toList()));
 
     Order order = placeOrder.execute(placeOrderRequest);

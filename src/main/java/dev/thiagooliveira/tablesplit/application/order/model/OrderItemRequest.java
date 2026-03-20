@@ -5,12 +5,14 @@ import java.util.UUID;
 public class OrderItemRequest {
   private UUID itemId;
   private int quantity;
+  private String note;
 
   public OrderItemRequest() {}
 
-  public OrderItemRequest(UUID itemId, int quantity) {
+  public OrderItemRequest(UUID itemId, int quantity, String note) {
     this.itemId = itemId;
     this.quantity = quantity;
+    this.note = note;
   }
 
   public UUID getItemId() {
@@ -27,5 +29,13 @@ public class OrderItemRequest {
 
   public void setQuantity(int quantity) {
     this.quantity = quantity;
+  }
+
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 }

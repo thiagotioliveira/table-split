@@ -48,7 +48,7 @@ class PlaceOrderTest {
 
     PlaceOrderRequest request =
         new PlaceOrderRequest(
-            restaurantId, tableCod, customerName, List.of(new OrderItemRequest(itemId, 2)));
+            restaurantId, tableCod, customerName, List.of(new OrderItemRequest(itemId, 2, null)));
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
     Order order = new Order(UUID.randomUUID(), restaurantId, table.getId());
@@ -62,7 +62,7 @@ class PlaceOrderTest {
 
     assertNotNull(result);
     assertEquals(1, result.getItems().size());
-    assertEquals(customerName, result.getItems().get(0).getCustomerName());
+    assertEquals("CUSTOMER", result.getItems().get(0).getCustomerName());
     assertEquals(2, result.getItems().get(0).getQuantity());
 
     verify(orderRepository).save(order);
@@ -81,7 +81,7 @@ class PlaceOrderTest {
 
     PlaceOrderRequest request =
         new PlaceOrderRequest(
-            restaurantId, tableCod, "Customer", List.of(new OrderItemRequest(itemId, 1)));
+            restaurantId, tableCod, "Customer", List.of(new OrderItemRequest(itemId, 1, null)));
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
     Order newOrder = new Order(UUID.randomUUID(), restaurantId, table.getId());
@@ -89,13 +89,13 @@ class PlaceOrderTest {
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
         .thenReturn(Optional.of(table));
     when(orderRepository.findActiveOrderByTableId(table.getId())).thenReturn(Optional.empty());
-    when(openTable.execute(restaurantId, tableCod)).thenReturn(newOrder);
+    when(openTable.execute(table.getId())).thenReturn(newOrder);
     when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
     Order result = placeOrder.execute(request);
 
     assertNotNull(result);
-    verify(openTable).execute(restaurantId, tableCod);
+    verify(openTable).execute(table.getId());
     verify(orderRepository).save(newOrder);
   }
 }
