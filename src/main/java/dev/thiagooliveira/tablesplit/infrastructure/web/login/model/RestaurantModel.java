@@ -2,17 +2,19 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class RestaurantModel {
-  private String name;
-  private String slug;
+  @NotBlank private String name;
+  @NotBlank private String slug;
   private String description;
-  private String phone;
-  private String email;
+  @NotBlank private String phone;
+  @NotBlank private String email;
   private String website;
-  private String address;
-  private Currency currency;
-  private int serviceFee = 10;
+  @NotBlank private String address;
+  @NotNull private Currency currency;
+  @NotNull private Integer serviceFee = 10;
 
   public CreateRestaurantCommand toCommand() {
     return new CreateRestaurantCommand(
@@ -91,11 +93,11 @@ public class RestaurantModel {
     this.currency = currency;
   }
 
-  public int getServiceFee() {
+  public Integer getServiceFee() {
     return serviceFee;
   }
 
-  public void setServiceFee(int serviceFee) {
+  public void setServiceFee(Integer serviceFee) {
     this.serviceFee = serviceFee;
   }
 }

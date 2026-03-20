@@ -859,15 +859,7 @@
       <span class="status-text" th:if="${profile.open}" th:text="#{page.profile.status.open}">Open now</span>
       <span class="status-text" th:if="${!profile.open}" th:text="#{page.profile.status.closed}">Closed now</span>
       <span class="status-hours"
-                  th:text="${profile.open} ?
-              #{page.profile.status.hours.close(
-                  ${#temporals.format(profile.nextOpeningOrClosingHours, 'HH:mm')}
-              )} :
-              #{page.profile.status.hours.open(
-                  #{'day.' + ${profile.nextOpeningOrClosingHours.dayOfWeek.name().toLowerCase()}}
-                  + ' ' +
-                  ${#temporals.format(profile.nextOpeningOrClosingHours, 'HH:mm')}
-              )}">
+            th:text="${profile.getNextOpeningOrClosingHoursDisplay(#locale)}">
       </span>
     </div>
 

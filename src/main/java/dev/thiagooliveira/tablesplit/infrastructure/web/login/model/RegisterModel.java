@@ -1,12 +1,13 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
+import jakarta.validation.Valid;
 import java.time.ZoneId;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class RegisterModel {
-  private UserModel user = new UserModel();
-  private RestaurantModel restaurant = new RestaurantModel();
+  @Valid private UserModel user = new UserModel();
+  @Valid private RestaurantModel restaurant = new RestaurantModel();
 
   public CreateAccountCommand toCommand(PasswordEncoder passwordEncoder, ZoneId zone) {
     return new CreateAccountCommand(

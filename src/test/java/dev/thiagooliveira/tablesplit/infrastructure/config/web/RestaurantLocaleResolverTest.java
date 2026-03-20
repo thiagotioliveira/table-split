@@ -33,7 +33,6 @@ class RestaurantLocaleResolverTest {
   void shouldReturnRequestedLocaleWhenSupported() {
     Restaurant restaurant = new Restaurant();
     restaurant.setCustomerLanguages(List.of(Language.PT, Language.EN));
-    restaurant.setDefaultLanguage(Language.PT);
 
     Locale requestedLocale = Locale.forLanguageTag("en");
     Locale result = resolver.adjustLocale(requestedLocale, restaurant);
@@ -49,7 +48,6 @@ class RestaurantLocaleResolverTest {
   void shouldFallbackToDefaultLanguageWhenRequestedLocaleNotSupported() {
     Restaurant restaurant = new Restaurant();
     restaurant.setCustomerLanguages(List.of(Language.PT));
-    restaurant.setDefaultLanguage(Language.PT);
 
     Locale requestedLocale = Locale.forLanguageTag("ja");
     Locale result = resolver.adjustLocale(requestedLocale, restaurant);
@@ -61,7 +59,6 @@ class RestaurantLocaleResolverTest {
   void shouldFallbackToRawLanguageIfDefaultNotEnum() {
     Restaurant restaurant = new Restaurant();
     restaurant.setCustomerLanguages(List.of(Language.PT));
-    restaurant.setDefaultLanguage(Language.PT);
 
     Locale requestedLocale = Locale.forLanguageTag("fr");
     Locale result = resolver.adjustLocale(requestedLocale, restaurant);

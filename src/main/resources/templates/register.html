@@ -24,6 +24,7 @@
       --success: #16A34A;
       --error: #DC2626;
       --radius: 12px;
+      --destructive: #ef4444;
     }
 
     * {
@@ -351,6 +352,11 @@
 
     .form-group.error .form-error {
       display: block;
+    }
+
+    .form-label .required {
+      color: var(--destructive);
+      margin-left: 0.25rem;
     }
 
     /* Terms */
@@ -867,7 +873,7 @@
             <div class="form-panel active" id="step1Panel">
               <div class="form-row">
                 <div class="form-group" id="firstNameGroup">
-                  <label for="firstName" th:text="#{page.register.step.account.firstname}">First Name</label>
+                  <label for="firstName" class="form-label"><span th:text="#{page.register.step.account.firstname}">First Name</span> <span class="required">*</span></label>
                   <div class="input-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
@@ -877,18 +883,20 @@
                       th:field="*{user.firstName}">
                   </div>
                   <p class="form-error" th:text="#{page.register.step.account.firstname.error}">Name is required</p>
+                  <div th:if="${#fields.hasErrors('user.firstName')}" th:errors="*{user.firstName}" style="color: var(--error);"></div>
                 </div>
 
                 <div class="form-group" id="lastNameGroup">
-                  <label for="lastName" th:text="#{page.register.step.account.lastname}">Last Name</label>
+                  <label for="lastName" class="form-label"><span th:text="#{page.register.step.account.lastname}">Last Name</span> <span class="required">*</span></label>
                   <input type="text" id="lastName" class="form-input" th:placeholder="#{page.register.step.account.lastname.placeholder}" autocomplete="family-name" required
                          th:field="*{user.lastName}">
                   <p class="form-error" th:text="#{page.register.step.account.lastname.error}">Last name is required</p>
+                  <div th:if="${#fields.hasErrors('user.lastName')}" th:errors="*{user.lastName}" style="color: var(--error);"></div>
                 </div>
               </div>
 
               <div class="form-group" id="emailGroup">
-                <label for="email">Email</label>
+                <label for="email" class="form-label">Email <span class="required">*</span></label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="20" height="16" x="2" y="4" rx="2"/>
@@ -898,10 +906,11 @@
                          th:field="*{user.email}">
                 </div>
                 <p class="form-error" th:text="#{page.register.step.account.email.error}">Email invalid</p>
+                <div th:if="${#fields.hasErrors('user.email')}" th:errors="*{user.email}" style="color: var(--error);"></div>
               </div>
 
               <div class="form-group" id="userPhoneGroup">
-                <label for="userPhone"><span th:text="#{page.register.step.account.phone}">Telefone</span> <span class="optional" th:text="#{page.register.step.account.phone.optional}">(optional)</span></label>
+                <label for="userPhone" class="form-label"><span th:text="#{page.register.step.account.phone}">Telefone</span> <span class="optional" th:text="#{page.register.step.account.phone.optional}">(optional)</span></label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -912,15 +921,16 @@
               </div>
 
               <div class="form-group">
-                <label for="defaultLanguage" th:text="#{page.register.step.account.language}">Languages</label>
+                <label for="defaultLanguage" class="form-label"><span th:text="#{page.register.step.account.language}">Languages</span> <span class="required">*</span></label>
                 <select id="defaultLanguage" class="form-input" th:field="*{user.language}">
                   <option value="EN" selected th:text="#{page.register.step.account.language.en}">English</option>
                   <option value="PT" th:text="#{page.register.step.account.language.pt}">Portuguese</option>
                 </select>
+                <div th:if="${#fields.hasErrors('user.language')}" th:errors="*{user.language}" style="color: var(--error);"></div>
               </div>
 
               <div class="form-group" id="passwordGroup">
-                <label for="password" th:text="#{page.register.step.account.password}">Password</label>
+                <label for="password" class="form-label"><span th:text="#{page.register.step.account.password}">Password</span> <span class="required">*</span></label>
                 <div class="input-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
@@ -935,6 +945,7 @@
                     </svg>
                   </button>
                 </div>
+                <div th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}" style="color: var(--error);"></div>
                 <div class="password-strength">
                   <div class="strength-bar">
                     <div class="strength-fill" id="strengthFill"></div>
@@ -971,7 +982,7 @@
 
               <button type="button" class="btn btn-primary" onclick="goToStep(2)">
                 <span class="btn-content">
-                  Dados do Restaurante
+                  <span th:text="#{page.register.restaurant.data}">Restaurant Data</span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14"/>
                     <path d="m12 5 7 7-7 7"/>
@@ -1024,18 +1035,19 @@
                     <path d="M7 2v20"/>
                     <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
                   </svg>
-                  Informações básicas
+                  <span th:text="#{page.register.step.restaurant.basic.info}">Basic information</span>
                 </h3>
 
                 <div class="form-group" id="restaurantNameGroup">
-                  <label for="restaurantName">Nome do restaurante</label>
+                  <label for="restaurantName" class="form-label"><span th:text="#{page.register.step.restaurant.name}">Name of Restaurant</span> <span class="required">*</span></label>
                   <input type="text" id="restaurantName" class="form-input" placeholder="Ex: Cantina Bella Italia" required
                          th:field="*{restaurant.name}">
                   <p class="form-error">Nome do restaurante é obrigatório</p>
+                  <div th:if="${#fields.hasErrors('restaurant.name')}" th:errors="*{restaurant.name}" style="color: var(--error);"></div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="restaurantSlug" th:text="#{page.settings.form.restaurant.slug}">Id *</label>
+                  <label class="form-label" for="restaurantSlug"><span th:text="#{page.settings.form.restaurant.slug}">Id</span> <span class="required">*</span></label>
                   <div class="slug-input-group">
                     <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.com/</span>
                     <input type="text" id="restaurantSlug" class="form-input" th:field="*{restaurant.slug}"
@@ -1047,8 +1059,8 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="description">Descrição <span class="optional">(opcional)</span></label>
-                  <textarea id="description" class="form-input" placeholder="Uma breve descrição do seu restaurante..." rows="3"
+                  <label for="description"><span th:test="#{page.register.step.restaurant.description}">Description</span> <span class="optional">(opcional)</span></label>
+                  <textarea id="description" class="form-input" th:placeholder="#{page.register.step.restaurant.description.placeholder}" rows="3"
                             th:field="*{restaurant.description}"></textarea>
                 </div>
 
@@ -1076,14 +1088,15 @@
                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
-                  Contato e localização
+                  <span th:text="#{page.register.step.restaurant.contact}">Contact and Localization</span>
                 </h3>
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="restaurantPhone">Telefone</label>
-                    <input type="tel" id="restaurantPhone" class="form-input" placeholder="(11) 99999-9999"
+                    <label for="restaurantPhone"><span th:text="#{page.register.step.restaurant.contact.phone}">Phone</span> <span class="required">*</span></label>
+                    <input type="tel" id="restaurantPhone" class="form-input" placeholder="+351 999 999 999"
                            th:field="*{restaurant.phone}">
+                    <div th:if="${#fields.hasErrors('restaurant.phone')}" th:errors="*{restaurant.phone}" style="color: var(--error);"></div>
                   </div>
                   <div class="form-group">
                     <label for="website">Website <span class="optional">(opcional)</span></label>
@@ -1093,15 +1106,17 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="restaurant-email">E-mail</label>
-                  <input type="email" id="restaurant-email" class="form-input" placeholder="restaurant@gmail.com"
+                  <label for="restaurant-email" class="form-label">E-mail <span class="required">*</span></label>
+                  <input type="email" id="restaurant-email" class="form-input" placeholder="restaurant@email"
                          th:field="*{restaurant.email}">
+                  <div th:if="${#fields.hasErrors('restaurant.email')}" th:errors="*{restaurant.email}" style="color: var(--error);"></div>
                 </div>
 
                 <div class="form-group">
-                  <label for="address">Endereço</label>
-                  <input type="text" id="address" class="form-input" placeholder="Rua, número - Bairro, Cidade"
+                  <label for="address" class="form-label"><span th:text="#{page.register.step.restaurant.contact.address}">Address</span> <span class="required">*</span></label>
+                  <input type="text" id="address" class="form-input" th:placeholder="#{page.register.step.restaurant.contact.address.placeholder}"
                          th:field="*{restaurant.address}">
+                  <div th:if="${#fields.hasErrors('restaurant.address')}" th:errors="*{restaurant.address}" style="color: var(--error);"></div>
                 </div>
               </div>
 
@@ -1113,7 +1128,7 @@
                     <path d="M3 9h18"/>
                     <path d="M9 21V9"/>
                   </svg>
-                  Configuração inicial
+                  <span th:text="#{page.register.step.restaurant.initial.setup}">Initial setup</span>
                 </h3>
 
                 <div class="form-group" th:if="${false}">
@@ -1133,15 +1148,16 @@
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="currency">Moeda</label>
+                    <label for="currency" class="form-label"><span th:text="#{page.register.step.restaurant.initial.setup.currency}">Currency</span> <span class="required">*</span></label>
                     <select id="currency" class="form-input" th:field="*{restaurant.currency}">
                       <option value="EUR">€ - Euro</option>
                       <option value="BRL">R$ - Real Brasileiro</option>
                       <option value="USD" th:if="${false}">$ - Dólar Americano</option>
                     </select>
+                    <div th:if="${#fields.hasErrors('restaurant.currency')}" th:errors="*{restaurant.currency}" style="color: var(--error);"></div>
                   </div>
                   <div class="form-group">
-                    <label for="serviceFee">Taxa de serviço</label>
+                    <label for="serviceFee" class="form-label"><span th:text="#{page.register.step.restaurant.initial.setup.service.fee}">Service Fee</span> <span class="required">*</span></label>
                     <div class="service-fee-group">
                       <input type="number" id="serviceFee" class="form-input service-fee-input" value="10" min="0" max="30"
                              th:field="*{restaurant.serviceFee}">
@@ -1158,11 +1174,11 @@
                     <path d="m12 19-7-7 7-7"/>
                     <path d="M19 12H5"/>
                   </svg>
-                  Voltar
+                  <span th:text="#{page.register.back}">Back</span>
                 </button>
                 <button type="submit" class="btn btn-primary" id="submitBtn">
                   <span class="btn-content">
-                    Concluir Cadastro
+                    <span th:text="#{page.register.confirm}">Confirm Register</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M20 6 9 17l-5-5"/>
                     </svg>
@@ -1192,7 +1208,11 @@
       slugHint: /*[[#{page.settings.form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
       slugInvalid: /*[[#{page.settings.form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
       slugLength: /*[[#{page.settings.form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
-      domain: /*[[#{app.domain}]]*/ 'tablesplit.com'
+      domain: /*[[#{app.domain}]]*/ 'tablesplit.com',
+      createAccountTitle: /*[[#{page.register.create.account.title}]]*/ 'Create your account',
+      createAccountSubtitle: /*[[#{page.register.create.account.subtitle}]]*/ 'Start using TableSplit for free',
+      createRestaurantTitle: /*[[#{page.register.create.restaurant.title}]]*/ 'Create your restaurant',
+      createRestaurantSubtitle: /*[[#{page.register.create.restaurant.subtitle}]]*/ 'This information will show to your customers',
     };
   </script>
 
@@ -1257,15 +1277,15 @@
         step1Number.innerHTML = '1';
         step2.className = 'step pending';
         divider.className = 'step-divider';
-        document.getElementById('formTitle').textContent = 'Crie sua conta';
-        document.getElementById('formSubtitle').textContent = 'Comece a usar o TableSplit gratuitamente';
+        document.getElementById('formTitle').textContent = i18n.createAccountTitle;
+        document.getElementById('formSubtitle').textContent = i18n.createAccountSubtitle;
       } else {
         step1.className = 'step completed';
         step1Number.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M20 6 9 17l-5-5"/></svg>';
         step2.className = 'step active';
         divider.className = 'step-divider completed';
-        document.getElementById('formTitle').textContent = 'Configure seu restaurante';
-        document.getElementById('formSubtitle').textContent = 'Essas informações aparecerão para seus clientes';
+        document.getElementById('formTitle').textContent = i18n.createRestaurantTitle;
+        document.getElementById('formSubtitle').textContent = i18n.createRestaurantSubtitle;
       }
       
       // Hide error alert

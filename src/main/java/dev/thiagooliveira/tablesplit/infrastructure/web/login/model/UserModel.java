@@ -2,15 +2,21 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserModel {
-  private String firstName;
-  private String lastName;
-  private String email;
+  @NotBlank private String firstName;
+  @NotBlank private String lastName;
+  @NotBlank private String email;
   private String phone;
+
+  @NotBlank
+  @Size(min = 8)
   private String password;
-  private String language;
+
+  @NotBlank private String language;
 
   public CreateUserCommand toCommand(PasswordEncoder passwordEncoder) {
     return new CreateUserCommand(

@@ -9,6 +9,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -51,17 +53,19 @@ public class RegisterController {
 
   @PostMapping
   public String register(
-      @ModelAttribute RegisterModel registerModel,
-      RedirectAttributes redirectAttributes,
+      @Valid @ModelAttribute("form") RegisterModel form,
+      BindingResult bindingResult,
+      Model model,
       HttpServletRequest request) {
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("alert", AlertModel.error("error.register.required.missing"));
+      return "register";
+    }
     var user =
         this.transactionalContext.execute(
-            () ->
-                this.createAccount.execute(
-                    registerModel.toCommand(passwordEncoder, time.getZoneId())));
+            () -> this.createAccount.execute(form.toCommand(passwordEncoder, time.getZoneId())));
     var token =
-        new UsernamePasswordAuthenticationToken(
-            user.getEmail(), registerModel.getUser().getPassword());
+        new UsernamePasswordAuthenticationToken(user.getEmail(), form.getUser().getPassword());
 
     Authentication authentication = authenticationManager.authenticate(token);
 

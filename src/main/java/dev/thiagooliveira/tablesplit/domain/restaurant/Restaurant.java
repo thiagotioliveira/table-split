@@ -28,7 +28,7 @@ public class Restaurant {
   private String hashPrimaryColor;
   private String hashAccentColor;
 
-  public ZonedDateTime getNextOpeningOrClosing(ZonedDateTime now) {
+  public Optional<ZonedDateTime> getNextOpeningOrClosing(ZonedDateTime now) {
 
     boolean currentlyOpen = isOpen(now);
 
@@ -59,17 +59,17 @@ public class Restaurant {
 
         if (currentlyOpen) {
           if (now.isBefore(endDateTime)) {
-            return endDateTime;
+            return Optional.of(endDateTime);
           }
         } else {
           if (now.isBefore(startDateTime)) {
-            return startDateTime;
+            return Optional.of(startDateTime);
           }
         }
       }
     }
 
-    return null; // nunca abre
+    return Optional.empty();
   }
 
   public boolean isOpen(ZonedDateTime now) {

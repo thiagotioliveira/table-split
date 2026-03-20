@@ -8,10 +8,9 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.context.MessageSource;
 
 public class ProfileModel {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -25,7 +24,7 @@ public class ProfileModel {
   private final String address;
   private final List<String> tags;
   private final boolean open;
-  private final ZonedDateTime nextOpeningOrClosingHours;
+  private final Optional<ZonedDateTime> nextOpeningOrClosingHours;
   private final List<DaySchedule> schedule;
   private final String hashPrimaryColor;
   private final String hashAccentColor;
@@ -34,12 +33,15 @@ public class ProfileModel {
 
   private final String menuLink;
 
-  public ProfileModel(Restaurant restaurant, ZoneId zoneId) {
+  private final MessageSource messageSource;
+
+  public ProfileModel(Restaurant restaurant, ZoneId zoneId, MessageSource messageSource) {
     this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
     this.description = restaurant.getDescription();
     this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
+    this.messageSource = messageSource;
     String[] values = restaurant.getAveragePrice().split("-");
     var symbol = restaurant.getCurrency().getSymbol();
     this.averagePrice = String.format("%s %s - %s %s", symbol, values[0], symbol, values[1]);
@@ -124,8 +126,24 @@ public class ProfileModel {
     return open;
   }
 
-  public ZonedDateTime getNextOpeningOrClosingHours() {
-    return nextOpeningOrClosingHours;
+  public String getNextOpeningOrClosingHoursDisplay(Locale locale) {
+    if (nextOpeningOrClosingHours.isEmpty()) {
+      return messageSource.getMessage("page.profile.status.empty", null, locale);
+    }
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    if (open) {
+      return messageSource.getMessage(
+          "page.profile.status.hours.close",
+          new Object[] {nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    } else {
+      String day = nextOpeningOrClosingHours.get().getDayOfWeek().name().toLowerCase();
+      return messageSource.getMessage(
+          "page.profile.status.hours.open",
+          new Object[] {day, nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    }
   }
 
   public List<DaySchedule> getSchedule() {
