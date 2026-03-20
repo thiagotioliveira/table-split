@@ -48,6 +48,7 @@ class SettingsControllerIT extends AuthenticatedIT {
                 .param("slug", "updated-slug")
                 .param("description", "Updated Description")
                 .param("email", "updated@example.com")
+                .param("address", "Updated Address")
                 .param("currency", Currency.EUR.name())
                 .param("serviceFee", "15")
                 .param("averagePrice", "50-100")
