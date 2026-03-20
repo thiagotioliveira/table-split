@@ -88,7 +88,7 @@ public class RegisterController {
   @ExceptionHandler(SlugAlreadyExist.class)
   public String handleSlugAlreadyExist(SlugAlreadyExist ex, RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute(
-        "alert", AlertModel.error("error.register.restaurant.slug.already.exist"));
+        "alert", AlertModel.error("error.restaurant.slug.already.exist"));
     return "redirect:/register";
   }
 }

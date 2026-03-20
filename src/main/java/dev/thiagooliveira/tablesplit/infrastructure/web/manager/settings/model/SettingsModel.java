@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.*;
 import jakarta.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsModel {
@@ -12,7 +13,7 @@ public class SettingsModel {
 
   @NotBlank
   @Size(min = 3, max = 50)
-  @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "{validation.slug.invalid}")
+  @Pattern(regexp = "^[a-zA-Z0-9_.-]+$", message = "{validation.slug.invalid}")
   private String slug;
 
   @Size(max = 254)
@@ -29,14 +30,15 @@ public class SettingsModel {
   @Email
   private String email;
 
+  @NotBlank
   @Size(max = 254)
   private String address;
 
-  private List<String> cuisineType;
+  private List<String> cuisineType = new ArrayList<>();
+  private List<String> tags = new ArrayList<>();
 
-  private List<String> tags;
-
-  private List<String> customerLanguages;
+  @Size(min = 1)
+  private List<String> customerLanguages = new ArrayList<>();
 
   @Size(min = 3, max = 3)
   @NotBlank
@@ -51,7 +53,7 @@ public class SettingsModel {
   @Size(max = 10)
   private String averagePrice;
 
-  private List<BusinessHoursModel> days;
+  private List<BusinessHoursModel> days = new ArrayList<>();
 
   @NotBlank
   @Size(min = 7, max = 7)
@@ -111,7 +113,7 @@ public class SettingsModel {
             : this.cuisineType.stream().map(CuisineType::valueOf).toList();
     return new UpdateRestaurantCommand(
         this.name,
-        this.slug,
+        this.slug.toLowerCase().trim(),
         this.description,
         this.website,
         this.phone,

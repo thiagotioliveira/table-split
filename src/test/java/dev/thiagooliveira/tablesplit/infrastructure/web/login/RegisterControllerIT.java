@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -8,30 +7,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import org.junit.jupiter.api.BeforeEach;
+import dev.thiagooliveira.tablesplit.infrastructure.web.BaseIT;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-@SpringBootTest
-@Transactional
-class RegisterControllerIT {
-
-  private MockMvc mockMvc;
-
-  @Autowired private WebApplicationContext context;
+class RegisterControllerIT extends BaseIT {
 
   @Autowired private UserRepository userRepository;
-
-  @BeforeEach
-  void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-  }
 
   @Test
   void shouldReturnRegisterView_whenGettingRegister() throws Exception {
@@ -66,7 +50,7 @@ class RegisterControllerIT {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/dashboard"));
 
-    assertTrue(userRepository.findByEmail("thiago.it@example.com").isPresent());
+    Assertions.assertTrue(userRepository.findByEmail("thiago.it@example.com").isPresent());
   }
 
   @Test
@@ -87,6 +71,10 @@ class RegisterControllerIT {
                 .param("user.language", Language.PT.name())
                 .param("restaurant.name", "Outro Restaurante")
                 .param("restaurant.slug", "outro-restaurante")
+                .param("restaurant.description", "Outra Descricao")
+                .param("restaurant.phone", "000000000")
+                .param("restaurant.email", "outro@restaurante.com")
+                .param("restaurant.address", "Outra Rua, 456")
                 .param("restaurant.currency", Currency.BRL.name())
                 .param("restaurant.serviceFee", "10"))
         .andExpect(status().is3xxRedirection())
@@ -116,11 +104,5 @@ class RegisterControllerIT {
                     "restaurant.email",
                     "restaurant.address",
                     "restaurant.currency"));
-  }
-
-  private void assertTrue(boolean condition) {
-    if (!condition) {
-      throw new AssertionError("Condition is false");
-    }
   }
 }

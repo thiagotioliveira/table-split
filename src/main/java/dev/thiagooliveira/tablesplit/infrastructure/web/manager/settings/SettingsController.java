@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
+import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -15,10 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -66,6 +64,13 @@ public class SettingsController {
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.settings.saved"));
     updateContext(context, restaurant);
     return "redirect:/settings";
+  }
+
+  @ExceptionHandler(SlugAlreadyExist.class)
+  public String handleSlugAlreadyExist(SlugAlreadyExist ex, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute(
+        "alert", AlertModel.error("error.restaurant.slug.already.exist"));
+    return "redirect:/register";
   }
 
   private void updateContext(AccountContext context, Restaurant restaurant) {

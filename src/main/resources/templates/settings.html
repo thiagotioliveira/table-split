@@ -790,7 +790,7 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="restaurantAddress" th:text="#{page.settings.form.restaurant.address}">Address</label>
+                <label class="form-label" for="restaurantAddress"><span th:text="#{page.settings.form.restaurant.address}">Address</span> <span class="required">*</span></label>
                 <input type="text" id="restaurantAddress" class="form-input" maxlength="254" th:field="*{address}"
                   th:placeholder="#{page.settings.form.restaurant.address.placeholder}">
                 <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}" style="color:red"></div>
@@ -1261,7 +1261,7 @@
             <div class="settings-section-body">
               <div class="form-row-3">
                 <div class="form-group">
-                  <label class="form-label" th:text="#{page.settings.form.color.primary}">Primary Color</label>
+                  <label class="form-label"><span th:text="#{page.settings.form.color.primary}">Primary Color</span> <span class="required">*</span></label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashPrimaryColor}">
@@ -1272,7 +1272,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" th:text="#{page.settings.form.color.accent}">Accent Color</label>
+                  <label class="form-label"><span th:text="#{page.settings.form.color.accent}">Accent Color</span> <span class="required">*</span></label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashAccentColor}">
