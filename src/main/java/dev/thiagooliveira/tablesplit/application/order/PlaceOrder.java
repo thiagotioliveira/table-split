@@ -35,7 +35,7 @@ public class PlaceOrder {
     Order order =
         orderRepository
             .findActiveOrderByTableId(table.getId())
-            .orElseGet(() -> openTable.execute(table.getId()));
+            .orElseGet(() -> openTable.execute(table.getId(), request.getServiceFee()));
 
     for (OrderItemRequest itemRequest : request.getItems()) {
       Item item =

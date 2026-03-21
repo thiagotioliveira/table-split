@@ -23,7 +23,7 @@ public class OpenTable {
     this.eventPublisher = eventPublisher;
   }
 
-  public Order execute(UUID tableId) {
+  public Order execute(UUID tableId, int serviceFee) {
     Table table =
         tableRepository
             .findById(tableId)
@@ -36,7 +36,7 @@ public class OpenTable {
     table.occupy();
     tableRepository.save(table);
 
-    Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId());
+    Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId(), serviceFee);
     orderRepository.save(order);
 
     eventPublisher.publishEvent(new TableOpenedEvent(order, table));

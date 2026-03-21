@@ -23,7 +23,9 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.Cate
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TableModel;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -79,7 +81,20 @@ public class TableController {
     var context = (AccountContext) auth.getPrincipal();
 
     var result = getTables.execute(context.getRestaurant().getId());
-    model.addAttribute("tables", result.tables());
+    var tables =
+        result.tables().stream()
+            .map(
+                t -> {
+                  var activeOrder = getOrder.execute(t.getId());
+                  var total =
+                      activeOrder
+                          .map(dev.thiagooliveira.tablesplit.domain.order.Order::calculateTotal)
+                          .orElse(BigDecimal.ZERO);
+                  return new TableModel(t.getId(), t.getCod(), t.getStatus(), total);
+                })
+            .collect(Collectors.toList());
+
+    model.addAttribute("tables", tables);
     model.addAttribute("count", result.count());
     model.addAttribute("countAvailable", result.countAvailable());
     model.addAttribute("countOccupied", result.countOccupied());
@@ -107,23 +122,27 @@ public class TableController {
       var activeOrder = getOrder.execute(selectedTableId);
       if (activeOrder.isPresent()) {
         var order = activeOrder.get();
-        var primaryLanguage = languages.isEmpty() ? Language.PT : languages.get(0);
         var clients =
             order.getItems().stream()
                 .collect(
                     Collectors.groupingBy(
                         OrderItem::getCustomerName,
                         Collectors.mapping(
-                            item ->
+                            oi ->
                                 new OrderItemModel(
-                                    item.getName().getOrDefault(primaryLanguage, "Unknown"),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice(),
-                                    item.getNote()),
+                                    oi.getName().get(Language.PT),
+                                    oi.getQuantity(),
+                                    oi.getUnitPrice(),
+                                    oi.getTotalPrice(),
+                                    oi.getNote(),
+                                    oi.getStatus().getLabel(),
+                                    oi.getStatus().getCssClass()),
                             Collectors.toList())));
         model.addAttribute("clients", clients);
         model.addAttribute("orderLoaded", true);
+        model.addAttribute("orderServiceFee", order.getServiceFee());
+        model.addAttribute("orderServiceFeeApplied", order.feeApplied());
+        model.addAttribute("orderSubtotal", order.calculateSubtotal());
         model.addAttribute("orderTotal", order.calculateTotal());
       }
     }
@@ -153,9 +172,11 @@ public class TableController {
   }
 
   @PostMapping("/{tableId}/open")
-  public String openTable(@PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
-
-    transactionalContext.execute(() -> openTable.execute(tableId));
+  public String openTable(
+      Authentication auth, @PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
+    var context = (AccountContext) auth.getPrincipal();
+    transactionalContext.execute(
+        () -> openTable.execute(tableId, context.getRestaurant().getServiceFee()));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.opened"));
     return "redirect:/tables?selectedTableId=" + tableId;

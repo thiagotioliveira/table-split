@@ -21,6 +21,9 @@ public class OrderEntity {
   private UUID tableId;
 
   @Column(nullable = false)
+  private int serviceFee;
+
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
 
@@ -38,6 +41,7 @@ public class OrderEntity {
     Order domain = new Order();
     domain.setId(this.id);
     domain.setRestaurantId(this.restaurantId);
+    domain.setServiceFee(this.serviceFee);
     domain.setTableId(this.tableId);
     domain.setStatus(this.status);
     domain.setOpenedAt(this.openedAt);
@@ -52,6 +56,7 @@ public class OrderEntity {
     OrderEntity entity = new OrderEntity();
     entity.setId(domain.getId());
     entity.setRestaurantId(domain.getRestaurantId());
+    entity.setServiceFee(domain.getServiceFee());
     entity.setTableId(domain.getTableId());
     entity.setStatus(domain.getStatus());
     entity.setOpenedAt(domain.getOpenedAt());
@@ -120,5 +125,13 @@ public class OrderEntity {
 
   public void setClosedAt(ZonedDateTime closedAt) {
     this.closedAt = closedAt;
+  }
+
+  public int getServiceFee() {
+    return serviceFee;
+  }
+
+  public void setServiceFee(int serviceFee) {
+    this.serviceFee = serviceFee;
   }
 }

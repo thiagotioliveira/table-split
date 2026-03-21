@@ -38,7 +38,7 @@ class OpenTableTest {
 
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    Order result = openTable.execute(tableId);
+    Order result = openTable.execute(tableId, 10);
 
     assertNotNull(result);
     assertEquals(restaurantId, result.getRestaurantId());
@@ -59,7 +59,7 @@ class OpenTableTest {
 
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    assertThrows(TableAlreadyOccupied.class, () -> openTable.execute(tableId));
+    assertThrows(TableAlreadyOccupied.class, () -> openTable.execute(tableId, 10));
 
     verify(orderRepository, never()).save(any());
   }

@@ -423,7 +423,11 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   categoryDrinks.getId(),
                   List.of(),
                   new ImageCommand(List.of(), List.of()),
-                  Map.of(Language.PT, "Suco de Abacaxi c/ Hortelã", Language.EN, "Pineapple Mint Juice"),
+                  Map.of(
+                      Language.PT,
+                      "Suco de Abacaxi c/ Hortelã",
+                      Language.EN,
+                      "Pineapple Mint Juice"),
                   Map.of(
                       Language.PT,
                       "Refrescante suco natural batido com hortelã fresca.",
@@ -451,7 +455,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   categoryDrinks.getId(),
                   List.of(),
                   new ImageCommand(List.of(), List.of()),
-                  Map.of(Language.PT, "Caipivodka de Morango", Language.EN, "Strawberry Caipivodka"),
+                  Map.of(
+                      Language.PT, "Caipivodka de Morango", Language.EN, "Strawberry Caipivodka"),
                   Map.of(
                       Language.PT,
                       "Versão da caipirinha com vodka e morangos selecionados.",

@@ -35,6 +35,7 @@ public class CustomerOrderController {
     placeOrderRequest.setRestaurantId(restaurant.getId());
     placeOrderRequest.setTableCod(tableCod);
     placeOrderRequest.setCustomerName(request.getCustomerName());
+    placeOrderRequest.setServiceFee(restaurant.getServiceFee());
     placeOrderRequest.setItems(
         request.getItems().stream()
             .map(i -> new OrderItemRequest(i.getItemId(), i.getQuantity(), null))

@@ -38,7 +38,7 @@ class CloseTableTest {
     Table table = new Table(tableId, restaurantId, "T1");
     table.occupy();
 
-    Order order = new Order(orderId, restaurantId, tableId);
+    Order order = new Order(orderId, restaurantId, tableId, 10);
 
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
@@ -61,7 +61,7 @@ class CloseTableTest {
     UUID orderId = UUID.randomUUID();
 
     Table table = new Table(tableId, restaurantId, "T1");
-    Order order = new Order(orderId, restaurantId, tableId);
+    Order order = new Order(orderId, restaurantId, tableId, 10);
     order.close();
 
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));

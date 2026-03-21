@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public class PlaceOrderRequest {
   private UUID restaurantId;
+  private int serviceFee;
   private String tableCod;
   private String customerName;
   private List<OrderItemRequest> items;
@@ -12,11 +13,16 @@ public class PlaceOrderRequest {
   public PlaceOrderRequest() {}
 
   public PlaceOrderRequest(
-      UUID restaurantId, String tableCod, String customerName, List<OrderItemRequest> items) {
+      UUID restaurantId,
+      String tableCod,
+      String customerName,
+      List<OrderItemRequest> items,
+      int serviceFee) {
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.customerName = customerName;
     this.items = items;
+    this.serviceFee = serviceFee;
   }
 
   public UUID getRestaurantId() {
@@ -49,5 +55,13 @@ public class PlaceOrderRequest {
 
   public void setItems(List<OrderItemRequest> items) {
     this.items = items;
+  }
+
+  public int getServiceFee() {
+    return serviceFee;
+  }
+
+  public void setServiceFee(int serviceFee) {
+    this.serviceFee = serviceFee;
   }
 }

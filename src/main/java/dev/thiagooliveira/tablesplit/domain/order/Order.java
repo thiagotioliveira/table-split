@@ -11,6 +11,7 @@ public class Order {
   private UUID id;
   private UUID restaurantId;
   private UUID tableId;
+  private int serviceFee;
   private OrderStatus status;
   private List<OrderItem> items = new ArrayList<>();
   private ZonedDateTime openedAt;
@@ -18,12 +19,13 @@ public class Order {
 
   public Order() {}
 
-  public Order(UUID id, UUID restaurantId, UUID tableId) {
+  public Order(UUID id, UUID restaurantId, UUID tableId, int serviceFee) {
     this.id = id;
     this.restaurantId = restaurantId;
     this.tableId = tableId;
     this.status = OrderStatus.OPEN;
     this.openedAt = ZonedDateTime.now();
+    this.serviceFee = serviceFee;
   }
 
   public void addItem(Item item, int quantity, String customerName, String note) {
@@ -33,8 +35,22 @@ public class Order {
     this.items.add(new OrderItem(item, quantity, customerName, note));
   }
 
-  public BigDecimal calculateTotal() {
+  public BigDecimal calculateSubtotal() {
     return items.stream().map(OrderItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public BigDecimal calculateTotal() {
+    BigDecimal subtotal = calculateSubtotal();
+
+    BigDecimal fee = feeApplied();
+
+    return subtotal.add(fee);
+  }
+
+  public BigDecimal feeApplied() {
+    BigDecimal subtotal = calculateSubtotal();
+
+    return subtotal.multiply(BigDecimal.valueOf(serviceFee)).divide(BigDecimal.valueOf(100));
   }
 
   public void close() {
@@ -100,5 +116,13 @@ public class Order {
 
   public void setClosedAt(ZonedDateTime closedAt) {
     this.closedAt = closedAt;
+  }
+
+  public int getServiceFee() {
+    return serviceFee;
+  }
+
+  public void setServiceFee(int serviceFee) {
+    this.serviceFee = serviceFee;
   }
 }

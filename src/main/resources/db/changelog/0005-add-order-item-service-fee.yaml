@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-service-fee-to-order
+      author: thiago.oliveira
+      changes:
+        - addColumn:
+            tableName: order
+            columns:
+              - column:
+                  name: service_fee
+                  type: smallint
+                  constraints:
+                    nullable: false

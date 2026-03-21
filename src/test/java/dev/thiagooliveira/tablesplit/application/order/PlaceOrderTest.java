@@ -48,10 +48,14 @@ class PlaceOrderTest {
 
     PlaceOrderRequest request =
         new PlaceOrderRequest(
-            restaurantId, tableCod, customerName, List.of(new OrderItemRequest(itemId, 2, null)));
+            restaurantId,
+            tableCod,
+            customerName,
+            List.of(new OrderItemRequest(itemId, 2, null)),
+            10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
-    Order order = new Order(UUID.randomUUID(), restaurantId, table.getId());
+    Order order = new Order(UUID.randomUUID(), restaurantId, table.getId(), 10);
 
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
         .thenReturn(Optional.of(table));
@@ -62,7 +66,7 @@ class PlaceOrderTest {
 
     assertNotNull(result);
     assertEquals(1, result.getItems().size());
-    assertEquals("CUSTOMER", result.getItems().get(0).getCustomerName());
+    assertEquals("João Silva", result.getItems().get(0).getCustomerName());
     assertEquals(2, result.getItems().get(0).getQuantity());
 
     verify(orderRepository).save(order);
@@ -81,21 +85,21 @@ class PlaceOrderTest {
 
     PlaceOrderRequest request =
         new PlaceOrderRequest(
-            restaurantId, tableCod, "Customer", List.of(new OrderItemRequest(itemId, 1, null)));
+            restaurantId, tableCod, "Customer", List.of(new OrderItemRequest(itemId, 1, null)), 10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
-    Order newOrder = new Order(UUID.randomUUID(), restaurantId, table.getId());
+    Order newOrder = new Order(UUID.randomUUID(), restaurantId, table.getId(), 10);
 
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
         .thenReturn(Optional.of(table));
     when(orderRepository.findActiveOrderByTableId(table.getId())).thenReturn(Optional.empty());
-    when(openTable.execute(table.getId())).thenReturn(newOrder);
+    when(openTable.execute(table.getId(), 10)).thenReturn(newOrder);
     when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
     Order result = placeOrder.execute(request);
 
     assertNotNull(result);
-    verify(openTable).execute(table.getId());
+    verify(openTable).execute(table.getId(), 10);
     verify(orderRepository).save(newOrder);
   }
 }

@@ -11,6 +11,7 @@ public class RestaurantContext {
   private String name;
   private String slug;
   private Currency currency;
+  private int serviceFee;
   private List<Language> customerLanguages;
 
   public RestaurantContext(Restaurant restaurant) {
@@ -18,6 +19,7 @@ public class RestaurantContext {
     this.name = restaurant.getName();
     this.slug = restaurant.getSlug();
     this.currency = restaurant.getCurrency();
+    this.serviceFee = restaurant.getServiceFee();
     this.customerLanguages = restaurant.getCustomerLanguages();
   }
 
@@ -55,5 +57,13 @@ public class RestaurantContext {
 
   public void setSlug(String slug) {
     this.slug = slug;
+  }
+
+  public int getServiceFee() {
+    return serviceFee;
+  }
+
+  public void setServiceFee(int serviceFee) {
+    this.serviceFee = serviceFee;
   }
 }

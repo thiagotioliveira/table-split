@@ -8,14 +8,24 @@ public class OrderItemModel {
   private final BigDecimal unitPrice;
   private final BigDecimal totalPrice;
   private final String note;
+  private final String status;
+  private final String statusClass;
 
   public OrderItemModel(
-      String name, int quantity, BigDecimal unitPrice, BigDecimal totalPrice, String note) {
+      String name,
+      int quantity,
+      BigDecimal unitPrice,
+      BigDecimal totalPrice,
+      String note,
+      String status,
+      String statusClass) {
     this.name = name;
     this.quantity = quantity;
     this.unitPrice = unitPrice;
     this.totalPrice = totalPrice;
     this.note = note;
+    this.status = status;
+    this.statusClass = statusClass;
   }
 
   public String getName() {
@@ -36,5 +46,13 @@ public class OrderItemModel {
 
   public String getNote() {
     return note;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public String getStatusClass() {
+    return statusClass;
   }
 }

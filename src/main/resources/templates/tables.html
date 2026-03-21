@@ -2106,6 +2106,7 @@
                         <div class="table-card-info">
                             <span th:if="${table.status.name() == 'AVAILABLE'}">Disponível</span>
                             <span th:if="${table.status.name() == 'OCCUPIED'}">Em uso</span>
+                            <span class="table-total" th:text="${'R$ ' + #numbers.formatDecimal(table.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -2196,6 +2197,7 @@
                                         </div>
                                         <div>
                                             <span class="order-item-price" th:text="${'R$ ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                                             <span class="order-item-status" th:classappend="${item.statusClass}" th:text="${item.status}">Pendente</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2219,7 +2221,11 @@
                             </h3>
                             <div class="bill-row">
                                 <span>Subtotal</span>
-                                <span th:text="${'R$ ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                                <span th:text="${'R$ ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                            </div>
+                            <div class="bill-row">
+                                <span>Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
+                                <span th:text="${'R$ ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                             </div>
                             <div class="bill-row total">
                                 <span>Total da Mesa</span>

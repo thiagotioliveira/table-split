@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.OrderItem;
+import dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -35,6 +36,10 @@ public class OrderItemEntity {
 
   @Column private String note;
 
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private OrderItemStatus status;
+
   public OrderItemEntity() {}
 
   public OrderItem toDomain() {
@@ -46,6 +51,7 @@ public class OrderItemEntity {
     domain.setQuantity(this.quantity);
     domain.setUnitPrice(this.unitPrice);
     domain.setNote(this.note);
+    domain.setStatus(this.status);
     return domain;
   }
 
@@ -59,6 +65,7 @@ public class OrderItemEntity {
     entity.setQuantity(domain.getQuantity());
     entity.setUnitPrice(domain.getUnitPrice());
     entity.setNote(domain.getNote());
+    entity.setStatus(domain.getStatus());
     return entity;
   }
 
@@ -124,5 +131,13 @@ public class OrderItemEntity {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus status) {
+    this.status = status;
   }
 }
