@@ -5,6 +5,8 @@ import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.CloseTable;
 import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
+import dev.thiagooliveira.tablesplit.application.order.GetTickets;
+import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
@@ -36,8 +38,10 @@ public class OrderConfig {
       OpenTable openTable,
       TableRepository tableRepository,
       OrderRepository orderRepository,
-      ItemRepository itemRepository) {
-    return new PlaceOrder(openTable, tableRepository, orderRepository, itemRepository);
+      ItemRepository itemRepository,
+      EventPublisher eventPublisher) {
+    return new PlaceOrder(
+        openTable, tableRepository, orderRepository, itemRepository, eventPublisher);
   }
 
   @Bean
@@ -46,7 +50,17 @@ public class OrderConfig {
   }
 
   @Bean
-  public CreateTable createTable(TableRepository tableRepository) {
-    return new CreateTable(tableRepository);
+  public CreateTable createTable(TableRepository tableRepository, EventPublisher eventPublisher) {
+    return new CreateTable(tableRepository, eventPublisher);
+  }
+
+  @Bean
+  public GetTickets getTickets(OrderRepository orderRepository, TableRepository tableRepository) {
+    return new GetTickets(orderRepository, tableRepository);
+  }
+
+  @Bean
+  public MoveTicket moveTicket(OrderRepository orderRepository) {
+    return new MoveTicket(orderRepository);
   }
 }

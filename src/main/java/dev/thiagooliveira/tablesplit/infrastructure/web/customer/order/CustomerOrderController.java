@@ -34,12 +34,16 @@ public class CustomerOrderController {
     var placeOrderRequest = new PlaceOrderRequest();
     placeOrderRequest.setRestaurantId(restaurant.getId());
     placeOrderRequest.setTableCod(tableCod);
-    placeOrderRequest.setCustomerName(request.getCustomerName());
     placeOrderRequest.setServiceFee(restaurant.getServiceFee());
-    placeOrderRequest.setItems(
+
+    var ticketRequest = new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest();
+    ticketRequest.setCustomerName(request.getCustomerName());
+    ticketRequest.setItems(
         request.getItems().stream()
             .map(i -> new OrderItemRequest(i.getItemId(), i.getQuantity(), null))
             .collect(Collectors.toList()));
+
+    placeOrderRequest.setTickets(java.util.List.of(ticketRequest));
 
     Order order = placeOrder.execute(placeOrderRequest);
 

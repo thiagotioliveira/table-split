@@ -131,7 +131,8 @@ public class TableController {
       if (activeOrder.isPresent()) {
         var order = activeOrder.get();
         var clients =
-            order.getItems().stream()
+            order.getTickets().stream()
+                .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
                         OrderItem::getCustomerName,
@@ -160,7 +161,8 @@ public class TableController {
 
         Map<String, BigDecimal> clientBalances = new HashMap<>();
         Map<String, BigDecimal> clientSubtotals =
-            order.getItems().stream()
+            order.getTickets().stream()
+                .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
                         OrderItem::getCustomerName,
@@ -207,7 +209,8 @@ public class TableController {
                           hist.getClosedAt() != null
                               ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                               : null,
-                          hist.getItems().stream()
+                          hist.getTickets().stream()
+                              .flatMap(t -> t.getItems().stream())
                               .map(
                                   oi ->
                                       new OrderItemModel(
@@ -281,7 +284,10 @@ public class TableController {
 
   @PostMapping("/{tableId}/order")
   public String placeOrder(
-      Authentication auth, @PathVariable UUID tableId, @ModelAttribute PlaceOrderRequest request) {
+      Authentication auth,
+      @PathVariable UUID tableId,
+      @ModelAttribute PlaceOrderRequest request,
+      RedirectAttributes redirectAttributes) {
     var account = (AccountContext) auth.getPrincipal();
     var table = getTables.findById(tableId).orElseThrow();
     request.setRestaurantId(table.getRestaurantId());
@@ -290,6 +296,7 @@ public class TableController {
 
     transactionalContext.execute(() -> placeOrder.execute(request));
 
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.order.placed"));
     return "redirect:/tables?selectedTableId=" + tableId;
   }
 

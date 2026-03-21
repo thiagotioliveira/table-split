@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.OrderItem;
-import dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus;
+import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -15,8 +15,8 @@ public class OrderItemEntity {
   @Id private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id", nullable = false)
-  private OrderEntity order;
+  @JoinColumn(name = "ticket_id", nullable = false)
+  private TicketEntity ticket;
 
   @Column(nullable = false)
   private UUID itemId;
@@ -38,7 +38,7 @@ public class OrderItemEntity {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private OrderItemStatus status;
+  private TicketStatus status;
 
   public OrderItemEntity() {}
 
@@ -55,10 +55,10 @@ public class OrderItemEntity {
     return domain;
   }
 
-  public static OrderItemEntity fromDomain(OrderItem domain, OrderEntity order) {
+  public static OrderItemEntity fromDomain(OrderItem domain, TicketEntity ticket) {
     OrderItemEntity entity = new OrderItemEntity();
     entity.setId(domain.getId());
-    entity.setOrder(order);
+    entity.setTicket(ticket);
     entity.setItemId(domain.getItemId());
     entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
     entity.setCustomerName(domain.getCustomerName());
@@ -77,12 +77,12 @@ public class OrderItemEntity {
     this.id = id;
   }
 
-  public OrderEntity getOrder() {
-    return order;
+  public TicketEntity getTicket() {
+    return ticket;
   }
 
-  public void setOrder(OrderEntity order) {
-    this.order = order;
+  public void setTicket(TicketEntity ticket) {
+    this.ticket = ticket;
   }
 
   public UUID getItemId() {
@@ -133,11 +133,11 @@ public class OrderItemEntity {
     this.note = note;
   }
 
-  public dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus getStatus() {
+  public dev.thiagooliveira.tablesplit.domain.order.TicketStatus getStatus() {
     return status;
   }
 
-  public void setStatus(dev.thiagooliveira.tablesplit.domain.order.OrderItemStatus status) {
+  public void setStatus(dev.thiagooliveira.tablesplit.domain.order.TicketStatus status) {
     this.status = status;
   }
 }

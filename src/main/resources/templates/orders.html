@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - TableSplit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Orders specific styles */
+        .orders-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .orders-filters {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .filter-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .filter-btn:not(.active) .filter-badge {
+            background: var(--background-secondary);
+            color: var(--muted);
+        }
+
+        .orders-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Kanban Layout */
+        .kanban-container {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        @media (min-width: 768px) {
+            .kanban-container {
+                grid-template-columns: repeat(2, minmax(280px, 1fr));
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .kanban-container {
+                grid-template-columns: repeat(4, minmax(280px, 1fr));
+            }
+        }
+
+        .kanban-column {
+            background: var(--background-secondary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .kanban-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kanban-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .kanban-title-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kanban-title-icon svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .kanban-title-icon.new {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .kanban-title-icon.preparing {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .kanban-title-icon.ready {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .kanban-title-icon.delivered {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .kanban-title h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .kanban-count {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .kanban-body {
+            padding: 0.75rem;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Order Card */
+        .order-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .order-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .order-card.urgent {
+            border-color: var(--primary);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
+        }
+
+        .order-header {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .order-table {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-table-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--primary);
+        }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-customer {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .order-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .order-time.urgent {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .order-id {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-family: monospace;
+        }
+
+        /* Order Type Badge */
+        .order-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .order-type-badge svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+
+        .order-type-badge.dine-in {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            color: #0369a1;
+        }
+
+        .order-type-badge.delivery {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            color: #7c3aed;
+        }
+
+        .order-address {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.25rem;
+        }
+
+        .order-address svg {
+            width: 0.875rem;
+            height: 0.875rem;
+            flex-shrink: 0;
+            margin-top: 0.0625rem;
+        }
+
+        .order-delivery-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--background-secondary);
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+        }
+
+        .order-delivery-info .driver-avatar {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.625rem;
+            color: var(--primary);
+        }
+
+        .order-delivery-info .driver-name {
+            font-weight: 500;
+        }
+
+        .order-delivery-info .eta {
+            margin-left: auto;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Type filters */
+        .type-filters {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            margin-right: 1rem;
+        }
+
+        .type-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: calc(var(--radius) - 2px);
+            background: transparent;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--muted);
+        }
+
+        .type-filter-btn:hover {
+            color: var(--foreground);
+        }
+
+        .type-filter-btn.active {
+            background: var(--card);
+            color: var(--foreground);
+            box-shadow: var(--shadow);
+        }
+
+        .type-filter-btn svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .order-body {
+            padding: 0.75rem;
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .order-item-qty {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 1.5rem;
+        }
+
+        .order-item-name {
+            flex: 1;
+        }
+
+        .order-item-note {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-style: italic;
+            margin-left: 2rem;
+        }
+
+        .order-total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            border-top: 1px dashed var(--border);
+            font-size: 0.875rem;
+        }
+
+        .order-total-label {
+            color: var(--muted);
+        }
+
+        .order-total-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .order-footer {
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .order-footer .btn {
+            flex: 1;
+        }
+
+        /* Waiter Call Alert */
+        .waiter-alerts {
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .waiter-alerts-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .waiter-alerts-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ring 1s ease-in-out infinite;
+        }
+
+        @keyframes ring {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+
+        .waiter-alerts-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .waiter-alerts-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .waiter-alerts-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .waiter-alert-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+
+        .waiter-alert-table {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .waiter-alert-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .waiter-alert-dismiss {
+            background: none;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+        }
+
+        .waiter-alert-dismiss:hover {
+            color: var(--destructive);
+        }
+
+        /* Delivered column limit */
+        .kanban-body.limited {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .kanban-footer {
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+            background: var(--card);
+            text-align: center;
+        }
+
+        .kanban-footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+
+        .kanban-footer-link:hover {
+            background: var(--primary-light);
+        }
+
+        .kanban-footer-link svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .more-orders-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            background: var(--background-secondary);
+            border-top: 1px dashed var(--border);
+        }
+
+        .more-orders-hint svg {
+            width: 0.875rem;
+            height: 0.875rem;
+        }
+
+        /* Empty state */
+        .kanban-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .kanban-empty svg {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.5;
+        }
+
+        .kanban-empty p {
+            font-size: 0.875rem;
+        }
+
+        /* Sound toggle */
+        .sound-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .sound-toggle:hover {
+            border-color: var(--primary);
+        }
+
+        .sound-toggle.muted {
+            opacity: 0.5;
+        }
+
+        .sound-toggle svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* Live indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        .live-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Order details modal */
+        .order-detail-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .order-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-detail-item-info {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .order-detail-item-qty {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .order-detail-item-price {
+            font-weight: 500;
+        }
+
+        .order-detail-summary {
+            background: var(--background-secondary);
+            padding: 1rem;
+            border-radius: var(--radius);
+        }
+
+        .order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .order-detail-row.total {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            margin-bottom: 0;
+        }
+
+        .order-detail-row.total .value {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{components/sidebar :: sidebar(#{page.orders.header.title}, ~{::tablesButton})}"></div>
+<!-- fragmento local -->
+<div th:remove="all">
+    <div th:fragment="tablesButton">
+        <div class="flex items-center gap-3">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                Tempo real
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Main Content -->
+<main class="main-content">
+    <div class="dashboard-body">
+        <!-- Waiter Call Alerts -->
+        <div class="waiter-alerts" id="waiterAlerts">
+            <div class="waiter-alerts-header">
+                <div class="waiter-alerts-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                </div>
+                <span class="waiter-alerts-title">Chamadas de Garçom</span>
+            </div>
+            <div class="waiter-alerts-list">
+                <div class="waiter-alert-item">
+                    <span class="waiter-alert-table">Mesa 2</span>
+                    <span class="waiter-alert-time">há 2 min</span>
+                    <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <div class="waiter-alert-item">
+                    <span class="waiter-alert-table">Mesa 5</span>
+                    <span class="waiter-alert-time">há 5 min</span>
+                    <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Header -->
+        <div class="orders-header">
+            <div class="orders-filters">
+                <!-- Type Filters -->
+                <div class="type-filters">
+                    <button class="type-filter-btn active" onclick="filterByType('all', this)">
+                        Todos
+                    </button>
+                    <button class="type-filter-btn" onclick="filterByType('dine-in', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                        Mesa
+                    </button>
+                    <button class="type-filter-btn" onclick="filterByType('delivery', this)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><path d="M12 12v4"/><rect x="6" y="16" width="12" height="3" rx="1"/></svg>
+                        Delivery
+                    </button>
+                </div>
+
+                <button class="filter-btn active" onclick="filterOrders('all', this)">
+                    Todos
+                    <span class="filter-badge" th:text="${totalCount}">12</span>
+                </button>
+                <button class="filter-btn" onclick="filterOrders('new', this)">
+                    Novos
+                    <span class="filter-badge" th:text="${pendingCount}">3</span>
+                </button>
+                <button class="filter-btn" onclick="filterOrders('preparing', this)">
+                    Em Preparo
+                    <span class="filter-badge" th:text="${preparingCount}">2</span>
+                </button>
+                <button class="filter-btn" onclick="filterOrders('ready', this)">
+                    Prontos
+                    <span class="filter-badge" th:text="${readyCount}">2</span>
+                </button>
+                <button class="filter-btn" onclick="filterOrders('delivered', this)">
+                    Entregues
+                    <span class="filter-badge" th:text="${deliveredCount}">1</span>
+                </button>
+            </div>
+
+            <div class="orders-actions">
+                <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    Som ativo
+                </button>
+                <button class="btn btn-outline btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    Exportar
+                </button>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-container">
+            <!-- PENDING -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">
+                        <div class="kanban-title-icon new">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        </div>
+                        <h3>Novos</h3>
+                    </div>
+                    <span class="kanban-count" th:text="${pendingCount}">0</span>
+                </div>
+                <div class="kanban-body">
+                    <div th:each="ticket : ${ticketsByStatus['PENDING']}" class="order-card" th:classappend="${ticket.urgent ? 'urgent' : ''}">
+                        <div class="order-header">
+                            <div class="order-table">
+                                <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
+                                <div class="order-info">
+                                    <span class="order-customer" th:text="${ticket.customerName}">Maria Silva</span>
+                                    <span class="order-time" th:classappend="${ticket.urgent ? 'urgent' : ''}" th:text="${ticket.timeAgo + (ticket.urgent ? ' ⚠️' : '')}">há 8 min</span>
+                                </div>
+                            </div>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0042</span>
+                        </div>
+                        <div class="order-body">
+                            <div class="order-items">
+                                <div th:each="item : ${ticket.items}" class="order-item">
+                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">2x</span>
+                                    <span class="order-item-name" th:text="${item.name}">Item</span>
+                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                </div>
+                            </div>
+                            <div class="order-total">
+                                <span class="order-total-label">Total</span>
+                                <span class="order-total-value" th:text="${'R$ ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">R$ 0,00</span>
+                            </div>
+                        </div>
+                        <div class="order-footer">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
+                                Preparar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREPARING -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">
+                        <div class="kanban-title-icon preparing">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
+                        </div>
+                        <h3>Em Preparo</h3>
+                    </div>
+                    <span class="kanban-count" th:text="${preparingCount}">0</span>
+                </div>
+                <div class="kanban-body">
+                    <div th:each="ticket : ${ticketsByStatus['PREPARING']}" class="order-card">
+                        <div class="order-header">
+                            <div class="order-table">
+                                <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
+                                <div class="order-info">
+                                    <span class="order-customer" th:text="${ticket.customerName}">Maria Silva</span>
+                                    <span class="order-time" th:text="${ticket.timeAgo}">há 8 min</span>
+                                </div>
+                            </div>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0042</span>
+                        </div>
+                        <div class="order-body">
+                            <div class="order-items">
+                                <div th:each="item : ${ticket.items}" class="order-item">
+                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">2x</span>
+                                    <span class="order-item-name" th:text="${item.name}">Item</span>
+                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-footer">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="READY" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Pronto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- READY -->
+            <!-- READY -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">
+                        <div class="kanban-title-icon ready">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <h3>Prontos</h3>
+                    </div>
+                    <span class="kanban-count" th:text="${readyCount}">0</span>
+                </div>
+                <div class="kanban-body">
+                    <div th:each="ticket : ${ticketsByStatus['READY']}" class="order-card">
+                        <div class="order-header">
+                            <div class="order-table">
+                                <div class="order-table-number" th:text="${ticket.tableCod}">1</div>
+                                <div class="order-info">
+                                    <span class="order-customer" th:text="${ticket.customerName}">Maria Silva</span>
+                                    <span class="order-time" th:text="${ticket.timeAgo}">há 20 min</span>
+                                </div>
+                            </div>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0038</span>
+                        </div>
+                        <div class="order-footer">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="DELIVERED" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                Entregue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entregues -->
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">
+                        <div class="kanban-title-icon delivered">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                        </div>
+                        <h3>Entregues</h3>
+                    </div>
+                    <span class="kanban-count" th:text="${deliveredCount}">0</span>
+                </div>
+                <div class="kanban-body limited">
+                    <div th:each="ticket : ${ticketsByStatus['DELIVERED']}" class="order-card" style="opacity: 0.7;">
+                        <div class="order-header">
+                            <div class="order-table">
+                                <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
+                                <div class="order-info">
+                                    <span class="order-customer" th:text="${ticket.customerName}">Maria Silva</span>
+                                    <span class="order-time" th:text="${ticket.timeAgo}">há 45 min</span>
+                                </div>
+                            </div>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0035</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="more-orders-hint">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <span th:text="'+' + ${deliveredCount} + ' pedidos hoje'">+0 pedidos hoje</span>
+                </div>
+                <div class="kanban-footer">
+                    <a href="order-history.html" class="kanban-footer-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Ver histórico completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Order Detail Modal -->
+<div id="orderModal" class="modal-overlay">
+    <div class="modal" style="max-width: 28rem;">
+        <div class="modal-header">
+            <h3 id="modalOrderId">Pedido #0042</h3>
+            <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+          <span id="modalTypeText">Mesa</span>
+        </span>
+        </div>
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                <div>
+                    <p id="modalTableOrDelivery" style="font-weight: 600;">Mesa 2</p>
+                    <p id="modalCustomerName" style="font-size: 0.875rem; color: var(--muted);">Maria Silva</p>
+                </div>
+                <div style="text-align: right;">
+                    <p id="modalOrderTime" style="font-size: 0.875rem; color: var(--muted);">12:45</p>
+                    <span id="modalOrderStatus" class="status-badge status-occupied" style="margin-top: 0.25rem;">Novo</span>
+                </div>
+            </div>
+
+            <!-- Delivery Info (hidden for dine-in) -->
+            <div id="modalDeliveryInfo" style="display: none; margin-bottom: 1rem; padding: 0.75rem; background: linear-gradient(135deg, #f3e8ff, #ede9fe); border-radius: 0.5rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <div>
+                        <p id="modalDeliveryAddress" style="font-weight: 500; color: #5b21b6; font-size: 0.875rem;">Rua das Flores, 123 - Centro</p>
+                        <p id="modalDeliveryComplement" style="font-size: 0.75rem; color: #7c3aed;">Apto 45</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <p id="modalDeliveryPhone" style="font-size: 0.875rem; color: #5b21b6;">(11) 99999-9999</p>
+                </div>
+            </div>
+
+            <div class="order-detail-items">
+                <div class="order-detail-item">
+                    <div class="order-detail-item-info">
+                        <span class="order-detail-item-qty">2x</span>
+                        <span>Filé Mignon ao Molho</span>
+                    </div>
+                    <span class="order-detail-item-price">R$ 179,80</span>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-item-info">
+                        <span class="order-detail-item-qty">1x</span>
+                        <span>Risoto de Funghi</span>
+                    </div>
+                    <span class="order-detail-item-price">R$ 62,00</span>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-item-info">
+                        <span class="order-detail-item-qty">3x</span>
+                        <span>Caipirinha</span>
+                    </div>
+                    <span class="order-detail-item-price">R$ 54,00</span>
+                </div>
+            </div>
+
+            <div class="order-detail-summary">
+                <div class="order-detail-row">
+                    <span>Subtotal</span>
+                    <span>R$ 295,80</span>
+                </div>
+                <div class="order-detail-row">
+                    <span>Taxa de serviço (10%)</span>
+                    <span>R$ 29,58</span>
+                </div>
+                <div class="order-detail-row total">
+                    <span>Total</span>
+                    <span class="value">R$ 325,38</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeOrderModal()">Fechar</button>
+            <button class="btn btn-primary" onclick="printOrder()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                Imprimir
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sidebar functions
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Current filters
+    let currentTypeFilter = 'all';
+    let currentStatusFilter = 'all';
+
+    // Filter orders by type (Mesa/Delivery)
+    function filterByType(type, btn) {
+        currentTypeFilter = type;
+        document.querySelectorAll('.type-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    }
+
+    // Filter orders by status
+    function filterOrders(status, btn) {
+        currentStatusFilter = status;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    }
+
+    // Apply all filters
+    function applyFilters() {
+        const allCards = document.querySelectorAll('.order-card');
+
+        allCards.forEach(card => {
+            const cardType = card.dataset.type || 'dine-in';
+            const matchesType = currentTypeFilter === 'all' || cardType === currentTypeFilter;
+            card.style.display = matchesType ? '' : 'none';
+        });
+
+        updateColumnCounts();
+    }
+
+    // Update kanban column counts
+    function updateColumnCounts() {
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            const cards = column.querySelectorAll('.order-card');
+            let visible = 0;
+            cards.forEach(c => {
+                if (c.style.display !== 'none') visible++;
+            });
+            const count = column.querySelector('.kanban-count');
+            if (count) count.textContent = visible;
+        });
+    }
+
+    // Move order to next status
+    function moveOrder(ticketId, status) {
+        fetch('/orders/move', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ticketId: ticketId, status: status })
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Erro ao mover pedido');
+            }
+        });
+    }
+
+    // View order details
+    function viewOrder(id) {
+        // Find the card that was clicked
+        const card = document.querySelector(`.order-card [onclick="viewOrder(${id})"]`)?.closest('.order-card');
+        const orderType = card?.dataset.type || 'dine-in';
+
+        // Update modal type badge
+        const typeBadge = document.getElementById('modalOrderType');
+        const typeText = document.getElementById('modalTypeText');
+        const deliveryInfo = document.getElementById('modalDeliveryInfo');
+        const tableOrDelivery = document.getElementById('modalTableOrDelivery');
+
+        if (orderType === 'delivery') {
+            typeBadge.className = 'order-type-badge delivery';
+            typeBadge.querySelector('svg').outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><path d="M12 12v4"/></svg>';
+            typeText.textContent = 'Delivery';
+            deliveryInfo.style.display = 'block';
+            tableOrDelivery.textContent = 'Delivery';
+
+            // Get address from card if available
+            const addressEl = card?.querySelector('.order-address');
+            if (addressEl) {
+                document.getElementById('modalDeliveryAddress').textContent = addressEl.textContent.trim();
+            }
+        } else {
+            typeBadge.className = 'order-type-badge dine-in';
+            typeBadge.querySelector('svg').outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>';
+            typeText.textContent = 'Mesa';
+            deliveryInfo.style.display = 'none';
+
+            // Get table number from card
+            const tableEl = card?.querySelector('.order-table-number');
+            if (tableEl && !tableEl.querySelector('svg')) {
+                tableOrDelivery.textContent = 'Mesa ' + tableEl.textContent.trim();
+            }
+        }
+
+        // Get customer name from card
+        const customerEl = card?.querySelector('.order-customer');
+        if (customerEl) {
+            document.getElementById('modalCustomerName').textContent = customerEl.textContent.trim();
+        }
+
+        // Update order ID
+        document.getElementById('modalOrderId').textContent = 'Pedido #' + String(id).padStart(4, '0');
+
+        document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+    }
+
+    // Print order
+    function printOrder() {
+        // TODO: Implement print functionality
+        window.print();
+    }
+
+    // Toggle sound
+    let soundEnabled = true;
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const btn = document.getElementById('soundToggle');
+
+        if (soundEnabled) {
+            btn.classList.remove('muted');
+            btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          Som ativo
+        `;
+        } else {
+            btn.classList.add('muted');
+            btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>
+          Som mudo
+        `;
+        }
+    }
+
+    // Dismiss waiter call
+    function dismissWaiterCall(btn) {
+        const item = btn.closest('.waiter-alert-item');
+        item.remove();
+
+        const alerts = document.getElementById('waiterAlerts');
+        const remaining = alerts.querySelectorAll('.waiter-alert-item').length;
+
+        if (remaining === 0) {
+            alerts.style.display = 'none';
+        }
+    }
+
+    // Close modal on outside click
+    document.getElementById('orderModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeOrderModal();
+        }
+    });
+
+    // Simulate real-time updates (for demo)
+    // In production, use WebSocket or polling
+    /*
+    setInterval(() => {
+      // Check for new orders
+      fetch('/api/orders/new')
+        .then(res => res.json())
+        .then(orders => {
+          // Update UI with new orders
+          // Play notification sound if soundEnabled
+        });
+    }, 5000);
+    */
+</script>
+</body>
+</html>

@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.util.Optional;
@@ -18,12 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CreateTableTest {
 
   @Mock private TableRepository tableRepository;
+  @Mock private EventPublisher eventPublisher;
 
   private CreateTable createTable;
 
   @BeforeEach
   void setUp() {
-    createTable = new CreateTable(tableRepository);
+    createTable = new CreateTable(tableRepository, eventPublisher);
   }
 
   @Test

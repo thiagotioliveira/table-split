@@ -7,21 +7,15 @@ public class PlaceOrderRequest {
   private UUID restaurantId;
   private int serviceFee;
   private String tableCod;
-  private String customerName;
-  private List<OrderItemRequest> items;
+  private List<TicketRequest> tickets;
 
   public PlaceOrderRequest() {}
 
   public PlaceOrderRequest(
-      UUID restaurantId,
-      String tableCod,
-      String customerName,
-      List<OrderItemRequest> items,
-      int serviceFee) {
+      UUID restaurantId, String tableCod, List<TicketRequest> tickets, int serviceFee) {
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
-    this.customerName = customerName;
-    this.items = items;
+    this.tickets = tickets;
     this.serviceFee = serviceFee;
   }
 
@@ -41,20 +35,12 @@ public class PlaceOrderRequest {
     this.tableCod = tableCod;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public List<TicketRequest> getTickets() {
+    return tickets;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
-  }
-
-  public List<OrderItemRequest> getItems() {
-    return items;
-  }
-
-  public void setItems(List<OrderItemRequest> items) {
-    this.items = items;
+  public void setTickets(List<TicketRequest> tickets) {
+    this.tickets = tickets;
   }
 
   public int getServiceFee() {

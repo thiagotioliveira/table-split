@@ -1,5 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.domain.event.PaymentProcessedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.TableClosedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import java.math.BigDecimal;
@@ -12,10 +15,15 @@ public class ProcessPayment {
 
   private final OrderRepository orderRepository;
   private final TableRepository tableRepository;
+  private final EventPublisher eventPublisher;
 
-  public ProcessPayment(OrderRepository orderRepository, TableRepository tableRepository) {
+  public ProcessPayment(
+      OrderRepository orderRepository,
+      TableRepository tableRepository,
+      EventPublisher eventPublisher) {
     this.orderRepository = orderRepository;
     this.tableRepository = tableRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Transactional
@@ -36,6 +44,7 @@ public class ProcessPayment {
     order.addPayment(payment);
 
     orderRepository.save(order);
+    eventPublisher.publishEvent(new PaymentProcessedEvent(order, payment));
 
     if (order.getStatus() == dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
       tableRepository
@@ -44,6 +53,7 @@ public class ProcessPayment {
               table -> {
                 table.release();
                 tableRepository.save(table);
+                eventPublisher.publishEvent(new TableClosedEvent(order, table));
               });
     }
 

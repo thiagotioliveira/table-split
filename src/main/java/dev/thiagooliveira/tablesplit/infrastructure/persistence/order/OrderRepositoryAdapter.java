@@ -40,4 +40,16 @@ public class OrderRepositoryAdapter implements OrderRepository {
   public void save(Order order) {
     orderJpaRepository.save(OrderEntity.fromDomain(order));
   }
+
+  @Override
+  public List<Order> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status) {
+    return orderJpaRepository.findAllByRestaurantIdAndStatus(restaurantId, status).stream()
+        .map(OrderEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public Optional<Order> findByTicketId(UUID ticketId) {
+    return orderJpaRepository.findByTicketId(ticketId).map(OrderEntity::toDomain);
+  }
 }

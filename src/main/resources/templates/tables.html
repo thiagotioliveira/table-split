@@ -2187,7 +2187,264 @@
                 display: flex;
             }
         }
-    </style>
+        .order-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0;
+      overflow-x: auto;
+    }
+
+    .order-tab {
+      padding: 0.6rem 1.25rem;
+      background: var(--background-secondary);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: var(--radius) var(--radius) 0 0;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+      position: relative;
+      margin-bottom: -2px;
+    }
+
+    .order-tab:hover {
+      background: var(--card);
+      border-color: var(--primary);
+    }
+
+    .order-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      z-index: 1;
+    }
+
+    .order-tab.add-client-tab {
+      background: none;
+      border: 1px dashed var(--primary);
+      color: var(--primary);
+      padding: 0.6rem 1rem;
+    }
+
+    .tab-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--primary);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border: 2px solid var(--card);
+    }
+
+    .order-tab.active .tab-badge {
+      background: white;
+      color: var(--primary);
+    }
+
+    .category-chips {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+    }
+
+    .category-chip {
+      padding: 0.5rem 1.25rem;
+      background: var(--background-secondary);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+
+    .category-chip:hover {
+      background: var(--card);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .category-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    #orderModal .menu-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #orderModal .menu-item-card {
+      padding: 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #orderModal .menu-item-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    #orderModal .menu-item-card.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    #orderModal .menu-item-card h4 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    #orderModal .menu-item-card .price {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    #orderModal .menu-item-card.selected .price {
+      color: white;
+    }
+
+    .multi-client-summary {
+      background: var(--background-secondary);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .summary-client {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-client:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .summary-client-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-client-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .summary-client-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .order-summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .order-summary-row.total {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    .selected-items {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .selected-items h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .selected-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .selected-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .item-note-input {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .item-note-input:focus {
+      border-color: var(--primary);
+    }
+</style>
 </head>
 <body>
 <div th:insert="~{components/sidebar :: sidebar(#{page.table.header.title}, ~{::tablesButton})}"></div>
@@ -2344,7 +2601,7 @@
                     </div>
                     <div class="header-actions" id="headerActions" th:style="${selectedTableObj != null} ? 'display: flex;' : 'display: none;'">
                         <div id="activeOrderActions" style="display: contents;">
-                            <button class="action-btn primary" id="btnNewOrder" onclick="openOrderModal()" th:if="${orderLoaded}">
+                            <button class="action-btn primary" id="btnNewOrder" onclick="openOrderModal(selectedTable, selectedTableCod)" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                                 <span>Novo Pedido</span>
                             </button>
@@ -2427,7 +2684,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="add-order-btn" th:attr="onclick=|openOrderModal('${client.key}')|">
+                                <button class="add-order-btn" th:attr="onclick=|openOrderModal(selectedTable, selectedTableCod, '${client.key}')|">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                                     Adicionar pedido para <span th:text="${client.key}">Cliente</span>
                                 </button>
@@ -2615,6 +2872,7 @@
     // Table Selection
     // =====================
     let selectedTable = null;
+    let selectedTableCod = null;
 
     function selectTable(tableId) {
         if (selectedTable === tableId) return;
@@ -2632,6 +2890,7 @@
         if (card) {
             card.classList.add('selected');
             selectedTable = tableId;
+            selectedTableCod = card.querySelector('.table-number').textContent.replace('Mesa ', '').trim();
 
             // Close mobile panel
             closeTablesPanel();
@@ -2719,163 +2978,6 @@
         }
     });
 
-    // =====================
-    // Modal Functions (Placeholders)
-    // =====================
-    let cart = {};
-
-    function openOrderModal(clientName) {
-        populateClientOptions(clientName);
-        document.getElementById('newOrderModal').classList.add('active');
-        //document.getElementById('orderClientName').textContent = clientName || 'Novo Cliente';
-        const card = document.querySelector(`.table-card[data-table="${selectedTable}"]`);
-        const tableNumber = card ? card.querySelector('.table-number').textContent : '';
-        document.getElementById('orderTableNumber').textContent = selectedTable ? tableNumber : '';
-        
-        // Reset cart when opening
-        cart = {};
-        updateCartUI();
-    }
-
-    function closeOrderModal() {
-        document.getElementById('newOrderModal').classList.remove('active');
-    }
-
-    function addToCart(itemId, name, price) {
-        if (cart[itemId]) {
-            cart[itemId].quantity += 1;
-        } else {
-            cart[itemId] = {
-                name: name,
-                price: price,
-                quantity: 1,
-                note: ''
-            };
-        }
-        updateCartUI();
-    }
-
-    function updateCartQuantity(itemId, delta) {
-        if (!cart[itemId]) return;
-        cart[itemId].quantity += delta;
-        if (cart[itemId].quantity <= 0) {
-            delete cart[itemId];
-        }
-        updateCartUI();
-    }
-
-    function updateCartNote(itemId, note) {
-        if (cart[itemId]) {
-            cart[itemId].note = note;
-        }
-    }
-
-    function updateCartUI() {
-        const list = document.getElementById('orderItemsList');
-        const items = Object.keys(cart);
-        
-        if (items.length === 0) {
-            list.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem;">Selecione itens do menu</div>';
-            document.getElementById('orderTotal').textContent = 'R$ 0,00';
-            document.getElementById('submitOrderBtn').disabled = true;
-            return;
-        }
-
-        let total = 0;
-        list.innerHTML = items.map(id => {
-            const item = cart[id];
-            total += item.price * item.quantity;
-            return `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <input type="text" class="cart-item-note" placeholder="Adicionar nota..." 
-                               value="${item.note}" onchange="updateCartNote('${id}', this.value)">
-                    </div>
-                    <div class="cart-item-actions">
-                        <div class="menu-item-price" style="margin-right: 0.5rem;">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
-                        <button class="qty-btn" onclick="updateCartQuantity('${id}', -1)">-</button>
-                        <span class="qty-val">${item.quantity}</span>
-                        <button class="qty-btn" onclick="updateCartQuantity('${id}', 1)">+</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        document.getElementById('orderTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-        document.getElementById('submitOrderBtn').disabled = false;
-    }
-
-
-    function filterMenuItems(category, lang) {
-        document.querySelectorAll('.menu-filter-btn').forEach(btn => btn.classList.remove('active'));
-        if (event && event.target) {
-            event.target.classList.add('active');
-        }
-
-        const items = category === 'all' ? menuItems : menuItems.filter(i => i.categoryId === category);
-        renderMenuItems(items, lang);
-    }
-
-    function renderMenuItems(items, lang) {
-        const grid = document.getElementById('menuItemsGrid');
-        grid.innerHTML = items.map(item => {
-            const itemName = item.name[lang] || Object.values(item.name)[0];
-            return `
-                <div class="menu-item-card" onclick="addToCart('${item.id}', '${itemName}', ${item.price})">
-                  <div class="menu-item-name">${itemName}</div>
-                  <div class="menu-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
-                </div>
-            `;
-        }).join('');
-    }
-    function prepareOrderSubmission(form) {
-        if (Object.keys(cart).length === 0) {
-            alert('Por favor, adicione pelo menos um item ao pedido.');
-            return false;
-        }
-
-        form.action = `/tables/${selectedTable}/order`;
-        
-        const container = document.getElementById('hiddenOrderItems');
-        container.innerHTML = '';
-        
-        Object.keys(cart).forEach((id, index) => {
-            const item = cart[id];
-            
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = `items[${index}].itemId`;
-            idInput.value = id;
-            container.appendChild(idInput);
-            
-            const qtyInput = document.createElement('input');
-            qtyInput.type = 'hidden';
-            qtyInput.name = `items[${index}].quantity`;
-            qtyInput.value = item.quantity;
-            container.appendChild(qtyInput);
-            
-            if (item.note) {
-                const noteInput = document.createElement('input');
-                noteInput.type = 'hidden';
-                noteInput.name = `items[${index}].note`;
-                noteInput.value = item.note;
-                container.appendChild(noteInput);
-            }
-        });
-
-        const customerNameInput = document.createElement('input');
-        customerNameInput.type = 'hidden';
-        customerNameInput.name = 'customerName';
-        customerNameInput.value = getSelectedClientName();
-        container.appendChild(customerNameInput);
-
-        const submitBtn = document.getElementById('submitOrderBtn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
-        
-        return true;
-    }
 
     function openTable() {
         if (!selectedTable) {
@@ -3388,63 +3490,73 @@
 </div>
 
 <!-- Novo Pedido Modal -->
-<div class="modal-overlay" id="newOrderModal">
-    <div class="modal">
-        <form id="orderForm" method="post" onsubmit="return prepareOrderSubmission(this)">
-            <div class="modal-header">
-                <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                    Novo Pedido - <span id="orderTableNumber">Mesa 01</span>
-                </h3>
-                <button type="button" class="modal-close" onclick="closeOrderModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+<div class="modal-overlay" id="orderModal">
+    <div class="modal" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Novo Pedido - <span id="orderModalTable">Mesa 01</span>
+            </h3>
+            <button type="button" class="modal-close" onclick="closeOrderModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 1.5rem; overflow-y: auto; max-height: calc(90vh - 120px);">
+            <!-- Client Tabs -->
+            <div class="order-tabs" id="orderClientTabs">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Categories -->
+            <div class="category-chips" id="categoryChips">
+                <button type="button" class="category-chip active" onclick="filterMenuItems('all')">Todos</button>
+                <button type="button" th:each="category : ${categories}" 
+                        class="category-chip"
+                        th:text="${category.name[#locale.language]}"
+                        th:attr="onclick=|filterMenuItems('${category.id}')|">
+                    Categoria
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="client-selector">
-                    <label class="client-selector-label">Cliente</label>
-                    <div class="client-options" id="clientOptions">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
 
-                <div class="menu-categories" id="menuCategories">
-                    <button type="button" class="menu-filter-btn active" onclick="filterMenuItems('all', '${#locale.language}')">Todos</button>
-                    <button type="button" th:each="category : ${categories}" 
-                            class="menu-filter-btn"
-                            th:text="${category.name[#locale.language]}"
-                            th:attr="onclick=|filterMenuItems('${category.id}', '${#locale.language}')|">
-                        Categoria
-                    </button>
-                </div>
-
-                <div class="menu-items-grid" id="menuItemsGrid">
-                    <div th:each="item : ${menuItems}" 
-                         class="menu-item-card" 
-                         th:data-category="${item.categoryId}"
-                         th:attr="onclick=|addToCart('${item.id}', '${item.name[#locale.language]}', ${item.price})|">
-                        <div class="menu-item-name" th:text="${item.name[#locale.language]}">Nome do Item</div>
-                        <div class="menu-item-price" th:text="${#numbers.formatCurrency(item.price)}">R$ 0,00</div>
-                    </div>
-                </div>
-
-                <div class="order-items-section">
-                    <h4 style="margin-bottom: 0.5rem;">Itens Selecionados</h4>
-                    <div class="order-items-list" id="orderItemsList">
-                        <div style="padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem;">Selecione itens do menu</div>
-                    </div>
-                    <div id="hiddenOrderItems"></div>
-                    <div class="order-summary-row" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-weight: 700;">
-                        <span>Total do Pedido</span>
-                        <span id="orderTotal">R$ 0,00</span>
-                    </div>
+            <!-- Items Grid -->
+            <div class="menu-items-grid" id="menuItemsGrid">
+                <div th:each="item : ${menuItems}" 
+                     class="menu-item-card" 
+                     th:data-id="${item.id}"
+                     th:data-category="${item.categoryId}"
+                     th:data-price="${item.price}"
+                     th:attr="onclick=|toggleMenuItem(this)|">
+                    <h4 th:text="${item.name[#locale.language]}">Nome do Item</h4>
+                    <div class="price" th:text="${#numbers.formatCurrency(item.price)}">R$ 0,00</div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="modal-btn" onclick="closeOrderModal()">Cancelar</button>
-                <button type="submit" class="modal-btn success" id="submitOrderBtn" disabled>Enviar Pedido</button>
+
+            <!-- Current Client Order -->
+            <div id="selectedItems" class="selected-items" style="display: none;">
+                <h4>Itens de <span id="currentClientName" style="color: var(--primary);">Cliente</span></h4>
+                <div id="selectedItemsList">
+                    <!-- Populated by JS -->
+                </div>
             </div>
-        </form>
+
+            <!-- All Clients Summary -->
+            <div id="multiClientSummary" class="multi-client-summary" style="display: none;">
+                <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem;">Resumo Geral</h4>
+                <div id="summaryClientsList">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="order-summary-row total">
+                    <span>Total Geral</span>
+                    <span id="summaryGrandTotal">R$ 0,00</span>
+                </div>
+            </div>
+            <!-- Order Form (Hidden) -->
+            <form id="orderForm" method="POST" th:action="@{/tables}" style="display: none;"></form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn" onclick="closeOrderModal()">Cancelar</button>
+            <button type="button" class="modal-btn success" id="submitOrderBtn" onclick="submitOrder()">Enviar Pedido</button>
+        </div>
     </div>
 </div>
 
@@ -3795,81 +3907,345 @@
     });
     */
 
-    let selectedClientId = null;
-
     function getTableClients() {
         const clients = [];
         document.querySelectorAll('#clientsSection .client-card').forEach(card => {
-            const clientId = card.dataset.client;
-            const nameEl = card.querySelector('.client-name');
+            const nameEl = card.querySelector('.client-name span:last-child') || card.querySelector('.client-name');
             if (nameEl) {
-                // Extract text, removing the SVG icon text
                 const name = nameEl.textContent.trim();
-                clients.push({ id: clientId, name: name });
+                clients.push({ id: name, name: name });
             }
         });
         return clients;
     }
 
-    function populateClientOptions(preselectedName = '') {
-        const container = document.getElementById('clientOptions');
-        const clients = getTableClients();
+    let orderClients = {};
+    let activeClientTab = null;
+    let selectedMenuItems = {};
+    let currentTableId = null;
+    let currentTableCod = null;
 
-        let html = '';
-
-        clients.forEach((client, index) => {
-            const isSelected = client.name === preselectedName;
-            html += `
-          <label class="client-option ${isSelected ? 'selected' : ''}" onclick="selectClient('${client.id}', '${client.name.replace(/'/g, "\\'")}')">
-            <input type="radio" name="clientSelect" value="${client.id}" ${isSelected ? 'checked' : ''}>
-            <span class="client-option-name">${client.name}</span>
-          </label>
-        `;
-            if (isSelected) {
-                selectedClientId = client.id;
-            }
+    function openOrderModal(tableId, tableCod, preselectedClientName = null) {
+        currentTableId = tableId;
+        currentTableCod = tableCod;
+        document.getElementById('orderModalTable').textContent = `Mesa ${tableCod}`;
+        
+        const tableClients = getTableClients();
+        orderClients = {};
+        
+        tableClients.forEach(client => {
+            orderClients[client.id] = { name: client.name, items: {} };
         });
 
-        // New client option
-        const isNewSelected = preselectedName && !clients.find(c => c.name === preselectedName);
-        html += `
-        <label class="client-option new-client ${isNewSelected ? 'selected' : ''}" onclick="selectNewClient()">
-          <input type="radio" name="clientSelect" value="new" ${isNewSelected ? 'checked' : ''}>
-          <span class="new-client-placeholder">+ Novo cliente</span>
-          <input type="text" class="new-client-input" id="newClientNameInput"
-                 placeholder="Digite o nome..."
-                 value="${isNewSelected ? preselectedName : ''}"
-                 onclick="event.stopPropagation()">
-        </label>
-      `;
+        if (preselectedClientName) {
+            const found = tableClients.find(c => c.name === preselectedClientName);
+            if (found) {
+                activeClientTab = found.id;
+            } else {
+                activeClientTab = tableClients[0]?.id || Object.keys(orderClients)[0];
+            }
+        } else if (tableClients.length > 0) {
+            activeClientTab = tableClients[0].id;
+        } else {
+            activeClientTab = null;
+        }
 
+        selectedMenuItems = {};
+        filterMenuItems('all');
+        renderOrderTabs();
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        
+        document.getElementById('currentClientName').textContent = orderClients[activeClientTab]?.name || '';
+        document.getElementById('orderModal').classList.add('active');
+        
+        // Also highlight correctly if it's the first time
+        document.querySelectorAll('.menu-item-card').forEach(card => card.classList.remove('selected'));
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+        orderClients = {};
+        activeClientTab = null;
+        selectedMenuItems = {};
+    }
+
+    function renderOrderTabs() {
+        const container = document.getElementById('orderClientTabs');
+        const clients = Object.entries(orderClients);
+        
+        let html = clients.map(([clientId, client]) => {
+            const itemCount = Object.values(client.items).reduce((acc, item) => acc + item.qty, 0);
+            const isActive = clientId === activeClientTab;
+            return `
+                <button class="order-tab ${isActive ? 'active' : ''}" onclick="switchClientTab('${clientId}')">
+                    ${client.name}
+                    ${itemCount > 0 ? `<span class="tab-badge">${itemCount}</span>` : ''}
+                </button>
+            `;
+        }).join('');
+        
+        html += `<button class="order-tab add-client-tab" onclick="addNewClientTab()">+ Cliente</button>`;
         container.innerHTML = html;
+    }
 
-        if (isNewSelected) {
-            selectedClientId = 'new';
-            setTimeout(() => document.getElementById('newClientNameInput').focus(), 100);
+    function switchClientTab(clientId) {
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
+        }
+        
+        activeClientTab = clientId;
+        const currentClient = orderClients[clientId];
+        selectedMenuItems = currentClient ? { ...currentClient.items } : {};
+        
+        renderOrderTabs();
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        
+        document.querySelectorAll('.menu-item-card').forEach(card => {
+            const id = card.dataset.id;
+            card.classList.toggle('selected', !!selectedMenuItems[id]);
+        });
+        
+        document.getElementById('currentClientName').textContent = currentClient?.name || '';
+    }
+
+    function addNewClientTab() {
+        const name = prompt('Nome do novo cliente:');
+        if (!name || !name.trim()) return;
+        
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
+        }
+        
+        const clientId = 'new_' + Date.now();
+        orderClients[clientId] = { name: name.trim(), items: {} };
+        activeClientTab = clientId;
+        selectedMenuItems = {};
+        
+        renderOrderTabs();
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        
+        document.querySelectorAll('.menu-item-card').forEach(card => card.classList.remove('selected'));
+        document.getElementById('currentClientName').textContent = name.trim();
+    }
+
+    function filterMenuItems(category) {
+        document.querySelectorAll('.category-chip').forEach(btn => btn.classList.remove('active'));
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else {
+            // If called without event (reset to "Todos")
+            const todosBtn = document.querySelector('.category-chip');
+            if (todosBtn) todosBtn.classList.add('active');
+        }
+
+        document.querySelectorAll('.menu-item-card').forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleMenuItem(card) {
+        if (!activeClientTab) {
+            addNewClientTab();
+            if (!activeClientTab) return; // User cancelled prompt
+        }
+        const id = card.dataset.id;
+        const name = card.querySelector('h4').textContent;
+        const price = parseFloat(card.dataset.price);
+
+        if (selectedMenuItems[id]) {
+            delete selectedMenuItems[id];
+            card.classList.remove('selected');
+        } else {
+            selectedMenuItems[id] = { name, price, qty: 1, note: '' };
+            card.classList.add('selected');
+        }
+        
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
+        }
+        
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        renderOrderTabs();
+    }
+
+    function updateSelectedItemsUI() {
+        const container = document.getElementById('selectedItems');
+        const list = document.getElementById('selectedItemsList');
+        const items = Object.entries(selectedMenuItems);
+
+        if (items.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'block';
+        list.innerHTML = items.map(([id, item]) => `
+            <div class="selected-item-row">
+                <div style="flex: 1;">
+                    <strong>${item.name}</strong>
+                    <div style="color: var(--primary); font-weight: 600;">R$ ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
+                    <input type="text" class="item-note-input" placeholder="Observação (ex: sem cebola)" 
+                        value="${item.note}" onchange="updateItemNote('${id}', this.value)">
+                </div>
+                <div class="qty-controls" style="margin-left: 1rem;">
+                    <button class="qty-btn" onclick="updateItemQty('${id}', -1)">−</button>
+                    <span style="font-weight: 600; min-width: 24px; text-align: center;">${item.qty}</span>
+                    <button class="qty-btn" onclick="updateItemQty('${id}', 1)">+</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateItemQty(id, delta) {
+        if (!selectedMenuItems[id]) return;
+        
+        selectedMenuItems[id].qty += delta;
+        if (selectedMenuItems[id].qty <= 0) {
+            delete selectedMenuItems[id];
+            document.querySelector(`.menu-item-card[data-id="${id}"]`)?.classList.remove('selected');
+        }
+        
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
+        }
+        
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        renderOrderTabs();
+    }
+
+    function updateItemNote(id, note) {
+        if (selectedMenuItems[id]) {
+            selectedMenuItems[id].note = note;
+        }
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
         }
     }
 
-    function selectClient(clientId, clientName) {
-        selectedClientId = clientId;
-        document.querySelectorAll('.client-option').forEach(opt => opt.classList.remove('selected'));
-        event.currentTarget.classList.add('selected');
-    }
-
-    function selectNewClient() {
-        selectedClientId = 'new';
-        document.querySelectorAll('.client-option').forEach(opt => opt.classList.remove('selected'));
-        event.currentTarget.classList.add('selected');
-        setTimeout(() => document.getElementById('newClientNameInput').focus(), 100);
-    }
-
-    function getSelectedClientName() {
-        if (selectedClientId === 'new') {
-            return document.getElementById('newClientNameInput').value.trim();
+    function updateMultiClientSummary() {
+        const container = document.getElementById('multiClientSummary');
+        const list = document.getElementById('summaryClientsList');
+        
+        const clientsWithItems = Object.entries(orderClients).filter(([_, client]) => 
+            Object.keys(client.items).length > 0
+        );
+        
+        if (clientsWithItems.length === 0) {
+            container.style.display = 'none';
+            return;
         }
-        const selectedOption = document.querySelector('.client-option.selected .client-option-name');
-        return selectedOption ? selectedOption.textContent.trim() : '';
+        
+        container.style.display = 'block';
+        let grandTotal = 0;
+        
+        list.innerHTML = clientsWithItems.map(([clientId, client]) => {
+            const items = Object.entries(client.items);
+            let clientTotal = 0;
+            
+            const itemsHtml = items.map(([_, item]) => {
+                const subtotal = item.price * item.qty;
+                clientTotal += subtotal;
+                return `
+                    <div class="summary-client-item">
+                        <span>${item.qty}x ${item.name}</span>
+                        <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            grandTotal += clientTotal;
+            
+            return `
+                <div class="summary-client">
+                    <div class="summary-client-header">
+                        <span>${client.name}</span>
+                        <span style="color: var(--primary);">R$ ${clientTotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="summary-client-items">${itemsHtml}</div>
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('summaryGrandTotal').textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+    }
+
+    function submitOrder() {
+        const clientsWithItems = Object.entries(orderClients).filter(([_, client]) => 
+            Object.keys(client.items).length > 0
+        );
+        
+        if (clientsWithItems.length === 0) {
+            alert('Por favor, adicione pelo menos um item para algum cliente.');
+            return;
+        }
+
+        const form = document.getElementById('orderForm');
+        form.action = `/tables/${currentTableId}/order`;
+        
+        // Maintain CSRF tokens if they exist (Thymeleaf adds them automatically with th:action)
+        const csrfInputs = form.querySelectorAll('input[type="hidden"]');
+        const preservedInputs = Array.from(csrfInputs).filter(input => 
+            input.name === '_csrf' || input.name.includes('csrf')
+        );
+        form.innerHTML = ''; 
+        preservedInputs.forEach(input => form.appendChild(input));
+
+        // Single Ticket for all items
+        const ticketIndex = 0;
+        
+        // Ticket Customer Name (Generic or Table identifier)
+        const ticketNameInput = document.createElement('input');
+        ticketNameInput.type = 'hidden';
+        ticketNameInput.name = `tickets[${ticketIndex}].customerName`;
+        ticketNameInput.value = `Atendimento ${currentTableCod}`;
+        form.appendChild(ticketNameInput);
+
+        let globalItemIndex = 0;
+        clientsWithItems.forEach(([_, client]) => {
+            const items = Object.entries(client.items);
+            items.forEach(([itemId, item]) => {
+                // Item ID
+                const itemIdInput = document.createElement('input');
+                itemIdInput.type = 'hidden';
+                itemIdInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].itemId`;
+                itemIdInput.value = itemId;
+                form.appendChild(itemIdInput);
+
+                // Quantity
+                const qtyInput = document.createElement('input');
+                qtyInput.type = 'hidden';
+                qtyInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].quantity`;
+                qtyInput.value = item.qty;
+                form.appendChild(qtyInput);
+
+                // Item Note
+                const itemNoteInput = document.createElement('input');
+                itemNoteInput.type = 'hidden';
+                itemNoteInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].note`;
+                itemNoteInput.value = item.note || '';
+                form.appendChild(itemNoteInput);
+
+                // Individual Customer Name (Item Level)
+                const itemCustomerInput = document.createElement('input');
+                itemCustomerInput.type = 'hidden';
+                itemCustomerInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].customerName`;
+                itemCustomerInput.value = client.name;
+                form.appendChild(itemCustomerInput);
+
+                globalItemIndex++;
+            });
+        });
+
+        form.submit();
     }
 </script>
 </body>

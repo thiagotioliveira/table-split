@@ -28,7 +28,7 @@ public class OrderEntity {
   private OrderStatus status;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderItemEntity> items = new ArrayList<>();
+  private List<TicketEntity> tickets = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "order_id")
@@ -50,8 +50,9 @@ public class OrderEntity {
     domain.setStatus(this.status);
     domain.setOpenedAt(this.openedAt);
     domain.setClosedAt(this.closedAt);
-    if (this.items != null) {
-      domain.setItems(new ArrayList<>(this.items.stream().map(OrderItemEntity::toDomain).toList()));
+    if (this.tickets != null) {
+      domain.setTickets(
+          new ArrayList<>(this.tickets.stream().map(TicketEntity::toDomain).toList()));
     }
     if (this.payments != null) {
       domain.setPayments(
@@ -69,11 +70,11 @@ public class OrderEntity {
     entity.setStatus(domain.getStatus());
     entity.setOpenedAt(domain.getOpenedAt());
     entity.setClosedAt(domain.getClosedAt());
-    if (domain.getItems() != null) {
-      entity.setItems(
+    if (domain.getTickets() != null) {
+      entity.setTickets(
           new ArrayList<>(
-              domain.getItems().stream()
-                  .map(item -> OrderItemEntity.fromDomain(item, entity))
+              domain.getTickets().stream()
+                  .map(ticket -> TicketEntity.fromDomain(ticket, entity))
                   .toList()));
     }
     if (domain.getPayments() != null) {
@@ -115,12 +116,12 @@ public class OrderEntity {
     this.status = status;
   }
 
-  public List<OrderItemEntity> getItems() {
-    return items;
+  public List<TicketEntity> getTickets() {
+    return tickets;
   }
 
-  public void setItems(List<OrderItemEntity> items) {
-    this.items = items;
+  public void setTickets(List<TicketEntity> tickets) {
+    this.tickets = tickets;
   }
 
   public ZonedDateTime getOpenedAt() {

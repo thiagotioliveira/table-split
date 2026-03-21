@@ -15,7 +15,7 @@ public class OrderItem {
   private int quantity;
   private BigDecimal unitPrice;
   private String note;
-  private OrderItemStatus status = OrderItemStatus.PENDING;
+  private TicketStatus status = TicketStatus.PENDING;
 
   public OrderItem() {}
 
@@ -89,11 +89,11 @@ public class OrderItem {
     this.note = note;
   }
 
-  public OrderItemStatus getStatus() {
+  public TicketStatus getStatus() {
     return status;
   }
 
-  public void setStatus(OrderItemStatus status) {
+  public void setStatus(TicketStatus status) {
     this.status = status;
   }
 }

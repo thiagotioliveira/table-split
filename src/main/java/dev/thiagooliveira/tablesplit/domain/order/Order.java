@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class Order {
   private UUID tableId;
   private int serviceFee;
   private OrderStatus status;
-  private List<OrderItem> items = new ArrayList<>();
+  private List<Ticket> tickets = new ArrayList<>();
   private List<Payment> payments = new ArrayList<>();
   private ZonedDateTime openedAt;
   private ZonedDateTime closedAt;
@@ -51,15 +50,15 @@ public class Order {
     return calculateRemainingAmount().compareTo(BigDecimal.ZERO) <= 0;
   }
 
-  public void addItem(Item item, int quantity, String customerName, String note) {
+  public void addTicket(Ticket ticket) {
     if (this.status != OrderStatus.OPEN) {
-      throw new IllegalStateException("Cannot add items to a non-open order");
+      throw new IllegalStateException("Cannot add tickets to a non-open order");
     }
-    this.items.add(new OrderItem(item, quantity, customerName, note));
+    this.tickets.add(ticket);
   }
 
   public BigDecimal calculateSubtotal() {
-    return items.stream().map(OrderItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return tickets.stream().map(Ticket::calculateTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public BigDecimal calculateTotal() {
@@ -117,12 +116,16 @@ public class Order {
     this.status = status;
   }
 
-  public List<OrderItem> getItems() {
-    return items;
+  public List<Ticket> getTickets() {
+    return tickets;
   }
 
-  public void setItems(List<OrderItem> items) {
-    this.items = items;
+  public void setTickets(List<Ticket> tickets) {
+    this.tickets = tickets;
+  }
+
+  public List<OrderItem> getItems() {
+    return tickets.stream().flatMap(t -> t.getItems().stream()).toList();
   }
 
   public ZonedDateTime getOpenedAt() {

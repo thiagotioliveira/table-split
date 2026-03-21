@@ -5,5 +5,6 @@ public enum Module {
   MENU,
   SETTINGS,
   USER_PROFILE,
-  TABLES
+  TABLES,
+  ORDERS
 }

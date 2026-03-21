@@ -1,0 +1,86 @@
+package dev.thiagooliveira.tablesplit.domain.order;
+
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class Ticket {
+  private UUID id;
+  private List<OrderItem> items = new ArrayList<>();
+  private TicketStatus status;
+  private ZonedDateTime createdAt;
+  private ZonedDateTime readyAt;
+  private String note;
+
+  public Ticket() {
+    this.id = UUID.randomUUID();
+    this.status = TicketStatus.PENDING;
+    this.createdAt = ZonedDateTime.now();
+  }
+
+  public Ticket(
+      UUID id, List<OrderItem> items, TicketStatus status, ZonedDateTime createdAt, String note) {
+    this.id = id;
+    this.items = items;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.note = note;
+  }
+
+  public BigDecimal calculateTotal() {
+    return items.stream().map(OrderItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
+
+  public List<OrderItem> getItems() {
+    return items;
+  }
+
+  public void setItems(List<OrderItem> items) {
+    this.items = items;
+  }
+
+  public TicketStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(TicketStatus status) {
+    this.status = status;
+    if (this.items != null) {
+      this.items.forEach(item -> item.setStatus(status));
+    }
+  }
+
+  public ZonedDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(ZonedDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public ZonedDateTime getReadyAt() {
+    return readyAt;
+  }
+
+  public void setReadyAt(ZonedDateTime readyAt) {
+    this.readyAt = readyAt;
+  }
+
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
+  }
+}

@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.model.OrderItemRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
@@ -23,6 +24,7 @@ class PlaceOrderTest {
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
   private ItemRepository itemRepository;
+  private EventPublisher eventPublisher;
   private PlaceOrder placeOrder;
 
   @BeforeEach
@@ -31,7 +33,9 @@ class PlaceOrderTest {
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
     itemRepository = mock(ItemRepository.class);
-    placeOrder = new PlaceOrder(openTable, tableRepository, orderRepository, itemRepository);
+    eventPublisher = mock(EventPublisher.class);
+    placeOrder =
+        new PlaceOrder(openTable, tableRepository, orderRepository, itemRepository, eventPublisher);
   }
 
   @Test
@@ -50,8 +54,9 @@ class PlaceOrderTest {
         new PlaceOrderRequest(
             restaurantId,
             tableCod,
-            customerName,
-            List.of(new OrderItemRequest(itemId, 2, null)),
+            List.of(
+                new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
+                    customerName, null, List.of(new OrderItemRequest(itemId, 2, null)))),
             10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
@@ -65,9 +70,9 @@ class PlaceOrderTest {
     Order result = placeOrder.execute(request);
 
     assertNotNull(result);
-    assertEquals(1, result.getItems().size());
-    assertEquals("João Silva", result.getItems().get(0).getCustomerName());
-    assertEquals(2, result.getItems().get(0).getQuantity());
+    assertEquals(1, result.getTickets().size());
+    assertEquals(customerName, result.getTickets().get(0).getItems().get(0).getCustomerName());
+    assertEquals(2, result.getTickets().get(0).getItems().get(0).getQuantity());
 
     verify(orderRepository).save(order);
   }
@@ -85,7 +90,12 @@ class PlaceOrderTest {
 
     PlaceOrderRequest request =
         new PlaceOrderRequest(
-            restaurantId, tableCod, "Customer", List.of(new OrderItemRequest(itemId, 1, null)), 10);
+            restaurantId,
+            tableCod,
+            List.of(
+                new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
+                    "Customer", null, List.of(new OrderItemRequest(itemId, 1, null)))),
+            10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
     Order newOrder = new Order(UUID.randomUUID(), restaurantId, table.getId(), 10);

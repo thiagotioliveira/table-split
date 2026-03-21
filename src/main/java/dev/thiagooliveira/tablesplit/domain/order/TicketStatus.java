@@ -1,15 +1,16 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
-public enum OrderItemStatus {
+public enum TicketStatus {
   PENDING("Pendente", "pending"),
   PREPARING("Preparando", "preparing"),
   READY("Pronto", "ready"),
-  DELIVERED("Entregue", "delivered");
+  DELIVERED("Entregue", "delivered"),
+  CANCELLED("Cancelado", "cancelled");
 
   private final String label;
   private final String cssClass;
 
-  OrderItemStatus(String label, String cssClass) {
+  TicketStatus(String label, String cssClass) {
     this.label = label;
     this.cssClass = cssClass;
   }
