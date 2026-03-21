@@ -7,3 +7,7 @@ databaseChangeLog:
       file: classpath:/db/changelog/0003-add-order-item-note.yaml
   - include:
       file: classpath:/db/changelog/0004-add-order-item-status.yaml
+  - include:
+      file: db/changelog/0005-create-payments-table.yaml
+  - include:
+      file: db/changelog/0006-add-payment-details.yaml

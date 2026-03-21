@@ -30,6 +30,10 @@ public class OrderEntity {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderItemEntity> items = new ArrayList<>();
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id")
+  private List<PaymentEntity> payments = new ArrayList<>();
+
   @Column(nullable = false)
   private ZonedDateTime openedAt;
 
@@ -49,6 +53,10 @@ public class OrderEntity {
     if (this.items != null) {
       domain.setItems(new ArrayList<>(this.items.stream().map(OrderItemEntity::toDomain).toList()));
     }
+    if (this.payments != null) {
+      domain.setPayments(
+          new ArrayList<>(this.payments.stream().map(PaymentEntity::toDomain).toList()));
+    }
     return domain;
   }
 
@@ -67,6 +75,10 @@ public class OrderEntity {
               domain.getItems().stream()
                   .map(item -> OrderItemEntity.fromDomain(item, entity))
                   .toList()));
+    }
+    if (domain.getPayments() != null) {
+      entity.setPayments(
+          new ArrayList<>(domain.getPayments().stream().map(PaymentEntity::fromDomain).toList()));
     }
     return entity;
   }
@@ -133,5 +145,13 @@ public class OrderEntity {
 
   public void setServiceFee(int serviceFee) {
     this.serviceFee = serviceFee;
+  }
+
+  public List<PaymentEntity> getPayments() {
+    return payments;
+  }
+
+  public void setPayments(List<PaymentEntity> payments) {
+    this.payments = payments;
   }
 }

@@ -14,6 +14,7 @@ public class Order {
   private int serviceFee;
   private OrderStatus status;
   private List<OrderItem> items = new ArrayList<>();
+  private List<Payment> payments = new ArrayList<>();
   private ZonedDateTime openedAt;
   private ZonedDateTime closedAt;
 
@@ -26,6 +27,28 @@ public class Order {
     this.status = OrderStatus.OPEN;
     this.openedAt = ZonedDateTime.now();
     this.serviceFee = serviceFee;
+  }
+
+  public void addPayment(Payment payment) {
+    if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
+      throw new IllegalStateException("Cannot add payment to a closed or cancelled order");
+    }
+    this.payments.add(payment);
+    if (isFullyPaid()) {
+      close();
+    }
+  }
+
+  public BigDecimal calculatePaidAmount() {
+    return payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public BigDecimal calculateRemainingAmount() {
+    return calculateTotal().subtract(calculatePaidAmount());
+  }
+
+  public boolean isFullyPaid() {
+    return calculateRemainingAmount().compareTo(BigDecimal.ZERO) <= 0;
   }
 
   public void addItem(Item item, int quantity, String customerName, String note) {
@@ -124,5 +147,13 @@ public class Order {
 
   public void setServiceFee(int serviceFee) {
     this.serviceFee = serviceFee;
+  }
+
+  public List<Payment> getPayments() {
+    return payments;
+  }
+
+  public void setPayments(List<Payment> payments) {
+    this.payments = payments;
   }
 }

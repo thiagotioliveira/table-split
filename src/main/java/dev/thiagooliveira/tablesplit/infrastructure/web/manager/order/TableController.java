@@ -8,12 +8,13 @@ import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
-import dev.thiagooliveira.tablesplit.application.order.TableRepository;
+import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.OrderItem;
+import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -22,10 +23,15 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryPaymentModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TableModel;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,8 +55,8 @@ public class TableController {
   private final GetCategory getCategory;
   private final GetItem getItem;
   private final PlaceOrder placeOrder;
-  private final TableRepository tableRepository;
   private final GetOrder getOrder;
+  private final ProcessPayment processPayment;
 
   public TableController(
       TransactionalContext transactionalContext,
@@ -61,8 +67,8 @@ public class TableController {
       GetCategory getCategory,
       GetItem getItem,
       PlaceOrder placeOrder,
-      TableRepository tableRepository,
-      GetOrder getOrder) {
+      GetOrder getOrder,
+      ProcessPayment processPayment) {
     this.transactionalContext = transactionalContext;
     this.openTable = openTable;
     this.closeTable = closeTable;
@@ -71,8 +77,8 @@ public class TableController {
     this.getCategory = getCategory;
     this.getItem = getItem;
     this.placeOrder = placeOrder;
-    this.tableRepository = tableRepository;
     this.getOrder = getOrder;
+    this.processPayment = processPayment;
   }
 
   @GetMapping
@@ -86,11 +92,13 @@ public class TableController {
             .map(
                 t -> {
                   var activeOrder = getOrder.execute(t.getId());
-                  var total =
+                  var balance =
                       activeOrder
-                          .map(dev.thiagooliveira.tablesplit.domain.order.Order::calculateTotal)
+                          .map(
+                              dev.thiagooliveira.tablesplit.domain.order.Order
+                                  ::calculateRemainingAmount)
                           .orElse(BigDecimal.ZERO);
-                  return new TableModel(t.getId(), t.getCod(), t.getStatus(), total);
+                  return new TableModel(t.getId(), t.getCod(), t.getStatus(), balance);
                 })
             .collect(Collectors.toList());
 
@@ -116,7 +124,7 @@ public class TableController {
     model.addAttribute("menuItems", menuItems);
 
     if (selectedTableId != null) {
-      var table = tableRepository.findById(selectedTableId).orElseThrow();
+      var table = getTables.findById(selectedTableId).orElseThrow();
       model.addAttribute("selectedTableObj", table);
       model.addAttribute("selectedTable", selectedTableId);
       var activeOrder = getOrder.execute(selectedTableId);
@@ -130,6 +138,7 @@ public class TableController {
                         Collectors.mapping(
                             oi ->
                                 new OrderItemModel(
+                                    oi.getCustomerName(),
                                     oi.getName().get(Language.PT),
                                     oi.getQuantity(),
                                     oi.getUnitPrice(),
@@ -144,7 +153,86 @@ public class TableController {
         model.addAttribute("orderServiceFeeApplied", order.feeApplied());
         model.addAttribute("orderSubtotal", order.calculateSubtotal());
         model.addAttribute("orderTotal", order.calculateTotal());
+        model.addAttribute("payments", order.getPayments());
+        model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
+        model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
+        model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
+
+        Map<String, BigDecimal> clientBalances = new HashMap<>();
+        Map<String, BigDecimal> clientSubtotals =
+            order.getItems().stream()
+                .collect(
+                    Collectors.groupingBy(
+                        OrderItem::getCustomerName,
+                        Collectors.reducing(
+                            BigDecimal.ZERO, OrderItem::getTotalPrice, BigDecimal::add)));
+
+        Map<String, BigDecimal> clientPaid =
+            order.getPayments().stream()
+                .filter(p -> !"unknown".equals(p.getCustomerName()))
+                .collect(
+                    Collectors.groupingBy(
+                        dev.thiagooliveira.tablesplit.domain.order.Payment::getCustomerName,
+                        Collectors.reducing(
+                            BigDecimal.ZERO,
+                            dev.thiagooliveira.tablesplit.domain.order.Payment::getAmount,
+                            BigDecimal::add)));
+
+        BigDecimal feeFactor =
+            BigDecimal.ONE.add(
+                BigDecimal.valueOf(order.getServiceFee())
+                    .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
+
+        clientSubtotals.forEach(
+            (name, subtotal) -> {
+              BigDecimal totalWithFee =
+                  subtotal.multiply(feeFactor).setScale(2, RoundingMode.HALF_UP);
+              BigDecimal paid = clientPaid.getOrDefault(name, BigDecimal.ZERO);
+              clientBalances.put(name, totalWithFee.subtract(paid));
+            });
+
+        model.addAttribute("clientBalances", clientBalances);
       }
+      model.addAttribute(
+          "orderHistory",
+          getOrder.findAllByTableId(selectedTableId).stream()
+              .map(
+                  hist ->
+                      new OrderHistoryModel(
+                          hist.getId().toString(),
+                          hist.getTableId().toString(),
+                          hist.getServiceFee(),
+                          hist.getStatus().name(),
+                          hist.getOpenedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                          hist.getClosedAt() != null
+                              ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                              : null,
+                          hist.getItems().stream()
+                              .map(
+                                  oi ->
+                                      new OrderItemModel(
+                                          oi.getCustomerName(),
+                                          oi.getName().get(Language.PT),
+                                          oi.getQuantity(),
+                                          oi.getUnitPrice(),
+                                          oi.getTotalPrice(),
+                                          oi.getNote(),
+                                          oi.getStatus().getLabel(),
+                                          oi.getStatus().getCssClass()))
+                              .toList(),
+                          hist.getPayments().stream()
+                              .map(
+                                  pay ->
+                                      new OrderHistoryPaymentModel(
+                                          pay.getId().toString(),
+                                          pay.getCustomerName(),
+                                          pay.getAmount(),
+                                          pay.getPaidAt()
+                                              .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                          pay.getMethod().name(),
+                                          pay.getNote()))
+                              .toList()))
+              .toList());
     }
 
     model.addAttribute("createTableForm", new CreateTableForm());
@@ -192,14 +280,32 @@ public class TableController {
   }
 
   @PostMapping("/{tableId}/order")
-  public String placeOrder(@PathVariable UUID tableId, @ModelAttribute PlaceOrderRequest request) {
-
-    var table = tableRepository.findById(tableId).orElseThrow();
+  public String placeOrder(
+      Authentication auth, @PathVariable UUID tableId, @ModelAttribute PlaceOrderRequest request) {
+    var account = (AccountContext) auth.getPrincipal();
+    var table = getTables.findById(tableId).orElseThrow();
     request.setRestaurantId(table.getRestaurantId());
     request.setTableCod(table.getCod());
+    request.setServiceFee(account.getRestaurant().getServiceFee());
 
     transactionalContext.execute(() -> placeOrder.execute(request));
 
+    return "redirect:/tables?selectedTableId=" + tableId;
+  }
+
+  @PostMapping("/{tableId}/payment")
+  public String processPayment(
+      @PathVariable UUID tableId,
+      @RequestParam String customerName,
+      @RequestParam BigDecimal amount,
+      @RequestParam(required = false, defaultValue = "CASH") PaymentMethod method,
+      @RequestParam(required = false) String note,
+      RedirectAttributes redirectAttributes) {
+
+    transactionalContext.execute(
+        () -> processPayment.execute(tableId, customerName, amount, method, note));
+
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.processed"));
     return "redirect:/tables?selectedTableId=" + tableId;
   }
 

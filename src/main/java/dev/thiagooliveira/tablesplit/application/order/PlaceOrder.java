@@ -43,7 +43,8 @@ public class PlaceOrder {
               .findById(itemRequest.getItemId())
               .orElseThrow(
                   () -> new IllegalArgumentException("Item not found: " + itemRequest.getItemId()));
-      order.addItem(item, itemRequest.getQuantity(), "João Silva", itemRequest.getNote());
+      order.addItem(
+          item, itemRequest.getQuantity(), request.getCustomerName(), itemRequest.getNote());
     }
 
     orderRepository.save(order);

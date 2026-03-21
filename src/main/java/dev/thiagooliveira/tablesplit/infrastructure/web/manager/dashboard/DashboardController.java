@@ -56,6 +56,7 @@ public class DashboardController {
                         java.util.List.of(context.getUser().getLanguage()))
                     .stream()
                     .map(ItemModel.Item::new)
+                    .limit(3)
                     .toList(),
                 this.getItem.count(context.getRestaurant().getId()),
                 this.getItem.countActive(context.getRestaurant().getId()),

@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 import java.math.BigDecimal;
 
 public class OrderItemModel {
+  private final String customerName;
   private final String name;
   private final int quantity;
   private final BigDecimal unitPrice;
@@ -12,6 +13,7 @@ public class OrderItemModel {
   private final String statusClass;
 
   public OrderItemModel(
+      String customerName,
       String name,
       int quantity,
       BigDecimal unitPrice,
@@ -19,6 +21,7 @@ public class OrderItemModel {
       String note,
       String status,
       String statusClass) {
+    this.customerName = customerName;
     this.name = name;
     this.quantity = quantity;
     this.unitPrice = unitPrice;
@@ -26,6 +29,10 @@ public class OrderItemModel {
     this.note = note;
     this.status = status;
     this.statusClass = statusClass;
+  }
+
+  public String getCustomerName() {
+    return customerName;
   }
 
   public String getName() {

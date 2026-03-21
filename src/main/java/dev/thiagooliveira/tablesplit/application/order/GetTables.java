@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class GetTables {
@@ -10,6 +11,10 @@ public class GetTables {
 
   public GetTables(TableRepository tableRepository) {
     this.tableRepository = tableRepository;
+  }
+
+  public Optional<Table> findById(UUID id) {
+    return tableRepository.findById(id);
   }
 
   public Result execute(UUID restaurantId) {

@@ -8,13 +8,13 @@ public class TableModel {
   private final UUID id;
   private final String cod;
   private final TableStatus status;
-  private final BigDecimal total;
+  private final BigDecimal balance;
 
-  public TableModel(UUID id, String cod, TableStatus status, BigDecimal total) {
+  public TableModel(UUID id, String cod, TableStatus status, BigDecimal balance) {
     this.id = id;
     this.cod = cod;
     this.status = status;
-    this.total = total;
+    this.balance = balance;
   }
 
   public UUID getId() {
@@ -29,7 +29,7 @@ public class TableModel {
     return status;
   }
 
-  public BigDecimal getTotal() {
-    return total;
+  public BigDecimal getBalance() {
+    return balance;
   }
 }

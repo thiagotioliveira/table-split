@@ -941,6 +941,87 @@
             text-align: center;
         }
 
+        .client-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .client-selector-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .client-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .client-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .client-option:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .client-option.selected {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .client-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .client-option-name {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .client-option.new-client {
+            border-style: dashed;
+        }
+
+        .new-client-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .new-client-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .client-option.new-client.selected .new-client-input {
+            display: block;
+        }
+
+        .client-option.new-client.selected .new-client-placeholder {
+            display: none;
+        }
+
+        .new-client-placeholder {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
         .order-item-name {
             font-weight: 500;
         }
@@ -1011,6 +1092,71 @@
             border-radius: var(--radius-lg);
             padding: 1.25rem;
             box-shadow: var(--shadow);
+        }
+
+        .payments-history {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            border: 1px dashed var(--border);
+        }
+
+        .payments-history h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .payment-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .payment-history-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .payment-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-customer {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .payment-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .payment-amount {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .bill-row.paid {
+            margin-top: 0.5rem;
+            color: #10b981 !important;
+            font-weight: 600;
+        }
+
+        .bill-row.remaining {
+            color: var(--primary) !important;
+            font-weight: 700;
+            border-top: 1px solid var(--border);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         .bill-summary h3 {
@@ -1805,6 +1951,68 @@
             color: var(--muted);
         }
 
+        .history-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .history-filters .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .history-table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .history-table th, 
+        .history-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-table th {
+            background: var(--background-secondary);
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tr:hover td {
+            background: rgba(var(--primary-rgb), 0.05);
+            cursor: pointer;
+        }
+
+        .empty-table-message {
+            padding: 3rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-table-message svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
         /* Modal Large */
         .modal.large {
             width: 90%;
@@ -2106,7 +2314,7 @@
                         <div class="table-card-info">
                             <span th:if="${table.status.name() == 'AVAILABLE'}">Disponível</span>
                             <span th:if="${table.status.name() == 'OCCUPIED'}">Em uso</span>
-                            <span class="table-total" th:text="${'R$ ' + #numbers.formatDecimal(table.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                            <span class="table-total" th:text="${'R$ ' + #numbers.formatDecimal(table.balance, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -2121,26 +2329,44 @@
                             Ver Mesas
                         </button>
                         <div class="selected-table-info" id="selectedTableInfo">
-                            <h2 th:if="${selectedTableObj == null}">Selecione uma mesa</h2>
-                            <p th:if="${selectedTableObj == null}">Clique em uma mesa na lista para gerenciá-la</p>
-                            
-                            <h2 th:if="${selectedTableObj != null}" th:text="${'Mesa ' + selectedTableObj.cod}">Mesa XX</h2>
-                            <p th:if="${selectedTableObj != null}" th:text="${orderLoaded ? 'Mesa ocupada - Clientes consumindo' : 'Mesa livre - Pronta para novos clientes'}">Status</p>
+                            <div id="activeTableInfo">
+                                <h2 th:if="${selectedTableObj == null}">Selecione uma mesa</h2>
+                                <p th:if="${selectedTableObj == null}">Clique em uma mesa na lista para gerenciá-la</p>
+                                
+                                <h2 th:if="${selectedTableObj != null}" th:text="${'Mesa ' + selectedTableObj.cod}">Mesa XX</h2>
+                                <p th:if="${selectedTableObj != null}" th:text="${orderLoaded ? 'Mesa ocupada - Clientes consumindo' : 'Mesa livre - Pronta para novos clientes'}">Status</p>
+                            </div>
+                            <div id="historyViewInfo" style="display: none;">
+                                <h2 id="historyHeaderTitle">Histórico - Mesa XX</h2>
+                                <p id="historyHeaderDates">Abertura: --/-- | Fechamento: --/--</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="header-actions" id="headerActions" th:style="${orderLoaded} ? 'display: flex;' : 'display: none;'">
-                        <button class="action-btn primary" onclick="openOrderModal()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                            <span>Novo Pedido</span>
-                        </button>
-                        <button class="action-btn purple" onclick="openBillModal()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                            <span>Ver Conta</span>
-                        </button>
-                        <button class="action-btn success" onclick="openCloseTableModal()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            <span>Fechar Mesa</span>
-                        </button>
+                    <div class="header-actions" id="headerActions" th:style="${selectedTableObj != null} ? 'display: flex;' : 'display: none;'">
+                        <div id="activeOrderActions" style="display: contents;">
+                            <button class="action-btn primary" id="btnNewOrder" onclick="openOrderModal()" th:if="${orderLoaded}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                <span>Novo Pedido</span>
+                            </button>
+                            <button class="action-btn" onclick="openHistoryModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Histórico</span>
+                            </button>
+                            <button class="action-btn purple" id="btnViewBill" onclick="openBillModal()" th:if="${orderLoaded}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                <span>Ver Conta</span>
+                            </button>
+                            <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()" th:if="${orderLoaded}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span>Fechar Mesa</span>
+                            </button>
+                        </div>
+                        <div id="historyViewActions" style="display: none;">
+                            <button class="action-btn" onclick="exitHistoryView()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                                <span>Voltar para Mesa</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -2231,6 +2457,34 @@
                                 <span>Total da Mesa</span>
                                 <span th:text="${'R$ ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                             </div>
+
+                            <div class="payments-history" th:if="${not #lists.isEmpty(payments)}">
+                                <h3>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                                    Pagamentos Realizados
+                                </h3>
+                                <div class="payment-history-item" th:each="payment : ${payments}">
+                                    <div class="payment-info">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span class="payment-customer" th:text="${payment.customerName}">Cliente</span>
+                                            <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600;" th:text="${payment.method}">MB_WAY</span>
+                                        </div>
+                                        <span class="payment-time" th:text="${#temporals.format(payment.paidAt, 'HH:mm')}">12:00</span>
+                                        <div class="payment-note" th:if="${payment.note != null and !payment.note.empty}" style="font-size: 0.75rem; font-style: italic; color: var(--muted); margin-top: 4px; padding-left: 0.5rem; border-left: 2px solid var(--border);" th:text="${payment.note}">
+                                            Observação
+                                        </div>
+                                    </div>
+                                    <span class="payment-amount" th:text="${'- R$ ' + #numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}">- R$ 0,00</span>
+                                </div>
+                                <div class="bill-row paid">
+                                    <span>Total Pago</span>
+                                    <span th:text="${'R$ ' + #numbers.formatDecimal(orderPaidAmount, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                                </div>
+                                <div class="bill-row remaining">
+                                    <span>Saldo Restante</span>
+                                    <span th:text="${'R$ ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                                </div>
+                            </div>
                             <button class="close-table-btn" onclick="openCloseTableModal()" th:if="${false}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></svg>
                                 Fechar Mesa
@@ -2245,6 +2499,59 @@
 
 <script th:inline="javascript">
     const menuItems = /*[[${menuItems}]]*/[];
+    const tables = /*[[${tables}]]*/ [];
+    const orderHistory = /*[[${orderHistory}]]*/ [];
+    const orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
+
+    function confirmCloseTable() {
+        if (typeof selectedTable === 'undefined' || !selectedTable) {
+            alert('Nenhuma mesa selecionada');
+            return;
+        }
+
+        const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
+        const note = document.getElementById('closeTableNote')?.value || '';
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tables/${selectedTable}/payment`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'hidden';
+        nameInput.name = 'customerName';
+        nameInput.value = 'unknown';
+        form.appendChild(nameInput);
+
+        const amountInput = document.createElement('input');
+        amountInput.type = 'hidden';
+        amountInput.name = 'amount';
+        amountInput.value = orderRemainingAmount;
+        form.appendChild(amountInput);
+
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = 'method';
+        methodInput.value = method;
+        form.appendChild(methodInput);
+
+        const noteInput = document.createElement('input');
+        noteInput.type = 'hidden';
+        noteInput.name = 'note';
+        noteInput.value = note;
+        form.appendChild(noteInput);
+
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 </script>
 
 <script>
@@ -2418,6 +2725,7 @@
     let cart = {};
 
     function openOrderModal(clientName) {
+        populateClientOptions(clientName);
         document.getElementById('newOrderModal').classList.add('active');
         //document.getElementById('orderClientName').textContent = clientName || 'Novo Cliente';
         const card = document.querySelector(`.table-card[data-table="${selectedTable}"]`);
@@ -2556,6 +2864,12 @@
             }
         });
 
+        const customerNameInput = document.createElement('input');
+        customerNameInput.type = 'hidden';
+        customerNameInput.name = 'customerName';
+        customerNameInput.value = getSelectedClientName();
+        container.appendChild(customerNameInput);
+
         const submitBtn = document.getElementById('submitOrderBtn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
@@ -2592,11 +2906,6 @@
         document.getElementById('closeTableModal').classList.remove('active');
     }
 
-    function confirmCloseTable() {
-        alert('Mesa fechada com sucesso!');
-        closeCloseTableModal();
-    }
-
     function openReservationsModal() {
         document.getElementById('reservationsModal').classList.add('active');
     }
@@ -2631,22 +2940,351 @@
     }
 
     function processPartialPayment() {
-        const method = document.querySelector('input[name="partialPayMethod"]:checked')?.value;
-        if (!method) {
-            alert('Selecione um método de pagamento');
+        const selectedRadio = document.querySelector('input[name="customerName"]:checked');
+        if (!selectedRadio) {
+            alert('Selecione um cliente para o pagamento');
             return;
         }
-        alert(`Pagamento parcial processado via ${method}!`);
-        closePartialPaymentModal();
+
+        const customerName = selectedRadio.value;
+        const amount = document.getElementById('partialPaymentAmount').value;
+
+        if (!amount || parseFloat(amount) <= 0) {
+            alert('Informe um valor válido para o pagamento');
+            return;
+        }
+
+        const method = document.querySelector('input[name="partialPayMethod"]:checked')?.value || 'CASH';
+        const note = document.getElementById('partialPaymentNote')?.value || '';
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tables/${selectedTable}/payment`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'hidden';
+        nameInput.name = 'customerName';
+        nameInput.value = customerName;
+        form.appendChild(nameInput);
+
+        const amountInput = document.createElement('input');
+        amountInput.type = 'hidden';
+        amountInput.name = 'amount';
+        amountInput.value = amount;
+        form.appendChild(amountInput);
+
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = 'method';
+        methodInput.value = method;
+        form.appendChild(methodInput);
+
+        const noteInput = document.createElement('input');
+        noteInput.type = 'hidden';
+        noteInput.name = 'note';
+        noteInput.value = note;
+        form.appendChild(noteInput);
+
+        // Required for Spring Security CSRF
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function openHistoryModal() {
         document.getElementById('historyModal').classList.add('active');
         document.getElementById('historyTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTable).padStart(2, '0')}` : '';
+
+        // Set default date range (last 30 days)
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        document.getElementById('historyDateEnd').value = today.toISOString().split('T')[0];
+        document.getElementById('historyDateStart').value = thirtyDaysAgo.toISOString().split('T')[0];
+        document.getElementById('historyStatusFilter').value = 'all';
+
+        renderOrderHistory();
     }
 
     function closeHistoryModal() {
         document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function filterOrderHistory() {
+        renderOrderHistory();
+    }
+
+    function renderOrderHistory() {
+        const tbody = document.getElementById('ordersTableBody');
+        const startDate = document.getElementById('historyDateStart').value;
+        const endDate = document.getElementById('historyDateEnd').value;
+        const statusFilter = document.getElementById('historyStatusFilter').value;
+        // Filter orders by selected table and filters
+        let filteredOrders = orderHistory.filter(order => {
+            if (selectedTable && order.tableId !== String(selectedTable)) {
+                return false;
+            }
+            if (!order.openedAt) {
+                return false;
+            }
+
+            try {
+                const orderDate = new Date(order.openedAt).toISOString().split('T')[0];
+                if (startDate && orderDate < startDate) return false;
+                if (endDate && orderDate > endDate) return false;
+            } catch (e) {
+                return false;
+            }
+
+            if (statusFilter !== 'all' && order.status !== statusFilter) {
+                return false;
+            }
+
+            return true;
+        });
+        if (filteredOrders.length === 0) {
+            tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-table-message">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <p>Nenhum pedido encontrado para os filtros selecionados</p>
+              </div>
+            </td>
+          </tr>
+        `;
+            return;
+        }
+
+        tbody.innerHTML = filteredOrders.map(order => {
+            const total = calculateOrderTotal(order);
+            const shortId = order.id.substring(0, 8).toUpperCase();
+            const openedAt = formatDateTime(order.openedAt);
+            const closedAt = order.closedAt ? formatDateTime(order.closedAt) : '-';
+            const statusBadge = getStatusBadge(order.status);
+
+            return `
+          <tr onclick="openOrderDetail('${order.id}')">
+            <td><strong>#${shortId}</strong></td>
+            <td>${openedAt}</td>
+            <td>${closedAt}</td>
+            <td>${order.serviceFee}%</td>
+            <td>${statusBadge}</td>
+            <td><strong>R$ ${total.toFixed(2).replace('.', ',')}</strong></td>
+          </tr>
+        `;
+        }).join('');
+    }
+
+    function calculateOrderTotal(order) {
+        if (!order.items) return 0;
+        const subtotal = order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+        const fee = (subtotal * (order.serviceFee || 0)) / 100;
+        return subtotal + fee;
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function getStatusBadge(status) {
+        const badges = {
+            'OPEN': '<span class="status-badge status-open">Aberta</span>',
+            'PENDING': '<span class="status-badge status-pending">Pendente</span>',
+            'CLOSED': '<span class="status-badge status-closed">Fechada</span>',
+            'CANCELLED': '<span class="status-badge status-cancelled">Cancelada</span>'
+        };
+        return badges[status] || `<span class="status-badge">${status}</span>`;
+    }
+
+    function openOrderDetail(orderId) {
+        const order = orderHistory.find(o => o.id === orderId);
+        if (!order) return;
+
+        // Close history modal
+        closeHistoryModal();
+
+        // Update Header
+        document.getElementById('activeTableInfo').style.display = 'none';
+        document.getElementById('historyViewInfo').style.display = 'block';
+        document.getElementById('historyHeaderTitle').textContent = `Histórico - Mesa ${order.tableId ? (tables.find(t => t.id === order.tableId)?.cod || '??') : '??'}`;
+        
+        const openedAt = formatDateTime(order.openedAt);
+        const closedAt = order.closedAt ? formatDateTime(order.closedAt) : 'Aberta';
+        document.getElementById('historyHeaderDates').textContent = `Abertura: ${openedAt} | Fechamento: ${closedAt}`;
+
+        // Update Actions
+        document.getElementById('activeOrderActions').style.display = 'none';
+        document.getElementById('historyViewActions').style.display = 'block';
+
+        // Render History Content
+        renderHistoryDetail(order);
+    }
+
+    function exitHistoryView() {
+        // Just reload for now to restore original server state easily
+        // Or we could hide/show if we want it smoother
+        document.getElementById('historyViewInfo').style.display = 'none';
+        document.getElementById('activeTableInfo').style.display = 'block';
+        document.getElementById('historyViewActions').style.display = 'none';
+        document.getElementById('activeOrderActions').style.display = 'flex';
+        
+        // Re-render original state? 
+        // Simplest: window.location.reload()
+        window.location.reload();
+    }
+
+    function renderHistoryDetail(order) {
+        const tableDetail = document.getElementById('tableDetail');
+        tableDetail.classList.add('active');
+        tableDetail.style.display = 'block';
+        
+        // Hide quick actions for empty table if any
+        const quickActions = document.getElementById('quickActionsEmpty');
+        if (quickActions) quickActions.style.display = 'none';
+
+        // Update Clients Section
+        const clientsSection = document.getElementById('clientsSection');
+        clientsSection.style.display = 'block';
+        
+        // Group items by client
+        const clients = {};
+        order.items.forEach(item => {
+            const clientName = item.customerName || 'Mesa'; // Default to 'Mesa' if no name
+            if (!clients[clientName]) clients[clientName] = [];
+            clients[clientName].push(item);
+        });
+
+        let clientsHtml = `
+            <div class="section-header">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Clientes no Pedido (Histórico)
+                </h3>
+            </div>
+        `;
+
+        Object.keys(clients).forEach(clientName => {
+            const clientItems = clients[clientName];
+            const subtotal = clientItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            
+            clientsHtml += `
+            <div class="client-card">
+                <div class="client-header">
+                    <span class="client-name">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>${clientName}</span>
+                    </span>
+                    <span class="client-subtotal">R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div class="client-orders">
+                    ${clientItems.map(item => `
+                    <div class="order-item">
+                        <div class="order-item-info">
+                            <span class="order-qty">${item.quantity}</span>
+                            <div>
+                                <span class="order-item-name">${item.name}</span>
+                                ${item.note ? `<span class="order-item-note">${item.note}</span>` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="order-item-price">R$ ${(item.totalPrice || 0).toFixed(2).replace('.', ',')}</span>
+                            <span class="order-item-status ${item.statusClass || ''}">${item.status || ''}</span>
+                        </div>
+                    </div>
+                    `).join('')}
+                </div>
+            </div>
+            `;
+        });
+
+        clientsSection.innerHTML = clientsHtml;
+
+        // Update Bill Summary
+        const subtotal = order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+        const fee = (subtotal * (order.serviceFee || 0)) / 100;
+        const total = subtotal + fee;
+
+        // Try to find the bill summary or create it
+        let billSummary = document.querySelector('.bill-summary');
+        if (!billSummary) {
+            billSummary = document.createElement('div');
+            billSummary.className = 'bill-summary';
+            tableDetail.appendChild(billSummary);
+        }
+
+        billSummary.innerHTML = `
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Resumo do Pedido (Histórico)
+            </h3>
+            <div class="bill-row">
+                <span>Subtotal</span>
+                <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div class="bill-row">
+                <span>Taxa de serviço (${order.serviceFee}%)</span>
+                <span>R$ ${fee.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div class="bill-row total">
+                <span>Total</span>
+                <span>R$ ${total.toFixed(2).replace('.', ',')}</span>
+            </div>
+        `;
+
+        // Update Payments History if any
+        let paymentsHistory = document.querySelector('.payments-history');
+        if (order.payments && order.payments.length > 0) {
+            if (!paymentsHistory) {
+                paymentsHistory = document.createElement('div');
+                paymentsHistory.className = 'payments-history';
+                tableDetail.appendChild(paymentsHistory);
+            }
+            
+            paymentsHistory.innerHTML = `
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                    Pagamentos no Histórico
+                </h3>
+                ${order.payments.map(payment => `
+                <div class="payment-history-item">
+                    <div class="payment-info">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="payment-customer">${payment.customerName}</span>
+                            <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600;">${payment.method}</span>
+                        </div>
+                        <span class="payment-time">${formatTimeOnly(payment.paidAt)}</span>
+                        ${payment.note ? `<div class="payment-note" style="font-size: 0.75rem; font-style: italic; color: var(--muted); margin-top: 4px; padding-left: 0.5rem; border-left: 2px solid var(--border);">${payment.note}</div>` : ''}
+                    </div>
+                    <span class="payment-amount">R$ ${(payment.amount || 0).toFixed(2).replace('.', ',')}</span>
+                </div>
+                `).join('')}
+            `;
+        } else if (paymentsHistory) {
+            paymentsHistory.style.display = 'none';
+        }
+    }
+
+    function formatTimeOnly(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
 
     function openAllNotificationsModal() {
@@ -2763,10 +3401,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Select Client (Hidden for now as requested) -->
-                <div style="display: none;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Cliente</label>
-                    <input type="text" name="customerName" value="CUSTOMER" class="modal-input" placeholder="Nome do cliente">
+                <div class="client-selector">
+                    <label class="client-selector-label">Cliente</label>
+                    <div class="client-options" id="clientOptions">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
 
                 <div class="menu-categories" id="menuCategories">
@@ -2823,40 +3462,28 @@
         </div>
         <div class="modal-body">
             <div class="bill-clients-list">
-                <div class="bill-client-row">
+                <div class="bill-client-row" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
                     <div>
-                        <div style="font-weight: 600;">João</div>
-                        <div style="font-size: 0.8rem; color: var(--muted);">Filé Mignon, 2x Caipirinha</div>
+                        <div style="font-weight: 600;" th:text="${client.key}">Cliente</div>
+                        <div style="font-size: 0.8rem; color: var(--muted);" 
+                             th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
                     </div>
-                    <div style="font-weight: 600;">R$ 125,90</div>
-                </div>
-                <div class="bill-client-row">
-                    <div>
-                        <div style="font-weight: 600;">Maria</div>
-                        <div style="font-size: 0.8rem; color: var(--muted);">Salmão, Refrigerante</div>
-                    </div>
-                    <div style="font-weight: 600;">R$ 80,00</div>
-                </div>
-                <div class="bill-client-row">
-                    <div>
-                        <div style="font-weight: 600;">Pedro</div>
-                        <div style="font-size: 0.8rem; color: var(--muted);">Picanha, Cerveja</div>
-                    </div>
-                    <div style="font-weight: 600;">R$ 91,90</div>
+                    <div style="font-weight: 600;" 
+                         th:text="${'R$ ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">R$ 0,00</div>
                 </div>
             </div>
             <div class="bill-summary-section">
                 <div class="bill-summary-row">
                     <span>Subtotal</span>
-                    <span>R$ 297,80</span>
+                    <span th:text="${'R$ ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                 </div>
                 <div class="bill-summary-row">
-                    <span>Taxa de serviço (10%)</span>
-                    <span>R$ 29,78</span>
+                    <span>Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
+                    <span th:text="${'R$ ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                 </div>
                 <div class="bill-summary-row total">
                     <span>Total</span>
-                    <span>R$ 327,58</span>
+                    <span th:text="${'R$ ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                 </div>
             </div>
         </div>
@@ -2882,41 +3509,39 @@
         </div>
         <div class="modal-body">
             <div style="text-align: center; padding: 1rem 0;">
-                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">R$ 327,58</div>
-                <div style="color: var(--muted);">Valor total da conta</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;"
+                     th:text="${'R$ ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</div>
+                <div style="color: var(--muted);">Saldo restante da conta</div>
             </div>
             <div class="form-group">
                 <label>Método de Pagamento</label>
                 <div class="payment-methods">
                     <div class="payment-method-option">
-                        <input type="radio" name="closePayMethod" id="closePix" value="pix">
-                        <label for="closePix">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-                            PIX
+                        <input type="radio" name="closePayMethod" id="closeMBWay" value="MB_WAY" checked>
+                        <label for="closeMBWay">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            MB WAY
                         </label>
                     </div>
                     <div class="payment-method-option">
-                        <input type="radio" name="closePayMethod" id="closeCredit" value="credit" checked>
-                        <label for="closeCredit">
+                        <input type="radio" name="closePayMethod" id="closeCard" value="CARD">
+                        <label for="closeCard">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            Crédito
+                            Cartão
                         </label>
                     </div>
                     <div class="payment-method-option">
-                        <input type="radio" name="closePayMethod" id="closeDebit" value="debit">
-                        <label for="closeDebit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            Débito
-                        </label>
-                    </div>
-                    <div class="payment-method-option">
-                        <input type="radio" name="closePayMethod" id="closeCash" value="cash">
+                        <input type="radio" name="closePayMethod" id="closeCash" value="CASH">
                         <label for="closeCash">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
                             Dinheiro
                         </label>
                     </div>
                 </div>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Observação (opcional)</label>
+                <textarea id="closeTableNote" class="modal-input" placeholder="Adicione um comentário..." style="height: 60px; resize: none;"></textarea>
             </div>
         </div>
         <div class="modal-footer">
@@ -2939,58 +3564,65 @@
             </button>
         </div>
         <div class="modal-body">
-            <p style="margin-bottom: 1rem; color: var(--muted);">Selecione os clientes que irão pagar:</p>
+            <p style="margin-bottom: 1rem; color: var(--muted);">Selecione o cliente que irá pagar:</p>
             <div class="client-payment-list">
-                <div class="client-payment-card">
-                    <input type="checkbox" class="client-payment-check" data-value="125.90" onchange="toggleClientPayment(this)">
+                <div class="client-payment-card" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+                    <input type="radio" name="customerName" th:value="${client.key}" class="client-payment-check" 
+                           th:data-value="${clientBalances[client.key]}" onchange="updatePartialPaymentAmount(this)">
                     <div class="client-payment-info">
-                        <div class="client-payment-name">João</div>
-                        <div class="client-payment-items">Filé Mignon, 2x Caipirinha</div>
+                        <div class="client-payment-name" th:text="${client.key}">Cliente</div>
+                        <div class="client-payment-items" th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
                     </div>
-                    <div class="client-payment-value">R$ 125,90</div>
-                </div>
-                <div class="client-payment-card">
-                    <input type="checkbox" class="client-payment-check" data-value="80.00" onchange="toggleClientPayment(this)">
-                    <div class="client-payment-info">
-                        <div class="client-payment-name">Maria</div>
-                        <div class="client-payment-items">Salmão, Refrigerante</div>
-                    </div>
-                    <div class="client-payment-value">R$ 80,00</div>
-                </div>
-                <div class="client-payment-card">
-                    <input type="checkbox" class="client-payment-check" data-value="91.90" onchange="toggleClientPayment(this)">
-                    <div class="client-payment-info">
-                        <div class="client-payment-name">Pedro</div>
-                        <div class="client-payment-items">Picanha, Cerveja</div>
-                    </div>
-                    <div class="client-payment-value">R$ 91,90</div>
+                    <div class="client-payment-value" th:text="${'R$ ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">R$ 0,00</div>
                 </div>
             </div>
-            <div style="margin-top: 1rem; padding: 1rem; background: var(--primary-light); border-radius: var(--radius); display: flex; justify-content: space-between; font-weight: 600;">
-                <span>Total Selecionado:</span>
-                <span id="partialPaymentTotal">R$ 0,00</span>
+
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label>Valor do Pagamento</label>
+                <div class="input-with-prefix" style="position: relative;">
+                    <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--muted);">R$</span>
+                    <input type="number" step="0.01" id="partialPaymentAmount" class="modal-input" placeholder="0,00" style="padding-left: 3rem;">
+                </div>
             </div>
+
             <div class="form-group" style="margin-top: 1rem;">
                 <label>Método de Pagamento</label>
                 <div class="payment-methods">
                     <div class="payment-method-option">
-                        <input type="radio" name="partialPayMethod" id="partialPix" value="pix">
-                        <label for="partialPix">PIX</label>
+                        <input type="radio" name="partialPayMethod" id="partialMBWay" value="MB_WAY" checked>
+                        <label for="partialMBWay">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            MB WAY
+                        </label>
                     </div>
                     <div class="payment-method-option">
-                        <input type="radio" name="partialPayMethod" id="partialCredit" value="credit">
-                        <label for="partialCredit">Crédito</label>
+                        <input type="radio" name="partialPayMethod" id="partialCard" value="CARD">
+                        <label for="partialCard">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                            Cartão
+                        </label>
                     </div>
                     <div class="payment-method-option">
-                        <input type="radio" name="partialPayMethod" id="partialDebit" value="debit">
-                        <label for="partialDebit">Débito</label>
-                    </div>
-                    <div class="payment-method-option">
-                        <input type="radio" name="partialPayMethod" id="partialCash" value="cash">
-                        <label for="partialCash">Dinheiro</label>
+                        <input type="radio" name="partialPayMethod" id="partialCash" value="CASH">
+                        <label for="partialCash">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                            Dinheiro
+                        </label>
                     </div>
                 </div>
             </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Observação (opcional)</label>
+                <textarea id="partialPaymentNote" class="modal-input" placeholder="Adicione um comentário..." style="height: 60px; resize: none;"></textarea>
+            </div>
+
+            <script>
+                function updatePartialPaymentAmount(radio) {
+                    const value = radio.dataset.value;
+                    document.getElementById('partialPaymentAmount').value = value;
+                }
+            </script>
         </div>
         <div class="modal-footer">
             <button class="modal-btn" onclick="closePartialPaymentModal()">Cancelar</button>
@@ -3001,7 +3633,7 @@
 
 <!-- Histórico Modal -->
 <div class="modal-overlay" id="historyModal">
-    <div class="modal">
+    <div class="modal large">
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -3012,32 +3644,41 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="form-group">
-                <label>Filtrar por Data</label>
-                <input type="date" class="form-input" id="historyDateFilter">
+            <div class="history-filters">
+                <div class="form-group">
+                    <label>Data Início</label>
+                    <input type="date" class="modal-input" id="historyDateStart" onchange="filterOrderHistory()">
+                </div>
+                <div class="form-group">
+                    <label>Data Fim</label>
+                    <input type="date" class="modal-input" id="historyDateEnd" onchange="filterOrderHistory()">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="modal-input" id="historyStatusFilter" onchange="filterOrderHistory()">
+                        <option value="all">Todos</option>
+                        <option value="OPEN">Aberta</option>
+                        <option value="CLOSED">Fechada</option>
+                        <option value="CANCELLED">Cancelada</option>
+                    </select>
+                </div>
             </div>
-            <div class="history-list">
-                <div class="history-item">
-                    <div class="history-item-header">
-                        <span class="history-item-date">Hoje, 19:45</span>
-                        <span class="history-item-total">R$ 187,50</span>
-                    </div>
-                    <div class="history-item-details">3 clientes • Filé Mignon, Picanha, 4x Caipirinha</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-item-header">
-                        <span class="history-item-date">Ontem, 20:30</span>
-                        <span class="history-item-total">R$ 245,00</span>
-                    </div>
-                    <div class="history-item-details">4 clientes • 2x Salmão, Picanha, 6x Cerveja</div>
-                </div>
-                <div class="history-item">
-                    <div class="history-item-header">
-                        <span class="history-item-date">15/01, 21:00</span>
-                        <span class="history-item-total">R$ 156,80</span>
-                    </div>
-                    <div class="history-item-details">2 clientes • Filé Mignon, Salmão, 2x Refrigerante</div>
-                </div>
+            <div class="history-table-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Abertura</th>
+                            <th>Fechamento</th>
+                            <th>Taxa</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="modal-footer">
@@ -3153,6 +3794,83 @@
         }
     });
     */
+
+    let selectedClientId = null;
+
+    function getTableClients() {
+        const clients = [];
+        document.querySelectorAll('#clientsSection .client-card').forEach(card => {
+            const clientId = card.dataset.client;
+            const nameEl = card.querySelector('.client-name');
+            if (nameEl) {
+                // Extract text, removing the SVG icon text
+                const name = nameEl.textContent.trim();
+                clients.push({ id: clientId, name: name });
+            }
+        });
+        return clients;
+    }
+
+    function populateClientOptions(preselectedName = '') {
+        const container = document.getElementById('clientOptions');
+        const clients = getTableClients();
+
+        let html = '';
+
+        clients.forEach((client, index) => {
+            const isSelected = client.name === preselectedName;
+            html += `
+          <label class="client-option ${isSelected ? 'selected' : ''}" onclick="selectClient('${client.id}', '${client.name.replace(/'/g, "\\'")}')">
+            <input type="radio" name="clientSelect" value="${client.id}" ${isSelected ? 'checked' : ''}>
+            <span class="client-option-name">${client.name}</span>
+          </label>
+        `;
+            if (isSelected) {
+                selectedClientId = client.id;
+            }
+        });
+
+        // New client option
+        const isNewSelected = preselectedName && !clients.find(c => c.name === preselectedName);
+        html += `
+        <label class="client-option new-client ${isNewSelected ? 'selected' : ''}" onclick="selectNewClient()">
+          <input type="radio" name="clientSelect" value="new" ${isNewSelected ? 'checked' : ''}>
+          <span class="new-client-placeholder">+ Novo cliente</span>
+          <input type="text" class="new-client-input" id="newClientNameInput"
+                 placeholder="Digite o nome..."
+                 value="${isNewSelected ? preselectedName : ''}"
+                 onclick="event.stopPropagation()">
+        </label>
+      `;
+
+        container.innerHTML = html;
+
+        if (isNewSelected) {
+            selectedClientId = 'new';
+            setTimeout(() => document.getElementById('newClientNameInput').focus(), 100);
+        }
+    }
+
+    function selectClient(clientId, clientName) {
+        selectedClientId = clientId;
+        document.querySelectorAll('.client-option').forEach(opt => opt.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+    }
+
+    function selectNewClient() {
+        selectedClientId = 'new';
+        document.querySelectorAll('.client-option').forEach(opt => opt.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        setTimeout(() => document.getElementById('newClientNameInput').focus(), 100);
+    }
+
+    function getSelectedClientName() {
+        if (selectedClientId === 'new') {
+            return document.getElementById('newClientNameInput').value.trim();
+        }
+        const selectedOption = document.querySelector('.client-option.selected .client-option-name');
+        return selectedOption ? selectedOption.textContent.trim() : '';
+    }
 </script>
 </body>
 </html>

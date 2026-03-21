@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,9 @@ public class GetOrder {
 
   public Optional<Order> execute(UUID tableId) {
     return orderRepository.findActiveOrderByTableId(tableId);
+  }
+
+  public List<Order> findAllByTableId(UUID tableId) {
+    return orderRepository.findAllByTableIdOrderByOpenedAtDesc(tableId);
   }
 }

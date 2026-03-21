@@ -36,11 +36,11 @@ logging:
     ROOT: INFO
     org:
       hibernate:
-        SQL: DEBUG
+        SQL: INFO
         type:
           descriptor:
             sql:
-              BasicBinder: TRACE
+              BasicBinder: INFO
       springframework:
         transaction: OFF
     dev.thiagooliveira: DEBUG
