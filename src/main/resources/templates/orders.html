@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
         /* Orders specific styles */
         .orders-header {
@@ -709,7 +711,7 @@
 <main class="main-content">
     <div class="dashboard-body">
         <!-- Waiter Call Alerts -->
-        <div class="waiter-alerts" id="waiterAlerts">
+        <div class="waiter-alerts" id="waiterAlerts" th:if="${false}">
             <div class="waiter-alerts-header">
                 <div class="waiter-alerts-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
@@ -738,7 +740,7 @@
         <div class="orders-header">
             <div class="orders-filters">
                 <!-- Type Filters -->
-                <div class="type-filters">
+                <div class="type-filters" th:if="${false}">
                     <button class="type-filter-btn active" onclick="filterByType('all', this)">
                         Todos
                     </button>
@@ -774,7 +776,7 @@
                 </button>
             </div>
 
-            <div class="orders-actions">
+            <div class="orders-actions" th:if="${false}">
                 <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
                     Som ativo
@@ -940,7 +942,7 @@
                     <span th:text="'+' + ${deliveredCount} + ' pedidos hoje'">+0 pedidos hoje</span>
                 </div>
                 <div class="kanban-footer">
-                    <a href="order-history.html" class="kanban-footer-link">
+                    <a href="#" class="kanban-footer-link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Ver histórico completo
                     </a>
@@ -1036,7 +1038,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     // Sidebar functions
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -1226,6 +1228,128 @@
         });
     }, 5000);
     */
+    // WebSocket connection
+    const restaurantId = /*[[${restaurantId}]]*/ null;
+    let stompClient = null;
+
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null; 
+        stompClient.connect({}, function (frame) {
+            console.log('Connected to WebSocket');
+            const topic = '/topic/restaurant/' + restaurantId + '/tickets';
+            console.log('Subscribing to topic:', topic);
+            stompClient.subscribe(topic, function (message) {
+                console.log('RAW message received:', message.body);
+                const data = JSON.parse(message.body);
+                console.log('Parsed data:', data);
+                if (data.newStatus) {
+                    handleStatusChange(data);
+                } else {
+                    handleNewTicket(data);
+                }
+            });
+        });
+    }
+
+    function handleNewTicket(ticket) {
+        // Prevent duplicate rendering
+        if (document.querySelector(`.order-card[data-ticket-id="${ticket.id}"]`)) {
+            console.log('Ticket already exists, skipping:', ticket.id);
+            return;
+        }
+
+        if (soundEnabled) {
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+            audio.play();
+        }
+
+        const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
+            const h3 = c.querySelector('h3');
+            return h3 && h3.textContent.trim().includes('Novos');
+        })?.querySelector('.kanban-body');
+        
+        console.log('Target column:', column);
+        if (!column) {
+            console.error('Column "Novos" not found!');
+            return;
+        }
+
+        const cardHtml = renderTicketCard(ticket);
+        column.insertAdjacentHTML('afterbegin', cardHtml);
+
+        // Update counts
+        updateCounts('PENDING', 1);
+    }
+
+    function handleStatusChange(event) {
+        const card = document.querySelector(`.order-card[data-ticket-id="${event.ticketId}"]`);
+        if (card) {
+            window.location.reload(); 
+        }
+    }
+
+    function renderTicketCard(ticket) {
+        const itemsHtml = ticket.items.map(item => `
+            <div class="order-item">
+                <span class="order-item-qty">${item.quantity}x</span>
+                <span class="order-item-name">${item.name}</span>
+                ${item.note ? `<p class="order-item-note">${item.note}</p>` : ''}
+            </div>
+        `).join('');
+
+        const totalFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ticket.total);
+
+        return `
+            <div class="order-card ${ticket.urgent ? 'urgent' : ''}" data-ticket-id="${ticket.id}">
+                <div class="order-header">
+                    <div class="order-table">
+                        <div class="order-table-number">${ticket.tableCod}</div>
+                        <div class="order-info">
+                            <span class="order-customer">${ticket.customerName}</span>
+                            <span class="order-time ${ticket.urgent ? 'urgent' : ''}">${ticket.timeAgo}${ticket.urgent ? ' ⚠️' : ''}</span>
+                        </div>
+                    </div>
+                    <span class="order-id">#${ticket.shortId}</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+                    <div class="order-total">
+                        <span class="order-total-label">Total</span>
+                        <span class="order-total-value">${totalFormatted}</span>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <button class="btn btn-primary btn-sm" data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
+                        Preparar
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateCounts(status, delta) {
+        // Update column badge
+        const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
+            const h3 = c.querySelector('h3');
+            return h3 && h3.textContent.trim().includes('Novos');
+        });
+        const columnBadge = column?.querySelector('.kanban-count');
+        if (columnBadge) columnBadge.textContent = parseInt(columnBadge.textContent) + delta;
+
+        // Update top filter badges
+        const allBadge = document.querySelector('button[onclick*="\'all\'"] .filter-badge');
+        if (allBadge) allBadge.textContent = parseInt(allBadge.textContent) + delta;
+
+        const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
+        if (newBadge) newBadge.textContent = parseInt(newBadge.textContent) + delta;
+    }
+
+    connect();
 </script>
 </body>
 </html>

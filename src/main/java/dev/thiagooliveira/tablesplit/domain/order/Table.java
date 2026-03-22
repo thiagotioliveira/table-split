@@ -53,7 +53,15 @@ public class Table {
     this.status = TableStatus.OCCUPIED;
   }
 
+  public void waiting() {
+    this.status = TableStatus.WAITING;
+  }
+
   public void release() {
     this.status = TableStatus.AVAILABLE;
+  }
+
+  public boolean isAvailable() {
+    return this.status == TableStatus.AVAILABLE;
   }
 }

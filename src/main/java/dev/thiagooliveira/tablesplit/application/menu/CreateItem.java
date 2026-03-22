@@ -24,7 +24,7 @@ public class CreateItem {
     this.itemRepository = itemRepository;
   }
 
-  public void execute(UUID accountId, UUID restaurantId, CreateItemCommand command) {
+  public Item execute(UUID accountId, UUID restaurantId, CreateItemCommand command) {
 
     var item = new Item();
     item.setId(UUID.randomUUID());
@@ -52,5 +52,6 @@ public class CreateItem {
     item = this.itemRepository.save(item);
 
     this.eventPublisher.publishEvent(new ItemCreatedEvent(accountId, item.getId()));
+    return item;
   }
 }

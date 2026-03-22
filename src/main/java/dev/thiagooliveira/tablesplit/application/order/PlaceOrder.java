@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.model.OrderItemRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
@@ -68,11 +69,14 @@ public class PlaceOrder {
                       item, itemRequest.getQuantity(), customerName, itemRequest.getNote()));
         }
         order.addTicket(ticket);
-        eventPublisher.publishEvent(new TicketCreatedEvent(order, ticket));
+        eventPublisher.publishEvent(new TicketCreatedEvent(order, ticket, table.getCod()));
       }
     }
 
+    table.waiting();
+    tableRepository.save(table);
     orderRepository.save(order);
+    eventPublisher.publishEvent(new TableStatusChangedEvent(table));
 
     return order;
   }

@@ -60,7 +60,10 @@ public class OrderConfig {
   }
 
   @Bean
-  public MoveTicket moveTicket(OrderRepository orderRepository) {
-    return new MoveTicket(orderRepository);
+  public MoveTicket moveTicket(
+      OrderRepository orderRepository,
+      TableRepository tableRepository,
+      EventPublisher eventPublisher) {
+    return new MoveTicket(orderRepository, tableRepository, eventPublisher);
   }
 }

@@ -88,7 +88,7 @@
       align-items: center;
       gap: 8px;
       padding: 12px 20px;
-      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      background: linear-gradient(135deg, #c9a050 0%, #a88535 100%);
       color: white;
       font-family: 'Inter', sans-serif;
       font-weight: 600;

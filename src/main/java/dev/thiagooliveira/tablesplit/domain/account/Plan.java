@@ -3,14 +3,16 @@ package dev.thiagooliveira.tablesplit.domain.account;
 import java.util.Set;
 
 public enum Plan {
-  LITE(
+  LITE(Set.of(Module.DASHBOARD, Module.MENU, Module.SETTINGS, Module.USER_PROFILE)),
+  PRO(
       Set.of(
           Module.DASHBOARD,
           Module.MENU,
           Module.SETTINGS,
           Module.USER_PROFILE,
           Module.TABLES,
-          Module.ORDERS));
+          Module.ORDERS,
+          Module.GALLERY));
 
   private final Set<Module> modules;
 

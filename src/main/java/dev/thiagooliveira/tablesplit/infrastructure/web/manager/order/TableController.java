@@ -103,6 +103,7 @@ public class TableController {
             .collect(Collectors.toList());
 
     model.addAttribute("tables", tables);
+    model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("count", result.count());
     model.addAttribute("countAvailable", result.countAvailable());
     model.addAttribute("countOccupied", result.countOccupied());

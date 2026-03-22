@@ -6,9 +6,9 @@
   <title th:text="#{app.title}">Entrar - SplitTable</title>
 
   <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#f97316">
+  <meta name="theme-color" content="#c9a050">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="TableSplit">
 
   <!-- Manifest -->
@@ -23,20 +23,29 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/icon-72x72.png">
   <style>
     :root {
-      --background: #FFFBF5;
-      --foreground: #1C1917;
-      --card: #FFFFFF;
-      --card-foreground: #1C1917;
-      --primary: #EA580C;
-      --primary-foreground: #FFFFFF;
-      --secondary: #FED7AA;
-      --secondary-foreground: #9A3412;
-      --muted: #F5F5F4;
-      --muted-foreground: #78716C;
-      --accent: #FFEDD5;
-      --border: #E7E5E4;
-      --success: #16A34A;
-      --error: #DC2626;
+      --background: #faf8f5;
+      --foreground: #1a1714;
+
+      --card: #ffffff;
+      --card-foreground: #1a1714;
+
+      --primary: #c9a050;
+      --primary-dark: #a88535;
+      --primary-foreground: #ffffff;
+
+      --secondary: #efe6d8;
+      --secondary-foreground: #5c4a2f;
+
+      --muted: #f3efe9;
+      --muted-foreground: #6b635a;
+
+      --accent: #e6efe9;
+
+      --border: #e8e4de;
+
+      --success: #2d5a47;
+      --error: #c45c5c;
+
       --radius: 12px;
     }
 
@@ -70,7 +79,7 @@
     .logo-icon {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -277,7 +286,7 @@
       font-size: 1rem;
       font-weight: 600;
       color: white;
-      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
@@ -428,11 +437,11 @@
       .auth-card-header {
         padding: 1.5rem 1.5rem 0;
       }
-      
+
       .auth-card-body {
         padding: 1.5rem;
       }
-      
+
       .auth-card-footer {
         padding: 1.25rem 1.5rem;
       }

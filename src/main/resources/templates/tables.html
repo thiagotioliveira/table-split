@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
         /* New Order Modal Styles */
         .menu-items-grid {
@@ -1686,6 +1688,31 @@
             justify-content: center;
         }
 
+        .table-status.occupied {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .table-status.waiting {
+            background: #fffbeb;
+            color: #f59e0b;
+        }
+
+        .table-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-available .table-status-dot { background-color: #10b981; }
+        .status-occupied .table-status-dot { background-color: #ef4444; }
+        .status-waiting .table-status-dot { background-color: #f59e0b; }
+
+        .table-card.occupied { border-left: 4px solid #ef4444; }
+        .table-card.waiting { border-left: 4px solid #f59e0b; }
+        .table-card.available { border-left: 4px solid #10b981; }
+
         .order-total-row {
             display: flex;
             justify-content: space-between;
@@ -2558,18 +2585,19 @@
                     <!-- Dynamic Tables List -->
                      <div th:each="table : ${tables}" 
                           class="table-card" 
-                          th:classappend="|status-${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}|" 
+                          th:classappend="${table.status.name().toLowerCase()}" 
                           th:data-table="${table.id}" 
-                          th:data-status="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
+                          th:data-status="${table.status.name().toLowerCase()}" 
                           th:onclick="selectTable(this.getAttribute('data-table'))">
                         <div class="table-card-header">
                             <span class="table-number" th:text="${'Mesa ' + table.cod}">Mesa 01</span>
                             <span class="table-status" 
-                                  th:classappend="${table.status.name() == 'AVAILABLE' ? 'free' : 'occupied'}" 
-                                  th:text="${table.status.name() == 'AVAILABLE' ? 'Livre' : 'Ocupada'}">Status</span>
+                                  th:classappend="${table.status.name().toLowerCase()}" 
+                                  th:text="${table.status.name() == 'AVAILABLE' ? 'Livre' : (table.status.name() == 'WAITING' ? 'Aguardando' : 'Ocupada')}">Status</span>
                         </div>
                         <div class="table-card-info">
                             <span th:if="${table.status.name() == 'AVAILABLE'}">Disponível</span>
+                            <span th:if="${table.status.name() == 'WAITING'}">Aguardando Pedido</span>
                             <span th:if="${table.status.name() == 'OCCUPIED'}">Em uso</span>
                             <span class="table-total" th:text="${'R$ ' + #numbers.formatDecimal(table.balance, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                         </div>
@@ -2759,6 +2787,7 @@
     const tables = /*[[${tables}]]*/ [];
     const orderHistory = /*[[${orderHistory}]]*/ [];
     const orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
+    const restaurantId = /*[[${restaurantId}]]*/ null;
 
     function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
@@ -4247,6 +4276,29 @@
 
         form.submit();
     }
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+        const topic = '/topic/restaurant/' + restaurantId + '/tables';
+        console.log('Subscribing to topic:', topic);
+        stompClient.connect({}, function (frame) {
+            stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tables', function (message) {
+                const event = JSON.parse(message.body);
+                updateTableStatus(event);
+            });
+        });
+    }
+
+    function updateTableStatus(event) {
+        console.log('Table status changed:', event);
+        // Reload the page to refresh all table cards and the selected table info
+        window.location.reload(); 
+    }
+
+
+    let stompClient = null;
+    connect();
 </script>
 </body>
 </html>

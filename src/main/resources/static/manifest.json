@@ -4,8 +4,8 @@
   "description": "Gestão de restaurante com cardápio QR e divisão de conta inteligente",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#f97316",
+  "background_color": "#faf8f5",
+  "theme_color": "#c9a050",
   "orientation": "portrait-primary",
   "scope": "/",
   "icons": [

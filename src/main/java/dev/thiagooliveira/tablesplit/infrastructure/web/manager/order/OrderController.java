@@ -56,10 +56,10 @@ public class OrderController {
     model.addAttribute("pendingCount", ticketsByStatus.getOrDefault("PENDING", List.of()).size());
     model.addAttribute(
         "preparingCount", ticketsByStatus.getOrDefault("PREPARING", List.of()).size());
-    model.addAttribute("readyCount", ticketsByStatus.getOrDefault("READY", List.of()).size());
     model.addAttribute(
         "deliveredCount", ticketsByStatus.getOrDefault("DELIVERED", List.of()).size());
     model.addAttribute("totalCount", allTickets.size());
+    model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
 
     return "orders";
   }

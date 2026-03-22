@@ -9,22 +9,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --background: #FFFBF5;
-      --foreground: #1C1917;
-      --card: #FFFFFF;
-      --card-foreground: #1C1917;
-      --primary: #EA580C;
-      --primary-foreground: #FFFFFF;
-      --secondary: #FED7AA;
-      --secondary-foreground: #9A3412;
-      --muted: #F5F5F4;
-      --muted-foreground: #78716C;
-      --accent: #FFEDD5;
-      --border: #E7E5E4;
-      --success: #16A34A;
-      --error: #DC2626;
+      /* Backgrounds */
+      --background: #faf8f5;
+      --foreground: #1a1714;
+
+      --card: #ffffff;
+      --card-foreground: #1a1714;
+
+      /* Core brand colors */
+      --primary: #c9a050;
+      --primary-dark: #a88535;
+      --primary-foreground: #ffffff;
+
+      --secondary: #efe6d8;
+      --secondary-foreground: #5c4a2f;
+
+      /* Muted / neutrals */
+      --muted: #f3efe9;
+      --muted-foreground: #6b635a;
+
+      --accent: #e6efe9;
+
+      --border: #e8e4de;
+
+      /* Status colors */
+      --success: #2d5a47;
+      --error: #c45c5c;
+      --destructive: #c45c5c;
+
+      /* Radius */
       --radius: 12px;
-      --destructive: #ef4444;
     }
 
     * {
@@ -57,7 +71,7 @@
     .logo-icon {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -646,7 +660,7 @@
 
     .btn-primary {
       color: white;
-      background: linear-gradient(135deg, var(--primary) 0%, #F97316 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border: none;
       box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
     }

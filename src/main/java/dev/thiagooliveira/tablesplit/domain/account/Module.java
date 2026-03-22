@@ -6,5 +6,6 @@ public enum Module {
   SETTINGS,
   USER_PROFILE,
   TABLES,
-  ORDERS
+  ORDERS,
+  GALLERY
 }

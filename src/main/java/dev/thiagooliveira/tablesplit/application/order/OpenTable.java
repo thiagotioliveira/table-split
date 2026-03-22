@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
@@ -29,7 +30,7 @@ public class OpenTable {
             .findById(tableId)
             .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableId));
 
-    if (table.getStatus() == TableStatus.OCCUPIED) {
+    if (table.getStatus() != TableStatus.AVAILABLE) {
       throw new TableAlreadyOccupied();
     }
 
@@ -39,6 +40,7 @@ public class OpenTable {
     Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId(), serviceFee);
     orderRepository.save(order);
 
+    eventPublisher.publishEvent(new TableStatusChangedEvent(table));
     eventPublisher.publishEvent(new TableOpenedEvent(order, table));
 
     return order;
