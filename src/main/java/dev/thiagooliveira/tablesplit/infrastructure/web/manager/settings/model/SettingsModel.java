@@ -34,7 +34,7 @@ public class SettingsModel {
   @Size(max = 254)
   private String address;
 
-  private List<String> cuisineType = new ArrayList<>();
+  private String cuisineType;
   private List<String> tags = new ArrayList<>();
 
   @Size(min = 1)
@@ -74,9 +74,7 @@ public class SettingsModel {
     this.email = restaurant.getEmail();
     this.address = restaurant.getAddress();
     this.cuisineType =
-        restaurant.getCuisineType() == null
-            ? List.of()
-            : restaurant.getCuisineType().stream().map(Enum::name).toList();
+        restaurant.getCuisineType() == null ? null : restaurant.getCuisineType().name();
     this.tags =
         restaurant.getTags() == null
             ? List.of()
@@ -107,10 +105,8 @@ public class SettingsModel {
         this.customerLanguages == null
             ? List.of()
             : this.customerLanguages.stream().map(Language::valueOf).toList();
-    List<CuisineType> domainCuisineType =
-        this.cuisineType == null
-            ? List.of()
-            : this.cuisineType.stream().map(CuisineType::valueOf).toList();
+    CuisineType domainCuisineType =
+        this.cuisineType == null ? null : CuisineType.valueOf(this.cuisineType);
     return new UpdateRestaurantCommand(
         this.name,
         this.slug.toLowerCase().trim(),
@@ -186,11 +182,11 @@ public class SettingsModel {
     this.address = address;
   }
 
-  public List<String> getCuisineType() {
+  public String getCuisineType() {
     return cuisineType;
   }
 
-  public void setCuisineType(List<String> cuisineType) {
+  public void setCuisineType(String cuisineType) {
     this.cuisineType = cuisineType;
   }
 

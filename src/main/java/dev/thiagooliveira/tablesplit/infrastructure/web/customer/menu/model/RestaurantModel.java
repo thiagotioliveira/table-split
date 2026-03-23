@@ -7,13 +7,22 @@ public class RestaurantModel {
   private final String name;
   private final String address;
   private final Currency currency;
+  private final String cuisineType;
   private final String time;
 
   public RestaurantModel(Restaurant restaurant) {
     this.name = restaurant.getName();
     this.address = restaurant.getAddress();
     this.currency = restaurant.getCurrency();
+    this.cuisineType =
+        restaurant.getCuisineType() != null
+            ? CuisineType.valueOf(restaurant.getCuisineType().name()).getLabel()
+            : null;
     this.time = "18:00 - 00:00";
+  }
+
+  public String getCuisineType() {
+    return cuisineType;
   }
 
   public String getName() {

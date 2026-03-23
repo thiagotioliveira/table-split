@@ -33,7 +33,7 @@ public class AccountCreatedEventListener {
             restaurantDetails.getPhone(),
             restaurantDetails.getEmail(),
             restaurantDetails.getAddress(),
-            List.of(),
+            null,
             List.of(),
             List.of(Language.PT, Language.EN),
             restaurantDetails.getCurrency(),

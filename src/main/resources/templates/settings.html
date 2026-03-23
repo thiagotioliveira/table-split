@@ -803,55 +803,55 @@
                 </p>
                 <div class="cuisine-tags" id="cuisineTags">
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('ITALIAN')} ? ' selected' : ''" data-cuisine="ITALIAN"
+                    th:classappend="${form.cuisineType == 'ITALIAN'} ? ' selected' : ''" data-cuisine="ITALIAN"
                     onclick="toggleCuisine(this)">🍝 <span th:text="#{restaurant.cuisine.type.italian}">Italian</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('JAPANESE')} ? ' selected' : ''" data-cuisine="JAPANESE"
+                    th:classappend="${form.cuisineType == 'JAPANESE'} ? ' selected' : ''" data-cuisine="JAPANESE"
                     onclick="toggleCuisine(this)">🍣 <span th:text="#{restaurant.cuisine.type.japanese}">Japanese</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('BRAZILIAN')} ? ' selected' : ''"
+                    th:classappend="${form.cuisineType == 'BRAZILIAN'} ? ' selected' : ''"
                     data-cuisine="BRAZILIAN" onclick="toggleCuisine(this)">🍖 <span th:text="#{restaurant.cuisine.type.brazilian}">Brazilian</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('MEXICAN')} ? ' selected' : ''" data-cuisine="MEXICAN"
+                    th:classappend="${form.cuisineType == 'MEXICAN'} ? ' selected' : ''" data-cuisine="MEXICAN"
                     onclick="toggleCuisine(this)">🌮 <span th:text="#{restaurant.cuisine.type.mexican}">Mexican</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('FRENCH')} ? ' selected' : ''" data-cuisine="FRENCH"
+                    th:classappend="${form.cuisineType == 'FRENCH'} ? ' selected' : ''" data-cuisine="FRENCH"
                     onclick="toggleCuisine(this)">🥐 <span th:text="#{restaurant.cuisine.type.french}">French</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('CHINESE')} ? ' selected' : ''" data-cuisine="CHINESE"
+                    th:classappend="${form.cuisineType == 'CHINESE'} ? ' selected' : ''" data-cuisine="CHINESE"
                     onclick="toggleCuisine(this)">🥡 <span th:text="#{restaurant.cuisine.type.chinese}">Chinese</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('INDIANA')} ? ' selected' : ''" data-cuisine="INDIANA"
+                    th:classappend="${form.cuisineType == 'INDIANA'} ? ' selected' : ''" data-cuisine="INDIANA"
                     onclick="toggleCuisine(this)">🍛 <span th:text="#{restaurant.cuisine.type.indian}">Indian</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('ARABIC')} ? ' selected' : ''" data-cuisine="ARABIC"
+                    th:classappend="${form.cuisineType == 'ARABIC'} ? ' selected' : ''" data-cuisine="ARABIC"
                     onclick="toggleCuisine(this)">🧆 <span th:text="#{restaurant.cuisine.type.arabic}">Arabic</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('AMERICAN')} ? ' selected' : ''" data-cuisine="AMERICAN"
+                    th:classappend="${form.cuisineType == 'AMERICAN'} ? ' selected' : ''" data-cuisine="AMERICAN"
                     onclick="toggleCuisine(this)">🍔 <span th:text="#{restaurant.cuisine.type.american}">American</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('FAST_FOOD')} ? ' selected' : ''" data-cuisine="FAST_FOOD"
+                    th:classappend="${form.cuisineType == 'FAST_FOOD'} ? ' selected' : ''" data-cuisine="FAST_FOOD"
                     onclick="toggleCuisine(this)">🍟 <span th:text="#{restaurant.cuisine.type.fastfood}">Fast-Food</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('PIZZERIA')} ? ' selected' : ''" data-cuisine="PIZZERIA"
+                    th:classappend="${form.cuisineType == 'PIZZERIA'} ? ' selected' : ''" data-cuisine="PIZZERIA"
                     onclick="toggleCuisine(this)">🍕 <span th:text="#{restaurant.cuisine.type.pizzeria}">Pizzeria</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('CONTEMPORARY')} ? ' selected' : ''" data-cuisine="CONTEMPORARY"
+                    th:classappend="${form.cuisineType == 'CONTEMPORARY'} ? ' selected' : ''" data-cuisine="CONTEMPORARY"
                     onclick="toggleCuisine(this)">🍽️ <span th:text="#{restaurant.cuisine.type.contemporary}">Contemporary</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('SEAFOOD')} ? ' selected' : ''" data-cuisine="SEAFOOD"
+                    th:classappend="${form.cuisineType == 'SEAFOOD'} ? ' selected' : ''" data-cuisine="SEAFOOD"
                     onclick="toggleCuisine(this)">🦐 <span th:text="#{restaurant.cuisine.type.seafood}">Sea-Food</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('VEGETARIAN')} ? ' selected' : ''"
+                    th:classappend="${form.cuisineType == 'VEGETARIAN'} ? ' selected' : ''"
                     data-cuisine="VEGETARIAN" onclick="toggleCuisine(this)">🥗 <span th:text="#{restaurant.cuisine.type.vegetarian}">Vegetarian</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('STEAKHOUSE')} ? ' selected' : ''"
+                    th:classappend="${form.cuisineType == 'STEAKHOUSE'} ? ' selected' : ''"
                     data-cuisine="STEAKHOUSE" onclick="toggleCuisine(this)">🥩 <span th:text="#{restaurant.cuisine.type.steakhouse}">Steak House</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('CAFETERIA')} ? ' selected' : ''"
+                    th:classappend="${form.cuisineType == 'CAFETERIA'} ? ' selected' : ''"
                     data-cuisine="CAFETERIA" onclick="toggleCuisine(this)">☕ <span th:text="#{restaurant.cuisine.type.cafeteria}">Cafeteria</span></button>
                   <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType.contains('SWEET_SHOP')} ? ' selected' : ''"
+                    th:classappend="${form.cuisineType == 'SWEET_SHOP'} ? ' selected' : ''"
                     data-cuisine="SWEET_SHOP" onclick="toggleCuisine(this)">🍰 <span th:text="#{restaurant.cuisine.type.sweetshop}">Sweet Shop</span></button>
                 </div>
               </div>
@@ -1416,21 +1416,25 @@
 
     // Cuisine type toggle
     function toggleCuisine(btn) {
-      btn.classList.toggle('selected');
+      const isSelected = btn.classList.contains('selected');
+      document.querySelectorAll('#cuisineTags .cuisine-tag').forEach(b => b.classList.remove('selected'));
+      if (!isSelected) {
+        btn.classList.add('selected');
+      }
       syncHiddenCuisines();
     }
 
     function syncHiddenCuisines() {
       const container = document.getElementById('hiddenCuisineContainer');
       container.innerHTML = '';
-      const selected = document.querySelectorAll('#cuisineTags .cuisine-tag.selected');
-      selected.forEach(btn => {
+      const selected = document.querySelector('#cuisineTags .cuisine-tag.selected');
+      if (selected) {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'cuisineType';
-        input.value = btn.dataset.cuisine;
+        input.value = selected.dataset.cuisine;
         container.appendChild(input);
-      });
+      }
     }
 
     // Toggle switch
@@ -1532,6 +1536,7 @@
     document.querySelector('form').addEventListener('submit', function () {
       syncHiddenTags();
       syncHiddenLanguages();
+      syncHiddenCuisines();
     });
 
     // Language management

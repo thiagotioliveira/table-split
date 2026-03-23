@@ -133,7 +133,7 @@ class UpdateRestaurantTest {
         "123456789",
         "updated@test.com",
         "Updated Address",
-        new ArrayList<>(),
+        null,
         new ArrayList<>(),
         List.of(Language.EN),
         Currency.EUR,

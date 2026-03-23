@@ -18,7 +18,7 @@ public class Restaurant {
   private String phone;
   private String email;
   private String address;
-  private List<CuisineType> cuisineType;
+  private CuisineType cuisineType;
   private List<Tag> tags;
   private List<Language> customerLanguages;
   private Currency currency;
@@ -191,11 +191,11 @@ public class Restaurant {
     this.address = address;
   }
 
-  public List<CuisineType> getCuisineType() {
+  public CuisineType getCuisineType() {
     return cuisineType;
   }
 
-  public void setCuisineType(List<CuisineType> cuisineType) {
+  public void setCuisineType(CuisineType cuisineType) {
     this.cuisineType = cuisineType;
   }
 

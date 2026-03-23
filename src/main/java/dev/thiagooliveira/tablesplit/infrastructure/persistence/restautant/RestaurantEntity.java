@@ -35,9 +35,9 @@ public class RestaurantEntity {
 
   private String address;
 
-  @Convert(converter = CuisineTypeJsonListConverter.class)
-  @Column(nullable = false, columnDefinition = "TEXT")
-  private List<CuisineType> cuisineType = new ArrayList<>();
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = true)
+  private CuisineType cuisineType;
 
   @Convert(converter = TagJsonListConverter.class)
   @Column(columnDefinition = "TEXT")
@@ -197,11 +197,11 @@ public class RestaurantEntity {
     this.address = address;
   }
 
-  public List<CuisineType> getCuisineType() {
+  public CuisineType getCuisineType() {
     return cuisineType;
   }
 
-  public void setCuisineType(List<CuisineType> cuisineType) {
+  public void setCuisineType(CuisineType cuisineType) {
     this.cuisineType = cuisineType;
   }
 

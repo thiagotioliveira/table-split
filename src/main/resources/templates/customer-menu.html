@@ -1204,7 +1204,7 @@
 
     <!-- Hero Content -->
     <div class="hero-content">
-        <p class="restaurant-category">Culinária Italiana</p>
+        <p class="restaurant-category" th:text="#{${customerMenu.restaurant.cuisineType}}" th:if="${customerMenu.restaurant.cuisineType != null}">Culinária Italiana</p>
         <h1 class="restaurant-name" th:text="${customerMenu.restaurant.name}">Cantina Bella Italia</h1>
         <div class="restaurant-meta">
         <span class="restaurant-meta-item" th:if="${false}">
