@@ -7,5 +7,6 @@ public enum Module {
   USER_PROFILE,
   TABLES,
   ORDERS,
-  GALLERY
+  GALLERY,
+  RESERVATION,
 }

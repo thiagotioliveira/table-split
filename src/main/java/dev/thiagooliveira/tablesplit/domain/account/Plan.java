@@ -12,7 +12,8 @@ public enum Plan {
           Module.USER_PROFILE,
           Module.TABLES,
           Module.ORDERS,
-          Module.GALLERY));
+          Module.GALLERY,
+          Module.RESERVATION));
 
   private final Set<Module> modules;
 

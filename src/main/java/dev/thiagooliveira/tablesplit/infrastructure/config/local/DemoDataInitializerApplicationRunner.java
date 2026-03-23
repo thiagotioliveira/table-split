@@ -116,6 +116,15 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
     var accountId = user.getAccountId();
     var restaurant = this.restaurantRepository.findByAccountId(accountId).orElseThrow();
     this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "01"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "02"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "03"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "04"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "05"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "06"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "07"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "08"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "09"));
+    this.transactionalContext.execute(() -> this.createTable.execute(restaurant.getId(), "10"));
     var categoryStarters =
         this.transactionalContext.execute(
             () ->
