@@ -1504,62 +1504,50 @@
             font-weight: 600;
         }
 
-        /* Order Items List */
-        .order-items-section {
-            margin-top: 1rem;
-            border-top: 1px solid var(--border);
-            padding-top: 1rem;
-        }
-
-        .order-items-section h4 {
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .order-items-list {
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .order-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .order-item-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .order-item-qty {
-            background: var(--primary);
-            color: white;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
+        /* Order Item Actions */
         .order-item-actions {
             display: flex;
+            gap: 0.25rem;
+            margin-left: 0.5rem;
+        }
+
+        .order-item-action {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .order-item-price {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .order-item-customizations {
-            font-size: 0.7rem;
+            justify-content: center;
+            transition: all 0.2s;
+            background: var(--background-secondary);
             color: var(--muted);
-            margin-top: 0.2rem;
-            padding-left: 2rem;
+        }
+
+        .order-item-action:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .order-item-action.cancel:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+        }
+
+        .order-item-action.transfer:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: #7c3aed;
+        }
+
+        .order-item-action.deliver:hover {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--green);
+        }
+
+        .order-item-action svg {
+            width: 14px;
+            height: 14px;
         }
 
         /* Item Customization Modal */
@@ -2471,6 +2459,369 @@
     .item-note-input:focus {
       border-color: var(--primary);
     }
+
+
+        /* Cancel Modal Styles */
+        .cancel-modal-content {
+            text-align: center;
+        }
+
+        .cancel-modal-item {
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cancel-modal-item-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .cancel-modal-item-price {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .cancel-qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .cancel-qty-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--card);
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .cancel-qty-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .cancel-qty-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .cancel-qty-value {
+            font-size: 2rem;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .cancel-qty-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .cancel-modal-reason {
+            margin-bottom: 1rem;
+        }
+
+        .cancel-modal-reason label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        .cancel-modal-reason select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            background: var(--card);
+        }
+
+        .cancel-modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .cancel-modal-footer button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cancel-modal-footer .btn-secondary {
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .cancel-modal-footer .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .cancel-modal-footer .btn-danger {
+            background: var(--destructive);
+            border: none;
+            color: white;
+        }
+
+        .cancel-modal-footer .btn-danger:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Multi-client order summary */
+        .multi-order-summary {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .multi-order-summary h4 {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .client-order-group {
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .client-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .client-order-header strong {
+            font-size: 0.9rem;
+        }
+
+        .client-order-header .subtotal {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .client-order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .client-order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0.25rem 0;
+        }
+
+        .client-order-item .item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .client-order-item .qty {
+            background: var(--card);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .client-order-item .remove-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .client-order-item .remove-btn:hover {
+            color: var(--destructive);
+        }
+
+        .multi-order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--foreground);
+            color: white;
+            border-radius: var(--radius);
+            margin-top: 0.75rem;
+        }
+
+        .multi-order-total strong {
+            font-size: 1rem;
+        }
+
+        .add-order-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .add-order-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Bill Summary */
+        .bill-summary {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .bill-summary h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .bill-row.total {
+            border-top: 2px solid var(--border);
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .bill-row.total span:last-child {
+            color: var(--primary);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 95%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--foreground);
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
 </style>
 </head>
 <body>
@@ -2709,6 +3060,14 @@
                                         <div>
                                             <span class="order-item-price" th:text="${'R$ ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                                              <span class="order-item-status" th:classappend="${item.statusClass}" th:text="${item.status}">Pendente</span>
+                                            <div class="order-item-actions">
+                                                <button class="order-item-action deliver" title="Marcar como Entregue" onclick="deliverOrderItem(103, 'Pudim')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                </button>
+                                                <button class="order-item-action cancel" title="Cancelar" onclick="openCancelItemModal(103, 'Pudim', 1, 14.60)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3919,6 +4278,60 @@
     </div>
 </div>
 
+
+<!-- Cancel Item Modal -->
+<div class="modal-overlay" id="cancelItemModal">
+    <div class="modal" style="max-width: 380px;">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Cancelar Item
+            </h3>
+            <button class="modal-close" onclick="closeCancelItemModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body cancel-modal-content">
+            <div class="cancel-modal-item">
+                <div class="cancel-modal-item-name" id="cancelItemName">--</div>
+                <div class="cancel-modal-item-price" id="cancelItemPrice">R$ 0,00</div>
+            </div>
+
+            <div class="cancel-qty-label">Quantidade a cancelar:</div>
+            <div class="cancel-qty-selector">
+                <button class="cancel-qty-btn" id="cancelQtyMinus" onclick="adjustCancelQty(-1)">−</button>
+                <div class="cancel-qty-value" id="cancelQtyValue">1</div>
+                <button class="cancel-qty-btn" id="cancelQtyPlus" onclick="adjustCancelQty(1)">+</button>
+            </div>
+            <div class="cancel-qty-label">de <span id="cancelQtyMax">1</span> unidade(s)</div>
+
+            <div class="cancel-modal-total" style="margin: 1rem 0; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius); font-weight: 600; color: var(--red);">
+                Total a cancelar: <span id="cancelTotalValue">R$ 0,00</span>
+            </div>
+
+            <div class="cancel-modal-reason">
+                <label>Motivo do cancelamento:</label>
+                <select id="cancelReason">
+                    <option value="">Selecione um motivo (opcional)</option>
+                    <option value="cliente_desistiu">Cliente desistiu</option>
+                    <option value="erro_pedido">Erro no pedido</option>
+                    <option value="item_indisponivel">Item indisponível</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="cancel-modal-footer">
+                <button class="btn-secondary" onclick="closeCancelItemModal()">Voltar</button>
+                <button class="btn-danger" onclick="confirmCancelItem()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Cancelar Item
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     // Initialize menu items grid when order modal opens
     /*
@@ -3935,6 +4348,30 @@
         }
     });
     */
+
+    function closeCancelItemModal() {
+        document.getElementById('cancelItemModal').classList.remove('active');
+    }
+
+    // Cancel Item Modal
+    let cancelItemData = { itemId: null, itemName: '', maxQty: 1, unitPrice: 0, cancelQty: 1 };
+
+    function openCancelItemModal(itemId, itemName, qty, unitPrice) {
+        cancelItemData = { itemId, itemName, maxQty: qty, unitPrice, cancelQty: qty };
+
+        document.getElementById('cancelItemName').textContent = itemName;
+        document.getElementById('cancelItemPrice').textContent = `R$ ${unitPrice.toFixed(2).replace('.', ',')} cada`;
+        document.getElementById('cancelQtyValue').textContent = cancelItemData.cancelQty;
+        document.getElementById('cancelQtyMax').textContent = cancelItemData.maxQty;
+        updateCancelTotal();
+
+        document.getElementById('cancelItemModal').classList.add('active');
+    }
+
+    function updateCancelTotal() {
+        const total = cancelItemData.cancelQty * cancelItemData.unitPrice;
+        document.getElementById('cancelTotalValue').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
 
     function getTableClients() {
         const clients = [];
