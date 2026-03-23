@@ -5,8 +5,8 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
-import dev.thiagooliveira.tablesplit.application.order.model.OrderItemRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
@@ -56,7 +56,7 @@ class PlaceOrderTest {
             tableCod,
             List.of(
                 new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
-                    customerName, null, List.of(new OrderItemRequest(itemId, 2, null)))),
+                    customerName, null, List.of(new TicketItemRequest(itemId, 2, null)))),
             10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
@@ -94,7 +94,7 @@ class PlaceOrderTest {
             tableCod,
             List.of(
                 new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
-                    "Customer", null, List.of(new OrderItemRequest(itemId, 1, null)))),
+                    "Customer", null, List.of(new TicketItemRequest(itemId, 1, null)))),
             10);
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);

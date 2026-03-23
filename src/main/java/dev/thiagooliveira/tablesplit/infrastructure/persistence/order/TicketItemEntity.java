@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.OrderItem;
+import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @Entity
-@jakarta.persistence.Table(name = "order_items")
-public class OrderItemEntity {
+@jakarta.persistence.Table(name = "ticket_items")
+public class TicketItemEntity {
 
   @Id private UUID id;
 
@@ -40,10 +40,10 @@ public class OrderItemEntity {
   @Enumerated(EnumType.STRING)
   private TicketStatus status;
 
-  public OrderItemEntity() {}
+  public TicketItemEntity() {}
 
-  public OrderItem toDomain() {
-    OrderItem domain = new OrderItem();
+  public TicketItem toDomain() {
+    TicketItem domain = new TicketItem();
     domain.setId(this.id);
     domain.setItemId(this.itemId);
     domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
@@ -55,8 +55,8 @@ public class OrderItemEntity {
     return domain;
   }
 
-  public static OrderItemEntity fromDomain(OrderItem domain, TicketEntity ticket) {
-    OrderItemEntity entity = new OrderItemEntity();
+  public static TicketItemEntity fromDomain(TicketItem domain, TicketEntity ticket) {
+    TicketItemEntity entity = new TicketItemEntity();
     entity.setId(domain.getId());
     entity.setTicket(ticket);
     entity.setItemId(domain.getItemId());
@@ -133,11 +133,11 @@ public class OrderItemEntity {
     this.note = note;
   }
 
-  public dev.thiagooliveira.tablesplit.domain.order.TicketStatus getStatus() {
+  public TicketStatus getStatus() {
     return status;
   }
 
-  public void setStatus(dev.thiagooliveira.tablesplit.domain.order.TicketStatus status) {
+  public void setStatus(TicketStatus status) {
     this.status = status;
   }
 }

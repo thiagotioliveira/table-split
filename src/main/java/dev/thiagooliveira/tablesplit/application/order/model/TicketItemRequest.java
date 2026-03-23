@@ -2,19 +2,19 @@ package dev.thiagooliveira.tablesplit.application.order.model;
 
 import java.util.UUID;
 
-public class OrderItemRequest {
+public class TicketItemRequest {
   private UUID itemId;
   private String customerName;
   private int quantity;
   private String note;
 
-  public OrderItemRequest() {}
+  public TicketItemRequest() {}
 
-  public OrderItemRequest(UUID itemId, int quantity, String note) {
+  public TicketItemRequest(UUID itemId, int quantity, String note) {
     this(itemId, null, quantity, note);
   }
 
-  public OrderItemRequest(UUID itemId, String customerName, int quantity, String note) {
+  public TicketItemRequest(UUID itemId, String customerName, int quantity, String note) {
     this.itemId = itemId;
     this.customerName = customerName;
     this.quantity = quantity;

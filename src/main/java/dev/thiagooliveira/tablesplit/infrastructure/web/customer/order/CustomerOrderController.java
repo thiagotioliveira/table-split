@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.order;
 
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
-import dev.thiagooliveira.tablesplit.application.order.model.OrderItemRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.order.model.CustomerOrderRequest;
@@ -40,7 +40,7 @@ public class CustomerOrderController {
     ticketRequest.setCustomerName(request.getCustomerName());
     ticketRequest.setItems(
         request.getItems().stream()
-            .map(i -> new OrderItemRequest(i.getItemId(), i.getQuantity(), null))
+            .map(i -> new TicketItemRequest(i.getItemId(), i.getQuantity(), null))
             .collect(Collectors.toList()));
 
     placeOrderRequest.setTickets(java.util.List.of(ticketRequest));

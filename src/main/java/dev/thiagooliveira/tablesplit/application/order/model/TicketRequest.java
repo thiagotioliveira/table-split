@@ -5,11 +5,11 @@ import java.util.List;
 public class TicketRequest {
   private String customerName;
   private String note;
-  private List<OrderItemRequest> items;
+  private List<TicketItemRequest> items;
 
   public TicketRequest() {}
 
-  public TicketRequest(String customerName, String note, List<OrderItemRequest> items) {
+  public TicketRequest(String customerName, String note, List<TicketItemRequest> items) {
     this.customerName = customerName;
     this.note = note;
     this.items = items;
@@ -31,11 +31,11 @@ public class TicketRequest {
     this.note = note;
   }
 
-  public List<OrderItemRequest> getItems() {
+  public List<TicketItemRequest> getItems() {
     return items;
   }
 
-  public void setItems(List<OrderItemRequest> items) {
+  public void setItems(List<TicketItemRequest> items) {
     this.items = items;
   }
 }

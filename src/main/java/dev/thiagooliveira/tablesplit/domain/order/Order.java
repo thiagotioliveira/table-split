@@ -124,8 +124,8 @@ public class Order {
     this.tickets = tickets;
   }
 
-  public List<OrderItem> getItems() {
-    return tickets.stream().flatMap(t -> t.getItems().stream()).toList();
+  public List<TicketItem> getItems() {
+    return tickets.stream().flatMap(ticket -> ticket.getItems().stream()).toList();
   }
 
   public ZonedDateTime getOpenedAt() {

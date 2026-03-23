@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 
 import java.math.BigDecimal;
 
-public class OrderItemModel {
+public class TicketItemModel {
   private final String customerName;
   private final String name;
   private final int quantity;
@@ -12,7 +12,7 @@ public class OrderItemModel {
   private final String status;
   private final String statusClass;
 
-  public OrderItemModel(
+  public TicketItemModel(
       String customerName,
       String name,
       int quantity,

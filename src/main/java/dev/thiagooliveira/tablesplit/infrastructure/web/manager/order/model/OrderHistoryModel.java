@@ -9,7 +9,7 @@ public class OrderHistoryModel {
   private final String status;
   private final String openedAt;
   private final String closedAt;
-  private final List<OrderItemModel> items;
+  private final List<TicketItemModel> items;
   private final List<OrderHistoryPaymentModel> payments;
 
   public OrderHistoryModel(
@@ -19,7 +19,7 @@ public class OrderHistoryModel {
       String status,
       String openedAt,
       String closedAt,
-      List<OrderItemModel> items,
+      List<TicketItemModel> items,
       List<OrderHistoryPaymentModel> payments) {
     this.id = id;
     this.tableId = tableId;
@@ -55,7 +55,7 @@ public class OrderHistoryModel {
     return closedAt;
   }
 
-  public List<OrderItemModel> getItems() {
+  public List<TicketItemModel> getItems() {
     return items;
   }
 

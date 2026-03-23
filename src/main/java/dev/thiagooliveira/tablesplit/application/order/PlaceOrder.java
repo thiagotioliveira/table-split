@@ -2,8 +2,8 @@ package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
-import dev.thiagooliveira.tablesplit.application.order.model.OrderItemRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
+import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import java.util.UUID;
 
 public class PlaceOrder {
@@ -50,7 +51,7 @@ public class PlaceOrder {
           request.getTickets()) {
         Ticket ticket = new Ticket();
         ticket.setNote(ticketRequest.getNote());
-        for (OrderItemRequest itemRequest : ticketRequest.getItems()) {
+        for (TicketItemRequest itemRequest : ticketRequest.getItems()) {
           Item item =
               itemRepository
                   .findById(itemRequest.getItemId())
@@ -65,7 +66,7 @@ public class PlaceOrder {
           ticket
               .getItems()
               .add(
-                  new dev.thiagooliveira.tablesplit.domain.order.OrderItem(
+                  new TicketItem(
                       item, itemRequest.getQuantity(), customerName, itemRequest.getNote()));
         }
         order.addTicket(ticket);

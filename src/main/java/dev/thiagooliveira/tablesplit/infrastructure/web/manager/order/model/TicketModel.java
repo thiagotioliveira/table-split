@@ -16,7 +16,7 @@ public class TicketModel {
   private final String statusLabel;
   private final ZonedDateTime createdAt;
   private final String timeAgo;
-  private final List<OrderItemModel> items;
+  private final List<TicketItemModel> items;
   private final BigDecimal total;
   private final boolean urgent;
 
@@ -27,7 +27,7 @@ public class TicketModel {
       TicketStatus status,
       ZonedDateTime createdAt,
       String timeAgo,
-      List<OrderItemModel> items,
+      List<TicketItemModel> items,
       BigDecimal total,
       boolean urgent) {
     this.id = id;
@@ -80,7 +80,7 @@ public class TicketModel {
     return timeAgo;
   }
 
-  public List<OrderItemModel> getItems() {
+  public List<TicketItemModel> getItems() {
     return items;
   }
 

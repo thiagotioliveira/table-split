@@ -19,7 +19,7 @@ public class TicketEntity {
   private OrderEntity order;
 
   @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderItemEntity> items = new ArrayList<>();
+  private List<TicketItemEntity> items = new ArrayList<>();
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -42,7 +42,8 @@ public class TicketEntity {
     domain.setReadyAt(this.readyAt);
     domain.setNote(this.note);
     if (this.items != null) {
-      domain.setItems(new ArrayList<>(this.items.stream().map(OrderItemEntity::toDomain).toList()));
+      domain.setItems(
+          new ArrayList<>(this.items.stream().map(TicketItemEntity::toDomain).toList()));
     }
     return domain;
   }
@@ -59,7 +60,7 @@ public class TicketEntity {
       entity.setItems(
           new ArrayList<>(
               domain.getItems().stream()
-                  .map(item -> OrderItemEntity.fromDomain(item, entity))
+                  .map(item -> TicketItemEntity.fromDomain(item, entity))
                   .toList()));
     }
     return entity;
@@ -81,11 +82,11 @@ public class TicketEntity {
     this.order = order;
   }
 
-  public List<OrderItemEntity> getItems() {
+  public List<TicketItemEntity> getItems() {
     return items;
   }
 
-  public void setItems(List<OrderItemEntity> items) {
+  public void setItems(List<TicketItemEntity> items) {
     this.items = items;
   }
 

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class Ticket {
   private UUID id;
-  private List<OrderItem> items = new ArrayList<>();
+  private List<TicketItem> items = new ArrayList<>();
   private TicketStatus status;
   private ZonedDateTime createdAt;
   private ZonedDateTime readyAt;
@@ -21,7 +21,7 @@ public class Ticket {
   }
 
   public Ticket(
-      UUID id, List<OrderItem> items, TicketStatus status, ZonedDateTime createdAt, String note) {
+      UUID id, List<TicketItem> items, TicketStatus status, ZonedDateTime createdAt, String note) {
     this.id = id;
     this.items = items;
     this.status = status;
@@ -30,7 +30,7 @@ public class Ticket {
   }
 
   public BigDecimal calculateTotal() {
-    return items.stream().map(OrderItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return items.stream().map(TicketItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public UUID getId() {
@@ -41,11 +41,11 @@ public class Ticket {
     this.id = id;
   }
 
-  public List<OrderItem> getItems() {
+  public List<TicketItem> getItems() {
     return items;
   }
 
-  public void setItems(List<OrderItem> items) {
+  public void setItems(List<TicketItem> items) {
     this.items = items;
   }
 

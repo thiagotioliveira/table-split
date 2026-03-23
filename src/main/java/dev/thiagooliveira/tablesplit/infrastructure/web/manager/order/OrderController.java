@@ -3,12 +3,13 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -73,20 +74,20 @@ public class OrderController {
   public record MoveTicketRequest(UUID ticketId, String status) {}
 
   private TicketModel mapToModel(Ticket ticket, String tableCod) {
-    List<OrderItemModel> itemModels =
+    List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
                 item ->
-                    new OrderItemModel(
+                    new TicketItemModel(
                         item.getCustomerName(),
                         item.getName()
-                            .getOrDefault("pt", item.getName().values().iterator().next()),
+                            .getOrDefault(Language.PT, item.getName().values().iterator().next()),
                         item.getQuantity(),
                         item.getUnitPrice(),
                         item.getTotalPrice(),
                         item.getNote(),
-                        item.getStatus() != null ? item.getStatus().name() : "",
-                        ""))
+                        item.getStatus().getLabel(),
+                        item.getStatus().getCssClass()))
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();

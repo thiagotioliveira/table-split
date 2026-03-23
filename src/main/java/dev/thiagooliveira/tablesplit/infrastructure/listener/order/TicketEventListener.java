@@ -5,7 +5,7 @@ import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderItemModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -39,7 +39,7 @@ public class TicketEventListener {
   }
 
   private TicketModel mapToModel(Ticket ticket, String tableCod) {
-    List<OrderItemModel> itemModels =
+    List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
                 item -> {
@@ -53,15 +53,15 @@ public class TicketEventListener {
                                     .getOrDefault(
                                         Language.EN, item.getName().values().iterator().next()));
                   }
-                  return new OrderItemModel(
+                  return new TicketItemModel(
                       item.getCustomerName(),
                       name,
                       item.getQuantity(),
                       item.getUnitPrice(),
                       item.getTotalPrice(),
                       item.getNote(),
-                      item.getStatus() != null ? item.getStatus().name() : "",
-                      "");
+                      item.getStatus().getLabel(),
+                      item.getStatus().getCssClass());
                 })
             .toList();
 

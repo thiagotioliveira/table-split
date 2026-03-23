@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
-public class OrderItem {
+public class TicketItem {
   private UUID id;
   private UUID itemId;
   private Map<Language, String>
@@ -17,9 +17,9 @@ public class OrderItem {
   private String note;
   private TicketStatus status = TicketStatus.PENDING;
 
-  public OrderItem() {}
+  public TicketItem() {}
 
-  public OrderItem(Item item, int quantity, String customerName, String note) {
+  public TicketItem(Item item, int quantity, String customerName, String note) {
     this.id = UUID.randomUUID();
     this.itemId = item.getId();
     this.name = item.getName();

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class CustomerOrderRequest {
   private String customerName;
-  private List<CustomerOrderItemRequest> items;
+  private List<CustomerTicketItemRequest> items;
 
   public String getCustomerName() {
     return customerName;
@@ -15,15 +15,15 @@ public class CustomerOrderRequest {
     this.customerName = customerName;
   }
 
-  public List<CustomerOrderItemRequest> getItems() {
+  public List<CustomerTicketItemRequest> getItems() {
     return items;
   }
 
-  public void setItems(List<CustomerOrderItemRequest> items) {
+  public void setItems(List<CustomerTicketItemRequest> items) {
     this.items = items;
   }
 
-  public static class CustomerOrderItemRequest {
+  public static class CustomerTicketItemRequest {
     private UUID itemId;
     private int quantity;
 

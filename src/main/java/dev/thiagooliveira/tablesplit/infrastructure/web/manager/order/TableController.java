@@ -13,8 +13,8 @@ import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExi
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.order.OrderItem;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
+import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -25,8 +25,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.Crea
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryPaymentModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TableModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -136,18 +136,18 @@ public class TableController {
                 .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
-                        OrderItem::getCustomerName,
+                        TicketItem::getCustomerName,
                         Collectors.mapping(
-                            oi ->
-                                new OrderItemModel(
-                                    oi.getCustomerName(),
-                                    oi.getName().get(Language.PT),
-                                    oi.getQuantity(),
-                                    oi.getUnitPrice(),
-                                    oi.getTotalPrice(),
-                                    oi.getNote(),
-                                    oi.getStatus().getLabel(),
-                                    oi.getStatus().getCssClass()),
+                            item ->
+                                new TicketItemModel(
+                                    item.getCustomerName(),
+                                    item.getName().get(Language.PT),
+                                    item.getQuantity(),
+                                    item.getUnitPrice(),
+                                    item.getTotalPrice(),
+                                    item.getNote(),
+                                    item.getStatus().getLabel(),
+                                    item.getStatus().getCssClass()),
                             Collectors.toList())));
         model.addAttribute("clients", clients);
         model.addAttribute("orderLoaded", true);
@@ -166,9 +166,9 @@ public class TableController {
                 .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
-                        OrderItem::getCustomerName,
+                        TicketItem::getCustomerName,
                         Collectors.reducing(
-                            BigDecimal.ZERO, OrderItem::getTotalPrice, BigDecimal::add)));
+                            BigDecimal.ZERO, TicketItem::getTotalPrice, BigDecimal::add)));
 
         Map<String, BigDecimal> clientPaid =
             order.getPayments().stream()
@@ -213,16 +213,16 @@ public class TableController {
                           hist.getTickets().stream()
                               .flatMap(t -> t.getItems().stream())
                               .map(
-                                  oi ->
-                                      new OrderItemModel(
-                                          oi.getCustomerName(),
-                                          oi.getName().get(Language.PT),
-                                          oi.getQuantity(),
-                                          oi.getUnitPrice(),
-                                          oi.getTotalPrice(),
-                                          oi.getNote(),
-                                          oi.getStatus().getLabel(),
-                                          oi.getStatus().getCssClass()))
+                                  item ->
+                                      new TicketItemModel(
+                                          item.getCustomerName(),
+                                          item.getName().get(Language.PT),
+                                          item.getQuantity(),
+                                          item.getUnitPrice(),
+                                          item.getTotalPrice(),
+                                          item.getNote(),
+                                          item.getStatus().getLabel(),
+                                          item.getStatus().getCssClass()))
                               .toList(),
                           hist.getPayments().stream()
                               .map(
