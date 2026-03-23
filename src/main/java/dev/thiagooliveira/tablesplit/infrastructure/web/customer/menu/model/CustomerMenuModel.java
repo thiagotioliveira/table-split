@@ -8,14 +8,14 @@ import java.util.List;
 
 public class CustomerMenuModel {
   private final String profileLink;
-  private final String restaurantName;
+  private final RestaurantModel restaurant;
   private final List<CategoryModel> categories = new ArrayList<>();
   private final List<ItemModel> items = new ArrayList<>();
 
   public CustomerMenuModel(Restaurant restaurant, List<Category> categories, List<Item> items) {
     var symbol = restaurant.getCurrency().getSymbol();
     this.profileLink = String.format("/@%s", restaurant.getSlug());
-    this.restaurantName = restaurant.getName();
+    this.restaurant = new RestaurantModel(restaurant);
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));
     items.forEach(i -> this.items.add(new ItemModel(i, symbol)));
   }
@@ -24,8 +24,8 @@ public class CustomerMenuModel {
     return profileLink;
   }
 
-  public String getRestaurantName() {
-    return restaurantName;
+  public RestaurantModel getRestaurant() {
+    return restaurant;
   }
 
   public List<CategoryModel> getCategories() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title th:text="#{page.customer.menu.title(${customerMenu.restaurantName})}">Menu - Cantina Bella Italia</title>
+    <title th:text="#{page.customer.menu.title(${customerMenu.restaurant.name})}">Menu - Cantina Bella Italia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,6 +44,9 @@
             /* Shadows */
             --shadow: 0 1px 3px rgba(26, 23, 20, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(26, 23, 20, 0.1);
+
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -55,93 +58,130 @@
             padding-bottom: 100px;
         }
 
-        /* Header */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
+        /* Hero Carousel */
+        .hero {
+            position: relative;
+            height: 55vh;
+            min-height: 380px;
+            max-height: 500px;
+            overflow: hidden;
+            background: #1a1714;
         }
-        .header-top {
+
+        .hero-carousel {
+            position: absolute;
+            inset: 0;
             display: flex;
-            align-items: center;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                    to bottom,
+                    rgba(26, 23, 20, 0.2) 0%,
+                    rgba(26, 23, 20, 0.1) 40%,
+                    rgba(26, 23, 20, 0.6) 80%,
+                    rgba(26, 23, 20, 0.9) 100%
+            );
+        }
+
+        /* Hero Navigation */
+        .hero-nav {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
             justify-content: space-between;
-            padding: 1rem;
+            align-items: center;
+            z-index: 10;
         }
-        .restaurant-info {
+
+        .hero-badge {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .restaurant-logo {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: var(--radius);
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+        .hero-badge svg { width: 1rem; height: 1rem; }
+
+        .hero-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .hero-action-btn {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
             color: white;
-        }
-        .restaurant-logo svg { width: 1.25rem; height: 1.25rem; }
-        .restaurant-name { font-weight: 700; font-size: 1rem; }
-        .table-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 0.375rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-        .table-badge:hover { background: var(--primary); color: white; }
-        .table-badge svg { width: 1rem; height: 1rem; }
-        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
-        .waiter-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--card);
-            font-size: 0.75rem;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .waiter-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .waiter-btn svg { width: 1rem; height: 1rem; }
+
+        .hero-action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .hero-action-btn svg { width: 1.125rem; height: 1.125rem; }
 
         /* Language Selector */
         .lang-selector {
             position: relative;
         }
+
         .lang-btn {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.375rem 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--card);
-            font-size: 1rem;
+            gap: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.9375rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .lang-btn:hover { border-color: var(--primary); }
-        .lang-btn svg { width: 0.75rem; height: 0.75rem; color: var(--muted); }
+
+        .lang-btn:hover { background: rgba(255, 255, 255, 0.25); }
+        .lang-btn svg { width: 0.75rem; height: 0.75rem; opacity: 0.8; }
+
         .lang-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 0.5rem);
             right: 0;
-            margin-top: 0.5rem;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -153,30 +193,202 @@
             transform: translateY(-0.5rem);
             transition: all 0.2s;
         }
+
         .lang-dropdown.active {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
+
         .lang-option {
             display: flex;
             align-items: center;
             gap: 0.625rem;
             width: 100%;
-            padding: 0.625rem 0.875rem;
+            padding: 0.75rem 1rem;
             border: none;
             background: none;
             font: inherit;
             font-size: 0.875rem;
+            color: var(--foreground);
             text-align: left;
             cursor: pointer;
             transition: background 0.15s;
         }
+
+        .lang-option:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+        .lang-option:last-child { border-radius: 0 0 var(--radius) var(--radius); }
         .lang-option:hover { background: var(--background); }
         .lang-option.active { color: var(--primary); font-weight: 600; }
         .lang-option .flag { font-size: 1.125rem; }
-        .lang-option .check { margin-left: auto; opacity: 0; }
+        .lang-option .check { margin-left: auto; opacity: 0; color: var(--primary); }
         .lang-option.active .check { opacity: 1; }
+
+        /* Hero Content */
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            z-index: 5;
+            color: white;
+        }
+
+        .restaurant-category {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .restaurant-name {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .restaurant-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .restaurant-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .restaurant-meta-item svg { width: 1rem; height: 1rem; opacity: 0.8; }
+
+        /* Carousel Dots */
+        .hero-dots {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .hero-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hero-dot.active {
+            width: 1.5rem;
+            border-radius: 9999px;
+            background: var(--primary);
+        }
+
+        /* Carousel Arrows */
+        .hero-arrows {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.75rem;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .hero-arrow {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            pointer-events: auto;
+            opacity: 0.7;
+        }
+
+        .hero-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .hero-arrow svg { width: 1.25rem; height: 1.25rem; }
+
+        /* Quick Info Bar */
+        .quick-info {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .quick-info::-webkit-scrollbar { display: none; }
+
+        .quick-info-item {
+            flex: 1;
+            min-width: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 1rem;
+            text-align: center;
+            border-right: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quick-info-item:last-child { border-right: none; }
+        .quick-info-item:hover { background: var(--background); }
+
+        .quick-info-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-info-icon svg { width: 1rem; height: 1rem; }
+
+        .quick-info-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quick-info-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
 
         /* Main Tabs */
         .main-tabs {
@@ -279,6 +491,7 @@
         .menu-content { padding: 1rem; }
         .category-section { margin-bottom: 2rem; }
         .category-title {
+            font-family: var(--font-display);
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 1rem;
@@ -646,6 +859,93 @@
         }
         .item-modal-overlay.active .item-modal { transform: translateY(0); }
 
+
+        /* Waiter Modal */
+        .waiter-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 23, 20, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .waiter-modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .waiter-modal {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .waiter-modal-overlay.active .waiter-modal { transform: scale(1); }
+
+        .waiter-modal-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+
+        .waiter-modal-icon svg { width: 2rem; height: 2rem; }
+
+        .waiter-modal h3 {
+            font-family: var(--font-display);
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .waiter-modal p {
+            color: var(--muted);
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .waiter-modal-actions { display: flex; gap: 0.75rem; }
+
+        .waiter-modal-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: var(--radius);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .waiter-modal-btn.secondary {
+            background: var(--background);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .waiter-modal-btn.secondary:hover { background: var(--border); }
+
+        .waiter-modal-btn.primary {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .waiter-modal-btn.primary:hover { background: var(--primary-dark); }
+
         /* Image Carousel */
         .carousel-container {
             position: relative;
@@ -723,7 +1023,7 @@
         .item-modal-close svg { width: 1rem; height: 1rem; }
         .item-modal-content { padding: 1.25rem; flex: 1; overflow-y: auto; }
         .item-modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
-        .item-modal-name { font-size: 1.25rem; font-weight: 700; }
+        .item-modal-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
         .item-modal-price { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
         .item-modal-desc { color: var(--muted); font-size: 0.9375rem; margin-bottom: 1rem; line-height: 1.6; }
         .item-modal-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -832,19 +1132,46 @@
         .table-total-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; }
         .table-total-row.grand { font-size: 1.125rem; font-weight: 700; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.5rem; }
         .table-total-row.grand .value { color: var(--primary); }
+
+        /* Responsive */
+        @media (min-width: 640px) {
+            .hero { height: 60vh; max-height: 550px; }
+            .restaurant-name { font-size: 3rem; }
+            .item-modal { max-width: 480px; left: 50%; transform: translateX(-50%) translateY(100%); }
+            .item-modal-overlay.active .item-modal { transform: translateX(-50%) translateY(0); }
+            .cart-drawer { max-width: 420px; left: auto; }
+            .item-modal-footer { max-width: 480px; margin: 0 auto; }
+        }
     </style>
 </head>
 <body>
-<!-- Header -->
-<header class="header">
-    <div class="header-top">
-        <div class="restaurant-info" th:attr="onclick=|window.location.href='${customerMenu.profileLink}'|" style="cursor: pointer;">
-            <div class="restaurant-logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-            </div>
-            <span class="restaurant-name" th:text="${customerMenu.restaurantName}">Cantina Bella Italia</span>
+<!-- Hero Section with Carousel -->
+<section class="hero">
+    <div class="hero-carousel" id="heroCarousel">
+        <div class="hero-slide">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200" alt="Ambiente">
         </div>
-        <div class="header-actions">
+        <div class="hero-slide">
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200" alt="Pratos">
+        </div>
+        <div class="hero-slide">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200" alt="Bar">
+        </div>
+        <div class="hero-slide">
+            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200" alt="Detalhes">
+        </div>
+    </div>
+    <div class="hero-overlay"></div>
+
+    <!-- Hero Navigation -->
+    <div class="hero-nav">
+        <div>
+            <button class="hero-badge" onclick="openTableModal()" th:if="${false}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
+                Mesa 12
+            </button>
+        </div>
+        <div class="hero-actions">
             <!-- Language Selector -->
             <div class="lang-selector">
                 <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">
@@ -869,31 +1196,74 @@
                     </a>
                 </div>
             </div>
-
-            <button class="table-badge" onclick="openTableModal()" th:if="${false}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg>
-                Mesa 2
-            </button>
-            <button class="waiter-btn" onclick="confirmCallWaiter()" th:if="${false}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                Garçom
+            <button class="hero-action-btn" onclick="openWaiterModal()" th:if="${false}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
             </button>
         </div>
     </div>
 
-    <!-- Main Tabs -->
-    <div class="main-tabs">
-        <button class="main-tab active" onclick="switchTab('menu', this)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
-            <span th:text="#{page.customer.menu.tab.menu}">Menu</span>
+    <!-- Hero Content -->
+    <div class="hero-content">
+        <p class="restaurant-category">Culinária Italiana</p>
+        <h1 class="restaurant-name" th:text="${customerMenu.restaurant.name}">Cantina Bella Italia</h1>
+        <div class="restaurant-meta">
+        <span class="restaurant-meta-item" th:if="${false}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          4.8 (324)
+        </span>
+            <span class="restaurant-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span th:text="${customerMenu.restaurant.time}">18:00 - 00:00</span>
+        </span>
+            <span class="restaurant-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span th:text="${customerMenu.restaurant.address}">Jardins, SP</span>
+        </span>
+        </div>
+    </div>
+
+    <!-- Carousel Arrows -->
+    <div class="hero-arrows">
+        <button class="hero-arrow" onclick="prevRestaurantImageSlide()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-        <button class="main-tab" onclick="switchTab('orders', this)" th:if="${false}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            Meus Pedidos
-            <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
+        <button class="hero-arrow" onclick="nextRestaurantImageSlide()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </button>
     </div>
-</header>
+
+    <!-- Carousel Dots -->
+    <div class="hero-dots" id="heroDots">
+        <button class="hero-dot active" onclick="goToSlide(0)"></button>
+        <button class="hero-dot" onclick="goToSlide(1)"></button>
+        <button class="hero-dot" onclick="goToSlide(2)"></button>
+        <button class="hero-dot" onclick="goToSlide(3)"></button>
+    </div>
+</section>
+<!-- Quick Info Bar -->
+<div class="quick-info" th:if="${false}">
+    <div class="quick-info-item" onclick="openWaiterModal()">
+        <div class="quick-info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <span class="quick-info-label" data-i18n="callWaiter">Chamar</span>
+        <span class="quick-info-value" data-i18n="waiter">Garçom</span>
+    </div>
+    <div class="quick-info-item" onclick="openTableModal()">
+        <div class="quick-info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        </div>
+        <span class="quick-info-label" data-i18n="tableBill">Conta</span>
+        <span class="quick-info-value">R$ 215,90</span>
+    </div>
+    <div class="quick-info-item">
+        <div class="quick-info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <span class="quick-info-label" data-i18n="atTable">Na mesa</span>
+        <span class="quick-info-value">3 <span data-i18n="people">pessoas</span></span>
+    </div>
+</div>
 
 <!-- Menu Tab Content -->
 <div id="menuTab" class="tab-content active">
@@ -1083,56 +1453,67 @@
         </div>
     </div>
 </div>
+<!-- Waiter Modal -->
+<div class="waiter-modal-overlay" id="waiterModalOverlay" onclick="closeWaiterModal()">
+    <div class="waiter-modal" onclick="event.stopPropagation()">
+        <div class="waiter-modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <h3 data-i18n="callWaiterTitle">Chamar Garçom?</h3>
+        <p data-i18n="callWaiterDesc">Um garçom será notificado e virá até sua mesa em breve.</p>
+        <div class="waiter-modal-actions">
+            <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel">Cancelar</button>
+            <button class="waiter-modal-btn primary" onclick="confirmCallWaiter()" data-i18n="callNow">Chamar Agora</button>
+        </div>
+    </div>
+</div>
 <script th:inline="javascript">
     const menuItems = /*[[${customerMenu.items}]]*/[];
+    // Current language
+    let currentLang = /*[[${#locale.language}]]*/'pt';
+    const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
 </script>
 <script>
-    // Current language
-    let currentLang = 'pt';
-    /*
-        // UI translations
-        const uiTranslations = {
-            'pt-BR': {
-                menu: 'Cardápio', myOrders: 'Meus Pedidos', all: 'Todos', starters: 'Entradas',
-                mains: 'Pratos Principais', drinks: 'Bebidas', desserts: 'Sobremesas',
-                searchPlaceholder: 'Buscar no cardápio...', waiter: 'Garçom', add: 'Adicionar',
-                yourOrder: 'Seu Pedido', subtotal: 'Subtotal', serviceFee: 'Taxa de serviço',
-                total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
-                preparing: 'Em preparo', ready: 'Pronto', delivered: 'Entregue',
-                callWaiter: 'Chamar Garçom?', waiterComing: 'Um garçom virá atendê-lo.',
-                orderSent: 'Pedido Enviado!', orderReceived: 'Seu pedido foi recebido pela cozinha.',
-                noOrders: 'Nenhum pedido ainda', ordersAppear: 'Seus pedidos aparecerão aqui',
-                yourConsumption: 'Resumo do seu consumo', tableAccount: 'Conta Completa',
-                tableSubtotal: 'Subtotal da Mesa', tableTotal: 'Total da Mesa', you: 'Você'
-            },
-            'en-US': {
-                menu: 'Menu', myOrders: 'My Orders', all: 'All', starters: 'Starters',
-                mains: 'Main Courses', drinks: 'Drinks', desserts: 'Desserts',
-                searchPlaceholder: 'Search menu...', waiter: 'Waiter', add: 'Add',
-                yourOrder: 'Your Order', subtotal: 'Subtotal', serviceFee: 'Service fee',
-                total: 'Total', confirmOrder: 'Confirm Order', sent: 'Sent',
-                preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered',
-                callWaiter: 'Call Waiter?', waiterComing: 'A waiter will assist you shortly.',
-                orderSent: 'Order Sent!', orderReceived: 'Your order was received by the kitchen.',
-                noOrders: 'No orders yet', ordersAppear: 'Your orders will appear here',
-                yourConsumption: 'Your consumption summary', tableAccount: 'Full Bill',
-                tableSubtotal: 'Table Subtotal', tableTotal: 'Table Total', you: 'You'
-            },
-            'es-ES': {
-                menu: 'Menú', myOrders: 'Mis Pedidos', all: 'Todos', starters: 'Entrantes',
-                mains: 'Platos Principales', drinks: 'Bebidas', desserts: 'Postres',
-                searchPlaceholder: 'Buscar en el menú...', waiter: 'Camarero', add: 'Añadir',
-                yourOrder: 'Tu Pedido', subtotal: 'Subtotal', serviceFee: 'Cargo por servicio',
-                total: 'Total', confirmOrder: 'Confirmar Pedido', sent: 'Enviado',
-                preparing: 'Preparando', ready: 'Listo', delivered: 'Entregado',
-                callWaiter: '¿Llamar camarero?', waiterComing: 'Un camarero vendrá a atenderte.',
-                orderSent: '¡Pedido Enviado!', orderReceived: 'Tu pedido fue recibido por la cocina.',
-                noOrders: 'Sin pedidos aún', ordersAppear: 'Tus pedidos aparecerán aquí',
-                yourConsumption: 'Resumen de tu consumo', tableAccount: 'Cuenta Completa',
-                tableSubtotal: 'Subtotal de la Mesa', tableTotal: 'Total de la Mesa', you: 'Tú'
-            }
-        };
-    */
+    let currentModalItem = null;
+    let currentSlide = 0;
+    const totalSlides = 4;
+    let slideInterval;
+    // Hero Carousel
+    function startCarousel() {
+        slideInterval = setInterval(() => nextRestaurantImageSlide(), 5000);
+    }
+
+    function stopCarousel() {
+        clearInterval(slideInterval);
+    }
+
+    function goToRestaurantImageSlide(index) {
+        currentSlide = index;
+        updateCarousel();
+        stopCarousel();
+        startCarousel();
+    }
+
+    function nextRestaurantImageSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    }
+
+    function prevRestaurantImageSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+        stopCarousel();
+        startCarousel();
+    }
+
+    function updateCarousel() {
+        const carousel = document.getElementById('heroCarousel');
+        carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+        const dots = document.querySelectorAll('.hero-dot');
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+    }
+
     // Helper to get item text in current language
     function getItemText(item, field) {
         return item[field][currentLang] || item[field]['pt'];
@@ -1142,87 +1523,28 @@
     function toggleLangDropdown() {
         document.getElementById('langDropdown').classList.toggle('active');
     }
-/*
-    function selectLang(lang, flag, name) {
-        currentLang = lang;
-        document.getElementById('currentLangFlag').textContent = flag;
-        document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        document.getElementById('langDropdown').classList.remove('active');
-        updateUILanguage();
+
+    // Waiter Modal
+    /*
+    function openWaiterModal() {
+        document.getElementById('waiterModalOverlay').classList.add('active');
     }
 
-    function updateUILanguage() {
-        const t = uiTranslations[currentLang];
-        // Update tabs
-        document.querySelectorAll('.main-tab')[0].innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>${t.menu}`;
-        const ordersTab = document.querySelectorAll('.main-tab')[1];
-        const badge = ordersTab.querySelector('.tab-badge');
-        ordersTab.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>${t.myOrders}`;
-        if (badge) ordersTab.appendChild(badge);
-        // Update categories
-        const cats = document.querySelectorAll('.category-btn');
-        cats[0].textContent = t.all;
-        cats[1].textContent = t.starters;
-        cats[2].textContent = t.mains;
-        cats[3].textContent = t.drinks;
-        cats[4].textContent = t.desserts;
-        // Update search
-        document.querySelector('.search-input').placeholder = t.searchPlaceholder;
-        // Update menu items display
-        document.querySelectorAll('.menu-item').forEach(el => {
-            const id = el.getAttribute('onclick').match(/\d+/)[0];
-            const item = menuItems[id];
-            if (item) {
-                el.querySelector('.menu-item-name').textContent = getItemText(item, 'name');
-                el.querySelector('.menu-item-desc').textContent = getItemText(item, 'desc');
-            }
-        });
-        // Update section titles
-        const sections = document.querySelectorAll('.category-title');
-        if (sections[0]) sections[0].innerHTML = `${t.starters} <span class="category-count">2 itens</span>`;
-        if (sections[1]) sections[1].innerHTML = `${t.mains} <span class="category-count">3 itens</span>`;
-        if (sections[2]) sections[2].innerHTML = `${t.drinks} <span class="category-count">2 itens</span>`;
-        if (sections[3]) sections[3].innerHTML = `${t.desserts} <span class="category-count">1 item</span>`;
+    function closeWaiterModal() {
+        document.getElementById('waiterModalOverlay').classList.remove('active');
     }
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.lang-selector')) {
-            document.getElementById('langDropdown').classList.remove('active');
-        }
-    });
-
-    // Table simulation data (other people at the table)
-    const tableOrders = {
-        'Maria Silva': [
-            { name: 'Filé Mignon ao Molho', qty: 1, price: 89.90, status: 'ready' },
-            { name: 'Caipirinha', qty: 2, price: 36.00, status: 'delivered' }
-        ],
-        'João Pedro': [
-            { name: 'Salmão Grelhado', qty: 1, price: 78.00, status: 'preparing' },
-            { name: 'Suco Natural', qty: 1, price: 12.00, status: 'delivered' }
-        ]
-    };
-
-    let cart = [];
-    let myOrders = []; // Orders sent by current user
-    const SERVICE_FEE = 0.10;
-    const currentUser = 'Você';
-
-    // Carousel state
-    let currentSlide = 0;
-    let currentModalItem = null;
-    let modalQty = 1;
-
-    // Tab switching
-    function switchTab(tab, btn) {
-        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById(tab + 'Tab').classList.add('active');
+    function confirmCallWaiter() {
+        closeWaiterModal();
+        alert('Garçom notificado! Ele chegará em breve.');
     }
-*/
+
+    // Table Modal (placeholder)
+    function openTableModal() {
+        alert('Ver conta da mesa - Em desenvolvimento');
+    }
+    */
+
     // Category selection
     function selectCategory(category, btn) {
         document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -1271,7 +1593,7 @@
     }
 */
     function formatPrice(value) {
-        return 'R$ ' + value.toFixed(2).replace('.', ',');
+        return currencySymbol + value.toFixed(2).replace('.', ',');
     }
 /*
     function updateCartUI() {
@@ -1538,6 +1860,11 @@
         updateCartUI();
         closeItemModal();
     }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        startCarousel();
+    });
 /*
     // Simulate order status updates
     setInterval(() => {
