@@ -109,7 +109,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                             "+351 963 927 944",
                             "contato@donamaria.com.br",
                             "https://donamaria.com.br",
-                            "Rua das Flores, 123 - Centro",
+                            "Rua Conde Redondo - Lisboa",
                             Currency.EUR,
                             10),
                         time.getZoneId())));

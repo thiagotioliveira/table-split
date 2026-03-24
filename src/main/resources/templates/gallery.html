@@ -212,7 +212,7 @@
             </svg>
             <span th:text="#{page.gallery.add.photo}">Adicionar Foto</span>
             <form th:action="@{/gallery}" method="post" enctype="multipart/form-data" id="uploadForm">
-              <input type="file" id="fileInput" name="file" style="display: none;" onchange="this.form.submit()">
+              <input type="file" id="fileInput" name="file" style="display: none;" onchange="showLoading('Adicionando imagem'); this.form.submit()">
             </form>
           </div>
 
@@ -231,7 +231,7 @@
               </form>
 
               <!-- Delete -->
-              <form th:action="@{/gallery/{id}/delete(id=${image.id})}" th:method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta foto?')">
+              <form th:action="@{/gallery/{id}/delete(id=${image.id})}" th:method="post" onsubmit="showLoading('Removendo imagem'); return confirm('Tem certeza que deseja excluir esta foto?');">
                 <button type="submit" class="gallery-action-btn delete" th:title="#{page.gallery.action.delete}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -298,6 +298,7 @@
           <option value="bebidas">Bebidas</option>
           <option value="equipe">Equipe</option>
           <option value="eventos">Eventos</option>
+        </select>
       </div>
       <div class="form-group" style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
         <input type="checkbox" id="uploadCover" style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
@@ -381,7 +382,7 @@
 
   function uploadImages() {
     if (selectedFiles.length === 0) return;
-
+    showLoading('Adicionando imagem');
     const category = document.getElementById('uploadCategory').value;
     const isCover = document.getElementById('uploadCover').checked;
     const file = selectedFiles[0]; // Sending first file for now
@@ -411,4 +412,6 @@
     });
   }
 </script>
+<!-- Loading Overlay -->
+<script th:src="@{/js/loading.js}"></script>
 </html>

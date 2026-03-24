@@ -3,6 +3,9 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -192,5 +195,18 @@ public class ProfileModel {
 
   public List<RestauranteImageModel> getCoverImages() {
     return images.stream().filter(RestauranteImageModel::isCover).toList();
+  }
+ 
+  public List<RestauranteImageModel> getGalleryImages() {
+    return images.stream().filter(img -> !img.isCover()).toList();
+  }
+
+  public String getGoogleMapsEmbedUrl() {
+    if (address == null || address.isBlank()) {
+      return null;
+    }
+
+    String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
+    return "https://www.google.com/maps?q=" + encodedAddress + "&output=embed";
   }
 }

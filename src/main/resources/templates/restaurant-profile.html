@@ -1354,18 +1354,22 @@
     </section>
 
     <!-- Location -->
-    <section class="section" th:if="${false}">
+    <section class="section">
       <h2 class="section-title">Localização</h2>
       <div class="map-container">
-        <div class="map-placeholder">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
+        <div>
+          <iframe
+                  width="100%"
+                  height="300"
+                  style="border:0"
+                  loading="lazy"
+                  allowfullscreen
+                  th:src="${profile.getGoogleMapsEmbedUrl()}">
+          </iframe>
         </div>
         <div class="map-info">
-          <p class="map-address">Rua das Flores, 123 - Centro<br>São Paulo, SP - 01234-567</p>
-          <a href="https://maps.google.com" target="_blank" class="map-btn">
+          <p class="map-address" th:text="${profile.address}">Rua das Flores, 123 - Centro<br>São Paulo, SP - 01234-567</p>
+          <a th:href="${profile.getGoogleMapsEmbedUrl()}" target="_blank" class="map-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="3 11 22 2 13 21 11 13 3 11"/>
             </svg>
@@ -1376,28 +1380,16 @@
     </section>
 
     <!-- Gallery -->
-    <section class="section" th:if="${false}">
+    <section class="section" th:if="${!#lists.isEmpty(profile.galleryImages)}">
       <div class="section-header">
         <h2 class="section-title">Fotos</h2>
-        <a href="#" class="section-link">Ver todas (24)</a>
+        <a href="#" class="section-link" th:if="${profile.galleryImages.size() > 6}">Ver todas (<span th:text="${profile.galleryImages.size()}">24</span>)</a>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop" alt="Prato">
+        <div th:each="image, iter : ${profile.galleryImages}" th:if="${iter.index < 6}" class="gallery-item" th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''">
+          <img th:src="${image.name}" th:alt="${profile.name}">
+          <span th:if="${iter.index == 5 and profile.galleryImages.size() > 6}" th:text="'+' + (${profile.galleryImages.size()} - 6)">+18</span>
         </div>
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop" alt="Prato">
-        </div>
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop" alt="Prato">
-        </div>
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop" alt="Prato">
-        </div>
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1482049016gy?w=300&h=300&fit=crop" alt="Ambiente">
-        </div>
-        <div class="gallery-item more">+18</div>
       </div>
     </section>
 
