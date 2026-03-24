@@ -54,6 +54,7 @@ public class TicketEventListener {
                                         Language.EN, item.getName().values().iterator().next()));
                   }
                   return new TicketItemModel(
+                      item.getId(),
                       item.getCustomerName(),
                       name,
                       item.getQuantity(),

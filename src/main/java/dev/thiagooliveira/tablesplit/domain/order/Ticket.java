@@ -83,4 +83,28 @@ public class Ticket {
   public void setNote(String note) {
     this.note = note;
   }
+
+  public void recalculateStatus() {
+    if (items == null || items.isEmpty()) {
+      return;
+    }
+
+    boolean allCompleted =
+        items.stream()
+            .allMatch(
+                item ->
+                    item.getStatus() == TicketStatus.DELIVERED
+                        || item.getStatus() == TicketStatus.CANCELLED);
+
+    if (allCompleted) {
+      boolean atLeastOneDelivered =
+          items.stream().anyMatch(item -> item.getStatus() == TicketStatus.DELIVERED);
+
+      if (atLeastOneDelivered) {
+        this.status = TicketStatus.DELIVERED;
+      } else {
+        this.status = TicketStatus.CANCELLED;
+      }
+    }
+  }
 }

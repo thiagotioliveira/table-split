@@ -3057,14 +3057,20 @@
                                                 <span class="order-item-note" th:if="${item.note != null && !item.note.empty}" th:text="${item.note}">Nota</span>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div style="display: flex; align-items: center;">
                                             <span class="order-item-price" th:text="${'R$ ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                                              <span class="order-item-status" th:classappend="${item.statusClass}" th:text="${item.status}">Pendente</span>
                                             <div class="order-item-actions">
-                                                <button class="order-item-action deliver" title="Marcar como Entregue" onclick="deliverOrderItem(103, 'Pudim')">
+                                                <button th:if="${item.status != 'Entregue'}" class="order-item-action deliver" title="Marcar como Entregue" 
+                                                        th:attr="onclick=|deliverOrderItem('${item.id}', '${item.name}')|">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                                 </button>
-                                                <button class="order-item-action cancel" title="Cancelar" onclick="openCancelItemModal(103, 'Pudim', 1, 14.60)">
+                                                <button th:if="${item.status == 'Entregue'}" class="order-item-action reset" title="Voltar para Pendente" 
+                                                        th:attr="onclick=|resetToPending('${item.id}', '${item.name}')|">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                                </button>
+                                                <button th:if="${item.status != 'Cancelado'}" class="order-item-action cancel" title="Cancelar" 
+                                                        th:attr="onclick=|openCancelItemModal('${item.id}', '${item.name}', ${item.quantity}, ${item.unitPrice})|">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                                 </button>
                                             </div>
@@ -4294,12 +4300,12 @@
         <div class="modal-body cancel-modal-content">
             <div class="cancel-modal-item">
                 <div class="cancel-modal-item-name" id="cancelItemName">--</div>
-                <div class="cancel-modal-item-price" id="cancelItemPrice">R$ 0,00</div>
+                <div class="cancel-modal-item-price" id="cancelItemPrice">R$ 0,00 cada</div>
             </div>
 
             <div class="cancel-qty-label">Quantidade a cancelar:</div>
             <div class="cancel-qty-selector">
-                <button class="cancel-qty-btn" id="cancelQtyMinus" onclick="adjustCancelQty(-1)">−</button>
+                <button class="cancel-qty-btn" id="cancelQtyMinus" onclick="adjustCancelQty(-1)">-</button>
                 <div class="cancel-qty-value" id="cancelQtyValue">1</div>
                 <button class="cancel-qty-btn" id="cancelQtyPlus" onclick="adjustCancelQty(1)">+</button>
             </div>
@@ -4322,10 +4328,48 @@
 
             <div class="cancel-modal-footer">
                 <button class="btn-secondary" onclick="closeCancelItemModal()">Voltar</button>
-                <button class="btn-danger" onclick="confirmCancelItem()">
+                <button class="btn-danger" id="confirmCancelBtn" onclick="confirmCancelItem()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     Cancelar Item
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deliver Item Modal -->
+<div class="modal-overlay" id="deliverItemModal">
+    <div class="modal" style="max-width: 380px;">
+        <div class="modal-header">
+            <h3>Marcar como Entregue</h3>
+            <button class="modal-close" onclick="document.getElementById('deliverItemModal').classList.remove('active')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Confirma que o item <strong id="deliverItemName"></strong> foi entregue ao cliente?</p>
+            <div class="cancel-modal-footer" style="margin-top: 1.5rem">
+                <button class="btn-secondary" onclick="document.getElementById('deliverItemModal').classList.remove('active')">Voltar</button>
+                <button class="action-btn success" id="confirmDeliverBtn" onclick="confirmDeliverItem()">Sim, Entregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Item Modal -->
+<div class="modal-overlay" id="resetItemModal">
+    <div class="modal" style="max-width: 380px;">
+        <div class="modal-header">
+            <h3>Voltar para Pendente</h3>
+            <button class="modal-close" onclick="document.getElementById('resetItemModal').classList.remove('active')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Deseja marcar o item <strong id="resetItemName"></strong> como pendente novamente?</p>
+            <div class="cancel-modal-footer" style="margin-top: 1.5rem">
+                <button class="btn-secondary" onclick="document.getElementById('resetItemModal').classList.remove('active')">Voltar</button>
+                <button class="action-btn primary" id="confirmResetBtn" onclick="confirmResetToPending()">Sim, Pendente</button>
             </div>
         </div>
     </div>
@@ -4371,6 +4415,66 @@
     function updateCancelTotal() {
         const total = cancelItemData.cancelQty * cancelItemData.unitPrice;
         document.getElementById('cancelTotalValue').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function adjustCancelQty(delta) {
+        const newVal = cancelItemData.cancelQty + delta;
+        if (newVal >= 1 && newVal <= cancelItemData.maxQty) {
+            cancelItemData.cancelQty = newVal;
+            document.getElementById('cancelQtyValue').textContent = cancelItemData.cancelQty;
+            updateCancelTotal();
+        }
+    }
+
+    function confirmCancelItem() {
+        if (!cancelItemData.itemId) return;
+        submitItemStatus(cancelItemData.itemId, 'CANCELLED');
+    }
+
+    function deliverOrderItem(itemId, itemName) {
+        document.getElementById('deliverItemName').textContent = itemName;
+        document.getElementById('deliverItemModal').dataset.itemId = itemId;
+        document.getElementById('deliverItemModal').classList.add('active');
+    }
+
+    function confirmDeliverItem() {
+        const itemId = document.getElementById('deliverItemModal').dataset.itemId;
+        submitItemStatus(itemId, 'DELIVERED');
+    }
+
+    function resetToPending(itemId, itemName) {
+        document.getElementById('resetItemName').textContent = itemName;
+        document.getElementById('resetItemModal').dataset.itemId = itemId;
+        document.getElementById('resetItemModal').classList.add('active');
+    }
+
+    function confirmResetToPending() {
+        const itemId = document.getElementById('resetItemModal').dataset.itemId;
+        submitItemStatus(itemId, 'PENDING');
+    }
+
+    function submitItemStatus(itemId, status) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tables/${selectedTable}/items/${itemId}/status`;
+        
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = status;
+        form.appendChild(statusInput);
+        
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function getTableClients() {

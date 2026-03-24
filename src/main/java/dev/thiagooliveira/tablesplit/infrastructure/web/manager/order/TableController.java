@@ -9,12 +9,14 @@ import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
+import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
+import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -57,6 +59,7 @@ public class TableController {
   private final PlaceOrder placeOrder;
   private final GetOrder getOrder;
   private final ProcessPayment processPayment;
+  private final UpdateTicketItemStatus updateTicketItemStatus;
 
   public TableController(
       TransactionalContext transactionalContext,
@@ -68,7 +71,8 @@ public class TableController {
       GetItem getItem,
       PlaceOrder placeOrder,
       GetOrder getOrder,
-      ProcessPayment processPayment) {
+      ProcessPayment processPayment,
+      UpdateTicketItemStatus updateTicketItemStatus) {
     this.transactionalContext = transactionalContext;
     this.openTable = openTable;
     this.closeTable = closeTable;
@@ -79,6 +83,7 @@ public class TableController {
     this.placeOrder = placeOrder;
     this.getOrder = getOrder;
     this.processPayment = processPayment;
+    this.updateTicketItemStatus = updateTicketItemStatus;
   }
 
   @GetMapping
@@ -140,6 +145,7 @@ public class TableController {
                         Collectors.mapping(
                             item ->
                                 new TicketItemModel(
+                                    item.getId(),
                                     item.getCustomerName(),
                                     item.getName().get(Language.PT),
                                     item.getQuantity(),
@@ -215,6 +221,7 @@ public class TableController {
                               .map(
                                   item ->
                                       new TicketItemModel(
+                                          item.getId(),
                                           item.getCustomerName(),
                                           item.getName().get(Language.PT),
                                           item.getQuantity(),
@@ -314,6 +321,19 @@ public class TableController {
         () -> processPayment.execute(tableId, customerName, amount, method, note));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.processed"));
+    return "redirect:/tables?selectedTableId=" + tableId;
+  }
+
+  @PostMapping("/{tableId}/items/{itemId}/status")
+  public String updateTicketItemStatus(
+      @PathVariable UUID tableId,
+      @PathVariable UUID itemId,
+      @RequestParam TicketStatus status,
+      RedirectAttributes redirectAttributes) {
+
+    transactionalContext.execute(() -> updateTicketItemStatus.execute(itemId, status));
+
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.item.status.updated"));
     return "redirect:/tables?selectedTableId=" + tableId;
   }
 

@@ -17,5 +17,7 @@ public interface OrderRepository {
 
   Optional<Order> findByTicketId(UUID ticketId);
 
+  Optional<Order> findByTicketItemId(UUID itemId);
+
   void save(Order order);
 }

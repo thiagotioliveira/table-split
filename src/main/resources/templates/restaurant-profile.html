@@ -210,6 +210,66 @@
     .lang-option .check { margin-left: auto; opacity: 0; color: var(--primary); }
     .lang-option.active .check { opacity: 1; }
 
+    /* Empty State - No Images Placeholder */
+    .hero-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 50%, #171923 100%);
+    }
+
+    .hero-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+              radial-gradient(circle at 20% 30%, rgba(201, 160, 80, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 80% 70%, rgba(45, 90, 71, 0.06) 0%, transparent 40%);
+    }
+
+    .hero-placeholder-icon {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      margin-bottom: 1.25rem;
+      color: rgba(255, 255, 255, 0.4);
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .hero-placeholder-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .hero-placeholder-text {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-placeholder-hint {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    /* Pattern overlay for empty state */
+    .hero-placeholder-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
     /* Hero Carousel */
     .hero {
       position: relative;
@@ -1056,6 +1116,19 @@
                  --accent: ${profile.hashAccentColor};|">
   <!-- Hero -->
   <section class="hero">
+    <div class="hero-placeholder">
+      <div class="hero-placeholder-pattern"></div>
+      <div class="hero-placeholder-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+      </div>
+      <p class="hero-placeholder-text">Nenhuma foto adicionada</p>
+      <p class="hero-placeholder-hint">Adicione fotos do seu restaurante nas configurações</p>
+    </div>
+
     <div class="hero-carousel" id="heroCarousel">
       <div class="hero-slide">
         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200" alt="Ambiente">

@@ -52,4 +52,9 @@ public class OrderRepositoryAdapter implements OrderRepository {
   public Optional<Order> findByTicketId(UUID ticketId) {
     return orderJpaRepository.findByTicketId(ticketId).map(OrderEntity::toDomain);
   }
+ 
+  @Override
+  public Optional<Order> findByTicketItemId(UUID itemId) {
+    return orderJpaRepository.findByTicketItemId(itemId).map(OrderEntity::toDomain);
+  }
 }

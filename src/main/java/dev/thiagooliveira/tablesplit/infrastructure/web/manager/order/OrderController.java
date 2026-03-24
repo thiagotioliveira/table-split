@@ -79,6 +79,7 @@ public class OrderController {
             .map(
                 item ->
                     new TicketItemModel(
+                        item.getId(),
                         item.getCustomerName(),
                         item.getName()
                             .getOrDefault(Language.PT, item.getName().values().iterator().next()),

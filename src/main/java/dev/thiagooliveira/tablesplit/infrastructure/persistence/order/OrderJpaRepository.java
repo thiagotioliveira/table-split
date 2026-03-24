@@ -18,4 +18,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
   @Query("select o from OrderEntity o join o.tickets t where t.id = :ticketId")
   Optional<OrderEntity> findByTicketId(UUID ticketId);
+ 
+  @Query("select o from OrderEntity o join o.tickets t join t.items i where i.id = :itemId")
+  Optional<OrderEntity> findByTicketItemId(UUID itemId);
 }

@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.persistence.image;
+package dev.thiagooliveira.tablesplit.infrastructure.media.image;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CloudinaryImageStorage implements ImageStorage {
-  private static final String PATH = "%s/accounts/%s/restaurants/%s/items/%s";
+  private static final String PATH_RESTAURANT = "%s/accounts/%s/restaurants/%s/gallery/%s";
+  private static final String PATH_ITEM = "%s/accounts/%s/restaurants/%s/items/%s";
   private final Cloudinary cloudinary;
   private final String rootFolder;
 
