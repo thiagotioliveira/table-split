@@ -9,4 +9,5 @@ public enum Module {
   ORDERS,
   GALLERY,
   RESERVATION,
+  REPORTS,
 }

@@ -13,7 +13,8 @@ public enum Plan {
           Module.TABLES,
           Module.ORDERS,
           Module.GALLERY,
-          Module.RESERVATION));
+          Module.RESERVATION,
+          Module.REPORTS));
 
   private final Set<Module> modules;
 
