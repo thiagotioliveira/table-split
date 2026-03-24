@@ -1207,7 +1207,8 @@
 <body>
 <!-- Hero Section with Carousel -->
 <section class="hero">
-    <div class="hero-placeholder">
+    <!-- Placeholder (when no images) -->
+    <div class="hero-placeholder" th:if="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
         <div class="hero-placeholder-pattern"></div>
         <div class="hero-placeholder-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1219,18 +1220,11 @@
         <p class="hero-placeholder-text">Nenhuma foto adicionada</p>
         <p class="hero-placeholder-hint">Adicione fotos do seu restaurante nas configurações</p>
     </div>
-    <div class="hero-carousel" id="heroCarousel">
-        <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200" alt="Ambiente">
-        </div>
-        <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200" alt="Pratos">
-        </div>
-        <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200" alt="Bar">
-        </div>
-        <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200" alt="Detalhes">
+
+    <!-- Hero Carousel (Cover images) -->
+    <div class="hero-carousel" id="heroCarousel" th:unless="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
+        <div th:each="image : ${customerMenu.restaurant.coverImages}" class="hero-slide">
+            <img th:src="${image.name}" th:alt="${customerMenu.restaurant.name}">
         </div>
     </div>
     <div class="hero-overlay"></div>
@@ -1295,7 +1289,7 @@
     </div>
 
     <!-- Carousel Arrows -->
-    <div class="hero-arrows">
+    <div class="hero-arrows" th:unless="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
         <button class="hero-arrow" onclick="prevRestaurantImageSlide()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
         </button>
@@ -1305,11 +1299,12 @@
     </div>
 
     <!-- Carousel Dots -->
-    <div class="hero-dots" id="heroDots">
-        <button class="hero-dot active" onclick="goToSlide(0)"></button>
-        <button class="hero-dot" onclick="goToSlide(1)"></button>
-        <button class="hero-dot" onclick="goToSlide(2)"></button>
-        <button class="hero-dot" onclick="goToSlide(3)"></button>
+    <div class="hero-dots" id="heroDots" th:unless="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
+        <button class="hero-dot"
+                th:each="slide, stat : ${customerMenu.restaurant.coverImages}"
+                th:classappend="${stat.index == 0} ? 'active' : ''"
+                th:onclick="'goToSlide(' + ${stat.index} + ')'">
+        </button>
     </div>
 </section>
 <!-- Quick Info Bar -->
@@ -1544,19 +1539,24 @@
     // Current language
     let currentLang = /*[[${#locale.language}]]*/'pt';
     const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
+    const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
+    const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
 </script>
 <script>
     let currentModalItem = null;
     let currentSlide = 0;
-    const totalSlides = 4;
     let slideInterval;
     // Hero Carousel
     function startCarousel() {
-        slideInterval = setInterval(() => nextRestaurantImageSlide(), 5000);
+        if(hasImage) {
+            slideInterval = setInterval(() => nextRestaurantImageSlide(), 5000);
+        }
     }
 
     function stopCarousel() {
-        clearInterval(slideInterval);
+        if(hasImage) {
+            clearInterval(slideInterval);
+        }
     }
 
     function goToRestaurantImageSlide(index) {
@@ -1567,15 +1567,19 @@
     }
 
     function nextRestaurantImageSlide() {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateCarousel();
+        if(hasImage) {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
     }
 
     function prevRestaurantImageSlide() {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        updateCarousel();
-        stopCarousel();
-        startCarousel();
+        if(hasImage) {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+            stopCarousel();
+            startCarousel();
+        }
     }
 
     function updateCarousel() {

@@ -27,6 +27,15 @@ public class Restaurant {
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
+  private List<RestauranteImage> images;
+
+  public List<RestauranteImage> getImages() {
+    return images;
+  }
+
+  public void setImages(List<RestauranteImage> images) {
+    this.images = images;
+  }
 
   public Optional<ZonedDateTime> getNextOpeningOrClosing(ZonedDateTime now) {
 

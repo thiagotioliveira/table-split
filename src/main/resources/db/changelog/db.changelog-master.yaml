@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/0008-change-cuisine-type-to-single-value.yaml
   - include:
       file: db/changelog/0009-rename-order-items-to-ticket-items.yaml
+  - include:
+      file: db/changelog/0010-create-restaurant-images-table.yaml

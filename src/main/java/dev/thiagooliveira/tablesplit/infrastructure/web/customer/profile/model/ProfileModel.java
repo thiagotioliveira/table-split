@@ -10,6 +10,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import dev.thiagooliveira.tablesplit.infrastructure.web.RestauranteImageModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import org.springframework.context.MessageSource;
 
 public class ProfileModel {
@@ -22,6 +24,7 @@ public class ProfileModel {
   private final String averagePrice;
   private final String email;
   private final String address;
+  private final String cuisineType;
   private final List<String> tags;
   private final boolean open;
   private final Optional<ZonedDateTime> nextOpeningOrClosingHours;
@@ -30,6 +33,7 @@ public class ProfileModel {
   private final String hashAccentColor;
   private final String hashGradientColor;
   private final String hashPrimaryShadowColor;
+  private final List<RestauranteImageModel> images;
 
   private final String menuLink;
 
@@ -38,6 +42,10 @@ public class ProfileModel {
   public ProfileModel(Restaurant restaurant, ZoneId zoneId, MessageSource messageSource) {
     this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
+    this.cuisineType =
+            restaurant.getCuisineType() != null
+                    ? CuisineType.valueOf(restaurant.getCuisineType().name()).getLabel()
+                    : null;
     this.description = restaurant.getDescription();
     this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
@@ -88,6 +96,14 @@ public class ProfileModel {
     this.hashGradientColor = ColorUtils.lighten(this.hashPrimaryColor, 0.08);
     this.hashPrimaryShadowColor =
         ColorUtils.darkenAndConvertToRgba(this.hashPrimaryColor, 0.15, 0.3);
+    this.images =
+        restaurant.getImages() == null
+            ? List.of()
+            : restaurant.getImages().stream().map(RestauranteImageModel::new).toList();
+  }
+
+  public String getCuisineType() {
+    return cuisineType;
   }
 
   public String getName() {
@@ -168,5 +184,13 @@ public class ProfileModel {
 
   public String getMenuLink() {
     return menuLink;
+  }
+
+  public List<RestauranteImageModel> getImages() {
+    return images;
+  }
+
+  public List<RestauranteImageModel> getCoverImages() {
+    return images.stream().filter(RestauranteImageModel::isCover).toList();
   }
 }

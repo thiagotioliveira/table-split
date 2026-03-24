@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CloudinaryImageStorage implements ImageStorage {
-  private static final String PATH_RESTAURANT = "%s/accounts/%s/restaurants/%s/gallery/%s";
-  private static final String PATH_ITEM = "%s/accounts/%s/restaurants/%s/items/%s";
   private final Cloudinary cloudinary;
   private final String rootFolder;
 
@@ -49,10 +47,45 @@ public class CloudinaryImageStorage implements ImageStorage {
   }
 
   @Override
-  public Map deleteItem(UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
+  public Map<String, Object> deleteItem(UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
     String publicId =
         String.format("%s/%s", folder(rootFolder, accountId, restaurantId, itemId), imageId);
     return deleteItem(publicId);
+  }
+
+  @Override
+  public String uploadRestaurantGallery(
+      ImageData image, UUID accountId, UUID restaurantId, UUID imageId) {
+    try {
+      Map<String, Object> uploadResult =
+          cloudinary
+              .uploader()
+              .upload(
+                  image.content(),
+                  Map.of(
+                      "folder",
+                      folderRestaurant(rootFolder, accountId, restaurantId),
+                      "public_id",
+                      String.format("%s", imageId),
+                      "overwrite",
+                      false));
+
+      return uploadResult.get("secure_url").toString();
+
+    } catch (IOException e) {
+      throw new InfrastructureException("error.image.restaurant.upload", e);
+    }
+  }
+
+  @Override
+  public Map<String, Object> deleteRestaurantGallery(UUID accountId, UUID restaurantId, UUID imageId) {
+    String publicId =
+        String.format("%s/%s", folderRestaurant(rootFolder, accountId, restaurantId), imageId);
+    return deleteItem(publicId);
+  }
+
+  private static String folderRestaurant(String rootFolder, UUID accountId, UUID restaurantId) {
+    return String.format("%s/accounts/%s/restaurants/%s/gallery", rootFolder, accountId, restaurantId);
   }
 
   private static String folder(String rootFolder, UUID accountId, UUID restaurantId, UUID itemId) {
@@ -60,7 +93,7 @@ public class CloudinaryImageStorage implements ImageStorage {
         "%s/accounts/%s/restaurants/%s/items/%s", rootFolder, accountId, restaurantId, itemId);
   }
 
-  private Map deleteItem(String imageId) {
+  private Map<String, Object> deleteItem(String imageId) {
     try {
       return cloudinary.uploader().destroy(imageId, ObjectUtils.emptyMap());
     } catch (IOException e) {
