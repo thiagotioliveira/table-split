@@ -1145,11 +1145,12 @@
                   <span th:text="#{page.register.step.restaurant.initial.setup}">Initial setup</span>
                 </h3>
 
-                <div class="form-group" th:if="${false}">
+                <div class="form-group">
                   <label>Quantas mesas você tem?</label>
                   <div class="table-setup">
                     <div class="table-counter">
                       <button type="button" class="counter-btn" onclick="updateTables(-1)">−</button>
+                      <input type="hidden" id="numberOfTablesInput" th:field="*{restaurant.numberOfTables}">
                       <span class="counter-value" id="tableCount">10</span>
                       <button type="button" class="counter-btn" onclick="updateTables(1)">+</button>
                     </div>
@@ -1430,7 +1431,13 @@
     function updateTables(delta) {
       tableCount = Math.max(1, Math.min(100, tableCount + delta));
       document.getElementById('tableCount').textContent = tableCount;
+      document.getElementById('numberOfTablesInput').value = tableCount;
     }
+    
+    // Set initial value
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('numberOfTablesInput').value = tableCount;
+    });
     /*
         // Logo upload
         function handleLogoUpload(event) {

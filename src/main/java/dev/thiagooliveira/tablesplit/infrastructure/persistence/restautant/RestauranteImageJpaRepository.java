@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RestauranteImageJpaRepository extends JpaRepository<RestauranteImageEntity, UUID> {
-  List<RestauranteImageEntity> findByRestaurantId(UUID restaurantId);
+public interface RestauranteImageJpaRepository extends JpaRepository<RestaurantImageEntity, UUID> {
+  List<RestaurantImageEntity> findByRestaurantId(UUID restaurantId);
 }

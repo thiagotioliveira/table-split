@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.domain.restaurant;
 
 import java.util.UUID;
 
-public class RestauranteImage {
+public class RestaurantImage {
   private UUID id;
   private UUID restaurantId;
   private String name;

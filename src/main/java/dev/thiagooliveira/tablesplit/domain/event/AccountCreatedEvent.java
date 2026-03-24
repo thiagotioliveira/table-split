@@ -33,10 +33,20 @@ public class AccountCreatedEvent implements DomainEvent {
         String website,
         String address,
         Currency currency,
-        int serviceFee) {
+        int serviceFee,
+        int numberOfTables) {
       this.restaurantDetails =
           new RestaurantDetails(
-              name, slug, description, phone, email, website, address, currency, serviceFee);
+              name,
+              slug,
+              description,
+              phone,
+              email,
+              website,
+              address,
+              currency,
+              serviceFee,
+              numberOfTables);
     }
 
     public RestaurantDetails getRestaurantDetails() {
@@ -54,6 +64,7 @@ public class AccountCreatedEvent implements DomainEvent {
     private final String address;
     private final Currency currency;
     private final int serviceFee;
+    private final int numberOfTables;
 
     public RestaurantDetails(
         String name,
@@ -64,7 +75,8 @@ public class AccountCreatedEvent implements DomainEvent {
         String website,
         String address,
         Currency currency,
-        int serviceFee) {
+        int serviceFee,
+        int numberOfTables) {
       this.name = name;
       this.slug = slug;
       this.description = description;
@@ -74,6 +86,7 @@ public class AccountCreatedEvent implements DomainEvent {
       this.address = address;
       this.currency = currency;
       this.serviceFee = serviceFee;
+      this.numberOfTables = numberOfTables;
     }
 
     public String getName() {
@@ -110,6 +123,10 @@ public class AccountCreatedEvent implements DomainEvent {
 
     public int getServiceFee() {
       return serviceFee;
+    }
+
+    public int getNumberOfTables() {
+      return numberOfTables;
     }
   }
 }

@@ -1,16 +1,16 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestauranteImage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import java.util.UUID;
 
-public class RestauranteImageModel {
+public class RestaurantImageModel {
   private UUID id;
   private String name;
   private boolean cover;
 
-  public RestauranteImageModel() {}
+  public RestaurantImageModel() {}
 
-  public RestauranteImageModel(RestauranteImage domain) {
+  public RestaurantImageModel(RestaurantImage domain) {
     this.id = domain.getId();
     this.name = domain.getName();
     this.cover = domain.isCover();

@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -16,6 +17,10 @@ public class RestaurantModel {
   @NotNull private Currency currency;
   @NotNull private Integer serviceFee = 10;
 
+  @Min(0)
+  @NotNull
+  private Integer numberOfTables = 0;
+
   public CreateRestaurantCommand toCommand() {
     return new CreateRestaurantCommand(
         this.name,
@@ -26,7 +31,8 @@ public class RestaurantModel {
         this.website,
         this.address,
         this.currency,
-        this.serviceFee);
+        this.serviceFee,
+        this.numberOfTables);
   }
 
   public String getName() {
@@ -99,5 +105,13 @@ public class RestaurantModel {
 
   public void setServiceFee(Integer serviceFee) {
     this.serviceFee = serviceFee;
+  }
+
+  public Integer getNumberOfTables() {
+    return numberOfTables;
+  }
+
+  public void setNumberOfTables(Integer numberOfTables) {
+    this.numberOfTables = numberOfTables;
   }
 }

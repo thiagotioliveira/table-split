@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestauranteImage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,11 +16,11 @@ public interface RestaurantRepository {
 
   void save(Restaurant restaurant);
 
-  List<RestauranteImage> findImagesByRestaurantId(UUID restaurantId);
+  List<RestaurantImage> findImagesByRestaurantId(UUID restaurantId);
 
-  void saveImage(RestauranteImage image);
+  void saveImage(RestaurantImage image);
 
   void deleteImage(UUID imageId);
 
-  Optional<RestauranteImage> findImageById(UUID imageId);
+  Optional<RestaurantImage> findImageById(UUID imageId);
 }

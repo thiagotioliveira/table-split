@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UploadRestaurantImageCommand;
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestauranteImage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -16,13 +16,13 @@ public class UploadRestaurantImage {
     this.imageStorage = imageStorage;
   }
 
-  public RestauranteImage execute(UploadRestaurantImageCommand command) throws IOException {
+  public RestaurantImage execute(UploadRestaurantImageCommand command) throws IOException {
     var imageId = UUID.randomUUID();
     String url =
         imageStorage.uploadRestaurantGallery(
             command.imageData(), command.accountId(), command.restaurantId(), imageId);
 
-    RestauranteImage image = new RestauranteImage();
+    RestaurantImage image = new RestaurantImage();
     image.setId(imageId);
     image.setRestaurantId(command.restaurantId());
     image.setName(url);

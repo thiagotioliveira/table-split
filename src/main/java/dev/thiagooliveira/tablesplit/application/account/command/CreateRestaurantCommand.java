@@ -11,4 +11,5 @@ public record CreateRestaurantCommand(
     String website,
     String address,
     Currency currency,
-    int serviceFee) {}
+    int serviceFee,
+    int numberOfTables) {}

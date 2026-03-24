@@ -38,6 +38,7 @@ public class AccountCreatedEventListener {
             List.of(Language.PT, Language.EN),
             restaurantDetails.getCurrency(),
             restaurantDetails.getServiceFee(),
+            restaurantDetails.getNumberOfTables(),
             "20-50", // TODO
             List.of(
                 new BusinessHours(

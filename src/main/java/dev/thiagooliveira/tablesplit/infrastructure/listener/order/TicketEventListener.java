@@ -12,9 +12,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class TicketEventListener {
 
   private final SimpMessagingTemplate messagingTemplate;

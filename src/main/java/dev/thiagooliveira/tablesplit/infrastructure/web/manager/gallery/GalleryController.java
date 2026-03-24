@@ -1,10 +1,10 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
+package dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
-import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurantImages;
-import dev.thiagooliveira.tablesplit.application.restaurant.UploadRestaurantImage;
 import dev.thiagooliveira.tablesplit.application.restaurant.DeleteRestaurantImage;
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurantImages;
 import dev.thiagooliveira.tablesplit.application.restaurant.SetRestaurantCoverImage;
+import dev.thiagooliveira.tablesplit.application.restaurant.UploadRestaurantImage;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UploadRestaurantImageCommand;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -12,7 +12,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import dev.thiagooliveira.tablesplit.infrastructure.web.RestauranteImageModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.RestaurantImageModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -51,10 +51,8 @@ public class GalleryController {
   public String index(Authentication auth, Model model) {
     var context = new ContextModel(auth);
     var restaurantId = context.getRestaurant().getId();
-    List<RestauranteImageModel> images =
-        getRestaurantImages.execute(restaurantId).stream()
-            .map(RestauranteImageModel::new)
-            .toList();
+    List<RestaurantImageModel> images =
+        getRestaurantImages.execute(restaurantId).stream().map(RestaurantImageModel::new).toList();
 
     model.addAttribute("module", Module.GALLERY);
     model.addAttribute("context", context);
@@ -108,7 +106,9 @@ public class GalleryController {
 
   @PostMapping("/{imageId}/cover")
   public String setCover(
-      Authentication auth, @PathVariable("imageId") UUID imageId, RedirectAttributes redirectAttributes) {
+      Authentication auth,
+      @PathVariable("imageId") UUID imageId,
+      RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
     var restaurantId = context.getRestaurant().getId();
 

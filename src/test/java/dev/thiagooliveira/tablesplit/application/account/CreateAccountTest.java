@@ -56,6 +56,7 @@ class CreateAccountTest {
             "www.restaurante.com",
             "Rua Teste",
             Currency.BRL,
+            10,
             10);
     CreateAccountCommand command =
         new CreateAccountCommand(userCommand, restaurantCommand, ZoneId.of("UTC"));

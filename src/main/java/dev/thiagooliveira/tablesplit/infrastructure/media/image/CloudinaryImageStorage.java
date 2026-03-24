@@ -47,7 +47,8 @@ public class CloudinaryImageStorage implements ImageStorage {
   }
 
   @Override
-  public Map<String, Object> deleteItem(UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
+  public Map<String, Object> deleteItem(
+      UUID accountId, UUID restaurantId, UUID itemId, UUID imageId) {
     String publicId =
         String.format("%s/%s", folder(rootFolder, accountId, restaurantId, itemId), imageId);
     return deleteItem(publicId);
@@ -78,14 +79,16 @@ public class CloudinaryImageStorage implements ImageStorage {
   }
 
   @Override
-  public Map<String, Object> deleteRestaurantGallery(UUID accountId, UUID restaurantId, UUID imageId) {
+  public Map<String, Object> deleteRestaurantGallery(
+      UUID accountId, UUID restaurantId, UUID imageId) {
     String publicId =
         String.format("%s/%s", folderRestaurant(rootFolder, accountId, restaurantId), imageId);
     return deleteItem(publicId);
   }
 
   private static String folderRestaurant(String rootFolder, UUID accountId, UUID restaurantId) {
-    return String.format("%s/accounts/%s/restaurants/%s/gallery", rootFolder, accountId, restaurantId);
+    return String.format(
+        "%s/accounts/%s/restaurants/%s/gallery", rootFolder, accountId, restaurantId);
   }
 
   private static String folder(String rootFolder, UUID accountId, UUID restaurantId, UUID itemId) {

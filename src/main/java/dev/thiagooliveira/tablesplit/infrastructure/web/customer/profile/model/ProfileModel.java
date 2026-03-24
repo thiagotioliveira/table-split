@@ -3,7 +3,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
-
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.RestaurantImageModel;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
@@ -13,8 +14,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import dev.thiagooliveira.tablesplit.infrastructure.web.RestauranteImageModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import org.springframework.context.MessageSource;
 
 public class ProfileModel {
@@ -36,7 +35,7 @@ public class ProfileModel {
   private final String hashAccentColor;
   private final String hashGradientColor;
   private final String hashPrimaryShadowColor;
-  private final List<RestauranteImageModel> images;
+  private final List<RestaurantImageModel> images;
 
   private final String menuLink;
 
@@ -46,9 +45,9 @@ public class ProfileModel {
     this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
     this.name = restaurant.getName();
     this.cuisineType =
-            restaurant.getCuisineType() != null
-                    ? CuisineType.valueOf(restaurant.getCuisineType().name()).getLabel()
-                    : null;
+        restaurant.getCuisineType() != null
+            ? CuisineType.valueOf(restaurant.getCuisineType().name()).getLabel()
+            : null;
     this.description = restaurant.getDescription();
     this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
@@ -102,7 +101,7 @@ public class ProfileModel {
     this.images =
         restaurant.getImages() == null
             ? List.of()
-            : restaurant.getImages().stream().map(RestauranteImageModel::new).toList();
+            : restaurant.getImages().stream().map(RestaurantImageModel::new).toList();
   }
 
   public String getCuisineType() {
@@ -189,15 +188,15 @@ public class ProfileModel {
     return menuLink;
   }
 
-  public List<RestauranteImageModel> getImages() {
+  public List<RestaurantImageModel> getImages() {
     return images;
   }
 
-  public List<RestauranteImageModel> getCoverImages() {
-    return images.stream().filter(RestauranteImageModel::isCover).toList();
+  public List<RestaurantImageModel> getCoverImages() {
+    return images.stream().filter(RestaurantImageModel::isCover).toList();
   }
- 
-  public List<RestauranteImageModel> getGalleryImages() {
+
+  public List<RestaurantImageModel> getGalleryImages() {
     return images.stream().filter(img -> !img.isCover()).toList();
   }
 

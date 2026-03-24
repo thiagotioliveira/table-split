@@ -27,13 +27,13 @@ public class Restaurant {
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
-  private List<RestauranteImage> images;
+  private List<RestaurantImage> images;
 
-  public List<RestauranteImage> getImages() {
+  public List<RestaurantImage> getImages() {
     return images;
   }
 
-  public void setImages(List<RestauranteImage> images) {
+  public void setImages(List<RestaurantImage> images) {
     this.images = images;
   }
 

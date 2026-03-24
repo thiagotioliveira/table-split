@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestauranteImage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "restaurant_images")
-public class RestauranteImageEntity {
+public class RestaurantImageEntity {
 
   @Id private UUID id;
 
@@ -23,8 +23,8 @@ public class RestauranteImageEntity {
   @Column(nullable = false)
   private boolean cover;
 
-  public static RestauranteImageEntity fromDomain(RestauranteImage domain) {
-    var entity = new RestauranteImageEntity();
+  public static RestaurantImageEntity fromDomain(RestaurantImage domain) {
+    var entity = new RestaurantImageEntity();
     entity.setId(domain.getId());
     entity.setRestaurantId(domain.getRestaurantId());
     entity.setName(domain.getName());
@@ -32,8 +32,8 @@ public class RestauranteImageEntity {
     return entity;
   }
 
-  public RestauranteImage toDomain() {
-    var domain = new RestauranteImage();
+  public RestaurantImage toDomain() {
+    var domain = new RestaurantImage();
     domain.setId(this.id);
     domain.setRestaurantId(this.restaurantId);
     domain.setName(this.name);
@@ -44,7 +44,7 @@ public class RestauranteImageEntity {
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
-    RestauranteImageEntity that = (RestauranteImageEntity) o;
+    RestaurantImageEntity that = (RestaurantImageEntity) o;
     return Objects.equals(id, that.id);
   }
 

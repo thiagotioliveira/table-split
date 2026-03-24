@@ -20,6 +20,7 @@ public record CreateRestaurantCommand(
     List<Language> customerLanguages,
     Currency currency,
     int serviceFee,
+    int numberOfTables,
     String averagePrice,
     List<BusinessHours> days,
     String hashPrimaryColor,
