@@ -692,6 +692,134 @@
         .order-detail-row.total .value {
             color: var(--primary);
         }
+
+        /* Cancelled item style */
+        .order-detail-item.cancelled .order-detail-item-name,
+        .order-detail-item.cancelled .order-detail-item-qty,
+        .order-detail-item.cancelled .order-detail-item-price {
+            text-decoration: line-through;
+            color: var(--muted);
+            opacity: 0.7;
+        }
+
+        .order-detail-item.cancelled .item-actions {
+            display: none;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .item-status-select {
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .item-action-btn {
+            background: none;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .item-action-btn:hover {
+            background: var(--background-secondary);
+            color: var(--foreground);
+        }
+
+        .item-action-btn.advance:hover {
+            color: var(--primary);
+        }
+
+        .item-action-btn.cancel:hover {
+            color: var(--destructive);
+        }
+
+        .item-action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .item-status-badge {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        .item-status-badge.pending { background: #f3f4f6; color: #374151; }
+        .item-status-badge.preparing { background: #fef3c7; color: #92400e; }
+        .item-status-badge.ready { background: #d1fae5; color: #065f46; }
+        .item-status-badge.delivered { background: #e0f2fe; color: #075985; }
+        .item-status-badge.cancelled { background: #fee2e2; color: #991b1b; }
+
+        .cancel-item-modal-content {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .cancel-item-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .cancel-item-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .cancel-qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .cancel-qty-btn {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .cancel-qty-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 2rem;
+        }
+
+        .cancel-reason-select {
+            width: 100%;
+            padding: 0.625rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
@@ -816,8 +944,9 @@
                         <div class="order-body">
                             <div class="order-items">
                                 <div th:each="item : ${ticket.items}" class="order-item">
-                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">2x</span>
-                                    <span class="order-item-name" th:text="${item.name}">Item</span>
+                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
+                                    <span class="order-item-name" th:text="${item.name}">Item Name</span>
+                                    <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
                                     <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
@@ -830,6 +959,9 @@
                             <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
                                 Preparar
+                            </button>
+                            <button class="btn btn-ghost btn-sm" th:attr="onclick=|viewOrder('${ticket.id}')|">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -862,8 +994,9 @@
                         <div class="order-body">
                             <div class="order-items">
                                 <div th:each="item : ${ticket.items}" class="order-item">
-                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">2x</span>
-                                    <span class="order-item-name" th:text="${item.name}">Item</span>
+                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
+                                    <span class="order-item-name" th:text="${item.name}">Item Name</span>
+                                    <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
                                     <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
@@ -872,6 +1005,9 @@
                             <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="READY" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                 Pronto
+                            </button>
+                            <button class="btn btn-ghost btn-sm" th:attr="onclick=|viewOrder('${ticket.id}')|">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -902,10 +1038,23 @@
                             </div>
                             <span class="order-id" th:text="'#' + ${ticket.shortId}">#0038</span>
                         </div>
+                        <div class="order-body">
+                            <div class="order-items">
+                                <div th:each="item : ${ticket.items}" class="order-item">
+                                    <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
+                                    <span class="order-item-name" th:text="${item.name}">Item Name</span>
+                                    <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
+                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="order-footer">
                             <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="DELIVERED" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 Entregue
+                            </button>
+                            <button class="btn btn-ghost btn-sm" th:attr="onclick=|viewOrder('${ticket.id}')|">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -935,6 +1084,12 @@
                             </div>
                             <span class="order-id" th:text="'#' + ${ticket.shortId}">#0035</span>
                         </div>
+                        <div class="order-footer">
+                            <button class="btn btn-ghost btn-sm" th:attr="onclick=|viewOrder('${ticket.id}')|">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                Ver detalhes
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="more-orders-hint">
@@ -955,7 +1110,7 @@
 <!-- Order Detail Modal -->
 <div id="orderModal" class="modal-overlay">
     <div class="modal" style="max-width: 28rem;">
-        <div class="modal-header">
+        <div class="modal-header" style="display: flex;">
             <h3 id="modalOrderId">Pedido #0042</h3>
             <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
@@ -989,42 +1144,22 @@
                 </div>
             </div>
 
-            <div class="order-detail-items">
-                <div class="order-detail-item">
-                    <div class="order-detail-item-info">
-                        <span class="order-detail-item-qty">2x</span>
-                        <span>Filé Mignon ao Molho</span>
-                    </div>
-                    <span class="order-detail-item-price">R$ 179,80</span>
-                </div>
-                <div class="order-detail-item">
-                    <div class="order-detail-item-info">
-                        <span class="order-detail-item-qty">1x</span>
-                        <span>Risoto de Funghi</span>
-                    </div>
-                    <span class="order-detail-item-price">R$ 62,00</span>
-                </div>
-                <div class="order-detail-item">
-                    <div class="order-detail-item-info">
-                        <span class="order-detail-item-qty">3x</span>
-                        <span>Caipirinha</span>
-                    </div>
-                    <span class="order-detail-item-price">R$ 54,00</span>
-                </div>
+            <div class="order-detail-items" id="modalOrderItems">
+                <!-- Items will be loaded dynamically -->
             </div>
 
             <div class="order-detail-summary">
                 <div class="order-detail-row">
                     <span>Subtotal</span>
-                    <span>R$ 295,80</span>
+                    <span id="modalSubtotal">R$ 0,00</span>
                 </div>
                 <div class="order-detail-row">
                     <span>Taxa de serviço (10%)</span>
-                    <span>R$ 29,58</span>
+                    <span id="modalServiceFee">R$ 0,00</span>
                 </div>
                 <div class="order-detail-row total">
                     <span>Total</span>
-                    <span class="value">R$ 325,38</span>
+                    <span class="value" id="modalTotal">R$ 0,00</span>
                 </div>
             </div>
         </div>
@@ -1033,6 +1168,45 @@
             <button class="btn btn-primary" onclick="printOrder()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
                 Imprimir
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Item Modal -->
+<div id="cancelItemModal" class="modal-overlay">
+    <div class="modal" style="max-width: 22rem;">
+        <div class="modal-header">
+            <h3>Cancelar Item</h3>
+        </div>
+        <div class="modal-body">
+            <div class="cancel-item-modal-content">
+                <div class="cancel-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </div>
+                <p class="cancel-item-name" id="cancelItemName">Filé Mignon ao Molho</p>
+                <p style="font-size: 0.875rem; color: var(--muted);">Quantos itens deseja cancelar?</p>
+                <div class="cancel-qty-selector">
+                    <button class="cancel-qty-btn" onclick="adjustCancelQty(-1)">−</button>
+                    <span class="cancel-qty-value" id="cancelQtyValue">1</span>
+                    <button class="cancel-qty-btn" onclick="adjustCancelQty(1)">+</button>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--muted);">de <span id="cancelQtyMax">2</span> disponíveis</p>
+                <select class="cancel-reason-select" id="cancelReasonSelect">
+                    <option value="">Selecione o motivo (opcional)</option>
+                    <option value="customer_request">Solicitação do cliente</option>
+                    <option value="out_of_stock">Item indisponível</option>
+                    <option value="wrong_order">Pedido errado</option>
+                    <option value="quality_issue">Problema de qualidade</option>
+                    <option value="other">Outro</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeCancelItemModal()">Voltar</button>
+            <button class="btn" style="background: var(--destructive); color: white;" onclick="confirmCancelItem()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                Cancelar Item
             </button>
         </div>
     </div>
@@ -1117,51 +1291,154 @@
 
     // View order details
     function viewOrder(id) {
-        // Find the card that was clicked
-        const card = document.querySelector(`.order-card [onclick="viewOrder(${id})"]`)?.closest('.order-card');
-        const orderType = card?.dataset.type || 'dine-in';
+        console.log(id);
+        document.getElementById('orderModal').dataset.ticketId = id;
+        fetch(`/orders/${id}`)
+            .then(res => res.json())
+            .then(order => {
+                document.getElementById('modalOrderId').textContent = 'Pedido #' + order.shortId;
+                document.getElementById('modalCustomerName').textContent = order.customerName;
+                document.getElementById('modalTableOrDelivery').textContent = 'Mesa ' + order.tableCod;
+                
+                const timeStr = new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('modalOrderTime').textContent = timeStr;
+                
+                const statusBadge = document.getElementById('modalOrderStatus');
+                statusBadge.textContent = order.status;
+                statusBadge.className = 'status-badge status-' + order.statusClass;
 
-        // Update modal type badge
-        const typeBadge = document.getElementById('modalOrderType');
-        const typeText = document.getElementById('modalTypeText');
-        const deliveryInfo = document.getElementById('modalDeliveryInfo');
-        const tableOrDelivery = document.getElementById('modalTableOrDelivery');
+                renderModalItems(order.items);
+                
+                const subtotal = order.total;
+                const serviceFee = subtotal * 0.1;
+                const total = subtotal + serviceFee;
 
-        if (orderType === 'delivery') {
-            typeBadge.className = 'order-type-badge delivery';
-            typeBadge.querySelector('svg').outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><path d="M12 12v4"/></svg>';
-            typeText.textContent = 'Delivery';
-            deliveryInfo.style.display = 'block';
-            tableOrDelivery.textContent = 'Delivery';
+                document.getElementById('modalSubtotal').textContent = formatCurrency(subtotal);
+                document.getElementById('modalServiceFee').textContent = formatCurrency(serviceFee);
+                document.getElementById('modalTotal').textContent = formatCurrency(total);
 
-            // Get address from card if available
-            const addressEl = card?.querySelector('.order-address');
-            if (addressEl) {
-                document.getElementById('modalDeliveryAddress').textContent = addressEl.textContent.trim();
+                document.getElementById('orderModal').classList.add('active');
+            })
+            .catch(err => {
+                console.error('Error loading order data:', err);
+                alert('Erro ao carregar detalhes do pedido');
+            });
+    }
+
+    function renderModalItems(items) {
+        const container = document.getElementById('modalOrderItems');
+        console.log(items);
+        container.innerHTML = items.map(item => `
+            <div class="order-detail-item ${item.status === 'CANCELLED' ? 'cancelled' : ''}" data-item-id="${item.id}">
+                <div class="order-detail-item-left">
+                    <div class="order-detail-item-info">
+                        <span class="order-detail-item-qty">${item.quantity}x</span>
+                        <span class="order-detail-item-name">${item.name}</span>
+                    </div>
+                    ${item.status !== 'CANCELLED' ? `
+                    <div class="item-actions">
+                        <select class="item-status-select" onchange="changeItemStatus('${item.id}', this.value)">
+                            <option value="PENDING" ${item.status === 'PENDING' ? 'selected' : ''}>Pendente</option>
+                            <option value="PREPARING" ${item.status === 'PREPARING' ? 'selected' : ''}>Preparando</option>
+                            <option value="READY" ${item.status === 'READY' ? 'selected' : ''}>Pronto</option>
+                            <option value="DELIVERED" ${item.status === 'DELIVERED' ? 'selected' : ''}>Entregue</option>
+                        </select>
+                        <button class="item-action-btn advance" title="Avançar status" onclick="advanceItemStatus('${item.id}', '${item.status}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                        <button class="item-action-btn cancel" title="Cancelar item" onclick="openCancelItemModal('${item.id}', '${item.name}', ${item.quantity})">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    ` : ''}
+                    ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                </div>
+                <div class="order-detail-item-right" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
+                    <span class="order-detail-item-price">${formatCurrency(item.totalPrice)}</span>
+                    <span class="item-status-badge ${item.statusClass}">${item.status}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    }
+
+    function changeItemStatus(itemId, status) {
+        fetch('/orders/item/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemId, status })
+        }).then(res => {
+            if (res.ok) {
+                // Refresh modal data
+                const ticketId = document.getElementById('orderModal').dataset.ticketId;
+                viewOrder(ticketId);
+            } else {
+                alert('Erro ao atualizar status do item');
             }
-        } else {
-            typeBadge.className = 'order-type-badge dine-in';
-            typeBadge.querySelector('svg').outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>';
-            typeText.textContent = 'Mesa';
-            deliveryInfo.style.display = 'none';
+        });
+    }
 
-            // Get table number from card
-            const tableEl = card?.querySelector('.order-table-number');
-            if (tableEl && !tableEl.querySelector('svg')) {
-                tableOrDelivery.textContent = 'Mesa ' + tableEl.textContent.trim();
+    function advanceItemStatus(itemId, currentStatus) {
+        console.log(itemId);
+        console.log(currentStatus);
+            const statuses = ['PENDING', 'PREPARING', 'READY', 'DELIVERED'];
+        const currentIndex = statuses.indexOf(currentStatus);
+        if (currentIndex < statuses.length - 1) {
+            console.log('entrou');
+            changeItemStatus(itemId, statuses[currentIndex + 1]);
+        }
+    }
+
+    let cancelItemData = null;
+
+    function openCancelItemModal(id, name, qty) {
+        cancelItemData = { id, name, qty, cancelQty: 1 };
+        document.getElementById('cancelItemName').textContent = name;
+        document.getElementById('cancelQtyValue').textContent = '1';
+        document.getElementById('cancelQtyMax').textContent = qty;
+        document.getElementById('cancelReasonSelect').value = '';
+        document.getElementById('cancelItemModal').classList.add('active');
+    }
+
+    function closeCancelItemModal() {
+        document.getElementById('cancelItemModal').classList.remove('active');
+        cancelItemData = null;
+    }
+
+    function adjustCancelQty(delta) {
+        if (!cancelItemData) return;
+        const newVal = cancelItemData.cancelQty + delta;
+        if (newVal >= 1 && newVal <= cancelItemData.qty) {
+            cancelItemData.cancelQty = newVal;
+            document.getElementById('cancelQtyValue').textContent = newVal;
+        }
+    }
+
+    function confirmCancelItem() {
+        if (!cancelItemData) return;
+        const reason = document.getElementById('cancelReasonSelect').value;
+        
+        fetch('/orders/item/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                itemId: cancelItemData.id,
+                quantity: cancelItemData.cancelQty,
+                reason: reason
+            })
+        }).then(res => {
+            if (res.ok) {
+                closeCancelItemModal();
+                // Refresh modal data
+                const ticketId = document.getElementById('orderModal').dataset.ticketId;
+                viewOrder(ticketId);
+            } else {
+                alert('Erro ao cancelar item');
             }
-        }
-
-        // Get customer name from card
-        const customerEl = card?.querySelector('.order-customer');
-        if (customerEl) {
-            document.getElementById('modalCustomerName').textContent = customerEl.textContent.trim();
-        }
-
-        // Update order ID
-        document.getElementById('modalOrderId').textContent = 'Pedido #' + String(id).padStart(4, '0');
-
-        document.getElementById('orderModal').classList.add('active');
+        });
     }
 
     function closeOrderModal() {
@@ -1176,6 +1453,8 @@
 
     // Toggle sound
     let soundEnabled = true;
+    const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
+    
     function toggleSound() {
         soundEnabled = !soundEnabled;
         const btn = document.getElementById('soundToggle');
@@ -1246,8 +1525,10 @@
                 console.log('Parsed data:', data);
                 if (data.newStatus) {
                     handleStatusChange(data);
-                } else {
+                } else if(data.tableCod) {
                     handleNewTicket(data);
+                } else {
+                    console.log('event not identified.')
                 }
             });
         });
@@ -1261,8 +1542,10 @@
         }
 
         if (soundEnabled) {
-            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
-            audio.play();
+            const audio = new Audio(alertSoundUrl);
+            audio.play().catch(err => {
+                console.warn('Click on the page to enable audio notification:', err);
+            });
         }
 
         const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
@@ -1285,9 +1568,9 @@
 
     function handleStatusChange(event) {
         const card = document.querySelector(`.order-card[data-ticket-id="${event.ticketId}"]`);
-        if (card) {
+        /*if (card) {
             window.location.reload(); 
-        }
+        }*/
     }
 
     function renderTicketCard(ticket) {
@@ -1295,6 +1578,7 @@
             <div class="order-item">
                 <span class="order-item-qty">${item.quantity}x</span>
                 <span class="order-item-name">${item.name}</span>
+                <span class="item-status-badge ${item.statusClass}">${item.status}</span>
                 ${item.note ? `<p class="order-item-note">${item.note}</p>` : ''}
             </div>
         `).join('');
@@ -1326,6 +1610,9 @@
                     <button class="btn btn-primary btn-sm" data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
                         Preparar
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="viewOrder('${ticket.id}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
             </div>

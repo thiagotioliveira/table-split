@@ -89,6 +89,17 @@ public class Ticket {
       return;
     }
 
+    boolean anyInProduction =
+        items.stream()
+            .anyMatch(
+                item ->
+                    item.getStatus() == TicketStatus.PREPARING
+                        || item.getStatus() == TicketStatus.READY);
+
+    if (anyInProduction && this.status == TicketStatus.PENDING) {
+      this.status = TicketStatus.PREPARING;
+    }
+
     boolean allCompleted =
         items.stream()
             .allMatch(

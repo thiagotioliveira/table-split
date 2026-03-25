@@ -55,6 +55,7 @@ public class SecurityConfig {
                         "/login",
                         "/register",
                         "/css/**",
+                        "/media/**",
                         "/js/**",
                         "/pwa-install.js",
                         "/manifest.json",

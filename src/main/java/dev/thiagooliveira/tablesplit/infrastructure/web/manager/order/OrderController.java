@@ -1,12 +1,16 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 
+import dev.thiagooliveira.tablesplit.application.order.CancelTicketItem;
+import dev.thiagooliveira.tablesplit.application.order.GetTicket;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
+import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
@@ -21,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,11 +37,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class OrderController {
 
   private final GetTickets getTickets;
+  private final GetTicket getTicket;
   private final MoveTicket moveTicket;
+  private final UpdateTicketItemStatus updateTicketItemStatus;
+  private final CancelTicketItem cancelTicketItem;
+  private final TransactionalContext transactionalContext;
 
-  public OrderController(GetTickets getTickets, MoveTicket moveTicket) {
+  public OrderController(
+      GetTickets getTickets,
+      GetTicket getTicket,
+      MoveTicket moveTicket,
+      UpdateTicketItemStatus updateTicketItemStatus,
+      CancelTicketItem cancelTicketItem,
+      TransactionalContext transactionalContext) {
     this.getTickets = getTickets;
+    this.getTicket = getTicket;
     this.moveTicket = moveTicket;
+    this.updateTicketItemStatus = updateTicketItemStatus;
+    this.cancelTicketItem = cancelTicketItem;
+    this.transactionalContext = transactionalContext;
   }
 
   @GetMapping
@@ -68,10 +87,40 @@ public class OrderController {
   @PostMapping("/move")
   @ResponseBody
   public void move(@RequestBody MoveTicketRequest request) {
-    moveTicket.execute(request.ticketId(), TicketStatus.valueOf(request.status()));
+    transactionalContext.execute(
+        () -> moveTicket.execute(request.ticketId(), TicketStatus.valueOf(request.status())));
+  }
+
+  @GetMapping("/{id}")
+  @ResponseBody
+  public TicketModel getTicket(@PathVariable UUID id) {
+    return getTicket
+        .execute(id)
+        .map(tw -> mapToModel(tw.ticket(), tw.tableCod()))
+        .orElseThrow(() -> new IllegalArgumentException("Ticket not found: " + id));
+  }
+
+  @PostMapping("/item/status")
+  @ResponseBody
+  public void updateItemStatus(@RequestBody UpdateItemStatusRequest request) {
+    transactionalContext.execute(
+        () ->
+            updateTicketItemStatus.execute(
+                request.itemId(), TicketStatus.valueOf(request.status())));
+  }
+
+  @PostMapping("/item/cancel")
+  @ResponseBody
+  public void cancelItem(@RequestBody CancelItemRequest request) {
+    transactionalContext.execute(
+        () -> cancelTicketItem.execute(request.itemId(), request.quantity(), request.reason()));
   }
 
   public record MoveTicketRequest(UUID ticketId, String status) {}
+
+  public record UpdateItemStatusRequest(UUID itemId, String status) {}
+
+  public record CancelItemRequest(UUID itemId, int quantity, String reason) {}
 
   private TicketModel mapToModel(Ticket ticket, String tableCod) {
     List<TicketItemModel> itemModels =
@@ -87,7 +136,7 @@ public class OrderController {
                         item.getUnitPrice(),
                         item.getTotalPrice(),
                         item.getNote(),
-                        item.getStatus().getLabel(),
+                        item.getStatus().name(),
                         item.getStatus().getCssClass()))
             .toList();
 

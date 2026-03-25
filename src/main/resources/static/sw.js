@@ -225,6 +225,9 @@ async function networkOnly(request) {
 
 // Adiciona ao cache
 async function addToCache(cacheName, request, response) {
+  if (response.status === 206) {
+    return;
+  }
   const cache = await caches.open(cacheName);
   await cache.put(request, response);
 }

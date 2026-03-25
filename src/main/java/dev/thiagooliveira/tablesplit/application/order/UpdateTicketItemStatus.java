@@ -1,21 +1,22 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class UpdateTicketItemStatus {
 
   private final OrderRepository orderRepository;
+  private final EventPublisher eventPublisher;
 
-  public UpdateTicketItemStatus(OrderRepository orderRepository) {
+  public UpdateTicketItemStatus(OrderRepository orderRepository, EventPublisher eventPublisher) {
     this.orderRepository = orderRepository;
+    this.eventPublisher = eventPublisher;
   }
 
-  @Transactional
   public void execute(UUID itemId, TicketStatus newStatus) {
     Order order =
         orderRepository
@@ -31,8 +32,17 @@ public class UpdateTicketItemStatus {
                   .findFirst()
                   .ifPresent(
                       item -> {
+                        TicketStatus oldTicketStatus = ticket.getStatus();
                         item.setStatus(newStatus);
                         ticket.recalculateStatus();
+
+                        eventPublisher.publishEvent(
+                            new TicketItemStatusChangedEvent(order, ticket, item, newStatus));
+
+                        if (ticket.getStatus() != oldTicketStatus) {
+                          eventPublisher.publishEvent(
+                              new TicketStatusChangedEvent(order, ticket, ticket.getStatus()));
+                        }
                       });
             });
 

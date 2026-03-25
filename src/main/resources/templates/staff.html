@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipe - TableSplit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Staff specific styles */
+        .staff-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .staff-search {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input-wrapper svg {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            background: var(--card);
+        }
+
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Staff Table */
+        .staff-table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .staff-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .staff-table th,
+        .staff-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .staff-table th {
+            background: var(--background-secondary);
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.025em;
+        }
+
+        .staff-table td {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .staff-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .staff-table tr:hover td {
+            background: var(--background-secondary);
+        }
+
+        .staff-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .staff-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .staff-name {
+            font-weight: 500;
+        }
+
+        .staff-email {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .module-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .module-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--background-secondary);
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            color: var(--muted);
+        }
+
+        .module-badge svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+
+        .staff-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .staff-action-btn {
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            border-radius: var(--radius);
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .staff-action-btn:hover {
+            background: var(--background-secondary);
+            color: var(--foreground);
+        }
+
+        .staff-action-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+        }
+
+        .staff-action-btn svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+        }
+
+        .status-badge.inactive {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .status-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state svg {
+            width: 4rem;
+            height: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 32rem;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--background-secondary);
+            color: var(--foreground);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            background: var(--card);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-input:disabled {
+            background: var(--background-secondary);
+            color: var(--muted);
+        }
+
+        /* Password Display */
+        .password-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: var(--radius);
+        }
+
+        .password-value {
+            flex: 1;
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        .password-copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .password-copy-btn:hover {
+            opacity: 0.9;
+        }
+
+        .password-copy-btn svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .password-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(234, 179, 8, 0.1);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            color: #a16207;
+        }
+
+        .password-warning svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        /* Module Checkboxes */
+        .modules-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .module-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .module-checkbox:hover {
+            background: var(--background-secondary);
+        }
+
+        .module-checkbox.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .module-checkbox input {
+            display: none;
+        }
+
+        .module-checkbox-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius);
+            background: var(--background-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+        }
+
+        .module-checkbox.selected .module-checkbox-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .module-checkbox-icon svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .module-checkbox-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Delete Confirmation */
+        .delete-confirm-content {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .delete-confirm-icon {
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--destructive);
+        }
+
+        .delete-confirm-icon svg {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .delete-confirm-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .delete-confirm-text {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* Responsive Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .staff-table th:nth-child(3),
+            .staff-table td:nth-child(3) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .staff-table th:nth-child(4),
+            .staff-table td:nth-child(4) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{components/sidebar :: sidebar(#{page.staff.header.title}, ~{})}"></div>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div th:replace="~{components/alert :: alert}"></div>
+
+    <div class="dashboard-body">
+        <!-- Staff Header -->
+        <div class="staff-header">
+            <div class="staff-search">
+                <div class="search-input-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Buscar por nome ou e-mail..." id="searchInput" oninput="filterStaff()">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                Novo Usuário
+            </button>
+        </div>
+
+        <!-- Staff Table -->
+        <div class="staff-table-card">
+            <div class="table-responsive">
+                <table class="staff-table" id="staffTable">
+                    <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Módulos</th>
+                        <th>Status</th>
+                        <th>Criado em</th>
+                        <th style="width: 100px;">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                    <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State (hidden when has data) -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <h3>Nenhum usuário cadastrado</h3>
+                <p>Comece adicionando membros da sua equipe</p>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                    Novo Usuário
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Add/Edit User Modal -->
+<div id="userModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Novo Usuário</h3>
+            <button class="modal-close" onclick="closeUserModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="userId" value="">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="firstName">Primeiro Nome *</label>
+                        <input type="text" id="firstName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="lastName">Último Nome *</label>
+                        <input type="text" id="lastName" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">E-mail *</label>
+                    <input type="email" id="email" class="form-input" required>
+                </div>
+
+                <!-- Password Section (only for new users) -->
+                <div class="form-group" id="passwordSection">
+                    <label class="form-label">Senha Gerada</label>
+                    <div class="password-display">
+                        <span class="password-value" id="generatedPassword">********</span>
+                        <button type="button" class="password-copy-btn" onclick="copyPassword()">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <span id="copyBtnText">Copiar</span>
+                        </button>
+                    </div>
+                    <div class="password-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                        <span>Copie e salve esta senha em local seguro. Ela não poderá ser visualizada novamente após fechar este modal.</span>
+                    </div>
+                </div>
+
+                <!-- Modules -->
+                <div class="form-group">
+                    <label class="modules-label">Módulos de Acesso</label>
+                    <div class="modules-grid" id="modulesGrid">
+                        <label class="module-checkbox" data-module="dashboard">
+                            <input type="checkbox" name="modules" value="dashboard" checked>
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Dashboard</span>
+                        </label>
+                        <label class="module-checkbox" data-module="pedidos">
+                            <input type="checkbox" name="modules" value="pedidos">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Pedidos</span>
+                        </label>
+                        <label class="module-checkbox" data-module="cardapio">
+                            <input type="checkbox" name="modules" value="cardapio">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Cardápio</span>
+                        </label>
+                        <label class="module-checkbox" data-module="relatorios">
+                            <input type="checkbox" name="modules" value="relatorios">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Relatórios</span>
+                        </label>
+                        <label class="module-checkbox" data-module="galeria">
+                            <input type="checkbox" name="modules" value="galeria">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Galeria</span>
+                        </label>
+                        <label class="module-checkbox" data-module="reservas">
+                            <input type="checkbox" name="modules" value="reservas">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Reservas</span>
+                        </label>
+                        <label class="module-checkbox" data-module="garcom">
+                            <input type="checkbox" name="modules" value="garcom">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M3 3h18"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Garçom</span>
+                        </label>
+                        <label class="module-checkbox" data-module="configuracoes">
+                            <input type="checkbox" name="modules" value="configuracoes">
+                            <div class="module-checkbox-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <span class="module-checkbox-label">Configurações</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeUserModal()">Cancelar</button>
+            <button type="submit" form="userForm" class="btn btn-primary" id="saveBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Salvar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal" style="max-width: 24rem;">
+        <div class="modal-header">
+            <h3>Confirmar Exclusão</h3>
+            <button class="modal-close" onclick="closeDeleteModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-confirm-content">
+                <div class="delete-confirm-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                </div>
+                <p class="delete-confirm-name" id="deleteUserName">João Carlos</p>
+                <p class="delete-confirm-text">Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancelar</button>
+            <button type="button" class="btn" style="background: var(--destructive); color: white;" onclick="confirmDelete()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                Excluir
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // Sidebar Functions
+    // ============================================
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+
+        if (mainContent) {
+            mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+        }
+
+        localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+    }
+
+    function initSidebarState() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        if (isCollapsed && window.innerWidth >= 1024) {
+            sidebar.classList.add('collapsed');
+            if (mainContent) {
+                mainContent.classList.add('sidebar-collapsed');
+            }
+        }
+    }
+
+    function toggleUserMenu() {
+        document.getElementById('userMenuContainer').classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('userMenuContainer');
+        if (container && !container.contains(e.target)) {
+            container.classList.remove('open');
+        }
+    });
+
+    // ============================================
+    // Staff Data (Mock - replace with backend)
+    // ============================================
+    let staffList = [
+        {
+            id: 1,
+            firstName: 'Maria',
+            lastName: 'Silva',
+            email: 'maria.silva@restaurante.com',
+            modules: ['dashboard', 'pedidos', 'cardapio'],
+            status: 'active',
+            createdAt: '2024-01-10'
+        },
+        {
+            id: 2,
+            firstName: 'Carlos',
+            lastName: 'Santos',
+            email: 'carlos.santos@restaurante.com',
+            modules: ['dashboard', 'relatorios', 'configuracoes'],
+            status: 'active',
+            createdAt: '2024-01-15'
+        },
+        {
+            id: 3,
+            firstName: 'Ana',
+            lastName: 'Oliveira',
+            email: 'ana.oliveira@restaurante.com',
+            modules: ['dashboard', 'garcom'],
+            status: 'inactive',
+            createdAt: '2024-01-20'
+        }
+    ];
+
+    let deleteUserId = null;
+    let currentPassword = '';
+
+    // Module labels and icons
+    const moduleInfo = {
+        dashboard: { label: 'Dashboard', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>' },
+        pedidos: { label: 'Pedidos', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>' },
+        cardapio: { label: 'Cardápio', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>' },
+        relatorios: { label: 'Relatórios', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>' },
+        galeria: { label: 'Galeria', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>' },
+        reservas: { label: 'Reservas', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' },
+        garcom: { label: 'Garçom', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M3 3h18"/></svg>' },
+        configuracoes: { label: 'Config.', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>' }
+    };
+
+    // ============================================
+    // Render Functions
+    // ============================================
+    function renderStaffTable() {
+        const tbody = document.getElementById('staffTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.querySelector('.staff-table');
+
+        if (staffList.length === 0) {
+            table.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        table.style.display = '';
+        emptyState.style.display = 'none';
+
+        tbody.innerHTML = staffList.map(user => `
+        <tr data-id="${user.id}">
+          <td>
+            <div class="staff-user">
+              <div class="staff-avatar">${user.firstName[0]}${user.lastName[0]}</div>
+              <div>
+                <div class="staff-name">${user.firstName} ${user.lastName}</div>
+                <div class="staff-email">${user.email}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="module-badges">
+              ${user.modules.slice(0, 3).map(m => `
+                <span class="module-badge">
+                  ${moduleInfo[m]?.icon || ''}
+                  ${moduleInfo[m]?.label || m}
+                </span>
+              `).join('')}
+              ${user.modules.length > 3 ? `<span class="module-badge">+${user.modules.length - 3}</span>` : ''}
+            </div>
+          </td>
+          <td>
+            <span class="status-badge ${user.status}">
+              <span class="status-dot"></span>
+              ${user.status === 'active' ? 'Ativo' : 'Inativo'}
+            </span>
+          </td>
+          <td>${formatDate(user.createdAt)}</td>
+          <td>
+            <div class="staff-actions">
+              <button class="staff-action-btn" title="Editar" onclick="openEditModal(${user.id})">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              </button>
+              <button class="staff-action-btn delete" title="Excluir" onclick="openDeleteModal(${user.id})">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    // ============================================
+    // Password Generator
+    // ============================================
+    function generatePassword(length = 12) {
+        const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const lowercase = 'abcdefghjkmnpqrstuvwxyz';
+        const numbers = '23456789';
+        const special = '@#$%&*!?';
+
+        const allChars = uppercase + lowercase + numbers + special;
+        let password = '';
+
+        // Ensure at least one of each type
+        password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += special[Math.floor(Math.random() * special.length)];
+
+        // Fill the rest
+        for (let i = password.length; i < length; i++) {
+            password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        // Shuffle
+        return password.split('').sort(() => Math.random() - 0.5).join('');
+    }
+
+    // ============================================
+    // Modal Functions
+    // ============================================
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Novo Usuário';
+        document.getElementById('userId').value = '';
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('email').value = '';
+
+        // Generate and show password
+        currentPassword = generatePassword();
+        document.getElementById('generatedPassword').textContent = currentPassword;
+        document.getElementById('passwordSection').style.display = 'block';
+        document.getElementById('copyBtnText').textContent = 'Copiar';
+
+        // Reset modules
+        document.querySelectorAll('.module-checkbox input').forEach(cb => {
+            cb.checked = cb.value === 'dashboard';
+            updateModuleCheckboxStyle(cb);
+        });
+
+        document.getElementById('userModal').classList.add('active');
+    }
+
+    function openEditModal(id) {
+        const user = staffList.find(u => u.id === id);
+        if (!user) return;
+
+        document.getElementById('modalTitle').textContent = 'Editar Usuário';
+        document.getElementById('userId').value = user.id;
+        document.getElementById('firstName').value = user.firstName;
+        document.getElementById('lastName').value = user.lastName;
+        document.getElementById('email').value = user.email;
+
+        // Hide password section for editing
+        document.getElementById('passwordSection').style.display = 'none';
+
+        // Set modules
+        document.querySelectorAll('.module-checkbox input').forEach(cb => {
+            cb.checked = user.modules.includes(cb.value);
+            updateModuleCheckboxStyle(cb);
+        });
+
+        document.getElementById('userModal').classList.add('active');
+    }
+
+    function closeUserModal() {
+        document.getElementById('userModal').classList.remove('active');
+        currentPassword = '';
+    }
+
+    function openDeleteModal(id) {
+        const user = staffList.find(u => u.id === id);
+        if (!user) return;
+
+        deleteUserId = id;
+        document.getElementById('deleteUserName').textContent = `${user.firstName} ${user.lastName}`;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+        deleteUserId = null;
+    }
+
+    // ============================================
+    // CRUD Operations
+    // ============================================
+    function saveUser(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('userId').value;
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+
+        const modules = [];
+        document.querySelectorAll('.module-checkbox input:checked').forEach(cb => {
+            modules.push(cb.value);
+        });
+
+        if (id) {
+            // Update existing user
+            const index = staffList.findIndex(u => u.id === parseInt(id));
+            if (index !== -1) {
+                staffList[index] = {
+                    ...staffList[index],
+                    firstName,
+                    lastName,
+                    email,
+                    modules
+                };
+            }
+        } else {
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                firstName,
+                lastName,
+                email,
+                modules,
+                status: 'active',
+                createdAt: new Date().toISOString().split('T')[0]
+            };
+            staffList.push(newUser);
+
+            // TODO: Send password to backend
+            console.log('New user created with password:', currentPassword);
+        }
+
+        renderStaffTable();
+        closeUserModal();
+    }
+
+    function confirmDelete() {
+        if (deleteUserId) {
+            staffList = staffList.filter(u => u.id !== deleteUserId);
+            renderStaffTable();
+            closeDeleteModal();
+        }
+    }
+
+    // ============================================
+    // Utility Functions
+    // ============================================
+    function copyPassword() {
+        if (currentPassword) {
+            navigator.clipboard.writeText(currentPassword).then(() => {
+                document.getElementById('copyBtnText').textContent = 'Copiado!';
+                setTimeout(() => {
+                    document.getElementById('copyBtnText').textContent = 'Copiar';
+                }, 2000);
+            });
+        }
+    }
+
+    function filterStaff() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#staffTableBody tr');
+
+        rows.forEach(row => {
+            const name = row.querySelector('.staff-name').textContent.toLowerCase();
+            const email = row.querySelector('.staff-email').textContent.toLowerCase();
+
+            if (name.includes(search) || email.includes(search)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function updateModuleCheckboxStyle(checkbox) {
+        const label = checkbox.closest('.module-checkbox');
+        if (checkbox.checked) {
+            label.classList.add('selected');
+        } else {
+            label.classList.remove('selected');
+        }
+    }
+
+    // ============================================
+    // Event Listeners
+    // ============================================
+    document.querySelectorAll('.module-checkbox input').forEach(cb => {
+        cb.addEventListener('change', function() {
+            updateModuleCheckboxStyle(this);
+        });
+    });
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    });
+
+    // ============================================
+    // Initialize
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        initSidebarState();
+        renderStaffTable();
+    });
+</script>
+</body>
+</html>

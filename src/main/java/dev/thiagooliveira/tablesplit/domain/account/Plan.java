@@ -14,7 +14,8 @@ public enum Plan {
           Module.ORDERS,
           Module.GALLERY,
           Module.RESERVATION,
-          Module.REPORTS));
+          Module.REPORTS,
+          Module.STAFF));
 
   private final Set<Module> modules;
 

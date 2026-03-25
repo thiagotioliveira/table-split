@@ -1,7 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
@@ -32,10 +34,22 @@ public class TicketEventListener {
 
   @EventListener
   public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/tickets", event);
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/tables", event);
+    notifyRestaurant(event.getRestaurantId(), event);
+  }
+
+  @EventListener
+  public void handleTicketItemStatusChanged(TicketItemStatusChangedEvent event) {
+    notifyRestaurant(event.getRestaurantId(), event);
+  }
+
+  @EventListener
+  public void handleTableStatusChanged(TableStatusChangedEvent event) {
+    notifyRestaurant(event.getRestaurantId(), event);
+  }
+
+  private void notifyRestaurant(java.util.UUID restaurantId, Object payload) {
+    messagingTemplate.convertAndSend("/topic/restaurant/" + restaurantId + "/tickets", payload);
+    messagingTemplate.convertAndSend("/topic/restaurant/" + restaurantId + "/tables", payload);
   }
 
   private TicketModel mapToModel(Ticket ticket, String tableCod) {

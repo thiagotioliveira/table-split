@@ -7,10 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import java.math.BigDecimal;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class ProcessPayment {
 
   private final OrderRepository orderRepository;
@@ -26,7 +23,6 @@ public class ProcessPayment {
     this.eventPublisher = eventPublisher;
   }
 
-  @Transactional
   public Order execute(
       UUID tableId,
       String customerName,

@@ -5,6 +5,7 @@
   --primary: #c9a050;
   --primary-light: rgba(201, 160, 80, 0.15);
   --primary-dark: #a88535;
+  --destructive-light: rgba(239, 68, 68, 0.1);
 
   --accent: #2d5a47;
   --accent-light: rgba(45, 90, 71, 0.12);
@@ -1259,6 +1260,30 @@ a {
 .status-badge svg {
   width: 1rem;
   height: 1rem;
+}
+
+.status-pending {
+  background: var(--accent-light); /* claro, suave */
+  color: var(--accent);             /* cor principal de destaque, laranja #f97316 */
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.status-preparing {
+  background: var(--info-light);    /* azul suave */
+  color: var(--info);               /* azul principal #3b82f6 */
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.status-ready {
+  background: var(--success-light); /* verde suave */
+  color: var(--success);            /* verde principal #16a34a */
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.status-cancelled {
+  background: var(--destructive-light); /* vermelho suave */
+  color: var(--destructive);            /* vermelho principal #ef4444 */
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .status-free {

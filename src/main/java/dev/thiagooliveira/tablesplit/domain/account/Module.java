@@ -10,4 +10,5 @@ public enum Module {
   GALLERY,
   RESERVATION,
   REPORTS,
+  STAFF
 }

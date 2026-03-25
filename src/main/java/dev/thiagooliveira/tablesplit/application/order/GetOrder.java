@@ -4,9 +4,7 @@ import dev.thiagooliveira.tablesplit.domain.order.Order;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
-@Service
 public class GetOrder {
 
   private final OrderRepository orderRepository;

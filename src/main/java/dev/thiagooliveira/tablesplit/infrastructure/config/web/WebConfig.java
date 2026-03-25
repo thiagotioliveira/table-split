@@ -54,5 +54,10 @@ public class WebConfig implements WebMvcConfigurer {
         .addResourceHandler("/sw.js")
         .addResourceLocations("classpath:/static/")
         .setCacheControl(CacheControl.noCache());
+
+    registry
+        .addResourceHandler("/**")
+        .addResourceLocations("classpath:/static/")
+        .setCacheControl(CacheControl.maxAge(java.time.Duration.ofDays(365)));
   }
 }
