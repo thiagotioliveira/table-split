@@ -25,6 +25,8 @@ const CACHE_PAGES = [
   '/reservations',
   '/settings',
   '/profile',
+  '/promotions',
+  '/staff',
   '/'
 ];
 
