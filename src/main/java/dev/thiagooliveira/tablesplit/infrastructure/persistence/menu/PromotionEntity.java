@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 import dev.thiagooliveira.tablesplit.domain.menu.ApplyType;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
-import dev.thiagooliveira.tablesplit.domain.menu.RecurrenceType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
@@ -46,10 +45,6 @@ public class PromotionEntity {
   @Column(nullable = false)
   private boolean active;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "recurrence_type")
-  private RecurrenceType recurrenceType;
-
   @ElementCollection(targetClass = DayOfWeek.class)
   @CollectionTable(
       name = "promotion_recurrence_days",
@@ -68,8 +63,12 @@ public class PromotionEntity {
   @Column(name = "apply_type", nullable = false)
   private ApplyType applyType;
 
+  @ElementCollection
+  @CollectionTable(
+      name = "promotion_applicable_ids",
+      joinColumns = @JoinColumn(name = "promotion_id"))
   @Column(name = "applicable_id")
-  private UUID applicableId;
+  private Set<String> applicableIds = new HashSet<>();
 
   public Promotion toDomain() {
     var domain = new Promotion();
@@ -84,16 +83,10 @@ public class PromotionEntity {
     domain.setEndDate(this.endDate);
     domain.setActive(this.active);
     domain.setApplyType(this.applyType);
-    domain.setApplicableId(this.applicableId);
-
-    if (this.recurrenceType != null) {
-      domain.setRecurrence(
-          new Promotion.Recurrence(
-              this.recurrenceType,
-              new HashSet<>(this.recurrenceDays),
-              this.startTime,
-              this.endTime));
-    }
+    domain.setApplicableIds(new HashSet<>(this.applicableIds));
+    domain.setDaysOfWeek(new HashSet<>(this.recurrenceDays));
+    domain.setStartTime(this.startTime);
+    domain.setEndTime(this.endTime);
 
     return domain;
   }
@@ -111,18 +104,13 @@ public class PromotionEntity {
     entity.setEndDate(domain.getEndDate());
     entity.setActive(domain.isActive());
     entity.setApplyType(domain.getApplyType());
-    entity.setApplicableId(domain.getApplicableId());
-
-    if (domain.getRecurrence() != null) {
-      entity.setRecurrenceType(domain.getRecurrence().type());
-      entity.setRecurrenceDays(
-          new HashSet<>(
-              domain.getRecurrence().daysOfWeek() != null
-                  ? domain.getRecurrence().daysOfWeek()
-                  : new HashSet<>()));
-      entity.setStartTime(domain.getRecurrence().startTime());
-      entity.setEndTime(domain.getRecurrence().endTime());
-    }
+    entity.setApplicableIds(
+        new HashSet<>(
+            domain.getApplicableIds() != null ? domain.getApplicableIds() : new HashSet<>()));
+    entity.setRecurrenceDays(
+        new HashSet<>(domain.getDaysOfWeek() != null ? domain.getDaysOfWeek() : new HashSet<>()));
+    entity.setStartTime(domain.getStartTime());
+    entity.setEndTime(domain.getEndTime());
 
     return entity;
   }
@@ -200,20 +188,8 @@ public class PromotionEntity {
     this.endDate = endDate;
   }
 
-  public boolean isActive() {
-    return active;
-  }
-
   public void setActive(boolean active) {
     this.active = active;
-  }
-
-  public RecurrenceType getRecurrenceType() {
-    return recurrenceType;
-  }
-
-  public void setRecurrenceType(RecurrenceType recurrenceType) {
-    this.recurrenceType = recurrenceType;
   }
 
   public Set<DayOfWeek> getRecurrenceDays() {
@@ -248,11 +224,11 @@ public class PromotionEntity {
     this.applyType = applyType;
   }
 
-  public UUID getApplicableId() {
-    return applicableId;
+  public Set<String> getApplicableIds() {
+    return applicableIds;
   }
 
-  public void setApplicableId(UUID applicableId) {
-    this.applicableId = applicableId;
+  public void setApplicableIds(Set<String> applicableIds) {
+    this.applicableIds = applicableIds;
   }
 }

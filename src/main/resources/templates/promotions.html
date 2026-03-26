@@ -602,6 +602,32 @@
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover {
+            background: var(--background-secondary);
+        }
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .form-textarea {
@@ -1207,7 +1233,7 @@
                 <div class="search-filter">
                     <div class="search-input-wrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input type="text" placeholder="Buscar promoção...">
+                        <input type="text" placeholder="Buscar promoção..." oninput="filterGrid('promotionsGrid', this.value)">
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="openPromotionModal()">
@@ -1236,17 +1262,22 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy')} + ' até ' + ${promotion.endDate != null ? #temporals.format(promotion.endDate, 'dd/MM/yyyy') : 'Sempre'}">01/01/2024 até 31/12/2024</span>
                             </div>
-                            <div class="promo-detail" th:if="${promotion.recurrence != null}">
+                            <div class="promo-detail" th:if="${(promotion.daysOfWeek != null && !promotion.daysOfWeek.isEmpty()) || promotion.startTime != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                <span th:if="${promotion.recurrence.type == T(dev.thiagooliveira.tablesplit.domain.menu.RecurrenceType).ALWAYS}">Sempre disponível</span>
-                                <span th:if="${promotion.recurrence.type == T(dev.thiagooliveira.tablesplit.domain.menu.RecurrenceType).DAYS_OF_WEEK}" 
-                                      th:text="${#strings.listJoin(promotion.recurrence.daysOfWeek, ', ')}">Seg a Sex</span>
-                                <span th:if="${promotion.recurrence.type == T(dev.thiagooliveira.tablesplit.domain.menu.RecurrenceType).HOURS}" 
-                                      th:text="${promotion.recurrence.startTime} + ' às ' + ${promotion.recurrence.endTime}">17h às 20h</span>
+                                <span th:if="${promotion.daysOfWeek != null && !promotion.daysOfWeek.isEmpty()}" th:text="${#strings.listJoin(promotion.daysOfWeek, ', ')}">Seg a Sex</span>
+                                <span th:if="${promotion.startTime != null}" th:text="' Das ' + ${promotion.startTime} + ' às ' + ${promotion.endTime}">17h às 20h</span>
                             </div>
                             <div class="promo-detail" th:if="${promotion.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                                 Pedido mínimo: <span th:text="'R$ ' + ${promotion.minOrderValue}">R$ 80,00</span>
+                            </div>
+                            <div class="promo-detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
+                                <span th:if="${promotion.applyType.name() == 'ALL_MENU'}">Todo o Cardápio</span>
+                                <span th:if="${promotion.applyType.name() == 'CATEGORY'}">Categoria: <strong th:if="${!promotion.applicableIds.isEmpty()}" th:text="${categoriesMap.get(promotion.applicableIds.iterator().next())?.name}">Categoria</strong></span>
+                                <span th:if="${promotion.applyType.name() == 'ITEM'}">
+                                    <th:block th:text="${promotion.applicableIds.size() > 1 ? promotion.applicableIds.size() + ' Itens Selecionados' : '1 Item Selecionado'}"></th:block>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1257,7 +1288,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
                             <form th:action="@{/promotions/promotion/delete/{id}(id=${promotion.id})}" method="post" style="display:inline;">
-                                <button type="submit" class="promo-action-btn delete" title="Excluir">
+                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                                 </button>
                             </form>
@@ -1273,7 +1304,7 @@
                 <div class="search-filter">
                     <div class="search-input-wrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input type="text" placeholder="Buscar combo...">
+                        <input type="text" placeholder="Buscar combo..." oninput="filterGrid('combosGrid', this.value)">
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="openComboModal()">
@@ -1296,9 +1327,9 @@
                         <h3 class="promo-name" th:text="${combo.name}">Combo Lanche + Refri</h3>
                         <div class="combo-items">
                             <div th:each="ci : ${combo.items}" class="combo-item">
-                                <img class="combo-item-image" th:src="${itemMap.get(ci.itemId()) != null && !itemMap.get(ci.itemId()).images.isEmpty() ? itemMap.get(ci.itemId()).images[0].name : 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100'}" alt="Item">
-                                <span class="combo-item-name" th:text="${itemMap.get(ci.itemId()) != null ? itemMap.get(ci.itemId()).name : 'Item removido'}">X-Burger Clássico</span>
-                                <span class="combo-item-price" th:text="${itemMap.get(ci.itemId()) != null ? 'R$ ' + itemMap.get(ci.itemId()).price : ''}">R$ 32,90</span>
+                                <img class="combo-item-image" th:src="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).image : 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100'}" alt="Item">
+                                <span class="combo-item-name" th:text="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).name : 'Item removido'}">Item</span>
+                                <span class="combo-item-price" th:text="${itemMap.get(ci.getItemId()) != null ? 'R$ ' + itemMap.get(ci.getItemId()).price : ''}">R$ 0,00</span>
                             </div>
                         </div>
                         <div class="combo-pricing">
@@ -1316,7 +1347,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
                             <form th:action="@{/promotions/combo/delete/{id}(id=${combo.id})}" method="post" style="display:inline;">
-                                <button type="submit" class="promo-action-btn delete" title="Excluir">
+                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                                 </button>
                             </form>
@@ -1332,7 +1363,7 @@
                 <div class="search-filter">
                     <div class="search-input-wrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input type="text" placeholder="Buscar cupom...">
+                        <input type="text" placeholder="Buscar cupom..." oninput="filterGrid('couponsGrid', this.value)">
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="openCouponModal()">
@@ -1388,7 +1419,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
                             <form th:action="@{/promotions/coupon/delete/{id}(id=${coupon.id})}" method="post" style="display:inline;">
-                                <button type="submit" class="promo-action-btn delete" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este cupom?')">
+                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                                 </button>
                             </form>
@@ -1404,7 +1435,8 @@
 <div class="modal-overlay" id="promotionModal">
     <div class="modal">
         <div class="modal-header">
-            <h3>Nova Promoção</h3>
+
+            <h3 id="promotionModalTitle">Nova Promo\u00E7\u00E3o</h3>
             <button class="modal-close" onclick="closePromotionModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -1469,33 +1501,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Recorrência</label>
-                    <input type="hidden" name="recurrenceType" id="promoRecurrenceType" value="ALWAYS">
-                    <div class="recurrence-options">
-                        <button type="button" class="recurrence-btn active" data-recurrence="ALWAYS" onclick="setRecurrence('ALWAYS')">Sempre</button>
-                        <button type="button" class="recurrence-btn" data-recurrence="DAYS_OF_WEEK" onclick="setRecurrence('DAYS_OF_WEEK')">Dias da Semana</button>
-                        <button type="button" class="recurrence-btn" data-recurrence="HOURS" onclick="setRecurrence('HOURS')">Horários</button>
+                    <label class="form-label">Recorrência Semanal</label>
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <label th:each="day : ${T(java.time.DayOfWeek).values()}" style="display: flex; align-items: center; gap: 4px; background: var(--background-secondary); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                            <input type="checkbox" name="recurrenceDays" th:value="${day.name()}" style="width: auto;">
+                            <span th:text="${#strings.substring(day.name(), 0, 3)}">SEG</span>
+                        </label>
                     </div>
-                    <div id="recurrenceWeekdaysSelection" style="display:none; margin-top: 10px;">
-                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                            <label th:each="day : ${T(java.time.DayOfWeek).values()}" style="display: flex; align-items: center; gap: 4px; background: var(--background-secondary); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;">
-                                <input type="checkbox" name="daysOfWeek" th:value="${day.name()}" style="width: auto;">
-                                <span th:text="${#strings.substring(day.name(), 0, 3)}">SEG</span>
-                            </label>
+                    <p class="form-hint">Se nenhum dia for selecionado, a promoção vale para todos os dias.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Restrição de Horário (Opcional)</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Horário Início</label>
+                            <input type="time" name="startTime" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Horário Fim</label>
+                            <input type="time" name="endTime" class="form-input">
                         </div>
                     </div>
-                    <div id="recurrenceHoursSelection" style="display:none; margin-top: 10px;">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Início</label>
-                                <input type="time" name="recurrenceStartTime" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Fim</label>
-                                <input type="time" name="recurrenceEndTime" class="form-input">
-                            </div>
-                        </div>
-                    </div>
+                    <p class="form-hint">Deixe vazio para valer o dia todo.</p>
                 </div>
 
                 <div class="form-divider">
@@ -1524,20 +1552,23 @@
                 <div class="apply-selection active" id="promoCategorySelection">
                     <div class="form-group">
                         <label class="form-label">Categorias</label>
-                        <select class="form-select" name="applyIds">
+                        <select class="form-select" name="applicableIds">
                             <option value="">Selecione uma categoria</option>
-                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name != null ? category.name.get(T(dev.thiagooliveira.tablesplit.domain.common.Language).PT) : 'Categoria'}">Lanches</option>
+                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Categoria</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="apply-selection" id="promoItemSelection" style="display:none;">
+                <div class="apply-selection" id="promoItemSelection">
                     <div class="form-group">
-                        <label class="form-label">Itens</label>
-                        <select class="form-select" name="applyIds" multiple style="height: 100px;">
-                            <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.name}">Item</option>
-                        </select>
-                        <p class="form-hint">Segure Ctrl/Cmd para selecionar múltiplos</p>
+                        <label class="form-label">Itens Selecionados</label>
+                        <div class="selected-items" id="promoSelectedItems">
+                            <div class="selected-items-empty">Nenhum item selecionado</div>
+                        </div>
+                        <div id="promoApplicableIdsContainer"></div>
+                        <button type="button" class="add-item-btn" onclick="openItemSelector('promo')">
+                            + Selecionar Itens do Cardápio
+                        </button>
                     </div>
                 </div>
 
@@ -1566,7 +1597,7 @@
 <div class="modal-overlay" id="comboModal">
     <div class="modal">
         <div class="modal-header">
-            <h3>Novo Combo</h3>
+            <h3 id="comboModalTitle">Novo Combo</h3>
             <button class="modal-close" onclick="closeComboModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -1669,7 +1700,7 @@
 <div class="modal-overlay" id="couponModal">
     <div class="modal">
         <div class="modal-header">
-            <h3>Novo Cupom</h3>
+            <h3 id="couponModalTitle">Novo Cupom</h3>
             <button class="modal-close" onclick="closeCouponModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -1778,6 +1809,29 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="confirmDeleteModal">
+    <div class="modal" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>Confirmar Exclusão</h3>
+            <button class="modal-close" onclick="closeConfirmDeleteModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
+            <div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </div>
+            <h4 style="margin-bottom: 0.5rem; font-weight: 600;">Tem certeza?</h4>
+            <p style="color: var(--muted); font-size: 0.875rem;">Esta ação excluirá permanentemente o registro e não poderá ser desfeita.</p>
+        </div>
+        <div class="modal-footer" style="background: var(--background-secondary);">
+            <button type="button" class="btn btn-outline" onclick="closeConfirmDeleteModal()" style="flex: 1;">Cancelar</button>
+            <button type="button" class="btn btn-danger" onclick="executeDelete()" style="flex: 1; background: #ef4444; color: white; border: none;">Sim, Excluir</button>
+        </div>
+    </div>
+</div>
+
 <!-- Item Selector Modal -->
 <div class="modal-overlay item-selector-modal" id="itemSelectorModal">
     <div class="modal">
@@ -1797,11 +1851,12 @@
 
             <div class="item-selector-categories">
                 <button type="button" class="category-filter-btn active" data-category="all" onclick="filterByCategory('all')">Todos</button>
-                <button type="button" class="category-filter-btn" data-category="lanches" onclick="filterByCategory('lanches')">Lanches</button>
-                <button type="button" class="category-filter-btn" data-category="pizzas" onclick="filterByCategory('pizzas')">Pizzas</button>
-                <button type="button" class="category-filter-btn" data-category="pratos" onclick="filterByCategory('pratos')">Pratos</button>
-                <button type="button" class="category-filter-btn" data-category="bebidas" onclick="filterByCategory('bebidas')">Bebidas</button>
-                <button type="button" class="category-filter-btn" data-category="sobremesas" onclick="filterByCategory('sobremesas')">Sobremesas</button>
+                <button th:each="category : ${categories}" 
+                        type="button" 
+                        class="category-filter-btn" 
+                        th:data-category="${category.name.toLowerCase()}" 
+                        onclick="filterByCategory(this.getAttribute('data-category'))"
+                        th:text="${category.name}">Categoria</button>
             </div>
 
             <div class="item-selector-grid" id="itemSelectorGrid">
@@ -1818,7 +1873,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     // ============================================
     // Sidebar Functions
     // ============================================
@@ -1891,39 +1946,81 @@
     }
 
     function setRecurrence(type) {
-        document.getElementById('promoRecurrenceType').value = type;
-        document.getElementById('recurrenceWeekdaysSelection').style.display = type === 'DAYS_OF_WEEK' ? 'block' : 'none';
-        document.getElementById('recurrenceHoursSelection').style.display = type === 'HOURS' ? 'block' : 'none';
-        document.querySelectorAll('#promotionModal .recurrence-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.recurrence === type);
-        });
+        // Obsolete but kept to avoid errors if called elsewhere
     }
 
     function setPromoApplyType(type) {
         document.getElementById('promoApplyType').value = type;
         document.getElementById('promoCategorySelection').style.display = type === 'CATEGORY' ? 'block' : 'none';
         document.getElementById('promoItemSelection').style.display = type === 'ITEM' ? 'block' : 'none';
+        
+        // Manage name attribute to avoid sending IDs from the wrong type
+        const categorySelect = document.querySelector('#promoCategorySelection select');
+        if (categorySelect) {
+            if (type === 'CATEGORY') {
+                categorySelect.setAttribute('name', 'applicableIds');
+            } else {
+                categorySelect.removeAttribute('name');
+            }
+        }
+
         document.querySelectorAll('#promotionModal .apply-type-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.apply === type);
         });
+        
+        updatePromoHiddenInputs();
     }
 
     async function editPromotion(id) {
+        document.getElementById('promotionModalTitle').textContent = 'Editar Promo\u00E7\u00E3o';
         const response = await fetch(`/promotions/promotion/${id}`);
+        if (!response.ok) {
+            alert('Erro ao carregar promoção');
+            return;
+        }
         const promo = await response.json();
-        
+
         document.getElementById('promoId').value = promo.id;
         document.querySelector('#promotionModal input[name="name"]').value = promo.name;
         document.querySelector('#promotionModal textarea[name="description"]').value = promo.description || '';
         setDiscountType(promo.discountType);
         document.querySelector('#promotionModal input[name="discountValue"]').value = promo.discountValue;
         document.querySelector('#promotionModal input[name="minOrderValue"]').value = promo.minOrderValue || '';
-        document.querySelector('#promotionModal input[name="startDate"]').value = promo.startDate;
-        document.querySelector('#promotionModal input[name="endDate"]').value = promo.endDate || '';
-        setRecurrence(promo.recurrenceType || 'ALWAYS');
-        setPromoApplyType(promo.applyType || 'ALL_MENU');
-        document.querySelector('#promotionModal input[name="active"]').checked = promo.active;
+        document.querySelector('#promotionModal input[name="startDate"]').value = promo.startDate ? promo.startDate.substring(0, 10) : '';
+        document.querySelector('#promotionModal input[name="endDate"]').value = promo.endDate ? promo.endDate.substring(0, 10) : '';
         
+        // Reset checkboxes
+        document.querySelectorAll('#promotionModal input[name="recurrenceDays"]').forEach(cb => cb.checked = false);
+        if (promo.daysOfWeek) {
+            promo.daysOfWeek.forEach(day => {
+                const cb = document.querySelector(`#promotionModal input[name="recurrenceDays"][value="${day}"]`);
+                if (cb) cb.checked = true;
+            });
+        }
+        
+        document.querySelector('#promotionModal input[name="startTime"]').value = promo.startTime || '';
+        document.querySelector('#promotionModal input[name="endTime"]').value = promo.endTime || '';
+        setPromoApplyType(promo.applyType || 'ALL_MENU');
+        
+        // Handle applicableIds for Category or Item
+        if (promo.applyType === 'CATEGORY') {
+            document.querySelector('#promoCategorySelection select[name="applicableIds"]').value = (promo.applicableIds && promo.applicableIds.length > 0) ? promo.applicableIds[0] : '';
+            promoItems = [];
+        } else if (promo.applyType === 'ITEM') {
+            promoItems = [];
+            if (promo.applicableIds) {
+                promo.applicableIds.forEach(id => {
+                    const item = menuItems.find(i => i.id === id);
+                    if (item) promoItems.push(item);
+                });
+            }
+        } else {
+            promoItems = [];
+        }
+        renderPromoItems();
+        updatePromoHiddenInputs();
+
+        document.querySelector('#promotionModal input[name="active"]').checked = promo.active;
         document.getElementById('promotionModal').classList.add('active');
     }
 
@@ -1940,7 +2037,12 @@
     }
 
     async function editCombo(id) {
+        document.getElementById('comboModalTitle').textContent = 'Editar Combo';
         const response = await fetch(`/promotions/combo/${id}`);
+        if (!response.ok) {
+            alert('Erro ao carregar combo');
+            return;
+        }
         const combo = await response.json();
 
         document.getElementById('comboId').value = combo.id;
@@ -1996,7 +2098,12 @@
     }
 
     async function editCoupon(id) {
+        document.getElementById('couponModalTitle').textContent = 'Editar Cupom';
         const response = await fetch(`/promotions/coupon/${id}`);
+        if (!response.ok) {
+            alert('Erro ao carregar cupom');
+            return;
+        }
         const coupon = await response.json();
 
         document.getElementById('couponId').value = coupon.id;
@@ -2035,11 +2142,14 @@
     // Modal Functions
     // ============================================
     function openPromotionModal() {
+        document.getElementById('promotionModalTitle').textContent = 'Nova Promo\u00E7\u00E3o';
         document.getElementById('promoId').value = '';
         document.querySelector('#promotionModal form').reset();
         setDiscountType('PERCENTAGE');
-        setRecurrence('ALWAYS');
         setPromoApplyType('CATEGORY');
+        promoItems = [];
+        renderPromoItems();
+        updatePromoHiddenInputs();
         document.getElementById('promotionModal').classList.add('active');
     }
 
@@ -2048,6 +2158,7 @@
     }
 
     function openComboModal() {
+        document.getElementById('comboModalTitle').textContent = 'Novo Combo';
         document.getElementById('comboId').value = '';
         document.querySelector('#comboModal form').reset();
         document.getElementById('comboModal').classList.add('active');
@@ -2058,6 +2169,7 @@
     }
 
     function openCouponModal() {
+        document.getElementById('couponModalTitle').textContent = 'Novo Cupom';
         document.getElementById('couponId').value = '';
         document.querySelector('#couponModal form').reset();
         setCouponDiscountType('PERCENTAGE');
@@ -2069,24 +2181,59 @@
     }
 
     // ============================================
+    // Delete Confirmation Logic
+    // ============================================
+    let deleteFormToSubmit = null;
+
+    function showDeleteConfirmation(event, button) {
+        event.preventDefault();
+        deleteFormToSubmit = button.closest('form');
+        document.getElementById('confirmDeleteModal').classList.add('active');
+        return false;
+    }
+
+    function closeConfirmDeleteModal() {
+        document.getElementById('confirmDeleteModal').classList.remove('active');
+        deleteFormToSubmit = null;
+    }
+
+    function executeDelete() {
+        if (deleteFormToSubmit) {
+            deleteFormToSubmit.submit();
+        }
+    }
+
+    // ============================================
+    // Search Filtering
+    // ============================================
+    function filterGrid(gridId, query) {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        const cards = grid.getElementsByClassName('promo-card');
+        const q = query.toLowerCase().trim();
+        
+        for (const card of cards) {
+            const nameElement = card.querySelector('.promo-name');
+            if (nameElement) {
+                const name = nameElement.textContent.toLowerCase();
+                card.style.display = name.includes(q) ? '' : 'none';
+            }
+        }
+    }
+
+    // ============================================
     // Menu Items Data
     // ============================================
     const menuItems = [
-        { id: 1, name: 'X-Burger Clássico', price: 32.90, category: 'lanches', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100' },
-        { id: 2, name: 'X-Bacon', price: 36.90, category: 'lanches', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=100' },
-        { id: 3, name: 'X-Tudo', price: 42.90, category: 'lanches', image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=100' },
-        { id: 4, name: 'Pizza Margherita', price: 59.90, category: 'pizzas', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=100' },
-        { id: 5, name: 'Pizza Pepperoni', price: 64.90, category: 'pizzas', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=100' },
-        { id: 6, name: 'Pizza Calabresa', price: 54.90, category: 'pizzas', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100' },
-        { id: 7, name: 'Filé à Parmegiana', price: 54.90, category: 'pratos', image: 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=100' },
-        { id: 8, name: 'Picanha Grelhada', price: 79.90, category: 'pratos', image: 'https://images.unsplash.com/photo-1558030006-450675393462?w=100' },
-        { id: 9, name: 'Salmão Grelhado', price: 69.90, category: 'pratos', image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=100' },
-        { id: 10, name: 'Refrigerante Lata', price: 7.90, category: 'bebidas', image: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=100' },
-        { id: 11, name: 'Suco Natural 500ml', price: 12.90, category: 'bebidas', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=100' },
-        { id: 12, name: 'Água Mineral', price: 4.90, category: 'bebidas', image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=100' },
-        { id: 13, name: 'Petit Gâteau', price: 24.90, category: 'sobremesas', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=100' },
-        { id: 14, name: 'Pudim', price: 14.90, category: 'sobremesas', image: 'https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=100' },
-        { id: 15, name: 'Brownie com Sorvete', price: 22.90, category: 'sobremesas', image: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=100' }
+        /*[# th:each="item : ${items}"]*/
+        { 
+            id: [[${item.id}]], 
+            name: [[${item.name}]], 
+            price: [[${item.price}]], 
+            category: [[${item.category.toLowerCase()}]], 
+            image: [[${item.image}]] 
+        },
+        /*[/]*/
     ];
 
     // State
@@ -2144,7 +2291,7 @@
         grid.innerHTML = filteredItems.map(item => {
             const isSelected = selectedItemsTemp.some(s => s.id === item.id);
             return `
-          <div class="selectable-item ${isSelected ? 'selected' : ''}" data-id="${item.id}" onclick="toggleItemSelection(${item.id})">
+          <div class="selectable-item ${isSelected ? 'selected' : ''}" data-id="${item.id}" onclick="toggleItemSelection('${item.id}')">
             <img src="${item.image}" alt="${item.name}">
             <div class="selectable-item-info">
               <div class="selectable-item-name">${item.name}</div>
@@ -2198,6 +2345,7 @@
         } else if (itemSelectorMode === 'promo') {
             promoItems = [...selectedItemsTemp];
             renderPromoItems();
+            updatePromoHiddenInputs();
         } else if (itemSelectorMode === 'freeItem') {
             selectedFreeItem = selectedItemsTemp[0] || null;
             renderFreeItemDisplay();
@@ -2260,7 +2408,7 @@
             <div class="selected-item-name">${item.name}</div>
             <div class="selected-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
           </div>
-          <button type="button" class="selected-item-remove" onclick="removePromoItem(${item.id})">
+          <button type="button" class="selected-item-remove" onclick="removePromoItem('${item.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
@@ -2270,17 +2418,21 @@
     function removePromoItem(itemId) {
         promoItems = promoItems.filter(i => i.id !== itemId);
         renderPromoItems();
+        updatePromoHiddenInputs();
     }
 
-    function setPromoApplyType(type) {
-        document.querySelectorAll('.apply-type-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.apply === type);
-        });
-
-        document.getElementById('promoCategorySelection').classList.toggle('active', type === 'category');
-        document.getElementById('promoItemSelection').classList.toggle('active', type === 'item');
+    function updatePromoHiddenInputs() {
+        const container = document.getElementById('promoApplicableIdsContainer');
+        const currentType = document.getElementById('promoApplyType').value;
+        
+        if (container) {
+            if (currentType === 'ITEM') {
+                container.innerHTML = promoItems.map(item => `<input type="hidden" name="applicableIds" value="${item.id}">`).join('');
+            } else {
+                container.innerHTML = '';
+            }
+        }
     }
-
     // ============================================
     // Free Item Selection (Coupon)
     // ============================================
@@ -2329,18 +2481,30 @@
     });
 
     async function togglePromotion(id) {
-        await fetch(`/promotions/promotion/toggle/${id}`, { method: 'POST' });
-        location.reload();
+        const response = await fetch(`/promotions/promotion/toggle/${id}`, { method: 'POST' });
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Erro ao alterar status da promoção');
+        }
     }
 
     async function toggleCombo(id) {
-        await fetch(`/promotions/combo/toggle/${id}`, { method: 'POST' });
-        location.reload();
+        const response = await fetch(`/promotions/combo/toggle/${id}`, { method: 'POST' });
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Erro ao alterar status do combo');
+        }
     }
 
     async function toggleCoupon(id) {
-        await fetch(`/promotions/coupon/toggle/${id}`, { method: 'POST' });
-        location.reload();
+        const response = await fetch(`/promotions/coupon/toggle/${id}`, { method: 'POST' });
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Erro ao alterar status do cupom');
+        }
     }
 
     function copyCoupon(code) {

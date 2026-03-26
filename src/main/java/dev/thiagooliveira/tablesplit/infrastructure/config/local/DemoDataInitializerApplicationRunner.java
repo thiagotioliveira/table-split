@@ -615,10 +615,11 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   BigDecimal.ZERO,
                   LocalDateTime.now(),
                   LocalDateTime.now().plusMonths(3),
-                  new Promotion.Recurrence(
-                      RecurrenceType.HOURS, null, LocalTime.of(17, 0), LocalTime.of(20, 0)),
+                  Set.of(DayOfWeek.values()),
+                  LocalTime.of(17, 0),
+                  LocalTime.of(20, 0),
                   ApplyType.CATEGORY,
-                  categoryDrinks.getId(),
+                  Set.of(categoryDrinks.getId().toString()),
                   true));
 
           // Almoço Especial: 10% off main courses, Mon-Fri
@@ -632,18 +633,16 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   BigDecimal.ZERO,
                   LocalDateTime.now(),
                   LocalDateTime.now().plusMonths(3),
-                  new Promotion.Recurrence(
-                      RecurrenceType.DAYS_OF_WEEK,
-                      Set.of(
-                          DayOfWeek.MONDAY,
-                          DayOfWeek.TUESDAY,
-                          DayOfWeek.WEDNESDAY,
-                          DayOfWeek.THURSDAY,
-                          DayOfWeek.FRIDAY),
-                      null,
-                      null),
+                  Set.of(
+                      DayOfWeek.MONDAY,
+                      DayOfWeek.TUESDAY,
+                      DayOfWeek.WEDNESDAY,
+                      DayOfWeek.THURSDAY,
+                      DayOfWeek.FRIDAY),
+                  null,
+                  null,
                   ApplyType.CATEGORY,
-                  categoryMainCourse.getId(),
+                  Set.of(categoryMainCourse.getId().toString()),
                   true));
 
           return null;

@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +31,26 @@ public class GetItem {
       UUID restaurantId, List<Language> languages, boolean includePromotions) {
     var items = this.itemRepository.findAll(restaurantId, languages);
     if (includePromotions) {
+      var now = LocalDateTime.now();
+      var today = now.getDayOfWeek();
+      var currentTime = now.toLocalTime();
+
       var activePromos =
           promotionRepository.findByRestaurantId(restaurantId).stream()
               .filter(Promotion::isActive)
+              .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
+              .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
+              .filter(
+                  p ->
+                      p.getDaysOfWeek() == null
+                          || p.getDaysOfWeek().isEmpty()
+                          || p.getDaysOfWeek().contains(today))
+              .filter(
+                  p -> {
+                    if (p.getStartTime() == null || p.getEndTime() == null) return true;
+                    return !currentTime.isBefore(p.getStartTime())
+                        && !currentTime.isAfter(p.getEndTime());
+                  })
               .toList();
 
       for (var item : items) {
@@ -55,12 +73,14 @@ public class GetItem {
   }
 
   private boolean isApplicable(Item item, Promotion p) {
-    if (p.getApplyType() == ApplyType.MENU) return true;
+    if (p.getApplyType() == ApplyType.ALL_MENU) return true;
     if (p.getApplyType() == ApplyType.CATEGORY) {
-      return item.getCategory() != null && item.getCategory().getId().equals(p.getApplicableId());
+      return item.getCategory() != null
+          && p.getApplicableIds() != null
+          && p.getApplicableIds().contains(item.getCategory().getId().toString());
     }
     if (p.getApplyType() == ApplyType.ITEM) {
-      return item.getId().equals(p.getApplicableId());
+      return p.getApplicableIds() != null && p.getApplicableIds().contains(item.getId().toString());
     }
     return false;
   }

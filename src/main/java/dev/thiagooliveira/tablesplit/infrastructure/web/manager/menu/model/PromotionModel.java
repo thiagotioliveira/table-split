@@ -5,7 +5,6 @@ import dev.thiagooliveira.tablesplit.application.menu.command.UpdatePromotionCom
 import dev.thiagooliveira.tablesplit.domain.menu.*;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
@@ -20,11 +19,11 @@ public class PromotionModel {
   private BigDecimal discountValue;
   private BigDecimal minOrderValue;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private LocalDateTime startDate;
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private java.time.LocalDate startDate;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private LocalDateTime endDate;
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private java.time.LocalDate endDate;
 
   private String recurrenceOption;
   private List<DayOfWeek> recurrenceDays;
@@ -36,7 +35,7 @@ public class PromotionModel {
   private LocalTime endTime;
 
   private ApplyType applyType;
-  private UUID applicableId;
+  private java.util.List<String> applicableIds;
   private boolean active;
 
   public UUID getId() {
@@ -87,19 +86,19 @@ public class PromotionModel {
     this.minOrderValue = minOrderValue;
   }
 
-  public LocalDateTime getStartDate() {
+  public java.time.LocalDate getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(LocalDateTime startDate) {
+  public void setStartDate(java.time.LocalDate startDate) {
     this.startDate = startDate;
   }
 
-  public LocalDateTime getEndDate() {
+  public java.time.LocalDate getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(LocalDateTime endDate) {
+  public void setEndDate(java.time.LocalDate endDate) {
     this.endDate = endDate;
   }
 
@@ -143,12 +142,12 @@ public class PromotionModel {
     this.applyType = applyType;
   }
 
-  public UUID getApplicableId() {
-    return applicableId;
+  public java.util.List<String> getApplicableIds() {
+    return applicableIds;
   }
 
-  public void setApplicableId(UUID applicableId) {
-    this.applicableId = applicableId;
+  public void setApplicableIds(java.util.List<String> applicableIds) {
+    this.applicableIds = applicableIds;
   }
 
   public boolean isActive() {
@@ -159,21 +158,6 @@ public class PromotionModel {
     this.active = active;
   }
 
-  private Promotion.Recurrence toRecurrence() {
-    if ("always".equals(recurrenceOption)) {
-      return new Promotion.Recurrence(RecurrenceType.ALWAYS, null, null, null);
-    } else if ("weekdays".equals(recurrenceOption)) {
-      return new Promotion.Recurrence(
-          RecurrenceType.DAYS_OF_WEEK,
-          recurrenceDays != null ? new HashSet<>(recurrenceDays) : new HashSet<>(),
-          null,
-          null);
-    } else if ("hours".equals(recurrenceOption)) {
-      return new Promotion.Recurrence(RecurrenceType.HOURS, null, startTime, endTime);
-    }
-    return null;
-  }
-
   public CreatePromotionCommand toCreatePromotionCommand() {
     return new CreatePromotionCommand(
         name,
@@ -181,11 +165,13 @@ public class PromotionModel {
         discountType,
         discountValue,
         minOrderValue,
-        startDate,
-        endDate,
-        toRecurrence(),
+        startDate != null ? startDate.atStartOfDay() : null,
+        endDate != null ? endDate.atTime(LocalTime.MAX) : null,
+        recurrenceDays != null ? new HashSet<>(recurrenceDays) : new HashSet<>(),
+        startTime,
+        endTime,
         applyType,
-        applicableId,
+        applicableIds != null ? new HashSet<>(applicableIds) : new HashSet<>(),
         active);
   }
 
@@ -196,11 +182,13 @@ public class PromotionModel {
         discountType,
         discountValue,
         minOrderValue,
-        startDate,
-        endDate,
-        toRecurrence(),
+        startDate != null ? startDate.atStartOfDay() : null,
+        endDate != null ? endDate.atTime(LocalTime.MAX) : null,
+        recurrenceDays != null ? new HashSet<>(recurrenceDays) : new HashSet<>(),
+        startTime,
+        endTime,
         applyType,
-        applicableId,
+        applicableIds != null ? new HashSet<>(applicableIds) : new HashSet<>(),
         active);
   }
 }

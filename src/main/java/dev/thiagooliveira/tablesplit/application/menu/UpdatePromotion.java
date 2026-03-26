@@ -21,9 +21,11 @@ public class UpdatePromotion {
     promotion.setMinOrderValue(command.minOrderValue());
     promotion.setStartDate(command.startDate());
     promotion.setEndDate(command.endDate());
-    promotion.setRecurrence(command.recurrence());
+    promotion.setDaysOfWeek(command.daysOfWeek());
+    promotion.setStartTime(command.startTime());
+    promotion.setEndTime(command.endTime());
     promotion.setApplyType(command.applyType());
-    promotion.setApplicableId(command.applicableId());
+    promotion.setApplicableIds(command.applicableIds());
     promotion.setActive(command.active());
 
     return promotionRepository.save(promotion);

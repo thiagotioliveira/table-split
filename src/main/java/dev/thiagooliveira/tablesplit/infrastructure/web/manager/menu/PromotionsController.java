@@ -5,10 +5,13 @@ import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.ComboModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.CouponModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.PromotionCategoryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.PromotionItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.PromotionModel;
 import java.math.BigDecimal;
 import java.util.*;
@@ -17,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/promotions")
@@ -88,38 +92,55 @@ public class PromotionsController {
   public String index(Authentication auth, Model model) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
-    List<Language> languages = List.of(context.getUser().getLanguage());
+    Language language = context.getUser().getLanguage();
+    List<Language> languages = List.of(language);
 
     List<Combo> combos = getCombos.listByRestaurantId(restaurantId);
     List<Item> allItems = getItem.execute(restaurantId, languages);
-    Map<UUID, Item> itemMap = allItems.stream().collect(Collectors.toMap(Item::getId, i -> i));
+
+    Map<String, PromotionItemModel> itemMap =
+        allItems.stream()
+            .map(item -> PromotionItemModel.from(item, language))
+            .collect(Collectors.toMap(PromotionItemModel::id, i -> i));
 
     Map<UUID, BigDecimal> comboOriginalPrices = new HashMap<>();
     for (Combo combo : combos) {
       BigDecimal originalPrice = BigDecimal.ZERO;
       for (Combo.ComboItem ci : combo.getItems()) {
-        Item item = itemMap.get(ci.itemId());
-        if (item != null && item.getPrice() != null) {
+        PromotionItemModel item = itemMap.get(ci.getItemId());
+        if (item != null && item.price() != null) {
           originalPrice =
-              originalPrice.add(item.getPrice().multiply(BigDecimal.valueOf(ci.quantity())));
+              originalPrice.add(item.price().multiply(BigDecimal.valueOf(ci.getQuantity())));
         }
       }
       comboOriginalPrices.put(combo.getId(), originalPrice);
     }
 
+    List<PromotionCategoryModel> promoCategories =
+        getCategory.execute(restaurantId, languages).stream()
+            .map(cat -> PromotionCategoryModel.from(cat, language))
+            .toList();
+
+    Map<String, PromotionCategoryModel> categoriesMap =
+        promoCategories.stream().collect(Collectors.toMap(c -> c.id().toString(), c -> c));
+
     model.addAttribute("promotions", getPromotions.listByRestaurantId(restaurantId));
     model.addAttribute("combos", combos);
     model.addAttribute("comboOriginalPrices", comboOriginalPrices);
     model.addAttribute("coupons", getCoupons.listByRestaurantId(restaurantId));
-    model.addAttribute("categories", getCategory.execute(restaurantId, languages));
-    model.addAttribute("items", allItems);
+    model.addAttribute("categories", promoCategories);
+    model.addAttribute("categoriesMap", categoriesMap);
+    model.addAttribute("items", itemMap.values());
     model.addAttribute("itemMap", itemMap);
 
     return "promotions";
   }
 
   @PostMapping("/promotion")
-  public String savePromotion(Authentication auth, @ModelAttribute PromotionModel promotionModel) {
+  public String savePromotion(
+      Authentication auth,
+      @ModelAttribute PromotionModel promotionModel,
+      RedirectAttributes redirectAttributes) {
     AccountContext context = (AccountContext) auth.getPrincipal();
 
     if (promotionModel.getId() == null) {
@@ -135,35 +156,47 @@ public class PromotionsController {
                   promotionModel.getId(),
                   promotionModel.toUpdatePromotionCommand()));
     }
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.promotion.saved"));
     return "redirect:/promotions";
   }
 
   @GetMapping("/promotion/{id}")
   @ResponseBody
-  public Promotion getPromotion(@PathVariable UUID id) {
-    return getPromotions.findById(id).orElse(null);
+  public org.springframework.http.ResponseEntity<Promotion> getPromotion(@PathVariable UUID id) {
+    return getPromotions
+        .findById(id)
+        .map(org.springframework.http.ResponseEntity::ok)
+        .orElse(org.springframework.http.ResponseEntity.notFound().build());
   }
 
   @PostMapping("/promotion/toggle/{id}")
   @ResponseBody
-  public void togglePromotion(@PathVariable UUID id) {
+  public void togglePromotion(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> togglePromotion.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.promotion.toggled"));
   }
 
   @PostMapping("/promotion/delete/{id}")
-  public String deletePromotion(@PathVariable UUID id) {
+  public String deletePromotion(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> deletePromotion.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.promotion.deleted"));
     return "redirect:/promotions";
   }
 
   @GetMapping("/combo/{id}")
   @ResponseBody
-  public Combo getCombo(@PathVariable UUID id) {
-    return getCombos.findById(id).orElse(null);
+  public org.springframework.http.ResponseEntity<Combo> getCombo(@PathVariable UUID id) {
+    return getCombos
+        .findById(id)
+        .map(org.springframework.http.ResponseEntity::ok)
+        .orElse(org.springframework.http.ResponseEntity.notFound().build());
   }
 
   @PostMapping("/combo")
-  public String saveCombo(Authentication auth, @ModelAttribute ComboModel comboModel) {
+  public String saveCombo(
+      Authentication auth,
+      @ModelAttribute ComboModel comboModel,
+      RedirectAttributes redirectAttributes) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     if (comboModel.getId() == null) {
       transactionalContext.execute(
@@ -178,29 +211,38 @@ public class PromotionsController {
                   comboModel.getId(),
                   comboModel.toUpdateComboCommand()));
     }
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.combo.saved"));
     return "redirect:/promotions";
   }
 
   @PostMapping("/combo/toggle/{id}")
   @ResponseBody
-  public void toggleCombo(@PathVariable UUID id) {
+  public void toggleCombo(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> toggleCombo.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.combo.toggled"));
   }
 
   @PostMapping("/combo/delete/{id}")
-  public String deleteCombo(@PathVariable UUID id) {
+  public String deleteCombo(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> deleteCombo.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.combo.deleted"));
     return "redirect:/promotions";
   }
 
   @GetMapping("/coupon/{id}")
   @ResponseBody
-  public Coupon getCoupon(@PathVariable UUID id) {
-    return getCoupons.findById(id).orElse(null);
+  public org.springframework.http.ResponseEntity<Coupon> getCoupon(@PathVariable UUID id) {
+    return getCoupons
+        .findById(id)
+        .map(org.springframework.http.ResponseEntity::ok)
+        .orElse(org.springframework.http.ResponseEntity.notFound().build());
   }
 
   @PostMapping("/coupon")
-  public String saveCoupon(Authentication auth, @ModelAttribute CouponModel couponModel) {
+  public String saveCoupon(
+      Authentication auth,
+      @ModelAttribute CouponModel couponModel,
+      RedirectAttributes redirectAttributes) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     if (couponModel.getId() == null) {
       transactionalContext.execute(
@@ -215,18 +257,21 @@ public class PromotionsController {
                   couponModel.getId(),
                   couponModel.toUpdateCouponCommand()));
     }
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.coupon.saved"));
     return "redirect:/promotions";
   }
 
   @PostMapping("/coupon/toggle/{id}")
   @ResponseBody
-  public void toggleCoupon(@PathVariable UUID id) {
+  public void toggleCoupon(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> toggleCoupon.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.coupon.toggled"));
   }
 
   @PostMapping("/coupon/delete/{id}")
-  public String deleteCoupon(@PathVariable UUID id) {
+  public String deleteCoupon(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     transactionalContext.execute(() -> deleteCoupon.execute(id));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.coupon.deleted"));
     return "redirect:/promotions";
   }
 }

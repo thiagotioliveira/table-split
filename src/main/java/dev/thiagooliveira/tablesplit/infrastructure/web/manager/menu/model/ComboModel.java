@@ -4,7 +4,6 @@ import dev.thiagooliveira.tablesplit.application.menu.command.CreateComboCommand
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateComboCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Combo;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,11 +15,11 @@ public class ComboModel {
   private String description;
   private BigDecimal comboPrice;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private LocalDateTime startDate;
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private java.time.LocalDate startDate;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private LocalDateTime endDate;
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  private java.time.LocalDate endDate;
 
   private List<UUID> itemIds;
   private List<Integer> quantities;
@@ -58,19 +57,19 @@ public class ComboModel {
     this.comboPrice = comboPrice;
   }
 
-  public LocalDateTime getStartDate() {
+  public java.time.LocalDate getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(LocalDateTime startDate) {
+  public void setStartDate(java.time.LocalDate startDate) {
     this.startDate = startDate;
   }
 
-  public LocalDateTime getEndDate() {
+  public java.time.LocalDate getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(LocalDateTime endDate) {
+  public void setEndDate(java.time.LocalDate endDate) {
     this.endDate = endDate;
   }
 
@@ -110,11 +109,23 @@ public class ComboModel {
 
   public CreateComboCommand toCreateComboCommand() {
     return new CreateComboCommand(
-        name, description, comboPrice, startDate, endDate, toComboItems(), active);
+        name,
+        description,
+        comboPrice,
+        startDate != null ? startDate.atStartOfDay() : null,
+        endDate != null ? endDate.atTime(java.time.LocalTime.MAX) : null,
+        toComboItems(),
+        active);
   }
 
   public UpdateComboCommand toUpdateComboCommand() {
     return new UpdateComboCommand(
-        name, description, comboPrice, startDate, endDate, toComboItems(), active);
+        name,
+        description,
+        comboPrice,
+        startDate != null ? startDate.atStartOfDay() : null,
+        endDate != null ? endDate.atTime(java.time.LocalTime.MAX) : null,
+        toComboItems(),
+        active);
   }
 }

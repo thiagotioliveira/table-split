@@ -17,9 +17,11 @@ public class Promotion {
   private BigDecimal minOrderValue;
   private LocalDateTime startDate;
   private LocalDateTime endDate;
-  private Recurrence recurrence;
+  private Set<DayOfWeek> daysOfWeek;
+  private LocalTime startTime;
+  private LocalTime endTime;
   private ApplyType applyType;
-  private UUID applicableId;
+  private java.util.Set<String> applicableIds;
   private boolean active;
 
   public UUID getId() {
@@ -94,12 +96,28 @@ public class Promotion {
     this.endDate = endDate;
   }
 
-  public Recurrence getRecurrence() {
-    return recurrence;
+  public Set<DayOfWeek> getDaysOfWeek() {
+    return daysOfWeek;
   }
 
-  public void setRecurrence(Recurrence recurrence) {
-    this.recurrence = recurrence;
+  public void setDaysOfWeek(Set<DayOfWeek> daysOfWeek) {
+    this.daysOfWeek = daysOfWeek;
+  }
+
+  public LocalTime getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(LocalTime startTime) {
+    this.startTime = startTime;
+  }
+
+  public LocalTime getEndTime() {
+    return endTime;
+  }
+
+  public void setEndTime(LocalTime endTime) {
+    this.endTime = endTime;
   }
 
   public ApplyType getApplyType() {
@@ -110,12 +128,12 @@ public class Promotion {
     this.applyType = applyType;
   }
 
-  public UUID getApplicableId() {
-    return applicableId;
+  public java.util.Set<String> getApplicableIds() {
+    return applicableIds;
   }
 
-  public void setApplicableId(UUID applicableId) {
-    this.applicableId = applicableId;
+  public void setApplicableIds(java.util.Set<String> applicableIds) {
+    this.applicableIds = applicableIds;
   }
 
   public boolean isActive() {
@@ -125,7 +143,4 @@ public class Promotion {
   public void setActive(boolean active) {
     this.active = active;
   }
-
-  public record Recurrence(
-      RecurrenceType type, Set<DayOfWeek> daysOfWeek, LocalTime startTime, LocalTime endTime) {}
 }

@@ -72,8 +72,8 @@ public class ComboEntity {
                   i -> {
                     var itemEntity = new ComboItemEntity();
                     itemEntity.setComboId(domain.getId());
-                    itemEntity.setItemId(i.itemId());
-                    itemEntity.setQuantity(i.quantity());
+                    itemEntity.setItemId(UUID.fromString(i.getItemId()));
+                    itemEntity.setQuantity(i.getQuantity());
                     return itemEntity;
                   })
               .collect(Collectors.toList()));
