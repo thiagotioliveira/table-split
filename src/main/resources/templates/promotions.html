@@ -624,6 +624,60 @@
         .btn-outline:hover {
             background: var(--background-secondary);
         }
+
+        /* Combo Item Quantity Styles */
+        .combo-selected-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .combo-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.25rem;
+            margin-left: auto;
+        }
+
+        .qty-btn {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: none;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--foreground);
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .combo-item-qty input {
+            width: 2.5rem;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            appearance: textfield;
+        }
+
+        .combo-item-qty input::-webkit-outer-spin-button,
+        .combo-item-qty input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         .form-select:focus,
         .form-textarea:focus {
             outline: none;
@@ -1623,23 +1677,12 @@
                 </div>
 
                 <div class="form-group">
-                    <div id="comboItemsContainer">
-                        <div class="form-row combo-item-row" style="margin-bottom: 10px;">
-                            <div class="form-group" style="flex: 2;">
-                                <label class="form-label">Item</label>
-                                <select name="itemIds" class="form-select">
-                                    <option value="">Selecione um item</option>
-                                    <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.name}">Item</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label class="form-label">Qtd</label>
-                                <input type="number" name="quantities" class="form-input" value="1" min="1">
-                            </div>
-                        </div>
+                    <label class="form-label">Itens do Combo *</label>
+                    <div class="selected-items" id="comboItems">
+                        <div class="selected-items-empty">Nenhum item adicionado</div>
                     </div>
-                    <button type="button" class="add-item-btn" onclick="addComboItemRow()">
-                        + Adicionar Outro Item
+                    <button type="button" class="add-item-btn" onclick="openItemSelector('combo')">
+                        + Selecionar Itens do Cardápio
                     </button>
                 </div>
 
@@ -2027,14 +2070,6 @@
     // ============================================
     // Combo Logic
     // ============================================
-    function addComboItemRow() {
-        const container = document.getElementById('comboItemsContainer');
-        const firstRow = container.querySelector('.combo-item-row');
-        const newRow = firstRow.cloneNode(true);
-        newRow.querySelector('select').selectedIndex = 0;
-        newRow.querySelector('input').value = 1;
-        container.appendChild(newRow);
-    }
 
     async function editCombo(id) {
         document.getElementById('comboModalTitle').textContent = 'Editar Combo';
@@ -2053,26 +2088,16 @@
         document.querySelector('#comboModal input[name="endDate"]').value = combo.endDate || '';
         
         // Populate items
-        const container = document.getElementById('comboItemsContainer');
-        container.innerHTML = '';
-        if (combo.items && combo.items.length > 0) {
-            combo.items.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'form-row combo-item-row';
-                row.style.marginBottom = '10px';
-                row.innerHTML = `
-                    <div class="form-group" style="flex: 2;">
-                        <select name="itemIds" class="form-select">
-                            <option value="${item.itemId}" selected>${item.itemId}</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <input type="number" name="quantities" class="form-input" value="${item.quantity || 1}" min="1">
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
+        comboItems = (combo.items || []).map(item => {
+            const menuItem = menuItems.find(mi => mi.id === item.itemId);
+            if (menuItem) {
+                return { ...menuItem, quantity: item.quantity || 1 };
+            }
+            return null;
+        }).filter(item => item !== null);
+
+        renderComboItems();
+        updateComboPrice();
         
         document.getElementById('comboModal').classList.add('active');
     }
@@ -2161,6 +2186,9 @@
         document.getElementById('comboModalTitle').textContent = 'Novo Combo';
         document.getElementById('comboId').value = '';
         document.querySelector('#comboModal form').reset();
+        comboItems = [];
+        renderComboItems();
+        updateComboPrice();
         document.getElementById('comboModal').classList.add('active');
     }
 
@@ -2366,17 +2394,32 @@
         }
 
         container.innerHTML = comboItems.map(item => `
-        <div class="selected-item">
+        <div class="selected-item combo-selected-item">
           <img src="${item.image}" alt="${item.name}">
           <div class="selected-item-info">
             <div class="selected-item-name">${item.name}</div>
             <div class="selected-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
           </div>
-          <button type="button" class="selected-item-remove" onclick="removeComboItem(${item.id})">
+          <div class="combo-item-qty">
+            <button type="button" class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
+            <input type="number" name="quantities" value="${item.quantity || 1}" min="1" readonly>
+            <input type="hidden" name="itemIds" value="${item.id}">
+            <button type="button" class="qty-btn" onclick="updateItemQuantity('${item.id}', 1)">+</button>
+          </div>
+          <button type="button" class="selected-item-remove" onclick="removeComboItem('${item.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
       `).join('');
+    }
+
+    function updateItemQuantity(itemId, delta) {
+        const item = comboItems.find(i => i.id === itemId);
+        if (item) {
+            item.quantity = Math.max(1, (item.quantity || 1) + delta);
+            renderComboItems();
+            updateComboPrice();
+        }
     }
 
     function removeComboItem(itemId) {
@@ -2386,8 +2429,8 @@
     }
 
     function updateComboPrice() {
-        const total = comboItems.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById('comboOriginalPrice').value = 'R$ ' + total.toFixed(2).replace('.', ',');
+        const total = comboItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+        document.getElementById('comboOriginalPriceField').value = 'R$ ' + total.toFixed(2).replace('.', ',');
     }
 
     // ============================================
@@ -2518,6 +2561,14 @@
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
         initSidebarState();
+        
+        // Tab Persistence
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) {
+            const tabBtn = document.querySelector(`.page-tab[data-tab="${tab}"]`);
+            if (tabBtn) tabBtn.click();
+        }
     });
 </script>
 </body>

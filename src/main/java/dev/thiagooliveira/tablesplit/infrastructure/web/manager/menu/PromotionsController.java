@@ -157,7 +157,7 @@ public class PromotionsController {
                   promotionModel.toUpdatePromotionCommand()));
     }
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.promotion.saved"));
-    return "redirect:/promotions";
+    return "redirect:/promotions?tab=promotions";
   }
 
   @GetMapping("/promotion/{id}")
@@ -212,7 +212,7 @@ public class PromotionsController {
                   comboModel.toUpdateComboCommand()));
     }
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.combo.saved"));
-    return "redirect:/promotions";
+    return "redirect:/promotions?tab=combos";
   }
 
   @PostMapping("/combo/toggle/{id}")
@@ -258,7 +258,7 @@ public class PromotionsController {
                   couponModel.toUpdateCouponCommand()));
     }
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.coupon.saved"));
-    return "redirect:/promotions";
+    return "redirect:/promotions?tab=coupons";
   }
 
   @PostMapping("/coupon/toggle/{id}")
