@@ -14,6 +14,7 @@ public class Item {
   private Map<Language, String> name;
   private Map<Language, String> description;
   private BigDecimal price;
+  private PromotionInfo promotion;
 
   public UUID getId() {
     return id;
@@ -70,4 +71,14 @@ public class Item {
   public void setImages(List<ItemImage> images) {
     this.images = images;
   }
+
+  public PromotionInfo getPromotion() {
+    return promotion;
+  }
+
+  public void setPromotion(PromotionInfo promotion) {
+    this.promotion = promotion;
+  }
+
+  public record PromotionInfo(UUID promotionId, BigDecimal promotionalPrice) {}
 }

@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - TableSplit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Account Page Styles */
+        .account-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .account-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .account-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .account-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .account-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .account-card-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--primary);
+        }
+
+        .account-card-body {
+            padding: 1.5rem;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-banner.warning {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(234, 179, 8, 0.05));
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .alert-banner.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-banner.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .alert-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alert-banner.warning .alert-icon {
+            background: rgba(234, 179, 8, 0.2);
+            color: #a16207;
+        }
+
+        .alert-banner.danger .alert-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--destructive);
+        }
+
+        .alert-banner.info .alert-icon {
+            background: rgba(59, 130, 246, 0.2);
+            color: #2563eb;
+        }
+
+        .alert-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-banner.warning .alert-title { color: #a16207; }
+        .alert-banner.danger .alert-title { color: var(--destructive); }
+        .alert-banner.info .alert-title { color: #2563eb; }
+
+        .alert-text {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Plan Card */
+        .current-plan {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .plan-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plan-icon svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .plan-price {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .plan-renewal {
+            text-align: right;
+        }
+
+        .renewal-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .renewal-date {
+            font-weight: 600;
+        }
+
+        /* Info List */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .info-label svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
+        /* Plans Grid */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .plan-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .plan-card.current {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .plan-card.popular {
+            border-color: var(--accent);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -0.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .plan-badge.current {
+            background: var(--primary);
+            color: white;
+        }
+
+        .plan-badge.popular {
+            background: var(--accent);
+            color: white;
+        }
+
+        .plan-card-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-card-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-currency {
+            font-size: 1rem;
+            color: var(--muted);
+        }
+
+        .price-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .price-period {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .plan-features {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .plan-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            padding: 0.375rem 0;
+        }
+
+        .plan-feature svg {
+            width: 1rem;
+            height: 1rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .plan-feature.disabled {
+            color: var(--muted);
+        }
+
+        .plan-feature.disabled svg {
+            color: var(--muted);
+        }
+
+        /* Payment History */
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .payment-table th,
+        .payment-table td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .payment-table th {
+            background: var(--background-secondary);
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .payment-table td {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .payment-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .payment-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .payment-status.paid {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+        }
+
+        .payment-status.pending {
+            background: rgba(234, 179, 8, 0.1);
+            color: #a16207;
+        }
+
+        .payment-status.failed {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+        }
+
+        .payment-status-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .invoice-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .invoice-link:hover {
+            text-decoration: underline;
+        }
+
+        .invoice-link svg {
+            width: 0.875rem;
+            height: 0.875rem;
+        }
+
+        /* Payment Method */
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 3rem;
+            height: 2rem;
+            background: linear-gradient(135deg, #1a1f36, #2d3348);
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-number {
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        .card-expiry {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .quick-stat {
+            padding: 1rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .quick-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .quick-stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        /* Sidebar Summary */
+        .sidebar-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Usage Bar */
+        .usage-item {
+            margin-bottom: 1rem;
+        }
+
+        .usage-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .usage-label {
+            color: var(--muted);
+        }
+
+        .usage-value {
+            font-weight: 500;
+        }
+
+        .usage-bar {
+            height: 0.5rem;
+            background: var(--background-secondary);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .usage-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.3s;
+        }
+
+        .usage-bar-fill.low {
+            background: var(--accent);
+        }
+
+        .usage-bar-fill.medium {
+            background: #eab308;
+        }
+
+        .usage-bar-fill.high {
+            background: var(--destructive);
+        }
+
+        /* Action List */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-item:hover {
+            color: var(--primary);
+        }
+
+        .action-item svg {
+            width: 1.125rem;
+            height: 1.125rem;
+            color: var(--muted);
+        }
+
+        .action-item:hover svg {
+            color: var(--primary);
+        }
+
+        .action-item-arrow {
+            margin-left: auto;
+            color: var(--muted);
+        }
+
+        .action-item.danger {
+            color: var(--destructive);
+        }
+
+        .action-item.danger svg {
+            color: var(--destructive);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 32rem;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--background-secondary);
+            color: var(--foreground);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Responsive Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 640px) {
+            .payment-table th:nth-child(2),
+            .payment-table td:nth-child(2) {
+                display: none;
+            }
+        }
+
+        /* Admin Badge */
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .admin-badge svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Main Content -->
+<main class="main-content">
+    <div th:insert="~{components/sidebar :: sidebar(#{page.account.header.title}, ~{})}"></div>
+
+    <div class="dashboard-body">
+        <div th:replace="~{components/alert :: alert}"></div>
+        <!-- Payment Alert (conditional) -->
+        <div class="alert-banner warning" id="paymentAlert">
+            <div class="alert-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </div>
+            <div class="alert-content">
+                <p class="alert-title">Pagamento Pendente</p>
+                <p class="alert-text">Sua fatura de Janeiro/2024 no valor de R$ 149,90 está pendente. Regularize para evitar interrupção dos serviços.</p>
+                <div class="alert-actions">
+                    <button class="btn btn-primary btn-sm" onclick="openPaymentModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                        Pagar Agora
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="dismissAlert()">Lembrar Depois</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-grid">
+            <!-- Main Column -->
+            <div>
+                <!-- Current Plan -->
+                <div class="account-card" style="margin-bottom: 1.5rem;">
+                    <div class="account-card-header">
+                        <div class="account-card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                            Plano Atual
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="openUpgradeModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                            Upgrade
+                        </button>
+                    </div>
+                    <div class="account-card-body">
+                        <div class="current-plan">
+                            <div class="plan-info">
+                                <div class="plan-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </div>
+                                <div>
+                                    <div class="plan-name">Plano Profissional</div>
+                                    <div class="plan-price">R$ 149,90/mês</div>
+                                </div>
+                            </div>
+                            <div class="plan-renewal">
+                                <div class="renewal-label">Próxima renovação</div>
+                                <div class="renewal-date">15/02/2024</div>
+                            </div>
+                        </div>
+
+                        <div class="quick-stats">
+                            <div class="quick-stat">
+                                <div class="quick-stat-value">1.847</div>
+                                <div class="quick-stat-label">Pedidos este mês</div>
+                            </div>
+                            <div class="quick-stat">
+                                <div class="quick-stat-value">5</div>
+                                <div class="quick-stat-label">Usuários ativos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Info -->
+                <div class="account-card" style="margin-bottom: 1.5rem;">
+                    <div class="account-card-header">
+                        <div class="account-card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Informações da Conta
+                        </div>
+                    </div>
+                    <div class="account-card-body">
+                        <div class="info-list">
+                            <div class="info-item">
+                  <span class="info-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Nome da Conta
+                  </span>
+                                <span class="info-value">Cantina Bella Italia</span>
+                            </div>
+                            <div class="info-item">
+                  <span class="info-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    E-mail Principal
+                  </span>
+                                <span class="info-value">contato@bellaitalia.com.br</span>
+                            </div>
+                            <div class="info-item">
+                  <span class="info-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Data de Cadastro
+                  </span>
+                                <span class="info-value">15/03/2023</span>
+                            </div>
+                            <div class="info-item">
+                  <span class="info-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    ID da Conta
+                  </span>
+                                <span class="info-value" style="font-family: monospace;">ACC-2023-0847</span>
+                            </div>
+                            <div class="info-item">
+                  <span class="info-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Fuso Horário
+                  </span>
+                                <span class="info-value">America/Sao_Paulo (GMT-3)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="account-card" style="margin-bottom: 1.5rem;">
+                    <div class="account-card-header">
+                        <div class="account-card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                            Método de Pagamento
+                        </div>
+                        <button class="btn btn-ghost btn-sm">Alterar</button>
+                    </div>
+                    <div class="account-card-body">
+                        <div class="payment-method">
+                            <div class="card-icon">VISA</div>
+                            <div class="card-info">
+                                <div class="card-number">•••• •••• •••• 4532</div>
+                                <div class="card-expiry">Expira em 08/2026</div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        </div>
+                        <p style="font-size: 0.8125rem; color: var(--muted);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 0.25rem;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Pagamentos processados de forma segura via Stripe
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="account-card">
+                    <div class="account-card-header">
+                        <div class="account-card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Histórico de Pagamentos
+                        </div>
+                        <button class="btn btn-ghost btn-sm">Ver Todos</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="payment-table">
+                            <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Fatura</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>15/01/2024</td>
+                                <td>Plano Profissional - Janeiro/2024</td>
+                                <td>R$ 149,90</td>
+                                <td>
+                      <span class="payment-status pending">
+                        <span class="payment-status-dot"></span>
+                        Pendente
+                      </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="invoice-link" onclick="openPaymentModal()">
+                                        Pagar
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>15/12/2023</td>
+                                <td>Plano Profissional - Dezembro/2023</td>
+                                <td>R$ 149,90</td>
+                                <td>
+                      <span class="payment-status paid">
+                        <span class="payment-status-dot"></span>
+                        Pago
+                      </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="invoice-link">
+                                        INV-2023-1247
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>15/11/2023</td>
+                                <td>Plano Profissional - Novembro/2023</td>
+                                <td>R$ 149,90</td>
+                                <td>
+                      <span class="payment-status paid">
+                        <span class="payment-status-dot"></span>
+                        Pago
+                      </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="invoice-link">
+                                        INV-2023-1158
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>15/10/2023</td>
+                                <td>Plano Profissional - Outubro/2023</td>
+                                <td>R$ 149,90</td>
+                                <td>
+                      <span class="payment-status paid">
+                        <span class="payment-status-dot"></span>
+                        Pago
+                      </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="invoice-link">
+                                        INV-2023-1062
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div>
+                <!-- Usage -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">Uso do Plano</div>
+                    <div class="sidebar-card-body">
+                        <div class="usage-item">
+                            <div class="usage-header">
+                                <span class="usage-label">Pedidos/mês</span>
+                                <span class="usage-value">1.847 / 5.000</span>
+                            </div>
+                            <div class="usage-bar">
+                                <div class="usage-bar-fill low" style="width: 37%;"></div>
+                            </div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-header">
+                                <span class="usage-label">Usuários</span>
+                                <span class="usage-value">5 / 10</span>
+                            </div>
+                            <div class="usage-bar">
+                                <div class="usage-bar-fill low" style="width: 50%;"></div>
+                            </div>
+                        </div>
+                        <div class="usage-item">
+                            <div class="usage-header">
+                                <span class="usage-label">Armazenamento</span>
+                                <span class="usage-value">2.3 GB / 5 GB</span>
+                            </div>
+                            <div class="usage-bar">
+                                <div class="usage-bar-fill medium" style="width: 46%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">Ações Rápidas</div>
+                    <div class="sidebar-card-body" style="padding: 0.5rem 1.25rem;">
+                        <div class="action-list">
+                            <a href="#" class="action-item" onclick="openUpgradeModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                                Fazer Upgrade
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <a href="#" class="action-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                Exportar Dados
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <a href="#" class="action-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                Alterar E-mail
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <a href="#" class="action-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                Dados Fiscais
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <a href="#" class="action-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                                Central de Ajuda
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="sidebar-card" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="sidebar-card-header" style="color: var(--destructive);">Zona de Perigo</div>
+                    <div class="sidebar-card-body" style="padding: 0.5rem 1.25rem;">
+                        <div class="action-list">
+                            <a href="#" class="action-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Pausar Assinatura
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                            <a href="#" class="action-item danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                Cancelar Conta
+                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Upgrade Modal -->
+<div id="upgradeModal" class="modal-overlay">
+    <div class="modal" style="max-width: 48rem;">
+        <div class="modal-header">
+            <h3>Escolha seu Plano</h3>
+            <button class="modal-close" onclick="closeUpgradeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="plans-grid">
+                <!-- Starter -->
+                <div class="plan-card">
+                    <div class="plan-card-name">Starter</div>
+                    <div class="plan-card-price">
+                        <span class="price-currency">R$</span>
+                        <span class="price-value">79</span>
+                        <span class="price-period">/mês</span>
+                    </div>
+                    <div class="plan-features">
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            1.000 pedidos/mês
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            3 usuários
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            1 GB armazenamento
+                        </div>
+                        <div class="plan-feature disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            Relatórios avançados
+                        </div>
+                        <div class="plan-feature disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            Suporte prioritário
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" style="width: 100%;">Fazer Downgrade</button>
+                </div>
+
+                <!-- Profissional (Current) -->
+                <div class="plan-card current">
+                    <span class="plan-badge current">Plano Atual</span>
+                    <div class="plan-card-name">Profissional</div>
+                    <div class="plan-card-price">
+                        <span class="price-currency">R$</span>
+                        <span class="price-value">149</span>
+                        <span class="price-period">/mês</span>
+                    </div>
+                    <div class="plan-features">
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            5.000 pedidos/mês
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            10 usuários
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            5 GB armazenamento
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            Relatórios avançados
+                        </div>
+                        <div class="plan-feature disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            Suporte prioritário
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" style="width: 100%;" disabled>Plano Atual</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="plan-card popular">
+                    <span class="plan-badge popular">Mais Popular</span>
+                    <div class="plan-card-name">Enterprise</div>
+                    <div class="plan-card-price">
+                        <span class="price-currency">R$</span>
+                        <span class="price-value">299</span>
+                        <span class="price-period">/mês</span>
+                    </div>
+                    <div class="plan-features">
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            Pedidos ilimitados
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            Usuários ilimitados
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            20 GB armazenamento
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            Relatórios avançados
+                        </div>
+                        <div class="plan-feature">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                            Suporte prioritário 24/7
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">Fazer Upgrade</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal-overlay">
+    <div class="modal" style="max-width: 28rem;">
+        <div class="modal-header">
+            <h3>Pagar Fatura</h3>
+            <button class="modal-close" onclick="closePaymentModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align: center; padding: 1rem 0 1.5rem;">
+                <p style="color: var(--muted); margin-bottom: 0.5rem;">Valor a pagar</p>
+                <p style="font-size: 2rem; font-weight: 700; color: var(--primary);">R$ 149,90</p>
+                <p style="font-size: 0.875rem; color: var(--muted);">Plano Profissional - Janeiro/2024</p>
+            </div>
+
+            <div class="payment-method" style="margin-bottom: 1.5rem;">
+                <div class="card-icon">VISA</div>
+                <div class="card-info">
+                    <div class="card-number">•••• •••• •••• 4532</div>
+                    <div class="card-expiry">Expira em 08/2026</div>
+                </div>
+            </div>
+
+            <p style="font-size: 0.8125rem; color: var(--muted); text-align: center;">
+                Ao confirmar, você autoriza a cobrança no cartão cadastrado.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closePaymentModal()">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="processPayment()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                Confirmar Pagamento
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // Sidebar Functions
+    // ============================================
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+
+        if (mainContent) {
+            mainContent.classList.toggle('sidebar-collapsed', isCollapsed);
+        }
+
+        localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+    }
+
+    function initSidebarState() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.main-content');
+
+        if (isCollapsed && window.innerWidth >= 1024) {
+            sidebar.classList.add('collapsed');
+            if (mainContent) {
+                mainContent.classList.add('sidebar-collapsed');
+            }
+        }
+    }
+
+    function toggleUserMenu() {
+        document.getElementById('userMenuContainer').classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('userMenuContainer');
+        if (container && !container.contains(e.target)) {
+            container.classList.remove('open');
+        }
+    });
+
+    // ============================================
+    // Modal Functions
+    // ============================================
+    function openUpgradeModal() {
+        document.getElementById('upgradeModal').classList.add('active');
+    }
+
+    function closeUpgradeModal() {
+        document.getElementById('upgradeModal').classList.remove('active');
+    }
+
+    function openPaymentModal() {
+        document.getElementById('paymentModal').classList.add('active');
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('active');
+    }
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    });
+
+    // ============================================
+    // Alert Functions
+    // ============================================
+    function dismissAlert() {
+        document.getElementById('paymentAlert').style.display = 'none';
+    }
+
+    // ============================================
+    // Payment Functions
+    // ============================================
+    function processPayment() {
+        // TODO: Integrate with payment provider
+        alert('Processando pagamento...');
+        closePaymentModal();
+        dismissAlert();
+    }
+
+    // ============================================
+    // Initialize
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        initSidebarState();
+    });
+</script>
+</body>
+</html>

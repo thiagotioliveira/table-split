@@ -63,7 +63,7 @@ public class MenuController {
     var context = new ContextModel(auth);
     var languages = context.getRestaurant().getCustomerLanguages();
     var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
-    var items = this.getItem.execute(context.getRestaurant().getId(), languages);
+    var items = this.getItem.execute(context.getRestaurant().getId(), languages, true);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
     return "menu";

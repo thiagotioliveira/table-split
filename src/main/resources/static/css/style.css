@@ -768,7 +768,7 @@ a {
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  z-index: 60;
+  z-index: 100;
   transform: translateX(-100%);
   transition: transform 0.3s ease, width 0.3s ease;
 }
@@ -787,7 +787,7 @@ a {
 @media (min-width: 1024px) {
   .sidebar.collapsed {
     width: 4.5rem;
-    overflow: visible;
+    overflow: visible !important;
   }
 
   .sidebar.collapsed .sidebar-nav {
@@ -1026,6 +1026,12 @@ a {
 .sidebar-nav {
   flex: 1;
   padding: 1rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed .sidebar-nav {
+  overflow: visible !important;
 }
 
 .sidebar-nav ul {

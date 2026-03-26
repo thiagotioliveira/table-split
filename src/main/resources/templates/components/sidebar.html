@@ -28,7 +28,7 @@
         </button>
     </div>
 
-    <nav class="sidebar-nav" style="overflow-y: auto; overflow-x: hidden;">
+    <nav class="sidebar-nav">
         <ul>
             <li th:each="m : ${context.sidebarModules}">
                 <a th:href="${m.getHref()}" class="nav-item" th:classappend="${module.name() == m.name()} ? ' active'">

@@ -568,6 +568,37 @@
             border-radius: 9999px;
         }
 
+        /* Promo pricing styles */
+        .menu-item-prices {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .price-original {
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+        .price-promo {
+            font-weight: 700;
+            color: #16a34a;
+            font-size: 1rem;
+        }
+        .promo-badge {
+            position: static;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            z-index: 5;
+        }
+        .menu-item { position: relative; }
+
         /* Menu Item Card */
         .menu-item {
             display: flex;
@@ -813,6 +844,25 @@
         .cart-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; }
         .cart-row.total { font-weight: 700; font-size: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.75rem; }
         .cart-row.total .value { color: var(--primary); font-size: 1.125rem; }
+        .cart-item-prices {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .cart-item-prices .cart-price-original {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+        .cart-item-prices .cart-promo-badge {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+        }
         .checkout-btn {
             width: 100%;
             padding: 1rem;
@@ -919,6 +969,31 @@
         }
         .item-modal-overlay.active .item-modal { transform: translateY(0); }
 
+        .item-modal-price-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .item-modal-price-container .price-original {
+            font-size: 1.1rem;
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+        .item-modal-price-container .price-promo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #16a34a;
+        }
+        .item-modal-price-container .promo-badge {
+            position: static;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
 
         /* Waiter Modal */
         .waiter-modal-overlay {
@@ -1363,7 +1438,11 @@
                 <div class="menu-item-content">
                     <div class="menu-item-header">
                         <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
-                        <span class="menu-item-price" th:text="${item.priceFormatted}">R$ 28,90</span>
+                        <div class="menu-item-prices">
+                            <span class="promo-badge">-20%</span>
+                            <span class="price-original" th:text="${item.priceFormatted}">R$ 28,00</span>
+                            <span class="price-promo">R$ 22,40</span>
+                        </div>
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
                     <div class="menu-item-footer">
@@ -1866,7 +1945,17 @@
         currentSlide = 0;
 
         document.getElementById('itemModalName').textContent = getItemText(item, 'name');
-        document.getElementById('itemModalPrice').textContent = formatPrice(item.price);
+        const priceContainer = document.getElementById('itemModalPrice');
+        if (true) {
+            priceContainer.innerHTML = `
+          <span class="promo-badge">-10%</span>
+          <span class="price-original">${formatPrice(item.price)}</span>
+          <span class="price-promo">${formatPrice(item.price)}</span>
+        `;
+        } else {
+            priceContainer.innerHTML = formatPrice(item.price);
+        }
+        //document.getElementById('itemModalPrice').textContent = formatPrice(item.price);
         document.getElementById('itemModalDesc').textContent = getItemText(item, 'description');
         //document.getElementById('modalQty').textContent = modalQty;
         //document.getElementById('modalTotalPrice').textContent = formatPrice(item.price);

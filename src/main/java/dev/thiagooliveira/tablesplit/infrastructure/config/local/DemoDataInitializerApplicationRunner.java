@@ -4,24 +4,23 @@ import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
-import dev.thiagooliveira.tablesplit.application.menu.CreateCategory;
-import dev.thiagooliveira.tablesplit.application.menu.CreateItem;
-import dev.thiagooliveira.tablesplit.application.menu.command.CreateCategoryCommand;
-import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
-import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
+import dev.thiagooliveira.tablesplit.application.menu.*;
+import dev.thiagooliveira.tablesplit.application.menu.command.*;
 import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.*;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -66,6 +65,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final CreateTable createTable;
   private final PasswordEncoder passwordEncoder;
   private final ItemImageJpaRepository imageRepository;
+  private final CreatePromotion createPromotion;
+  private final CreateCombo createCombo;
+  private final CreateCoupon createCoupon;
 
   public DemoDataInitializerApplicationRunner(
       Time time,
@@ -76,7 +78,10 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       CreateItem createItem,
       CreateTable createTable,
       PasswordEncoder passwordEncoder,
-      ItemImageJpaRepository imageRepository) {
+      ItemImageJpaRepository imageRepository,
+      CreatePromotion createPromotion,
+      CreateCombo createCombo,
+      CreateCoupon createCoupon) {
     this.time = time;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
@@ -86,6 +91,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
     this.createTable = createTable;
     this.passwordEncoder = passwordEncoder;
     this.imageRepository = imageRepository;
+    this.createPromotion = createPromotion;
+    this.createCombo = createCombo;
+    this.createCoupon = createCoupon;
   }
 
   @Override
@@ -150,416 +158,577 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                         Map.of(Language.PT, "Bebidas", Language.EN, "Drinks"), 4)));
 
     // Starters
-    this.transactionalContext.execute(
-        () -> {
-          var items = new ArrayList<Item>();
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT, "Batata-Frita Rústica", Language.EN, "Rustic French Fries"),
-                      Map.of(
-                          Language.PT,
-                          "Batatas rústicas fritas na hora, temperadas com sal marinho e alecrim fresco.",
-                          Language.EN,
-                          "Freshly fried rustic potatoes, seasoned with sea salt and fresh rosemary."),
-                      new BigDecimal("18.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Dadinhos de Tapioca", Language.EN, "Tapioca Dice"),
-                      Map.of(
-                          Language.PT,
-                          "Cubos de tapioca com queijo coalho, servidos com geleia de pimenta defumada.",
-                          Language.EN,
-                          "Tapioca cubes with coalho cheese, served with smoked pepper jelly."),
-                      new BigDecimal("22.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Coxinhas de Frango", Language.EN, "Chicken Croquettes"),
-                      Map.of(
-                          Language.PT,
-                          "Massa crocante recheada com frango desfiado temperado e requeijão cremoso.",
-                          Language.EN,
-                          "Crispy dough filled with seasoned shredded chicken and creamy curd cheese."),
-                      new BigDecimal("15.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Bolinho de Bacalhau", Language.EN, "Codfish Balls"),
-                      Map.of(
-                          Language.PT,
-                          "Tradicional bolinho de bacalhau crocante e sequinho, receita da casa.",
-                          Language.EN,
-                          "Traditional crispy and dry codfish balls, house recipe."),
-                      new BigDecimal("21.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT, "Calabresa Acebolada", Language.EN, "Sausage with Onions"),
-                      Map.of(
-                          Language.PT,
-                          "Linguiça calabresa frita com cebolas caramelizadas e um toque de cachaça.",
-                          Language.EN,
-                          "Fried calabresa sausage with caramelized onions and a touch of cachaça."),
-                      new BigDecimal("25.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryStarters.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Provolone à Milanesa", Language.EN, "Breaded Provolone"),
-                      Map.of(
-                          Language.PT,
-                          "Cubos de queijo provolone empanados e fritos, servidos com mel de engenho.",
-                          Language.EN,
-                          "Breaded and fried provolone cheese cubes, served with sugarcane honey."),
-                      new BigDecimal("28.00"))));
-          saveImages(items, 0);
-          return null;
-        });
+    List<Item> starters =
+        this.transactionalContext.execute(
+            () -> {
+              var items = new ArrayList<Item>();
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Batata-Frita Rústica",
+                              Language.EN,
+                              "Rustic French Fries"),
+                          Map.of(
+                              Language.PT,
+                              "Batatas rústicas fritas na hora, temperadas com sal marinho e alecrim fresco.",
+                              Language.EN,
+                              "Freshly fried rustic potatoes, seasoned with sea salt and fresh rosemary."),
+                          new BigDecimal("18.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Dadinhos de Tapioca", Language.EN, "Tapioca Dice"),
+                          Map.of(
+                              Language.PT,
+                              "Cubos de tapioca com queijo coalho, servidos com geleia de pimenta defumada.",
+                              Language.EN,
+                              "Tapioca cubes with coalho cheese, served with smoked pepper jelly."),
+                          new BigDecimal("22.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT, "Coxinhas de Frango", Language.EN, "Chicken Croquettes"),
+                          Map.of(
+                              Language.PT,
+                              "Massa crocante recheada com frango desfiado temperado e requeijão cremoso.",
+                              Language.EN,
+                              "Crispy dough filled with seasoned shredded chicken and creamy curd cheese."),
+                          new BigDecimal("15.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Bolinho de Bacalhau", Language.EN, "Codfish Balls"),
+                          Map.of(
+                              Language.PT,
+                              "Tradicional bolinho de bacalhau crocante e sequinho, receita da casa.",
+                              Language.EN,
+                              "Traditional crispy and dry codfish balls, house recipe."),
+                          new BigDecimal("21.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Calabresa Acebolada",
+                              Language.EN,
+                              "Sausage with Onions"),
+                          Map.of(
+                              Language.PT,
+                              "Linguiça calabresa frita com cebolas caramelizadas e um toque de cachaça.",
+                              Language.EN,
+                              "Fried calabresa sausage with caramelized onions and a touch of cachaça."),
+                          new BigDecimal("25.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryStarters.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Provolone à Milanesa",
+                              Language.EN,
+                              "Breaded Provolone"),
+                          Map.of(
+                              Language.PT,
+                              "Cubos de queijo provolone empanados e fritos, servidos com mel de engenho.",
+                              Language.EN,
+                              "Breaded and fried provolone cheese cubes, served with sugarcane honey."),
+                          new BigDecimal("28.00"))));
+              saveImages(items, 0);
+              return items;
+            });
 
     // Main Courses
-    this.transactionalContext.execute(
-        () -> {
-          var items = new ArrayList<Item>();
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Feijoada Completa", Language.EN, "Traditional Feijoada"),
-                      Map.of(
-                          Language.PT,
-                          "A clássica feijoada com carnes nobres, arroz, couve, farofa e laranja.",
-                          Language.EN,
-                          "Classic black bean stew with noble meats, served with rice, kale, farofa, and orange."),
-                      new BigDecimal("45.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Moqueca de Peixe", Language.EN, "Fish Moqueca"),
-                      Map.of(
-                          Language.PT,
-                          "Cozido de peixe no leite de coco, dendê e coentro. Acompanha arroz e pirão.",
-                          Language.EN,
-                          "Fish stew in coconut milk, dende oil, and coriander. Served with rice and pirão."),
-                      new BigDecimal("65.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Picanha na Brasa", Language.EN, "Grilled Picanha"),
-                      Map.of(
-                          Language.PT,
-                          "Corte nobre de picanha grelhada no sal grosso, arroz biro-biro e farofa.",
-                          Language.EN,
-                          "Noble cut of picanha grilled with rock salt, biro-biro rice, and farofa."),
-                      new BigDecimal("75.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Baião de Dois", Language.EN, "Baiao de Dois"),
-                      Map.of(
-                          Language.PT,
-                          "Arroz com feijão-fradinho, queijo coalho, carne-seca e temperos nordestinos.",
-                          Language.EN,
-                          "Rice with black-eyed peas, coalho cheese, dried meat, and northeastern spices."),
-                      new BigDecimal("35.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Virado à Paulista", Language.EN, "Virado a Paulista"),
-                      Map.of(
-                          Language.PT,
-                          "Prato bandeirante com tutu de feijão, arroz, lombo, ovo frito e couve.",
-                          Language.EN,
-                          "Traditional state dish with bean puree, rice, pork loin, fried egg, and kale."),
-                      new BigDecimal("38.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryMainCourse.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT, "Filé Oswaldo Aranha", Language.EN, "Oswaldo Aranha Steak"),
-                      Map.of(
-                          Language.PT,
-                          "Filé alto com alho frito, arroz, farofa de ovos e batatas portuguesas.",
-                          Language.EN,
-                          "Thick steak with fried garlic, rice, egg farofa, and Portuguese potatoes."),
-                      new BigDecimal("55.00"))));
-          saveImages(items, 6);
-          return null;
-        });
+    List<Item> mainCourses =
+        this.transactionalContext.execute(
+            () -> {
+              var items = new ArrayList<Item>();
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Feijoada Completa",
+                              Language.EN,
+                              "Traditional Feijoada"),
+                          Map.of(
+                              Language.PT,
+                              "A clássica feijoada com carnes nobres, arroz, couve, farofa e laranja.",
+                              Language.EN,
+                              "Classic black bean stew with noble meats, served with rice, kale, farofa, and orange."),
+                          new BigDecimal("45.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Moqueca de Peixe", Language.EN, "Fish Moqueca"),
+                          Map.of(
+                              Language.PT,
+                              "Cozido de peixe no leite de coco, dendê e coentro. Acompanha arroz e pirão.",
+                              Language.EN,
+                              "Fish stew in coconut milk, dende oil, and coriander. Served with rice and pirão."),
+                          new BigDecimal("65.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Picanha na Brasa", Language.EN, "Grilled Picanha"),
+                          Map.of(
+                              Language.PT,
+                              "Corte nobre de picanha grelhada no sal grosso, arroz biro-biro e farofa.",
+                              Language.EN,
+                              "Noble cut of picanha grilled with rock salt, biro-biro rice, and farofa."),
+                          new BigDecimal("75.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Baião de Dois", Language.EN, "Baiao de Dois"),
+                          Map.of(
+                              Language.PT,
+                              "Arroz com feijão-fradinho, queijo coalho, carne-seca e temperos nordestinos.",
+                              Language.EN,
+                              "Rice with black-eyed peas, coalho cheese, dried meat, and northeastern spices."),
+                          new BigDecimal("35.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT, "Virado à Paulista", Language.EN, "Virado a Paulista"),
+                          Map.of(
+                              Language.PT,
+                              "Prato bandeirante com tutu de feijão, arroz, lombo, ovo frito e couve.",
+                              Language.EN,
+                              "Traditional state dish with bean puree, rice, pork loin, fried egg, and kale."),
+                          new BigDecimal("38.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryMainCourse.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Filé Oswaldo Aranha",
+                              Language.EN,
+                              "Oswaldo Aranha Steak"),
+                          Map.of(
+                              Language.PT,
+                              "Filé alto com alho frito, arroz, farofa de ovos e batatas portuguesas.",
+                              Language.EN,
+                              "Thick steak with fried garlic, rice, egg farofa, and Portuguese potatoes."),
+                          new BigDecimal("55.00"))));
+              saveImages(items, 6);
+              return items;
+            });
 
     // Desserts
+    List<Item> desserts =
+        this.transactionalContext.execute(
+            () -> {
+              var items = new ArrayList<Item>();
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDesserts.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Pudim de Leite", Language.EN, "Milk Pudding"),
+                          Map.of(
+                              Language.PT,
+                              "O clássico pudim com calda de caramelo brilhante e textura aveludada.",
+                              Language.EN,
+                              "Classic Brazilian pudding with shiny caramel sauce and velvety texture."),
+                          new BigDecimal("14.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDesserts.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Mousse de Maracujá",
+                              Language.EN,
+                              "Passion Fruit Mousse"),
+                          Map.of(
+                              Language.PT,
+                              "Refrescante mousse de maracujá com calda de sementes crocantes.",
+                              Language.EN,
+                              "Refreshing passion fruit mousse with crunchy seed syrup."),
+                          new BigDecimal("10.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDesserts.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Quindim Tradicional",
+                              Language.EN,
+                              "Traditional Quindim"),
+                          Map.of(
+                              Language.PT,
+                              "Doce à base de gemas e coco ralado, com um brilho e cor inconfundíveis.",
+                              Language.EN,
+                              "Egg yolk and coconut dessert with an unmistakable shine and color."),
+                          new BigDecimal("12.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDesserts.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Romeu e Julieta", Language.EN, "Romeo and Juliet"),
+                          Map.of(
+                              Language.PT,
+                              "Fatias de goiabada cascão cremosa acompanhadas de queijo minas frescal.",
+                              Language.EN,
+                              "Slices of creamy guava paste accompanied by fresh Minas cheese."),
+                          new BigDecimal("15.00"))));
+              saveImages(items, 12);
+              return items;
+            });
+
+    // Drinks
+    List<Item> drinks =
+        this.transactionalContext.execute(
+            () -> {
+              var items = new ArrayList<Item>();
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT, "Caipirinha de Limão", Language.EN, "Lemon Caipirinha"),
+                          Map.of(
+                              Language.PT,
+                              "Bebida nacional preparada com cachaça, limão taiti fresco e gelo.",
+                              Language.EN,
+                              "National drink prepared with cachaça, fresh Tahiti lime, and ice."),
+                          new BigDecimal("18.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Guaraná Antarctica", Language.EN, "Guarana Soda"),
+                          Map.of(
+                              Language.PT,
+                              "O refrigerante original da Amazônia, com sabor único e refrescante.",
+                              Language.EN,
+                              "The original Amazon soda, with a unique and refreshing flavor."),
+                          new BigDecimal("8.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(Language.PT, "Água de Coco", Language.EN, "Coconut Water"),
+                          Map.of(
+                              Language.PT,
+                              "Água de coco natural e geladinha, servida diretamente na fruta.",
+                              Language.EN,
+                              "Natural and chilled coconut water, served directly in the fruit."),
+                          new BigDecimal("12.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT, "Chopp Gelado 300ml", Language.EN, "Chilled Beer 300ml"),
+                          Map.of(
+                              Language.PT,
+                              "Caneca de chopp pilsen trincando, com colarinho cremoso.",
+                              Language.EN,
+                              "Frosty mug of pilsen beer with a creamy foam head."),
+                          new BigDecimal("10.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Suco de Abacaxi c/ Hortelã",
+                              Language.EN,
+                              "Pineapple Mint Juice"),
+                          Map.of(
+                              Language.PT,
+                              "Refrescante suco natural batido com hortelã fresca.",
+                              Language.EN,
+                              "Refreshing natural juice blended with fresh mint."),
+                          new BigDecimal("10.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Cerveja Original 600ml",
+                              Language.EN,
+                              "Original Beer 600ml"),
+                          Map.of(
+                              Language.PT,
+                              "Garrafa de 600ml de uma das cervejas mais tradicionais do Brasil.",
+                              Language.EN,
+                              "600ml bottle of one of Brazil's most traditional beers."),
+                          new BigDecimal("16.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Caipivodka de Morango",
+                              Language.EN,
+                              "Strawberry Caipivodka"),
+                          Map.of(
+                              Language.PT,
+                              "Versão da caipirinha com vodka e morangos selecionados.",
+                              Language.EN,
+                              "Vodka-based caipirinha version with selected strawberries."),
+                          new BigDecimal("22.00"))));
+              items.add(
+                  this.createItem.execute(
+                      accountId,
+                      restaurant.getId(),
+                      new CreateItemCommand(
+                          categoryDrinks.getId(),
+                          List.of(),
+                          new ImageCommand(List.of(), List.of()),
+                          Map.of(
+                              Language.PT,
+                              "Café Expresso Gourmet",
+                              Language.EN,
+                              "Gourmet Espresso"),
+                          Map.of(
+                              Language.PT,
+                              "Café expresso encorpado, moído na hora.",
+                              Language.EN,
+                              "Full-bodied espresso coffee, freshly ground."),
+                          new BigDecimal("6.00"))));
+              saveImages(items, 3);
+              return items;
+            });
+
+    // Seed Promotions
     this.transactionalContext.execute(
         () -> {
-          var items = new ArrayList<Item>();
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDesserts.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Pudim de Leite", Language.EN, "Milk Pudding"),
-                      Map.of(
-                          Language.PT,
-                          "O clássico pudim com calda de caramelo brilhante e textura aveludada.",
-                          Language.EN,
-                          "Classic Brazilian pudding with shiny caramel sauce and velvety texture."),
-                      new BigDecimal("14.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDesserts.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT, "Mousse de Maracujá", Language.EN, "Passion Fruit Mousse"),
-                      Map.of(
-                          Language.PT,
-                          "Refrescante mousse de maracujá com calda de sementes crocantes.",
-                          Language.EN,
-                          "Refreshing passion fruit mousse with crunchy seed syrup."),
-                      new BigDecimal("10.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDesserts.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT, "Quindim Tradicional", Language.EN, "Traditional Quindim"),
-                      Map.of(
-                          Language.PT,
-                          "Doce à base de gemas e coco ralado, com um brilho e cor inconfundíveis.",
-                          Language.EN,
-                          "Egg yolk and coconut dessert with an unmistakable shine and color."),
-                      new BigDecimal("12.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDesserts.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Romeu e Julieta", Language.EN, "Romeo and Juliet"),
-                      Map.of(
-                          Language.PT,
-                          "Fatias de goiabada cascão cremosa acompanhadas de queijo minas frescal.",
-                          Language.EN,
-                          "Slices of creamy guava paste accompanied by fresh Minas cheese."),
-                      new BigDecimal("15.00"))));
-          saveImages(items, 12);
+          // Happy Hour: 20% off all drinks, 17:00 - 20:00
+          this.createPromotion.execute(
+              restaurant.getId(),
+              new CreatePromotionCommand(
+                  "Happy Hour",
+                  "20% de desconto em todas as bebidas das 17h às 20h.",
+                  DiscountType.PERCENTAGE,
+                  new BigDecimal("20"),
+                  BigDecimal.ZERO,
+                  LocalDateTime.now(),
+                  LocalDateTime.now().plusMonths(3),
+                  new Promotion.Recurrence(
+                      RecurrenceType.HOURS, null, LocalTime.of(17, 0), LocalTime.of(20, 0)),
+                  ApplyType.CATEGORY,
+                  categoryDrinks.getId(),
+                  true));
+
+          // Almoço Especial: 10% off main courses, Mon-Fri
+          this.createPromotion.execute(
+              restaurant.getId(),
+              new CreatePromotionCommand(
+                  "Almoço Especial",
+                  "10% de desconto nos pratos principais de segunda a sexta.",
+                  DiscountType.PERCENTAGE,
+                  new BigDecimal("10"),
+                  BigDecimal.ZERO,
+                  LocalDateTime.now(),
+                  LocalDateTime.now().plusMonths(3),
+                  new Promotion.Recurrence(
+                      RecurrenceType.DAYS_OF_WEEK,
+                      Set.of(
+                          DayOfWeek.MONDAY,
+                          DayOfWeek.TUESDAY,
+                          DayOfWeek.WEDNESDAY,
+                          DayOfWeek.THURSDAY,
+                          DayOfWeek.FRIDAY),
+                      null,
+                      null),
+                  ApplyType.CATEGORY,
+                  categoryMainCourse.getId(),
+                  true));
+
           return null;
         });
 
-    // Drinks
+    // Seed Combos
     this.transactionalContext.execute(
         () -> {
-          var items = new ArrayList<Item>();
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Caipirinha de Limão", Language.EN, "Lemon Caipirinha"),
-                      Map.of(
-                          Language.PT,
-                          "Bebida nacional preparada com cachaça, limão taiti fresco e gelo.",
-                          Language.EN,
-                          "National drink prepared with cachaça, fresh Tahiti lime, and ice."),
-                      new BigDecimal("18.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Guaraná Antarctica", Language.EN, "Guarana Soda"),
-                      Map.of(
-                          Language.PT,
-                          "O refrigerante original da Amazônia, com sabor único e refrescante.",
-                          Language.EN,
-                          "The original Amazon soda, with a unique and refreshing flavor."),
-                      new BigDecimal("8.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Água de Coco", Language.EN, "Coconut Water"),
-                      Map.of(
-                          Language.PT,
-                          "Água de coco natural e geladinha, servida diretamente na fruta.",
-                          Language.EN,
-                          "Natural and chilled coconut water, served directly in the fruit."),
-                      new BigDecimal("12.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Chopp Gelado 300ml", Language.EN, "Chilled Beer 300ml"),
-                      Map.of(
-                          Language.PT,
-                          "Caneca de chopp pilsen trincando, com colarinho cremoso.",
-                          Language.EN,
-                          "Frosty mug of pilsen beer with a creamy foam head."),
-                      new BigDecimal("10.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT,
-                          "Suco de Abacaxi c/ Hortelã",
-                          Language.EN,
-                          "Pineapple Mint Juice"),
-                      Map.of(
-                          Language.PT,
-                          "Refrescante suco natural batido com hortelã fresca.",
-                          Language.EN,
-                          "Refreshing natural juice blended with fresh mint."),
-                      new BigDecimal("10.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT,
-                          "Cerveja Original 600ml",
-                          Language.EN,
-                          "Original Beer 600ml"),
-                      Map.of(
-                          Language.PT,
-                          "Garrafa de 600ml de uma das cervejas mais tradicionais do Brasil.",
-                          Language.EN,
-                          "600ml bottle of one of Brazil's most traditional beers."),
-                      new BigDecimal("16.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(
-                          Language.PT,
-                          "Caipivodka de Morango",
-                          Language.EN,
-                          "Strawberry Caipivodka"),
-                      Map.of(
-                          Language.PT,
-                          "Versão da caipirinha com vodka e morangos selecionados.",
-                          Language.EN,
-                          "Vodka-based caipirinha version with selected strawberries."),
-                      new BigDecimal("22.00"))));
-          items.add(
-              this.createItem.execute(
-                  accountId,
-                  restaurant.getId(),
-                  new CreateItemCommand(
-                      categoryDrinks.getId(),
-                      List.of(),
-                      new ImageCommand(List.of(), List.of()),
-                      Map.of(Language.PT, "Café Expresso Gourmet", Language.EN, "Gourmet Espresso"),
-                      Map.of(
-                          Language.PT,
-                          "Café expresso encorpado, moído na hora.",
-                          Language.EN,
-                          "Full-bodied espresso coffee, freshly ground."),
-                      new BigDecimal("6.00"))));
-          saveImages(items, 3);
+          // Casal Perfeito: Moqueca de Peixe + 2 Caipirinhas + Pudim de Leite
+          Item moqueca = mainCourses.get(1);
+          Item caipirinha = drinks.get(0);
+          Item pudim = desserts.get(0);
+
+          this.createCombo.execute(
+              restaurant.getId(),
+              new CreateComboCommand(
+                  "Combo Casal Perfeito",
+                  "Moqueca de Peixe, 2 Caipirinhas e 1 Pudim de Leite.",
+                  new BigDecimal("85.00"), // Original around 65 + 18*2 + 14 = 115
+                  LocalDateTime.now(),
+                  LocalDateTime.now().plusMonths(1),
+                  List.of(
+                      new Combo.ComboItem(moqueca.getId(), 1),
+                      new Combo.ComboItem(caipirinha.getId(), 2),
+                      new Combo.ComboItem(pudim.getId(), 1)),
+                  true));
+
+          // Entrada Mix: Dadinhos de Tapioca + Coxinhas de Frango + 2 Chopps
+          Item dadinhos = starters.get(1);
+          Item coxinhas = starters.get(2);
+          Item chopp = drinks.get(3);
+
+          this.createCombo.execute(
+              restaurant.getId(),
+              new CreateComboCommand(
+                  "Mix de Entradas",
+                  "Dadinhos de Tapioca, Coxinhas de Frango e 2 Chopps Gelados.",
+                  new BigDecimal("45.00"), // Original around 22 + 15 + 10 * 2 = 57
+                  LocalDateTime.now(),
+                  LocalDateTime.now().plusMonths(1),
+                  List.of(
+                      new Combo.ComboItem(dadinhos.getId(), 1),
+                      new Combo.ComboItem(coxinhas.getId(), 1),
+                      new Combo.ComboItem(chopp.getId(), 2)),
+                  true));
+          return null;
+        });
+
+    // Seed Coupons
+    this.transactionalContext.execute(
+        () -> {
+          // BEMVINDO10: 10% off
+          this.createCoupon.execute(
+              restaurant.getId(),
+              new CreateCouponCommand(
+                  "BEMVINDO10",
+                  "Cupom de Boas-vindas",
+                  DiscountType.PERCENTAGE,
+                  new BigDecimal("10"),
+                  null,
+                  new BigDecimal("30"),
+                  LocalDate.now().plusMonths(6),
+                  100,
+                  List.of(new Coupon.CouponRule(CouponRuleType.NEW_CUSTOMER, "true")),
+                  true));
+
+          // FESTA50: 50% discount on fixed value off or similar
+          this.createCoupon.execute(
+              restaurant.getId(),
+              new CreateCouponCommand(
+                  "OFF15",
+                  "Desconto Especial de R$15",
+                  DiscountType.FIXED_VALUE,
+                  new BigDecimal("15"),
+                  null,
+                  new BigDecimal("50"),
+                  LocalDate.now().plusMonths(1),
+                  null,
+                  List.of(new Coupon.CouponRule(CouponRuleType.MIN_ITEM_QUANTITY, "3")),
+                  true));
           return null;
         });
   }
 
-  private void saveImages(ArrayList<Item> items, int fator) {
+  private void saveImages(List<Item> items, int fator) {
     items.forEach(
         i -> {
           var image = new ItemImageEntity();

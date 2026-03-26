@@ -1,0 +1,16 @@
+package dev.thiagooliveira.tablesplit.application.menu;
+
+import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface PromotionRepository {
+  Promotion save(Promotion promotion);
+
+  Optional<Promotion> findById(UUID id);
+
+  List<Promotion> findByRestaurantId(UUID restaurantId);
+
+  void deleteById(UUID id);
+}

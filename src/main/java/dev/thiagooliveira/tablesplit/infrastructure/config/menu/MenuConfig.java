@@ -33,8 +33,8 @@ public class MenuConfig {
   }
 
   @Bean
-  public GetItem getItem(ItemRepository itemRepository) {
-    return new GetItem(itemRepository);
+  public GetItem getItem(ItemRepository itemRepository, PromotionRepository promotionRepository) {
+    return new GetItem(itemRepository, promotionRepository);
   }
 
   @Bean
