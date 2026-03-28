@@ -3,8 +3,8 @@ package dev.thiagooliveira.tablesplit.domain.common;
 import java.util.Locale;
 
 public enum Language {
-  PT("pt-BR"),
-  EN("en-US");
+  PT("pt-PT"),
+  EN("en-GB");
 
   Language(String label) {
     this.label = label;

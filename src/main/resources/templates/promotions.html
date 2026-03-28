@@ -20,7 +20,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            max-height: 200px;
+            max-height: 100px;
             overflow-y: auto;
             padding: 0.75rem;
             border: 1px solid var(--border);
@@ -1356,7 +1356,9 @@
                                           th:text="${#messages.msg('day.' + day.name().toLowerCase()).substring(0, 3).toUpperCase()}"
                                           class="promo-day-item">Segunda</span>
                                 </th:block>
-                                <span th:if="${promotion.startTime != null}" th:text="' Das ' + ${promotion.startTime} + ' às ' + ${promotion.endTime}">17h às 20h</span>
+                            </div>
+                            <div class="promo-detail" th:if="${promotion.startTime != null}">
+                                <span th:text="' Das ' + ${promotion.startTime} + ' às ' + ${promotion.endTime}">17h às 20h</span>
                             </div>
                             <div class="promo-detail" th:if="${promotion.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1424,15 +1426,15 @@
                             <div th:each="ci : ${combo.items}" class="combo-item">
                                 <img class="combo-item-image" th:src="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).image : 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100'}" alt="Item">
                                 <span class="combo-item-name" th:text="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).name : 'Item removido'}">Item</span>
-                                <span class="combo-item-price" th:text="${itemMap.get(ci.getItemId()) != null ? currencySymbol + ' ' + itemMap.get(ci.getItemId()).price : ''}">R$ 0,00</span>
+                                <span class="combo-item-price" th:data-price="${itemMap.get(ci.getItemId())?.price}">R$ 0,00</span>
                             </div>
                         </div>
                         <div class="combo-pricing">
                             <div>
-                                <div class="combo-original"><s th:text="${currencySymbol + ' ' + comboOriginalPrices.get(combo.id)}">R$ 40,80</s></div>
-                                <div class="combo-savings" th:text="'Economia de ' + ${currencySymbol + ' ' + comboOriginalPrices.get(combo.id).subtract(combo.comboPrice)}">Economia de R$ 5,90</div>
+                                <div class="combo-original"><s th:data-price="${comboOriginalPrices.get(combo.id)}">R$ 40,80</s></div>
+                                <div class="combo-savings" th:data-price="${comboOriginalPrices.get(combo.id).subtract(combo.comboPrice)}">Economia de R$ 5,90</div>
                             </div>
-                            <div class="combo-final" th:text="${currencySymbol + ' ' + combo.comboPrice}">R$ 34,90</div>
+                            <div class="combo-final" th:data-price="${combo.comboPrice}">R$ 34,90</div>
                         </div>
                     </div>
                     <div class="promo-card-footer">
@@ -1508,7 +1510,7 @@
                         </p>
                     </div>
                     <div class="promo-card-footer">
-                        <div th:class="${coupon.active ? 'promo-toggle active' : 'promo-toggle'}" onclick="togglePromo(this)"></div>
+                        <div class="promo-toggle" th:classappend="${coupon.active ? 'active' : ''}" th:data-id="${coupon.id}" onclick="toggleCoupon(this.getAttribute('data-id'))"></div>
                         <div class="promo-actions">
                             <button class="promo-action-btn" title="Editar" th:data-id="${coupon.id}" onclick="editCoupon(this.getAttribute('data-id'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
@@ -1961,8 +1963,17 @@
 </div>
 
 <input type="hidden" id="currencySymbolValue" th:value="${currencySymbol}">
+<input type="hidden" id="userLanguageValue" th:value="${userLanguage}">
 <script>
     const currencySymbol = document.getElementById('currencySymbolValue') ? document.getElementById('currencySymbolValue').value : 'R$';
+    const userLanguage = document.getElementById('userLanguageValue') ? document.getElementById('userLanguageValue').value : 'pt-PT';
+    
+    function formatPrice(value) {
+        return new Intl.NumberFormat(userLanguage, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
 </script>
 <script th:inline="javascript">
     // ============================================
@@ -2378,7 +2389,7 @@
             <img src="${item.image}" alt="${item.name}">
             <div class="selectable-item-info">
               <div class="selectable-item-name">${item.name}</div>
-              <div class="selectable-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
+              <div class="selectable-item-price">${currencySymbol} ${formatPrice(item.price)}</div>
               <div class="selectable-item-category">${item.category}</div>
             </div>
             <div class="selectable-item-check">
@@ -2453,7 +2464,7 @@
           <img src="${item.image}" alt="${item.name}">
           <div class="selected-item-info">
             <div class="selected-item-name">${item.name}</div>
-            <div class="selected-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
+            <div class="selected-item-price">${currencySymbol} ${formatPrice(item.price)}</div>
           </div>
           <div class="combo-item-qty">
             <button type="button" class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
@@ -2485,7 +2496,7 @@
 
     function updateComboPrice() {
         const total = comboItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-        document.getElementById('comboOriginalPriceField').value = currencySymbol + ' ' + total.toFixed(2).replace('.', ',');
+        document.getElementById('comboOriginalPriceField').value = currencySymbol + ' ' + formatPrice(total);
     }
 
     // ============================================
@@ -2504,7 +2515,7 @@
           <img src="${item.image}" alt="${item.name}">
           <div class="selected-item-info">
             <div class="selected-item-name">${item.name}</div>
-            <div class="selected-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
+            <div class="selected-item-price">${currencySymbol} ${formatPrice(item.price)}</div>
           </div>
           <button type="button" class="selected-item-remove" onclick="removePromoItem('${item.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -2550,7 +2561,7 @@
         if (selectedFreeItem) {
             document.getElementById('freeItemImg').src = selectedFreeItem.image;
             document.getElementById('freeItemName').textContent = selectedFreeItem.name;
-            document.getElementById('freeItemPrice').textContent = 'Valor: ' + currencySymbol + ' ' + selectedFreeItem.price.toFixed(2).replace('.', ',');
+            document.getElementById('freeItemPrice').textContent = 'Valor: ' + currencySymbol + ' ' + formatPrice(selectedFreeItem.price);
             display.style.display = 'flex';
             btn.style.display = 'none';
         } else {
@@ -2581,7 +2592,7 @@
     async function togglePromotion(id) {
         const response = await fetch(`/promotions/promotion/toggle/${id}`, { method: 'POST' });
         if (response.ok) {
-            location.reload();
+            window.location.href = '?tab=promotions';
         } else {
             alert('Erro ao alterar status da promoção');
         }
@@ -2590,7 +2601,7 @@
     async function toggleCombo(id) {
         const response = await fetch(`/promotions/combo/toggle/${id}`, { method: 'POST' });
         if (response.ok) {
-            location.reload();
+            window.location.href = '?tab=combos';
         } else {
             alert('Erro ao alterar status do combo');
         }
@@ -2599,7 +2610,7 @@
     async function toggleCoupon(id) {
         const response = await fetch(`/promotions/coupon/toggle/${id}`, { method: 'POST' });
         if (response.ok) {
-            location.reload();
+            window.location.href = '?tab=coupons';
         } else {
             alert('Erro ao alterar status do cupom');
         }
@@ -2646,6 +2657,31 @@
                 }
             });
         }
+
+        // Form Validation for Combo
+        const comboForm = document.querySelector('#comboModal form');
+        if (comboForm) {
+            comboForm.addEventListener('submit', function(e) {
+                if (comboItems.length < 2) {
+                    e.preventDefault();
+                    alert('Um combo deve ter pelo menos 2 itens selecionados.');
+                    return;
+                }
+            });
+        }
+
+        // Format static prices
+        document.querySelectorAll('.combo-final, .combo-item-price, .combo-original s, .combo-savings').forEach(el => {
+            const price = el.getAttribute('data-price');
+            if (price) {
+                const numericPrice = parseFloat(price);
+                if (el.classList.contains('combo-savings')) {
+                    el.textContent = 'Economia de ' + currencySymbol + ' ' + formatPrice(numericPrice);
+                } else {
+                    el.textContent = currencySymbol + ' ' + formatPrice(numericPrice);
+                }
+            }
+        });
     });
 </script>
 </body>
