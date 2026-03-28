@@ -35,6 +35,7 @@
 
       /* Radius */
       --radius: 12px;
+      --radius-lg: 1rem;
 
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1110,6 +1111,92 @@
         width: 100%;
       }
     }
+
+    /* Waiter Modal */
+    .waiter-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 23, 20, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .waiter-modal-overlay.active { opacity: 1; visibility: visible; }
+
+    .waiter-modal {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      transform: scale(0.95);
+      transition: transform 0.3s;
+    }
+
+    .waiter-modal-overlay.active .waiter-modal { transform: scale(1); }
+
+    .waiter-modal-icon {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .waiter-modal-icon svg { width: 2rem; height: 2rem; }
+
+    .waiter-modal h3 {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .waiter-modal p {
+      color: var(--muted);
+      font-size: 0.9375rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .waiter-modal-actions { display: flex; gap: 0.75rem; }
+
+    .waiter-modal-btn {
+      flex: 1;
+      padding: 0.875rem;
+      border-radius: var(--radius);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .waiter-modal-btn.secondary {
+      background: var(--background);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+    }
+
+    .waiter-modal-btn.secondary:hover { background: var(--border); }
+
+    .waiter-modal-btn.primary {
+      background: var(--primary);
+      border: none;
+      color: white;
+    }
+
+    .waiter-modal-btn.primary:hover { background: var(--primary-dark); }
   </style>
 </head>
 <body th:style="|--primary: ${profile.hashPrimaryColor};
@@ -1169,6 +1256,9 @@
         </button>
         <button class="nav-btn" th:if="${false}">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </button>
+        <button class="nav-btn" onclick="openWaiterModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         </button>
       </div>
     </nav>
@@ -1499,6 +1589,20 @@
     </a>
     <p class="footer-text" th:text="#{app.footer}"></p>
   </footer>
+  <!-- Waiter Modal -->
+  <div class="waiter-modal-overlay" id="waiterModalOverlay" onclick="closeWaiterModal()">
+    <div class="waiter-modal" onclick="event.stopPropagation()">
+      <div class="waiter-modal-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </div>
+      <h3 data-i18n="callWaiterTitle">Chamar Garçom?</h3>
+      <p data-i18n="callWaiterDesc">Um garçom será notificado e virá até sua mesa em breve.</p>
+      <div class="waiter-modal-actions">
+        <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel">Cancelar</button>
+        <button class="waiter-modal-btn primary" onclick="confirmCallWaiter()" data-i18n="callNow">Chamar Agora</button>
+      </div>
+    </div>
+  </div>
   <script th:inline="javascript">
     const hasImage = /*[[${!#lists.isEmpty(profile.coverImages)}]]*/false;
     const totalSlides = /*[[${profile.coverImages.size()}]]*/0;
@@ -1559,6 +1663,19 @@
         dot.classList.add('active');
       });
     });
+    // Waiter Modal
+    function openWaiterModal() {
+      document.getElementById('waiterModalOverlay').classList.add('active');
+    }
+
+    function closeWaiterModal() {
+      document.getElementById('waiterModalOverlay').classList.remove('active');
+    }
+
+    function confirmCallWaiter() {
+      closeWaiterModal();
+      alert('Garçom notificado! Ele chegará em breve.');
+    }
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       startCarousel();
