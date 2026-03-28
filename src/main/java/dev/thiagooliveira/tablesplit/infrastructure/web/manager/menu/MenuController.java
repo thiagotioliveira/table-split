@@ -11,12 +11,14 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.MenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.UpdateCategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.UpdateItemModel;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -60,21 +62,24 @@ public class MenuController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = new ContextModel(auth);
-    var languages = context.getRestaurant().getCustomerLanguages();
-    var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
-    var items = this.getItem.execute(context.getRestaurant().getId(), languages, true);
-    model.addAttribute(
-        "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
+    populateModel(auth, model);
     return "menu";
   }
 
   @PostMapping("/categories")
   public String updateCategory(
       Authentication auth,
-      @ModelAttribute UpdateCategoryModel updateCategoryModel,
+      @Valid @ModelAttribute("updateCategoryModel") UpdateCategoryModel updateCategoryModel,
+      BindingResult bindingResult,
+      Model model,
       RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
+
+    if (bindingResult.hasErrors()) {
+      populateModel(auth, model);
+      model.addAttribute("openCategoryModal", true);
+      return "menu";
+    }
     if (updateCategoryModel.getId() == null) {
       this.transactionalContext.execute(
           () ->
@@ -101,27 +106,45 @@ public class MenuController {
   @PostMapping("/items")
   public String updateItem(
       Authentication auth,
-      @ModelAttribute UpdateItemModel updateItemModel,
+      @Valid @ModelAttribute("updateItemModel") UpdateItemModel updateItemModel,
+      BindingResult bindingResult,
+      Model model,
       RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
-    if (updateItemModel.getId() == null) {
-      this.transactionalContext.execute(
-          () ->
-              this.createItem.execute(
-                  context.getId(),
-                  context.getRestaurant().getId(),
-                  updateItemModel.toCreateItemCommand()));
-      redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.created"));
-    } else {
-      this.transactionalContext.execute(
-          () ->
-              this.updateItem.execute(
-                  context.getId(),
-                  context.getRestaurant().getId(),
-                  updateItemModel.getId(),
-                  updateItemModel.toUpdateItemCommand()));
-      redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.updated"));
+
+    if (bindingResult.hasErrors()) {
+      populateModel(auth, model);
+      model.addAttribute("openItemModal", true);
+      return "menu";
     }
+    try {
+      if (updateItemModel.getId() == null) {
+        this.transactionalContext.execute(
+            () ->
+                this.createItem.execute(
+                    context.getId(),
+                    context.getRestaurant().getId(),
+                    updateItemModel.toCreateItemCommand()));
+        redirectAttributes.addFlashAttribute(
+            "alert", AlertModel.success("alert.menu.item.created"));
+      } else {
+        this.transactionalContext.execute(
+            () ->
+                this.updateItem.execute(
+                    context.getId(),
+                    context.getRestaurant().getId(),
+                    updateItemModel.getId(),
+                    updateItemModel.toUpdateItemCommand()));
+        redirectAttributes.addFlashAttribute(
+            "alert", AlertModel.success("alert.menu.item.updated"));
+      }
+    } catch (dev.thiagooliveira.tablesplit.application.exception.ApplicationException ex) {
+      populateModel(auth, model);
+      model.addAttribute("alert", AlertModel.error(ex.getMessage()));
+      model.addAttribute("openItemModal", true);
+      return "menu";
+    }
+
     return "redirect:/menu";
   }
 
@@ -145,6 +168,23 @@ public class MenuController {
     this.transactionalContext.execute(() -> this.deleteItem.execute(context.getId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
     return "redirect:/menu";
+  }
+
+  private void populateModel(Authentication auth, Model model) {
+    var context = new ContextModel(auth);
+    var languages = context.getRestaurant().getCustomerLanguages();
+    var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
+    var items = this.getItem.execute(context.getRestaurant().getId(), languages, true);
+    model.addAttribute(
+        "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
+    model.addAttribute("module", Module.MENU);
+    model.addAttribute("context", context);
+    if (!model.containsAttribute("updateCategoryModel")) {
+      model.addAttribute("updateCategoryModel", new UpdateCategoryModel());
+    }
+    if (!model.containsAttribute("updateItemModel")) {
+      model.addAttribute("updateItemModel", new UpdateItemModel());
+    }
   }
 
   @ExceptionHandler(InfrastructureException.class)

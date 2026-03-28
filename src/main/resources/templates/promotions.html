@@ -1966,29 +1966,29 @@
 
 <input type="hidden" id="currencySymbolValue" th:value="${currencySymbol}">
 <input type="hidden" id="userLanguageValue" th:value="${userLanguage}">
-<script>
-    const currencySymbol = document.getElementById('currencySymbolValue') ? document.getElementById('currencySymbolValue').value : 'R$';
-    const userLanguage = document.getElementById('userLanguageValue') ? document.getElementById('userLanguageValue').value : 'pt-PT';
+<script th:inline="javascript">
+    window.currencySymbol = document.getElementById('currencySymbolValue') ? document.getElementById('currencySymbolValue').value : 'R$';
+    window.userLanguage = document.getElementById('userLanguageValue') ? document.getElementById('userLanguageValue').value : 'pt-PT';
     
     const localization = {
-        promoTitleNew: [[#{page.promotions.modal.promotion.title.new}]],
-        promoTitleEdit: [[#{page.promotions.modal.promotion.title.edit}]],
-        comboTitleNew: [[#{page.promotions.modal.combo.title.new}]],
-        comboTitleEdit: [[#{page.promotions.modal.combo.title.edit}]],
-        couponTitleNew: [[#{page.promotions.modal.coupon.title.new}]],
-        couponTitleEdit: [[#{page.promotions.modal.coupon.title.edit}]],
-        discountHintPercent: [[#{page.promotions.type.percentage}]],
-        discountHintFixed: [[#{page.promotions.type.fixed(${currencySymbol})}]],
-        errorLoad: [[#{error.login.generic}]], // Reuse generic error or add specific
-        errorStatus: [[#{alert.promotion.toggled}]], // Reuse or add
-        itemSelectorCombo: [[#{page.promotions.form.combo.items}]],
-        itemSelectorPromo: [[#{page.promotions.item.selector.title}]],
-        itemSelectorFree: [[#{page.promotions.form.coupon.free.item}]],
-        copySuccess: [[#{alert.gallery.uploaded}]], // Placeholder for copy
-        valMinCategory: [[#{page.promotions.form.apply.type.category.hint}]],
-        valMinItem: [[#{page.promotions.form.items.placeholder}]],
-        valMinCombo: [[#{page.promotions.form.combo.items.min}]],
-        savingsLabel: [[#{page.promotions.combo.savings('')}]]
+        promoTitleNew: /*[[${#messages.msg('page.promotions.modal.promotion.title.new')}]]*/ "",
+        promoTitleEdit: /*[[${#messages.msg('page.promotions.modal.promotion.title.edit')}]]*/ "",
+        comboTitleNew: /*[[${#messages.msg('page.promotions.modal.combo.title.new')}]]*/ "",
+        comboTitleEdit: /*[[${#messages.msg('page.promotions.modal.combo.title.edit')}]]*/ "",
+        couponTitleNew: /*[[${#messages.msg('page.promotions.modal.coupon.title.new')}]]*/ "",
+        couponTitleEdit: /*[[${#messages.msg('page.promotions.modal.coupon.title.edit')}]]*/ "",
+        discountHintPercent: /*[[${#messages.msg('page.promotions.type.percentage')}]]*/ "",
+        discountHintFixed: /*[[${#messages.msg('page.promotions.type.fixed', currencySymbol)}]]*/ "",
+        errorLoad: /*[[${#messages.msg('error.login.generic')}]]*/ "",
+        errorStatus: /*[[${#messages.msg('alert.promotion.toggled')}]]*/ "",
+        itemSelectorCombo: /*[[${#messages.msg('page.promotions.form.combo.items')}]]*/ "",
+        itemSelectorPromo: /*[[${#messages.msg('page.promotions.item.selector.title')}]]*/ "",
+        itemSelectorFree: /*[[${#messages.msg('page.promotions.form.coupon.free.item')}]]*/ "",
+        copySuccess: /*[[${#messages.msg('alert.gallery.uploaded')}]]*/ "",
+        valMinCategory: /*[[${#messages.msg('page.promotions.form.apply.type.category.hint')}]]*/ "",
+        valMinItem: /*[[${#messages.msg('page.promotions.form.items.placeholder')}]]*/ "",
+        valMinCombo: /*[[${#messages.msg('page.promotions.form.combo.items.min')}]]*/ "",
+        savingsLabel: /*[[${#messages.msg('page.promotions.combo.savings', '')}]]*/ ""
     };
     
     function formatPrice(value) {
@@ -2344,11 +2344,11 @@
     const menuItems = [
         /*[# th:each="item : ${items}"]*/
         { 
-            id: [[${item.id}]], 
-            name: [[${item.name}]], 
-            price: [[${item.price}]], 
-            category: [[${item.category.toLowerCase()}]], 
-            image: [[${item.image}]] 
+            id: /*[[${item.id}]]*/ '', 
+            name: /*[[${item.name}]]*/ '', 
+            price: /*[[${item.price}]]*/ 0, 
+            category: /*[[${item.category != null ? item.category.toLowerCase() : ''}]]*/ '', 
+            image: /*[[${item.image}]]*/ '' 
         },
         /*[/]*/
     ];

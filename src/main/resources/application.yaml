@@ -30,6 +30,13 @@ cloudinary:
 app:
   time:
     zone-id: Europe/Lisbon
+  menu:
+    item:
+      image:
+        max-size: 1048576 #1MB
+  gallery:
+    image:
+      max-size: 1048576 #1MB
 
 logging:
   level:

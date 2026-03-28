@@ -16,12 +16,17 @@ public class CreateItem {
   private final EventPublisher eventPublisher;
   private final ImageStorage imageStorage;
   private final ItemRepository itemRepository;
+  private final long maxImageSize;
 
   public CreateItem(
-      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
+      EventPublisher eventPublisher,
+      ImageStorage imageStorage,
+      ItemRepository itemRepository,
+      long maxImageSize) {
     this.eventPublisher = eventPublisher;
     this.imageStorage = imageStorage;
     this.itemRepository = itemRepository;
+    this.maxImageSize = maxImageSize;
   }
 
   public Item execute(UUID accountId, UUID restaurantId, CreateItemCommand command) {
@@ -38,6 +43,10 @@ public class CreateItem {
 
     if (command.images() != null && command.images().newImages() != null) {
       for (ImageData i : command.images().newImages()) {
+        if (i.content() != null && i.content().length > this.maxImageSize) {
+          throw new dev.thiagooliveira.tablesplit.application.exception.ImageSizeExceededException(
+              "error.menu.item.image.size");
+        }
         var image = new ItemImage();
         image.setId(UUID.randomUUID());
         image.setMain(false);

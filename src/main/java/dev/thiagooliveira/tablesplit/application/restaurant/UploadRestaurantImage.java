@@ -9,14 +9,23 @@ import java.util.UUID;
 public class UploadRestaurantImage {
   private final RestaurantRepository restaurantRepository;
   private final ImageStorage imageStorage;
+  private final long maxImageSize;
 
   public UploadRestaurantImage(
-      RestaurantRepository restaurantRepository, ImageStorage imageStorage) {
+      RestaurantRepository restaurantRepository, ImageStorage imageStorage, long maxImageSize) {
     this.restaurantRepository = restaurantRepository;
     this.imageStorage = imageStorage;
+    this.maxImageSize = maxImageSize;
   }
 
   public RestaurantImage execute(UploadRestaurantImageCommand command) throws IOException {
+    if (command.imageData() != null
+        && command.imageData().content() != null
+        && command.imageData().content().length > this.maxImageSize) {
+      throw new dev.thiagooliveira.tablesplit.application.exception.ImageSizeExceededException(
+          "error.restaurant.image.size");
+    }
+
     var imageId = UUID.randomUUID();
     String url =
         imageStorage.uploadRestaurantGallery(

@@ -40,8 +40,11 @@ public class RestaurantConfig {
 
   @Bean
   public UploadRestaurantImage uploadRestaurantImage(
-      RestaurantRepository restaurantRepository, ImageStorage imageStorage) {
-    return new UploadRestaurantImage(restaurantRepository, imageStorage);
+      RestaurantRepository restaurantRepository,
+      ImageStorage imageStorage,
+      @org.springframework.beans.factory.annotation.Value("${app.gallery.image.max-size:1048576}")
+          long maxImageSize) {
+    return new UploadRestaurantImage(restaurantRepository, imageStorage, maxImageSize);
   }
 
   @Bean

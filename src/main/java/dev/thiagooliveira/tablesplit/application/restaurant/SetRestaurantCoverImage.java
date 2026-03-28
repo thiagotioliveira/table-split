@@ -11,11 +11,14 @@ public class SetRestaurantCoverImage {
     this.restaurantRepository = restaurantRepository;
   }
 
-  public void execute(UUID restaurantId, UUID imageId) {
+  public void execute(UUID restaurantId, UUID imageId, boolean isCover) {
     List<RestaurantImage> images = restaurantRepository.findImagesByRestaurantId(restaurantId);
     for (RestaurantImage img : images) {
-      img.setCover(img.getId().equals(imageId));
-      restaurantRepository.saveImage(img);
+      if (img.getId().equals(imageId)) {
+        img.setCover(isCover);
+        restaurantRepository.saveImage(img);
+        break;
+      }
     }
   }
 }

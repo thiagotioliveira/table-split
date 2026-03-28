@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
   <style>
     .category-actions {
       right: 1.5rem;
@@ -317,8 +317,8 @@
       <div class="modal-header">
         <h3 id="categoryModalTitle" th:text="#{page.menu.category.new}">New Category</h3>
       </div>
-      <form th:action="@{'/menu/categories'}" method="post" onsubmit="showLoading('Adicionando categoria')">
-        <input type="hidden" name="id" id="categoryId">
+      <form id="categoryForm" th:action="@{'/menu/categories'}" method="post" onsubmit="showLoading('Adicionando categoria')" th:object="${updateCategoryModel}">
+        <input type="hidden" th:field="*{id}">
         <div class="modal-body">
           <!-- Language Tabs for Category -->
           <div class="lang-tabs" id="categoryLangTabs">
@@ -342,7 +342,8 @@
             <div class="form-group">
               <label class="form-label" th:for="'categoryName-' + ${lang.name()}"><span th:text="#{page.menu.form.category.name}">Name</span> <span class="required">*</span></label>
               <input type="text" th:id="'categoryName-' + ${lang.name()}" class="form-input"
-                th:placeholder="#{page.menu.form.category.name.placeholder}" th:name="|name[${lang.name()}]|">
+                th:placeholder="#{page.menu.form.category.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
+              <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
             </div>
           </div>
 
@@ -351,7 +352,8 @@
             <label class="form-label" for="categoryOrder">
               <span th:text="#{page.menu.form.category.order}">Display order</span> <span class="required">*</span></label>
             <input type="number" id="categoryOrder" class="form-input" placeholder="1" min="1" style="max-width: 120px;"
-              th:name="order" value="1">
+              th:field="*{order}">
+            <span class="form-error" th:if="${#fields.hasErrors('order')}" th:errors="*{order}"></span>
             <p class="form-hint" th:text="#{page.menu.form.category.order.hint}">Categories will be ordered from
               smallest to largest number.</p>
           </div>
@@ -419,8 +421,8 @@
         <h3 id="itemModalTitle" th:text="#{page.menu.item.new}">New Item</h3>
       </div>
       <form id="itemForm" th:action="@{'/menu/items'}" method="post" enctype="multipart/form-data"
-        onsubmit="prepareItemSubmit(event)">
-        <input type="hidden" name="id" id="itemId">
+        onsubmit="prepareItemSubmit(event)" th:object="${updateItemModel}">
+        <input type="hidden" th:field="*{id}">
         <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
           <!-- Language Tabs for Item -->
           <div class="lang-tabs" id="itemLangTabs">
@@ -439,20 +441,26 @@
             </div>
           </div>
 
+          <div th:if="${#fields.hasAnyErrors()}" class="form-error-summary" style="color: var(--destructive); margin-bottom: 1rem; font-size: 0.875rem;">
+              <p th:text="#{page.promotions.form.validation.errors}">Por favor, corrija os erros abaixo.</p>
+          </div>
+
           <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
             th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
             <div class="form-group">
               <label class="form-label" th:for="'itemName-' + ${lang.name()}">
                 <span th:text="#{page.menu.item.name}">Name</span> <span class="required">*</span></label>
               <input type="text" th:id="'itemName-' + ${lang.name()}" class="form-input"
-                th:placeholder="#{page.menu.item.name.placeholder}" th:name="|name[${lang.name()}]|">
+                th:placeholder="#{page.menu.item.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
+              <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
             </div>
             <div class="form-group">
               <label class="form-label" th:for="'itemDesc-' + ${lang.name()}">
                 <span th:text="#{page.menu.item.description}">Description</span> <span class="required">*</span></label>
               <textarea th:id="'itemDesc-' + ${lang.name()}" class="form-textarea"
-                th:placeholder="#{page.menu.item.description.placeholder}" th:name="|description[${lang.name()}]|"
+                th:placeholder="#{page.menu.item.description.placeholder}" th:field="*{description[__${lang.name()}__]}"
                 rows="3"></textarea>
+              <span class="form-error" th:if="${#fields.hasErrors('description[' + lang.name() + ']')}" th:errors="*{description[__${lang.name()}__]}"></span>
             </div>
           </div>
 
@@ -462,14 +470,17 @@
             <div class="form-group">
               <label class="form-label" for="itemPrice"><span th:text="#{page.menu.item.price}">Preço</span> (<span
                   th:text="${menu.currencySymbol}"></span>) <span class="required">*</span></label>
-              <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:name="price" value="10.00">
+              <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:field="*{price}">
+              <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="itemCategory">Categoria <span class="required">*</span></label>
-              <select id="itemCategory" class="form-select" th:name="categoryId">
+              <select id="itemCategory" class="form-select" th:field="*{categoryId}">
+                <option value="" th:text="#{page.menu.item.category.select}">Selecione uma categoria</option>
                 <option th:each="c : ${menu.categories}" th:text="${c.name[#locale.language]}" th:value="${c.id}">
               </select>
+              <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></span>
             </div>
           </div>
 
@@ -528,6 +539,24 @@
     };
     const categories = /*[[${menu.categories}]]*/[];
     const items = /*[[${menu.items}]]*/[];
+    const openItemModalFlag = /*[[${openItemModal}]]*/ false;
+    const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
+    const jsCategoryId = /*[[${updateCategoryModel.id}]]*/ null;
+    const jsItemId = /*[[${updateItemModel.id}]]*/ null;
+    const primaryLang = /*[[${context.restaurant.customerLanguages[0].name()}]]*/ 'PT';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (openCategoryModalFlag) {
+        document.getElementById('categoryModalTitle').textContent = jsCategoryId ? i18n.categoryModalTitleEdit : i18n.categoryModalTitleNew;
+        document.getElementById('categoryModal').classList.add('active');
+        switchCategoryLang(primaryLang, document.querySelector('#categoryLangTabs .lang-tab'));
+      }
+      if (openItemModalFlag) {
+        document.getElementById('itemModalTitle').textContent = jsItemId ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
+        document.getElementById('itemModal').classList.add('active');
+        switchItemLang(primaryLang, document.querySelector('#itemLangTabs .lang-tab'));
+      }
+    });
   </script>
 
   <script>
@@ -543,8 +572,8 @@
       if (id) {
         const filtered = categories.find(c => c.id === id);
         if (filtered) {
-          document.getElementById('categoryId').value = filtered.id;
-          document.getElementById('categoryOrder').value = filtered.order;
+          document.querySelector('#categoryForm [name="id"]').value = filtered.id;
+          document.querySelector('#categoryForm [name="order"]').value = filtered.order;
 
           // Fill names for each language
           Object.keys(filtered.name).forEach(langKey => {
@@ -558,16 +587,14 @@
     function closeCategoryModal() {
       document.getElementById('categoryModal').classList.remove('active');
       // Clear hidden ID
-      document.getElementById('categoryId').value = '';
+      document.querySelector('#categoryForm [name="id"]').value = '';
       // Clear all language fields
       ['PT', 'EN', 'es-ES'].forEach(lang => {
         const nameInput = document.getElementById('categoryName-' + lang);
-        const descInput = document.getElementById('categoryDesc-' + lang);
         if (nameInput) nameInput.value = '';
-        if (descInput) descInput.value = '';
       });
       // Clear order field
-      document.getElementById('categoryOrder').value = '';
+      document.querySelector('#categoryForm [name="order"]').value = '';
     }
 
     function editCategory(id, lang) {
@@ -760,9 +787,9 @@
       if (id) {
         const filtered = items.find(c => c.id === id);
         if (filtered) {
-          document.getElementById('itemId').value = filtered.id;
-          document.getElementById('itemPrice').value = filtered.price;
-          document.getElementById('itemCategory').value = filtered.categoryId;
+          document.querySelector('#itemForm [name="id"]').value = filtered.id;
+          document.querySelector('#itemForm [name="price"]').value = filtered.price;
+          document.querySelector('#itemForm [name="categoryId"]').value = filtered.categoryId;
 
           // Load existing images
           if (filtered.images) {
@@ -779,7 +806,7 @@
             const input = document.getElementById('itemName-' + langKey.toUpperCase());
             if (input) input.value = filtered.name[langKey];
           });
-          Object.keys(filtered.name).forEach(langKey => {
+          Object.keys(filtered.description || {}).forEach(langKey => {
             const input = document.getElementById('itemDesc-' + langKey.toUpperCase());
             if (input) input.value = filtered.description[langKey];
           });
@@ -796,8 +823,8 @@
         if (nameInput) nameInput.value = '';
         if (descInput) descInput.value = '';
       });
-      document.getElementById('itemPrice').value = '';
-      document.getElementById('itemCategory').value = '';
+      document.querySelector('#itemForm [name="price"]').value = '';
+      document.querySelector('#itemForm [name="categoryId"]').value = '';
       //document.getElementById('itemTags').value = '';
       //document.getElementById('itemTags').value = '';
       clearImageGallery();
@@ -844,6 +871,18 @@
           this.classList.remove('active');
         }
       });
+    });
+
+    // Handle Validation Errors
+    window.addEventListener('DOMContentLoaded', () => {
+      const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
+      const openItemModalFlag = /*[[${openItemModal}]]*/ false;
+      
+      if (openCategoryModalFlag) {
+        document.getElementById('categoryModal').classList.add('active');
+      } else if (openItemModalFlag) {
+        document.getElementById('itemModal').classList.add('active');
+      }
     });
   </script>
   <!-- Loading Overlay -->

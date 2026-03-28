@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,14 +40,20 @@ public class MenuConfig {
 
   @Bean
   public UpdateItem updateItem(
-      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
-    return new UpdateItem(eventPublisher, imageStorage, itemRepository);
+      EventPublisher eventPublisher,
+      ImageStorage imageStorage,
+      ItemRepository itemRepository,
+      @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
+    return new UpdateItem(eventPublisher, imageStorage, itemRepository, maxImageSize);
   }
 
   @Bean
   public CreateItem createItem(
-      EventPublisher eventPublisher, ImageStorage imageStorage, ItemRepository itemRepository) {
-    return new CreateItem(eventPublisher, imageStorage, itemRepository);
+      EventPublisher eventPublisher,
+      ImageStorage imageStorage,
+      ItemRepository itemRepository,
+      @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
+    return new CreateItem(eventPublisher, imageStorage, itemRepository, maxImageSize);
   }
 
   @Bean

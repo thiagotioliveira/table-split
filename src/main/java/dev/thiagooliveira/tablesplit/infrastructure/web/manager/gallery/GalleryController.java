@@ -108,11 +108,13 @@ public class GalleryController {
   public String setCover(
       Authentication auth,
       @PathVariable("imageId") UUID imageId,
+      @RequestParam(value = "isCover", defaultValue = "true") boolean isCover,
       RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
     var restaurantId = context.getRestaurant().getId();
 
-    transactionalContext.execute(() -> setRestaurantCoverImage.execute(restaurantId, imageId));
+    transactionalContext.execute(
+        () -> setRestaurantCoverImage.execute(restaurantId, imageId, isCover));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.gallery.cover.set"));
     return "redirect:/gallery";

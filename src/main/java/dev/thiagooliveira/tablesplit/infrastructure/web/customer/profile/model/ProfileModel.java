@@ -193,7 +193,12 @@ public class ProfileModel {
   }
 
   public List<RestaurantImageModel> getCoverImages() {
-    return images.stream().filter(RestaurantImageModel::isCover).toList();
+    List<RestaurantImageModel> covers =
+        images.stream().filter(RestaurantImageModel::isCover).toList();
+    if (covers.isEmpty() && !images.isEmpty()) {
+      return images;
+    }
+    return covers;
   }
 
   public List<RestaurantImageModel> getGalleryImages() {

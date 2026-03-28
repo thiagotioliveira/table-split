@@ -1501,11 +1501,11 @@
   </footer>
   <script th:inline="javascript">
     const hasImage = /*[[${!#lists.isEmpty(profile.coverImages)}]]*/false;
+    const totalSlides = /*[[${profile.coverImages.size()}]]*/0;
   </script>
   <script>
     // Carousel State
     let currentSlide = 0;
-    const totalSlides = 4;
     let slideInterval;
 
     function startCarousel() {

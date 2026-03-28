@@ -5,6 +5,10 @@ import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,9 +19,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UpdateItemModel {
   private UUID id;
+
+  @NotNull(message = "{error.menu.item.category.required}")
   private UUID categoryId;
-  private Map<String, String> name;
-  private Map<String, String> description;
+
+  @NotEmpty(message = "{error.menu.item.name.required}")
+  private Map<String, @NotBlank(message = "{error.menu.item.name.required}") String> name;
+
+  @NotEmpty(message = "{error.menu.item.description.required}")
+  private Map<String, @NotBlank(message = "{error.menu.item.description.required}") String>
+      description;
+
+  @NotNull(message = "{error.menu.item.price.required}")
+  @Positive(message = "{error.menu.item.price.positive}")
   private BigDecimal price;
 
   private List<UUID> imageIdsToKeep;
