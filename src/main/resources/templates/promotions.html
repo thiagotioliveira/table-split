@@ -12,8 +12,38 @@
         .modal form {
             overflow-y: auto;
         }
-        .promo-day-item:not(:last-child)::after {
+        .promo-day-item:not(:last-child)::after,
+        .promo-category-item:not(:last-child)::after {
             content: ", ";
+        }
+        .category-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--background-secondary);
+        }
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.875rem;
+        }
+        .category-item:hover {
+            background: var(--card);
+        }
+        .category-item input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
         }
         /* Promotions Page Styles */
         .page-tabs {
@@ -1335,7 +1365,11 @@
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
                                 <span th:if="${promotion.applyType.name() == 'ALL_MENU'}">Todo o Cardápio</span>
-                                <span th:if="${promotion.applyType.name() == 'CATEGORY'}">Categoria: <strong th:if="${!promotion.applicableIds.isEmpty()}" th:text="${categoriesMap.get(promotion.applicableIds.iterator().next())?.name}">Categoria</strong></span>
+                                <span th:if="${promotion.applyType.name() == 'CATEGORY'}">Categorias: 
+                                    <strong th:each="catId : ${promotion.applicableIds}" 
+                                            th:text="${categoriesMap.get(catId)?.name}" 
+                                            class="promo-category-item">Categoria</strong>
+                                </span>
                                 <span th:if="${promotion.applyType.name() == 'ITEM'}">
                                     <th:block th:text="${promotion.applicableIds.size() > 1 ? promotion.applicableIds.size() + ' Itens Selecionados' : '1 Item Selecionado'}"></th:block>
                                 </span>
@@ -1612,17 +1646,20 @@
 
                 <div class="apply-selection active" id="promoCategorySelection">
                     <div class="form-group">
-                        <label class="form-label">Categorias</label>
-                        <select class="form-select" name="applicableIds">
-                            <option value="">Selecione uma categoria</option>
-                            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">Categoria</option>
-                        </select>
+                        <label class="form-label">Categorias <span class="required">*</span></label>
+                        <div class="category-checklist">
+                            <label th:each="category : ${categories}" class="category-item">
+                                <input type="checkbox" name="applicableIds" th:value="${category.id}" class="category-checkbox">
+                                <span th:text="${category.name}">Categoria</span>
+                            </label>
+                        </div>
+                        <p class="form-hint">Selecione uma ou mais categorias</p>
                     </div>
                 </div>
 
                 <div class="apply-selection" id="promoItemSelection">
                     <div class="form-group">
-                        <label class="form-label">Itens Selecionados</label>
+                        <label class="form-label">Itens Selecionados <span class="required">*</span></label>
                         <div class="selected-items" id="promoSelectedItems">
                             <div class="selected-items-empty">Nenhum item selecionado</div>
                         </div>
@@ -1667,7 +1704,7 @@
             <input type="hidden" id="comboId" name="id">
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Nome do Combo *</label>
+                    <label class="form-label">Nome do Combo <span class="required">*</span></label>
                     <input type="text" name="name" class="form-input" placeholder="Ex: Combo Lanche + Refri" required>
                 </div>
 
@@ -1684,7 +1721,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Itens do Combo *</label>
+                    <label class="form-label">Itens do Combo <span class="required">*</span></label>
                     <div class="selected-items" id="comboItems">
                         <div class="selected-items-empty">Nenhum item adicionado</div>
                     </div>
@@ -1700,7 +1737,7 @@
                         <p class="form-hint">Soma dos itens</p>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Preço do Combo *</label>
+                        <label class="form-label">Preço do Combo <span class="required">*</span></label>
                         <input type="number" name="comboPrice" class="form-input" th:placeholder="${currencySymbol + ' 0,00'}" step="0.01" required>
                         <p class="form-hint">Valor final com desconto</p>
                     </div>
@@ -2008,15 +2045,15 @@
         document.getElementById('promoCategorySelection').style.display = type === 'CATEGORY' ? 'block' : 'none';
         document.getElementById('promoItemSelection').style.display = type === 'ITEM' ? 'block' : 'none';
         
-        // Manage name attribute to avoid sending IDs from the wrong type
-        const categorySelect = document.querySelector('#promoCategorySelection select');
-        if (categorySelect) {
+        // Manage name attribute for category checkboxes
+        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        categoryCheckboxes.forEach(cb => {
             if (type === 'CATEGORY') {
-                categorySelect.setAttribute('name', 'applicableIds');
+                cb.setAttribute('name', 'applicableIds');
             } else {
-                categorySelect.removeAttribute('name');
+                cb.removeAttribute('name');
             }
-        }
+        });
 
         document.querySelectorAll('#promotionModal .apply-type-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.apply === type);
@@ -2057,8 +2094,14 @@
         setPromoApplyType(promo.applyType || 'ALL_MENU');
         
         // Handle applicableIds for Category or Item
+        document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = false);
         if (promo.applyType === 'CATEGORY') {
-            document.querySelector('#promoCategorySelection select[name="applicableIds"]').value = (promo.applicableIds && promo.applicableIds.length > 0) ? promo.applicableIds[0] : '';
+            if (promo.applicableIds) {
+                promo.applicableIds.forEach(catId => {
+                    const cb = document.querySelector(`.category-checkbox[value="${catId}"]`);
+                    if (cb) cb.checked = true;
+                });
+            }
             promoItems = [];
         } else if (promo.applyType === 'ITEM') {
             promoItems = [];
@@ -2186,6 +2229,7 @@
         promoItems = [];
         renderPromoItems();
         updatePromoHiddenInputs();
+        document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = false);
         document.getElementById('promotionModal').classList.add('active');
     }
 
@@ -2579,6 +2623,28 @@
         if (tab) {
             const tabBtn = document.querySelector(`.page-tab[data-tab="${tab}"]`);
             if (tabBtn) tabBtn.click();
+        }
+
+        // Form Validation for Promotion
+        const promoForm = document.querySelector('#promotionModal form');
+        if (promoForm) {
+            promoForm.addEventListener('submit', function(e) {
+                const applyType = document.getElementById('promoApplyType').value;
+                if (applyType === 'CATEGORY') {
+                    const checkedCategories = document.querySelectorAll('.category-checkbox:checked');
+                    if (checkedCategories.length === 0) {
+                        e.preventDefault();
+                        alert('Selecione pelo menos uma categoria.');
+                        return;
+                    }
+                } else if (applyType === 'ITEM') {
+                    if (promoItems.length === 0) {
+                        e.preventDefault();
+                        alert('Selecione pelo menos um item para a promoção.');
+                        return;
+                    }
+                }
+            });
         }
     });
 </script>
