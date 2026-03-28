@@ -132,6 +132,7 @@ public class PromotionsController {
     model.addAttribute("categoriesMap", categoriesMap);
     model.addAttribute("items", itemMap.values());
     model.addAttribute("itemMap", itemMap);
+    model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
 
     return "promotions";
   }

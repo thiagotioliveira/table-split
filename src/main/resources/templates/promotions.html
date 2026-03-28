@@ -1304,7 +1304,7 @@
                 <div th:each="promotion : ${promotions}" class="promo-card">
                     <div class="promo-card-header">
                         <span class="promo-type-badge" th:classappend="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? 'percent' : 'fixed'}" 
-                              th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? '% Porcentagem' : 'R$ Valor Fixo'}">% Porcentagem</span>
+                              th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? '% Porcentagem' : currencySymbol + ' Valor Fixo'}">% Porcentagem</span>
                         <span class="promo-status" th:classappend="${promotion.active ? 'active' : 'inactive'}">
                             <span class="status-dot"></span>
                             <span th:text="${promotion.active ? 'Ativa' : 'Inativa'}">Ativa</span>
@@ -1313,7 +1313,7 @@
                     <div class="promo-card-body">
                         <h3 class="promo-name" th:text="${promotion.name}">Happy Hour</h3>
                         <p class="promo-description" th:text="${promotion.description}">Desconto em todas as bebidas durante o happy hour</p>
-                        <p class="promo-value" th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? promotion.discountValue + '% OFF' : 'R$ ' + promotion.discountValue + ' OFF'}">20% OFF</p>
+                        <p class="promo-value" th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? promotion.discountValue + '% OFF' : currencySymbol + ' ' + promotion.discountValue + ' OFF'}">20% OFF</p>
                         <div class="promo-details">
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1330,7 +1330,7 @@
                             </div>
                             <div class="promo-detail" th:if="${promotion.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                                Pedido mínimo: <span th:text="'R$ ' + ${promotion.minOrderValue}">R$ 80,00</span>
+                                Pedido mínimo: <span th:text="${currencySymbol + ' ' + promotion.minOrderValue}">R$ 80,00</span>
                             </div>
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
@@ -1390,15 +1390,15 @@
                             <div th:each="ci : ${combo.items}" class="combo-item">
                                 <img class="combo-item-image" th:src="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).image : 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100'}" alt="Item">
                                 <span class="combo-item-name" th:text="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).name : 'Item removido'}">Item</span>
-                                <span class="combo-item-price" th:text="${itemMap.get(ci.getItemId()) != null ? 'R$ ' + itemMap.get(ci.getItemId()).price : ''}">R$ 0,00</span>
+                                <span class="combo-item-price" th:text="${itemMap.get(ci.getItemId()) != null ? currencySymbol + ' ' + itemMap.get(ci.getItemId()).price : ''}">R$ 0,00</span>
                             </div>
                         </div>
                         <div class="combo-pricing">
                             <div>
-                                <div class="combo-original"><s th:text="'R$ ' + ${comboOriginalPrices.get(combo.id)}">R$ 40,80</s></div>
-                                <div class="combo-savings" th:text="'Economia de R$ ' + ${comboOriginalPrices.get(combo.id).subtract(combo.comboPrice)}">Economia de R$ 5,90</div>
+                                <div class="combo-original"><s th:text="${currencySymbol + ' ' + comboOriginalPrices.get(combo.id)}">R$ 40,80</s></div>
+                                <div class="combo-savings" th:text="'Economia de ' + ${currencySymbol + ' ' + comboOriginalPrices.get(combo.id).subtract(combo.comboPrice)}">Economia de R$ 5,90</div>
                             </div>
-                            <div class="combo-final" th:text="'R$ ' + ${combo.comboPrice}">R$ 34,90</div>
+                            <div class="combo-final" th:text="${currencySymbol + ' ' + combo.comboPrice}">R$ 34,90</div>
                         </div>
                     </div>
                     <div class="promo-card-footer">
@@ -1450,7 +1450,7 @@
                         </div>
                         <p class="promo-value">
                             <th:block th:if="${coupon.discountType.name() == 'PERCENTAGE'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 1, 0) + '% OFF'}">15% OFF</th:block>
-                            <th:block th:if="${coupon.discountType.name() == 'FIXED_VALUE'}" th:text="${'R$ ' + #numbers.formatDecimal(coupon.discountValue, 1, 2) + ' OFF'}">R$ 10,00 OFF</th:block>
+                            <th:block th:if="${coupon.discountType.name() == 'FIXED_VALUE'}" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(coupon.discountValue, 1, 2) + ' OFF'}">10,00 OFF</th:block>
                             <th:block th:if="${coupon.discountType.name() == 'FREE_ITEM'}">Item Grátis</th:block>
                         </p>
                         <div class="coupon-rules" th:if="${not #lists.isEmpty(coupon.rules)}">
@@ -1466,7 +1466,7 @@
                             </div>
                             <div class="promo-detail" th:if="${coupon.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                Pedido Mín: R$ <span th:text="${#numbers.formatDecimal(coupon.minOrderValue, 1, 2)}">50,00</span>
+                                Pedido Mín: [[${currencySymbol}]] <span th:text="${#numbers.formatDecimal(coupon.minOrderValue, 1, 2)}">50,00</span>
                             </div>
                         </div>
                         <p class="coupon-usage" th:if="${coupon.usageLimit != null}">
@@ -1506,7 +1506,7 @@
             <input type="hidden" id="promoId" name="id">
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Nome da Promoção *</label>
+                    <label class="form-label">Nome da Promoção <span class="required">*</span></label>
                     <input type="text" name="name" class="form-input" placeholder="Ex: Happy Hour, Desconto de Verão..." required>
                 </div>
 
@@ -1516,7 +1516,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Tipo de Desconto *</label>
+                    <label class="form-label">Tipo de Desconto <span class="required">*</span></label>
                     <input type="hidden" name="discountType" id="promoDiscountType" value="PERCENTAGE">
                     <div class="discount-type-selector">
                         <button type="button" class="discount-type-btn active" data-type="PERCENTAGE" onclick="setDiscountType('PERCENTAGE')">
@@ -1532,13 +1532,13 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Valor do Desconto *</label>
+                        <label class="form-label">Valor do Desconto <span class="required">*</span></label>
                         <input type="number" name="discountValue" class="form-input" placeholder="Ex: 20" id="discountValue" step="0.01" required>
                         <p class="form-hint" id="discountHint">Porcentagem de desconto</p>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Pedido Mínimo</label>
-                        <input type="number" name="minOrderValue" class="form-input" placeholder="R$ 0,00" step="0.01">
+                        <input type="number" name="minOrderValue" class="form-input" th:placeholder="${currencySymbol + ' 0,00'}" step="0.01">
                         <p class="form-hint">Opcional</p>
                     </div>
                 </div>
@@ -1552,7 +1552,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Data Início *</label>
+                        <label class="form-label">Data Início <span class="required">*</span></label>
                         <input type="date" name="startDate" class="form-input" required>
                     </div>
                     <div class="form-group">
@@ -1595,7 +1595,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Tipo de Aplicação</label>
+                    <label class="form-label">Tipo de Aplicação <span class="required">*</span></label>
                     <input type="hidden" name="applyType" id="promoApplyType" value="CATEGORY">
                     <div class="apply-type-selector">
                         <button type="button" class="apply-type-btn active" data-apply="CATEGORY" onclick="setPromoApplyType('CATEGORY')">
@@ -1696,12 +1696,12 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Preço Original</label>
-                        <input type="text" class="form-input" value="R$ 0,00" disabled id="comboOriginalPriceField">
+                        <input type="text" class="form-input" th:value="${currencySymbol + ' 0,00'}" disabled id="comboOriginalPriceField">
                         <p class="form-hint">Soma dos itens</p>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Preço do Combo *</label>
-                        <input type="number" name="comboPrice" class="form-input" placeholder="R$ 0,00" step="0.01" required>
+                        <input type="number" name="comboPrice" class="form-input" th:placeholder="${currencySymbol + ' 0,00'}" step="0.01" required>
                         <p class="form-hint">Valor final com desconto</p>
                     </div>
                 </div>
@@ -1796,7 +1796,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Pedido Mínimo</label>
-                        <input type="number" name="minOrderValue" class="form-input" placeholder="R$ 0,00" step="0.01">
+                        <input type="number" name="minOrderValue" class="form-input" th:placeholder="${currencySymbol + ' 0,00'}" step="0.01">
                     </div>
                 </div>
 
@@ -1923,6 +1923,10 @@
     </div>
 </div>
 
+<input type="hidden" id="currencySymbolValue" th:value="${currencySymbol}">
+<script>
+    const currencySymbol = document.getElementById('currencySymbolValue') ? document.getElementById('currencySymbolValue').value : 'R$';
+</script>
 <script th:inline="javascript">
     // ============================================
     // Sidebar Functions
@@ -2330,7 +2334,7 @@
             <img src="${item.image}" alt="${item.name}">
             <div class="selectable-item-info">
               <div class="selectable-item-name">${item.name}</div>
-              <div class="selectable-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+              <div class="selectable-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
               <div class="selectable-item-category">${item.category}</div>
             </div>
             <div class="selectable-item-check">
@@ -2405,7 +2409,7 @@
           <img src="${item.image}" alt="${item.name}">
           <div class="selected-item-info">
             <div class="selected-item-name">${item.name}</div>
-            <div class="selected-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+            <div class="selected-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
           </div>
           <div class="combo-item-qty">
             <button type="button" class="qty-btn" onclick="updateItemQuantity('${item.id}', -1)">-</button>
@@ -2437,7 +2441,7 @@
 
     function updateComboPrice() {
         const total = comboItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-        document.getElementById('comboOriginalPriceField').value = 'R$ ' + total.toFixed(2).replace('.', ',');
+        document.getElementById('comboOriginalPriceField').value = currencySymbol + ' ' + total.toFixed(2).replace('.', ',');
     }
 
     // ============================================
@@ -2456,7 +2460,7 @@
           <img src="${item.image}" alt="${item.name}">
           <div class="selected-item-info">
             <div class="selected-item-name">${item.name}</div>
-            <div class="selected-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+            <div class="selected-item-price">${currencySymbol} ${item.price.toFixed(2).replace('.', ',')}</div>
           </div>
           <button type="button" class="selected-item-remove" onclick="removePromoItem('${item.id}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -2502,7 +2506,7 @@
         if (selectedFreeItem) {
             document.getElementById('freeItemImg').src = selectedFreeItem.image;
             document.getElementById('freeItemName').textContent = selectedFreeItem.name;
-            document.getElementById('freeItemPrice').textContent = 'Valor: R$ ' + selectedFreeItem.price.toFixed(2).replace('.', ',');
+            document.getElementById('freeItemPrice').textContent = 'Valor: ' + currencySymbol + ' ' + selectedFreeItem.price.toFixed(2).replace('.', ',');
             display.style.display = 'flex';
             btn.style.display = 'none';
         } else {
