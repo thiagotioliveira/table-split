@@ -12,6 +12,9 @@
         .modal form {
             overflow-y: auto;
         }
+        .promo-day-item:not(:last-child)::after {
+            content: ", ";
+        }
         /* Promotions Page Styles */
         .page-tabs {
             display: flex;
@@ -1318,7 +1321,11 @@
                             </div>
                             <div class="promo-detail" th:if="${(promotion.daysOfWeek != null && !promotion.daysOfWeek.isEmpty()) || promotion.startTime != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                <span th:if="${promotion.daysOfWeek != null && !promotion.daysOfWeek.isEmpty()}" th:text="${#strings.listJoin(promotion.daysOfWeek, ', ')}">Seg a Sex</span>
+                                <th:block th:each="day : ${T(java.time.DayOfWeek).values()}">
+                                    <span th:if="${promotion.daysOfWeek != null && promotion.daysOfWeek.contains(day)}" 
+                                          th:text="${#messages.msg('day.' + day.name().toLowerCase()).substring(0, 3).toUpperCase()}"
+                                          class="promo-day-item">Segunda</span>
+                                </th:block>
                                 <span th:if="${promotion.startTime != null}" th:text="' Das ' + ${promotion.startTime} + ' às ' + ${promotion.endTime}">17h às 20h</span>
                             </div>
                             <div class="promo-detail" th:if="${promotion.minOrderValue != null}">
@@ -1559,7 +1566,7 @@
                     <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;">
                         <label th:each="day : ${T(java.time.DayOfWeek).values()}" style="display: flex; align-items: center; gap: 4px; background: var(--background-secondary); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;">
                             <input type="checkbox" name="recurrenceDays" th:value="${day.name()}" style="width: auto;">
-                            <span th:text="${#strings.substring(day.name(), 0, 3)}">SEG</span>
+                            <span th:text="${#strings.substring(#messages.msg('day.' + day.name().toLowerCase()), 0, 3).toUpperCase()}">SEG</span>
                         </label>
                     </div>
                     <p class="form-hint">Se nenhum dia for selecionado, a promoção vale para todos os dias.</p>
