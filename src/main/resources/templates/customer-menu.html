@@ -1439,9 +1439,10 @@
                     <div class="menu-item-header">
                         <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
                         <div class="menu-item-prices">
-                            <span class="promo-badge">-20%</span>
-                            <span class="price-original" th:text="${item.priceFormatted}">R$ 28,00</span>
-                            <span class="price-promo">R$ 22,40</span>
+                            <span class="promo-badge" th:if="${item.promotion != null}" 
+                                  th:text="${item.promotion.discountType == 'PERCENTAGE' ? '-' + #numbers.formatInteger(item.promotion.discountValue, 0) + '%' : '-' + customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.discountValue, 1, 2).replace('.', ',')}">-20%</span>
+                            <span class= "menu-item-price" th:classappend="${item.promotion != null} ? ' price-original'" th:text="${item.priceFormatted}">R$ 28,00</span>
+                            <span class="price-promo" th:if="${item.promotion != null}" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 2).replace('.', ',')}">R$ 22,40</span>
                         </div>
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
@@ -1748,7 +1749,8 @@
     }
 */
     function formatPrice(value) {
-        return currencySymbol + value.toFixed(2).replace('.', ',');
+        if (value === undefined || value === null) return currencySymbol + ' 0,00';
+        return currencySymbol + ' ' + parseFloat(value).toFixed(2).replace('.', ',');
     }
 /*
     function updateCartUI() {
@@ -1943,14 +1945,17 @@
         currentModalItem = item;
         modalQty = 1;
         currentSlide = 0;
-
+        console.log(item);
         document.getElementById('itemModalName').textContent = getItemText(item, 'name');
         const priceContainer = document.getElementById('itemModalPrice');
-        if (true) {
+        if (item.promotion) {
+            const discountLabel = item.promotion.discountType === 'PERCENTAGE' 
+                ? `-${Math.round(item.promotion.discountValue)}%` 
+                : `-${formatPrice(item.promotion.discountValue)}`;
             priceContainer.innerHTML = `
-          <span class="promo-badge">-10%</span>
+          <span class="promo-badge">${discountLabel}</span>
           <span class="price-original">${formatPrice(item.price)}</span>
-          <span class="price-promo">${formatPrice(item.price)}</span>
+          <span class="price-promo">${formatPrice(item.promotion.promotionalPrice)}</span>
         `;
         } else {
             priceContainer.innerHTML = formatPrice(item.price);

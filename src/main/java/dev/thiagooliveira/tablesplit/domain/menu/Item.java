@@ -80,5 +80,9 @@ public class Item {
     this.promotion = promotion;
   }
 
-  public record PromotionInfo(UUID promotionId, BigDecimal promotionalPrice) {}
+  public record PromotionInfo(
+      UUID promotionId,
+      BigDecimal promotionalPrice,
+      DiscountType discountType,
+      BigDecimal discountValue) {}
 }

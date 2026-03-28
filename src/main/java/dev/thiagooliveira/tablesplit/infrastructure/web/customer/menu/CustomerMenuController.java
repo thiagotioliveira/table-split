@@ -32,7 +32,7 @@ public class CustomerMenuController {
     var restaurant = getRestaurant.execute(slug).orElseThrow();
     var requestLanguages = java.util.List.of(Language.fromLocale(locale));
     var categories = getCategory.execute(restaurant.getId(), requestLanguages);
-    var items = getItem.execute(restaurant.getId(), requestLanguages);
+    var items = getItem.execute(restaurant.getId(), requestLanguages, true);
     CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, items);
     model.addAttribute("customerMenu", menuModel);
     return "customer-menu";

@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.Image
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemModel {
@@ -16,6 +17,7 @@ public class ItemModel {
   private final Map<String, String> description;
   private final BigDecimal price;
   private final String priceFormatted;
+  private PromotionInfo promotion;
 
   public ItemModel(Item item, String symbol) {
     this.id = item.getId().toString();
@@ -26,6 +28,14 @@ public class ItemModel {
     this.description = convertMap(item.getDescription());
     this.price = item.getPrice();
     this.priceFormatted = String.format("%s %s", symbol, this.price);
+    if (item.getPromotion() != null) {
+      this.promotion =
+          new PromotionInfo(
+              item.getPromotion().promotionId(),
+              item.getPromotion().promotionalPrice(),
+              item.getPromotion().discountType().name(),
+              item.getPromotion().discountValue());
+    }
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -60,5 +70,43 @@ public class ItemModel {
 
   public List<ImageModel> getImages() {
     return images;
+  }
+
+  public PromotionInfo getPromotion() {
+    return promotion;
+  }
+
+  public static class PromotionInfo {
+    private final UUID promotionId;
+    private final BigDecimal promotionalPrice;
+    private final String discountType;
+    private final BigDecimal discountValue;
+
+    public PromotionInfo(
+        UUID promotionId,
+        BigDecimal promotionalPrice,
+        String discountType,
+        BigDecimal discountValue) {
+      this.promotionId = promotionId;
+      this.promotionalPrice = promotionalPrice;
+      this.discountType = discountType;
+      this.discountValue = discountValue;
+    }
+
+    public UUID getPromotionId() {
+      return promotionId;
+    }
+
+    public BigDecimal getPromotionalPrice() {
+      return promotionalPrice;
+    }
+
+    public String getDiscountType() {
+      return discountType;
+    }
+
+    public BigDecimal getDiscountValue() {
+      return discountValue;
+    }
   }
 }

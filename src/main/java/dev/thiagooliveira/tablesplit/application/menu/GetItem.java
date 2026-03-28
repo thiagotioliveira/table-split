@@ -59,7 +59,10 @@ public class GetItem {
                 p -> {
                   item.setPromotion(
                       new Item.PromotionInfo(
-                          p.getId(), calculatePromotionalPrice(item.getPrice(), p)));
+                          p.getId(),
+                          calculatePromotionalPrice(item.getPrice(), p),
+                          p.getDiscountType(),
+                          p.getDiscountValue()));
                 });
       }
     }
