@@ -340,8 +340,7 @@
           <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
             th:id="'categoryFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
             <div class="form-group">
-              <label class="form-label" th:for="'categoryName-' + ${lang.name()}"
-                th:text="#{page.menu.form.category.name}">Name *</label>
+              <label class="form-label" th:for="'categoryName-' + ${lang.name()}"><span th:text="#{page.menu.form.category.name}">Name</span> <span class="required">*</span></label>
               <input type="text" th:id="'categoryName-' + ${lang.name()}" class="form-input"
                 th:placeholder="#{page.menu.form.category.name.placeholder}" th:name="|name[${lang.name()}]|">
             </div>
@@ -349,8 +348,8 @@
 
           <!-- Common Fields (outside language tabs) -->
           <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-            <label class="form-label" for="categoryOrder" th:text="#{page.menu.form.category.order}">Display
-              order</label>
+            <label class="form-label" for="categoryOrder">
+              <span th:text="#{page.menu.form.category.order}">Display order</span> <span class="required">*</span></label>
             <input type="number" id="categoryOrder" class="form-input" placeholder="1" min="1" style="max-width: 120px;"
               th:name="order" value="1">
             <p class="form-hint" th:text="#{page.menu.form.category.order.hint}">Categories will be ordered from
@@ -443,14 +442,14 @@
           <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
             th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
             <div class="form-group">
-              <label class="form-label" th:for="'itemName-' + ${lang.name()}" th:text="#{page.menu.item.name}">Name
-                *</label>
+              <label class="form-label" th:for="'itemName-' + ${lang.name()}">
+                <span th:text="#{page.menu.item.name}">Name</span> <span class="required">*</span></label>
               <input type="text" th:id="'itemName-' + ${lang.name()}" class="form-input"
                 th:placeholder="#{page.menu.item.name.placeholder}" th:name="|name[${lang.name()}]|">
             </div>
             <div class="form-group">
-              <label class="form-label" th:for="'itemDesc-' + ${lang.name()}"
-                th:text="#{page.menu.item.description}">Description</label>
+              <label class="form-label" th:for="'itemDesc-' + ${lang.name()}">
+                <span th:text="#{page.menu.item.description}">Description</span> <span class="required">*</span></label>
               <textarea th:id="'itemDesc-' + ${lang.name()}" class="form-textarea"
                 th:placeholder="#{page.menu.item.description.placeholder}" th:name="|description[${lang.name()}]|"
                 rows="3"></textarea>
@@ -462,12 +461,12 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="itemPrice"><span th:text="#{page.menu.item.price}">Preço</span> (<span
-                  th:text="${menu.currencySymbol}"></span>) *</label>
+                  th:text="${menu.currencySymbol}"></span>) <span class="required">*</span></label>
               <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:name="price" value="10.00">
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="itemCategory">Categoria *</label>
+              <label class="form-label" for="itemCategory">Categoria <span class="required">*</span></label>
               <select id="itemCategory" class="form-select" th:name="categoryId">
                 <option th:each="c : ${menu.categories}" th:text="${c.name[#locale.language]}" th:value="${c.id}">
               </select>
