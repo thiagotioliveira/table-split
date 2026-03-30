@@ -17,6 +17,10 @@ public class GetTables {
     return tableRepository.findById(id);
   }
 
+  public Optional<Table> findByRestaurantIdAndCod(UUID restaurantId, String cod) {
+    return tableRepository.findByRestaurantIdAndCod(restaurantId, cod);
+  }
+
   public Result execute(UUID restaurantId) {
     List<Table> tables = tableRepository.findAllByRestaurantId(restaurantId);
     long count = tables.size();

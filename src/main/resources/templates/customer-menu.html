@@ -770,7 +770,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 1rem 1.25rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--foreground), #2a2520);
             border: none;
             border-radius: var(--radius-lg);
             color: white;
@@ -782,6 +782,17 @@
         }
         .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(249, 115, 22, 0.5); }
         .cart-btn-left { display: flex; align-items: center; gap: 0.75rem; }
+        .cart-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-icon svg { width: 1.25rem; height: 1.25rem; }
         .cart-count {
             background: rgba(255, 255, 255, 0.2);
             padding: 0.25rem 0.625rem;
@@ -1307,9 +1318,9 @@
     <!-- Hero Navigation -->
     <div class="hero-nav">
         <div>
-            <button class="hero-badge" onclick="openTableModal()" th:if="${false}">
+            <button class="hero-badge" onclick="openTableModal()" th:if="${table != null}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
-                Mesa 12
+                <span>Mesa</span> <span th:text="${table.cod}"></span>
             </button>
         </div>
         <div class="hero-actions">
@@ -1337,7 +1348,7 @@
                     </a>
                 </div>
             </div>
-            <button class="hero-action-btn" onclick="openWaiterModal()">
+            <button class="hero-action-btn" onclick="openWaiterModal()" th:if="${table != null}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
             </button>
         </div>
@@ -1383,7 +1394,7 @@
     </div>
 </section>
 <!-- Quick Info Bar -->
-<div class="quick-info" th:if="${false}">
+<div class="quick-info" th:if="${table != null}">
     <div class="quick-info-item" onclick="openWaiterModal()">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
@@ -1406,6 +1417,19 @@
         <span class="quick-info-value">3 <span data-i18n="people">pessoas</span></span>
     </div>
 </div>
+
+<!-- Main Tabs -->
+<nav class="main-tabs" th:if="${table != null}">
+    <button class="main-tab active" onclick="switchTab('menu', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
+        <span data-i18n="menu">Cardápio</span>
+    </button>
+    <button class="main-tab" onclick="switchTab('orders', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span data-i18n="myOrders">Meus Pedidos</span>
+        <span class="tab-badge" id="ordersBadge" style="display: none;">0</span>
+    </button>
+</nav>
 
 <!-- Menu Tab Content -->
 <div id="menuTab" class="tab-content active">
@@ -1447,8 +1471,8 @@
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
                     <div class="menu-item-footer">
-                        <div class="item-tags" th:if="${false}"><span class="item-tag">Vegetariano</span></div>
-                        <button th:if="${false}" class="add-btn" onclick="event.stopPropagation(); addToCart(1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <div class="item-tags"><span class="item-tag">Vegetariano</span></div>
+                        <button th:if="${table != null}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                     </div>
                 </div>
             </div>
@@ -1457,7 +1481,7 @@
 </div>
 
 <!-- Orders Tab Content -->
-<div id="ordersTab" class="tab-content" th:if="${false}">
+<div id="ordersTab" class="tab-content">
     <div class="orders-content" id="ordersContent">
         <div class="orders-empty" id="ordersEmpty">
             <div class="orders-empty-icon">
@@ -1480,28 +1504,32 @@
 </div>
 
 <!-- Cart Floating Button -->
-<div class="cart-float" id="cartFloat" style="display: none;" th:if="${false}">
+<div class="cart-float" id="cartFloat" style="display: none;" th:if="${table != null}">
     <button class="cart-btn" onclick="openCart()">
-        <span class="cart-btn-left"><span class="cart-count" id="cartCount">0 itens</span>Ver carrinho</span>
+        <div class="cart-btn-left">
+            <div class="cart-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            </div>
+            <span class="cart-count" id="cartCount">0 itens</span>Ver carrinho
+        </div>
         <span class="cart-btn-right" id="cartTotal">R$ 0,00</span>
     </button>
 </div>
 
 <!-- Cart Drawer -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()" th:if="${false}">
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()" th:if="${table != null}">
     <div class="cart-drawer" onclick="event.stopPropagation()">
         <div class="cart-handle"></div>
         <div class="cart-header">
             <h2 class="cart-title">Seu Pedido</h2>
             <button class="cart-clear" onclick="clearCart()">Limpar</button>
         </div>
-        <div class="cart-items" id="cartItems">
-            <div class="cart-empty" id="cartEmpty">
-                <div class="cart-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
-                <h3 class="cart-empty-title">Carrinho vazio</h3>
-                <p class="cart-empty-text">Adicione itens do cardápio</p>
-            </div>
+        <div class="cart-empty" id="cartEmpty">
+            <div class="cart-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <h3 class="cart-empty-title">Carrinho vazio</h3>
+            <p class="cart-empty-text">Adicione itens do cardápio</p>
         </div>
+        <div class="cart-items" id="cartItems"></div>
         <div class="cart-note" id="cartNote" style="display: none;">
             <label class="cart-note-label">Observações do pedido</label>
             <textarea class="cart-note-input" placeholder="Ex: Sem cebola, ponto da carne..." rows="2"></textarea>
@@ -1600,6 +1628,7 @@
         </div>
     </div>
 </div>
+
 <!-- Waiter Modal -->
 <div class="waiter-modal-overlay" id="waiterModalOverlay" onclick="closeWaiterModal()">
     <div class="waiter-modal" onclick="event.stopPropagation()">
@@ -1623,9 +1652,13 @@
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
 </script>
 <script>
+    let cart = [];
+    let myOrders = [];
     let currentModalItem = null;
+    let modalQty = 1;
     let currentSlide = 0;
     let slideInterval;
+    const SERVICE_FEE = 0.10;
     // Hero Carousel
     function startCarousel() {
         if(hasImage) {
@@ -1717,23 +1750,26 @@
             item.style.display = (name.includes(query) || query === '') ? 'flex' : 'none';
         });
     }
-/*
+
     // Cart functions
     function addToCart(itemId) {
-        const item = menuItems[itemId];
-        const existing = cart.find(c => c.id === itemId);
+        // Convert to string to safely match any UUID or ID type
+        const item = menuItems.find(i => String(i.id) === String(itemId));
+        if (!item) return;
+        const existing = cart.find(c => String(c.id) === String(itemId));
         if (existing) existing.qty++;
         else cart.push({ ...item, qty: 1 });
         updateCartUI();
     }
 
     function removeFromCart(itemId) {
-        cart = cart.filter(c => c.id !== itemId);
+        cart = cart.filter(c => String(c.id) !== String(itemId));
         updateCartUI();
     }
 
     function updateQty(itemId, delta) {
-        const item = cart.find(c => c.id === itemId);
+        const item = cart.find(c => String(c.id) === String(itemId));
+        console.log(item);
         if (item) {
             item.qty += delta;
             if (item.qty <= 0) removeFromCart(itemId);
@@ -1746,12 +1782,12 @@
         updateCartUI();
         closeCart();
     }
-*/
+
     function formatPrice(value) {
         if (value === undefined || value === null) return currencySymbol + ' 0,00';
         return currencySymbol + ' ' + parseFloat(value).toFixed(2).replace('.', ',');
     }
-/*
+
     function updateCartUI() {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -1765,19 +1801,20 @@
             document.getElementById('cartEmpty').style.display = 'none';
             document.getElementById('cartNote').style.display = 'block';
             document.getElementById('cartFooter').style.display = 'block';
+            document.getElementById('cartItems').style.display = 'block';
             document.getElementById('cartItems').innerHTML = cart.map(item => `
           <div class="cart-item">
-            <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0]}" alt="">` : ''}</div>
+            <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0].url}" alt="">` : ''}</div>
             <div class="cart-item-info">
               <div class="cart-item-name">${getItemText(item, 'name')}</div>
               <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
             </div>
             <div class="cart-item-actions">
-              <button class="cart-item-remove" onclick="removeFromCart(${item.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+              <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
               <div class="cart-item-qty">
-                <button onclick="updateQty(${item.id}, -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                <button onclick="updateQty('${item.id}', -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
                 <span>${item.qty}</span>
-                <button onclick="updateQty(${item.id}, 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                <button onclick="updateQty('${item.id}', 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
               </div>
             </div>
           </div>
@@ -1789,6 +1826,8 @@
             document.getElementById('cartEmpty').style.display = 'flex';
             document.getElementById('cartNote').style.display = 'none';
             document.getElementById('cartFooter').style.display = 'none';
+            document.getElementById('cartItems').style.display = 'none';
+            document.getElementById('cartItems').innerHTML = '';
         }
     }
 
@@ -1870,7 +1909,7 @@
     }
 
     // Waiter
-    function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
+    //function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
     function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
     function callWaiter() {
         closeConfirmWaiterModal();
@@ -1936,7 +1975,15 @@
         document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
         document.getElementById('tableGrandTotal').textContent = formatPrice(grandSubtotal + (grandSubtotal * SERVICE_FEE));
     }
-*/
+
+    // Tab switching
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + 'Tab').classList.add('active');
+    }
+
     // Item modal with carousel
     function openItemModal(itemId) {
         const item = menuItems.find(i => i.id === itemId);
