@@ -1649,7 +1649,7 @@
     let currentLang = /*[[${#locale.language}]]*/'pt';
 
     const allTableItems = /*[[${customerMenu.ticketItems}]]*/[];
-
+    const hasTable = /*[[${customerMenu.hasTable()}]]*/false;
     const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
     const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
@@ -1800,7 +1800,6 @@
 
     function updateQty(itemId, delta) {
         const item = cart.find(c => String(c.id) === String(itemId));
-        console.log(item);
         if (item) {
             item.qty += delta;
             if (item.qty <= 0) removeFromCart(itemId);
@@ -2088,7 +2087,6 @@
         currentModalItem = item;
         modalQty = 1;
         currentSlide = 0;
-        console.log(item);
         document.getElementById('itemModalName').textContent = getItemText(item, 'name');
         const priceContainer = document.getElementById('itemModalPrice');
         if (item.promotion) {
@@ -2177,8 +2175,10 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         startCarousel();
-        updateOrdersUI();
-        updateTableTotal();
+        if(hasTable) {
+            updateOrdersUI();
+            updateTableTotal();
+        }
     });
 /*
     // Simulate order status updates
