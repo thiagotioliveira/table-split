@@ -5,8 +5,11 @@ import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @jakarta.persistence.Table(name = "orders")
@@ -34,6 +37,10 @@ public class OrderEntity {
   @JoinColumn(name = "order_id")
   private List<PaymentEntity> payments = new ArrayList<>();
 
+  @ElementCollection
+  @CollectionTable(name = "order_customers", joinColumns = @JoinColumn(name = "order_id"))
+  private Set<OrderCustomerEntity> customers = new HashSet<>();
+
   @Column(nullable = false)
   private ZonedDateTime openedAt;
 
@@ -58,6 +65,10 @@ public class OrderEntity {
       domain.setPayments(
           new ArrayList<>(this.payments.stream().map(PaymentEntity::toDomain).toList()));
     }
+    if (this.customers != null) {
+      domain.setCustomers(
+          this.customers.stream().map(OrderCustomerEntity::toDomain).collect(Collectors.toSet()));
+    }
     return domain;
   }
 
@@ -80,6 +91,12 @@ public class OrderEntity {
     if (domain.getPayments() != null) {
       entity.setPayments(
           new ArrayList<>(domain.getPayments().stream().map(PaymentEntity::fromDomain).toList()));
+    }
+    if (domain.getCustomers() != null) {
+      entity.setCustomers(
+          domain.getCustomers().stream()
+              .map(OrderCustomerEntity::fromDomain)
+              .collect(Collectors.toSet()));
     }
     return entity;
   }
@@ -154,5 +171,13 @@ public class OrderEntity {
 
   public void setPayments(List<PaymentEntity> payments) {
     this.payments = payments;
+  }
+
+  public Set<OrderCustomerEntity> getCustomers() {
+    return customers;
+  }
+
+  public void setCustomers(Set<OrderCustomerEntity> customers) {
+    this.customers = customers;
   }
 }

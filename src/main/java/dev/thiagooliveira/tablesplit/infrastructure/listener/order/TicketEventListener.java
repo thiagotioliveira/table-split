@@ -27,7 +27,7 @@ public class TicketEventListener {
 
   @EventListener
   public void handleTicketCreated(TicketCreatedEvent event) {
-    TicketModel model = mapToModel(event.getTicket(), event.getTableCod());
+    TicketModel model = mapToModel(event.getTicket(), event.getOrder(), event.getTableCod());
     messagingTemplate.convertAndSend(
         "/topic/restaurant/" + event.getRestaurantId() + "/tickets", model);
   }
@@ -52,7 +52,8 @@ public class TicketEventListener {
     messagingTemplate.convertAndSend("/topic/restaurant/" + restaurantId + "/tables", payload);
   }
 
-  private TicketModel mapToModel(Ticket ticket, String tableCod) {
+  private TicketModel mapToModel(
+      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
@@ -69,7 +70,7 @@ public class TicketEventListener {
                   }
                   return new TicketItemModel(
                       item.getId(),
-                      item.getCustomerName(),
+                      order.getCustomerName(item.getCustomerId()),
                       name,
                       item.getQuantity(),
                       item.getUnitPrice(),

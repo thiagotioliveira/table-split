@@ -10,6 +10,7 @@ public class TicketCreatedEvent implements DomainEvent {
   private final String tableCod;
   private final UUID orderId;
   private final Ticket ticket;
+  private final Order order;
 
   public TicketCreatedEvent(Order order, Ticket ticket, String tableCod) {
     this.restaurantId = order.getRestaurantId();
@@ -17,6 +18,7 @@ public class TicketCreatedEvent implements DomainEvent {
     this.tableCod = tableCod;
     this.orderId = order.getId();
     this.ticket = ticket;
+    this.order = order;
   }
 
   @Override
@@ -42,5 +44,9 @@ public class TicketCreatedEvent implements DomainEvent {
 
   public String getTableCod() {
     return tableCod;
+  }
+
+  public Order getOrder() {
+    return order;
   }
 }

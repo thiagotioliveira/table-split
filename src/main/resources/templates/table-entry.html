@@ -415,6 +415,7 @@
     // const sessionToken = urlParams.get('session');
 
     // Simulated table data (would come from API)
+    /*
     const tableData = {
         id: 7,
         restaurantName: 'Cantina Bella Italia',
@@ -423,6 +424,14 @@
         sessionActive: true,
         peopleCount: 3
     };
+    */
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
 
     // Form submission
     function handleSubmit(event) {
@@ -441,11 +450,39 @@
         btn.classList.add('loading');
         btn.disabled = true;
 
-        // Simulate short loading and redirect
-        setTimeout(() => {
-            localStorage.setItem('customerName', name);
-            window.location.href = window.location.pathname + '/menu';
-        }, 500);
+        // Get or generate customer ID
+        let customer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+        if (!customer.id) {
+            customer.id = generateUUID();
+        }
+        customer.name = name;
+
+        // Call open/join endpoint
+        fetch(`${window.location.pathname}/open`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                customerId: customer.id,
+                customerName: customer.name
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.setItem('restaurantCustomer', JSON.stringify(customer));
+                //localStorage.setItem('customerName', name); // Keep for compatibility
+                window.location.href = window.location.pathname + '/menu';
+            } else {
+                throw new Error('Falha ao entrar na mesa');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorModal('Erro ao entrar', 'Não foi possível registrar seu acesso. Tente novamente.');
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        });
     }
 
     // Show field error
@@ -484,14 +521,14 @@
     function closeErrorModal() {
         document.getElementById('errorModal').classList.remove('active');
         // Focus on code input
-        document.getElementById('validationCode').focus();
-        document.getElementById('validationCode').select();
+        //document.getElementById('validationCode').focus();
+        //document.getElementById('validationCode').select();
     }
 
     // Auto-uppercase code input
-    document.getElementById('validationCode').addEventListener('input', function(e) {
-        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    });
+    //document.getElementById('validationCode').addEventListener('input', function(e) {
+    //    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    //});
 
     // Close modal on overlay click
     document.getElementById('errorModal').addEventListener('click', function(e) {

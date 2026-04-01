@@ -7,7 +7,8 @@ import java.util.UUID;
 
 public class GetTicket {
 
-  public record TicketWithTable(Ticket ticket, String tableCod) {}
+  public record TicketWithTable(
+      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {}
 
   private final OrderRepository orderRepository;
   private final TableRepository tableRepository;
@@ -27,7 +28,7 @@ public class GetTicket {
               return order.getTickets().stream()
                   .filter(t -> t.getId().equals(ticketId))
                   .findFirst()
-                  .map(ticket -> new TicketWithTable(ticket, tableCod));
+                  .map(ticket -> new TicketWithTable(ticket, order, tableCod));
             });
   }
 }

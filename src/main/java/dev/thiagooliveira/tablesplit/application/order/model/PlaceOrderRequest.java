@@ -5,14 +5,15 @@ import java.util.UUID;
 
 public class PlaceOrderRequest {
   private UUID restaurantId;
-  private int serviceFee;
+  private Integer serviceFee;
   private String tableCod;
   private List<TicketRequest> tickets;
+  private UUID customerId;
 
   public PlaceOrderRequest() {}
 
   public PlaceOrderRequest(
-      UUID restaurantId, String tableCod, List<TicketRequest> tickets, int serviceFee) {
+      UUID restaurantId, String tableCod, List<TicketRequest> tickets, Integer serviceFee) {
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.tickets = tickets;
@@ -43,11 +44,19 @@ public class PlaceOrderRequest {
     this.tickets = tickets;
   }
 
-  public int getServiceFee() {
+  public Integer getServiceFee() {
     return serviceFee;
   }
 
-  public void setServiceFee(int serviceFee) {
+  public void setServiceFee(Integer serviceFee) {
     this.serviceFee = serviceFee;
+  }
+
+  public UUID getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 }

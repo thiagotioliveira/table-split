@@ -11,6 +11,7 @@ public class TicketStatusChangedEvent implements DomainEvent {
   private final UUID orderId;
   private final UUID ticketId;
   private final TicketStatus newStatus;
+  private final Order order;
 
   public TicketStatusChangedEvent(Order order, Ticket ticket, TicketStatus newStatus) {
     this.restaurantId = order.getRestaurantId();
@@ -18,6 +19,7 @@ public class TicketStatusChangedEvent implements DomainEvent {
     this.orderId = order.getId();
     this.ticketId = ticket.getId();
     this.newStatus = newStatus;
+    this.order = order;
   }
 
   @Override
@@ -43,5 +45,9 @@ public class TicketStatusChangedEvent implements DomainEvent {
 
   public TicketStatus getNewStatus() {
     return newStatus;
+  }
+
+  public Order getOrder() {
+    return order;
   }
 }

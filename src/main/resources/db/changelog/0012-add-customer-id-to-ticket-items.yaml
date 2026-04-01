@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0012-add-customer-id-to-ticket-items
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: ticket_items
+            columns:
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 0012-create-order-customers-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: order_customers
+            columns:
+              - column:
+                  name: order_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: order_customers
+            columnNames: order_id, customer_id
+            constraintName: pk_order_customers
+        - addForeignKeyConstraint:
+            baseTableName: order_customers
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_order_customers_order_id

@@ -64,7 +64,9 @@ public class OrderController {
     List<TicketWithTable> ticketsWithTables = getTickets.execute(context.getRestaurant().getId());
 
     List<TicketModel> allTickets =
-        ticketsWithTables.stream().map(tw -> mapToModel(tw.ticket(), tw.tableCod())).toList();
+        ticketsWithTables.stream()
+            .map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod()))
+            .toList();
 
     Map<String, List<TicketModel>> ticketsByStatus =
         allTickets.stream().collect(Collectors.groupingBy(t -> t.getStatus().name()));
@@ -96,7 +98,7 @@ public class OrderController {
   public TicketModel getTicket(@PathVariable UUID id) {
     return getTicket
         .execute(id)
-        .map(tw -> mapToModel(tw.ticket(), tw.tableCod()))
+        .map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod()))
         .orElseThrow(() -> new IllegalArgumentException("Ticket not found: " + id));
   }
 
@@ -122,14 +124,15 @@ public class OrderController {
 
   public record CancelItemRequest(UUID itemId, int quantity, String reason) {}
 
-  private TicketModel mapToModel(Ticket ticket, String tableCod) {
+  private TicketModel mapToModel(
+      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
                 item ->
                     new TicketItemModel(
                         item.getId(),
-                        item.getCustomerName(),
+                        order.getCustomerName(item.getCustomerId()),
                         item.getName()
                             .getOrDefault(Language.PT, item.getName().values().iterator().next()),
                         item.getQuantity(),

@@ -3,7 +3,9 @@ package dev.thiagooliveira.tablesplit.domain.order;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class Order {
@@ -14,6 +16,7 @@ public class Order {
   private OrderStatus status;
   private List<Ticket> tickets = new ArrayList<>();
   private List<Payment> payments = new ArrayList<>();
+  private Set<OrderCustomer> customers = new HashSet<>();
   private ZonedDateTime openedAt;
   private ZonedDateTime closedAt;
 
@@ -82,6 +85,27 @@ public class Order {
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = ZonedDateTime.now();
+  }
+
+  public void addCustomer(UUID id, String name) {
+    if (id == null) return;
+    this.customers.add(new OrderCustomer(id, name));
+  }
+
+  public String getCustomerName(UUID id) {
+    return customers.stream()
+        .filter(c -> c.getId().equals(id))
+        .map(OrderCustomer::getName)
+        .findFirst()
+        .orElse("Desconhecido");
+  }
+
+  public Set<OrderCustomer> getCustomers() {
+    return customers;
+  }
+
+  public void setCustomers(Set<OrderCustomer> customers) {
+    this.customers = customers;
   }
 
   public UUID getId() {

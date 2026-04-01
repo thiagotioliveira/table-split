@@ -52,7 +52,7 @@ public class CancelTicketItem {
                           cancelledItem.setId(UUID.randomUUID());
                           cancelledItem.setItemId(item.getItemId());
                           cancelledItem.setName(item.getName());
-                          cancelledItem.setCustomerName(item.getCustomerName());
+                          cancelledItem.setCustomerId(item.getCustomerId());
                           cancelledItem.setQuantity(quantityToCancel);
                           cancelledItem.setUnitPrice(item.getUnitPrice());
                           cancelledItem.setStatus(TicketStatus.CANCELLED);

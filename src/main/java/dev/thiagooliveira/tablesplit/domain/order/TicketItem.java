@@ -11,7 +11,7 @@ public class TicketItem {
   private UUID itemId;
   private Map<Language, String>
       name; // Using Map to match Item domain for now, will map to localized_text_id in entity
-  private String customerName;
+  private UUID customerId;
   private int quantity;
   private BigDecimal unitPrice;
   private String note;
@@ -19,11 +19,11 @@ public class TicketItem {
 
   public TicketItem() {}
 
-  public TicketItem(Item item, int quantity, String customerName, String note) {
+  public TicketItem(Item item, int quantity, UUID customerId, String note) {
     this.id = UUID.randomUUID();
     this.itemId = item.getId();
     this.name = item.getName();
-    this.customerName = customerName;
+    this.customerId = customerId;
     this.quantity = quantity;
     this.unitPrice = item.getPrice();
     this.note = note;
@@ -53,12 +53,12 @@ public class TicketItem {
     this.name = name;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 
   public int getQuantity() {

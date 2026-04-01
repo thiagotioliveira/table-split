@@ -44,7 +44,29 @@ public class PlaceOrder {
     Order order =
         orderRepository
             .findActiveOrderByTableId(table.getId())
-            .orElseGet(() -> openTable.execute(table.getId(), request.getServiceFee()));
+            .orElseGet(
+                () ->
+                    openTable.execute(
+                        table.getId(),
+                        request.getServiceFee() != null ? request.getServiceFee() : 0,
+                        null, // customer is added below for both new and existing orders
+                        null));
+
+    // Always register the customer on the order (new or existing).
+    // Set<OrderCustomer> uses UUID equals, so duplicates are safely ignored.
+    UUID requestCustomerId =
+        request.getCustomerId() != null
+            ? request.getCustomerId()
+            : (request.getTickets() != null && !request.getTickets().isEmpty()
+                ? request.getTickets().get(0).getCustomerId()
+                : null);
+    String requestCustomerName =
+        request.getTickets() != null && !request.getTickets().isEmpty()
+            ? request.getTickets().get(0).getCustomerName()
+            : null;
+    if (requestCustomerId != null) {
+      order.addCustomer(requestCustomerId, requestCustomerName);
+    }
 
     if (request.getTickets() != null) {
       for (dev.thiagooliveira.tablesplit.application.order.model.TicketRequest ticketRequest :
@@ -59,15 +81,15 @@ public class PlaceOrder {
                       () ->
                           new IllegalArgumentException(
                               "Item not found: " + itemRequest.getItemId()));
-          String customerName =
-              itemRequest.getCustomerName() != null
-                  ? itemRequest.getCustomerName()
-                  : ticketRequest.getCustomerName();
-          ticket
-              .getItems()
-              .add(
-                  new TicketItem(
-                      item, itemRequest.getQuantity(), customerName, itemRequest.getNote()));
+          UUID customerId =
+              itemRequest.getCustomerId() != null
+                  ? itemRequest.getCustomerId()
+                  : ticketRequest.getCustomerId() != null
+                      ? ticketRequest.getCustomerId()
+                      : request.getCustomerId();
+          TicketItem ticketItem =
+              new TicketItem(item, itemRequest.getQuantity(), customerId, itemRequest.getNote());
+          ticket.getItems().add(ticketItem);
         }
         order.addTicket(ticket);
         eventPublisher.publishEvent(new TicketCreatedEvent(order, ticket, table.getCod()));

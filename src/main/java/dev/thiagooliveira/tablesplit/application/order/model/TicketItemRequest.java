@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class TicketItemRequest {
   private UUID itemId;
-  private String customerName;
+  private UUID customerId;
   private int quantity;
   private String note;
 
@@ -14,9 +14,9 @@ public class TicketItemRequest {
     this(itemId, null, quantity, note);
   }
 
-  public TicketItemRequest(UUID itemId, String customerName, int quantity, String note) {
+  public TicketItemRequest(UUID itemId, UUID customerId, int quantity, String note) {
     this.itemId = itemId;
-    this.customerName = customerName;
+    this.customerId = customerId;
     this.quantity = quantity;
     this.note = note;
   }
@@ -29,12 +29,12 @@ public class TicketItemRequest {
     this.itemId = itemId;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 
   public int getQuantity() {

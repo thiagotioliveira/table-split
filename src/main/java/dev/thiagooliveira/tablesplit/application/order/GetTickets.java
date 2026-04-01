@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class GetTickets {
 
-  public record TicketWithTable(Ticket ticket, String tableCod) {}
+  public record TicketWithTable(Ticket ticket, Order order, String tableCod) {}
 
   private final OrderRepository orderRepository;
   private final TableRepository tableRepository;
@@ -28,7 +28,7 @@ public class GetTickets {
       String tableCod =
           tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
       for (Ticket ticket : order.getTickets()) {
-        results.add(new TicketWithTable(ticket, tableCod));
+        results.add(new TicketWithTable(ticket, order, tableCod));
       }
     }
     return results;

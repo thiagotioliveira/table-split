@@ -1318,9 +1318,9 @@
     <!-- Hero Navigation -->
     <div class="hero-nav">
         <div>
-            <button class="hero-badge" onclick="openTableModal()" th:if="${table != null}">
+            <button class="hero-badge" onclick="openTableModal()" th:if="${customerMenu.hasTable()}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
-                <span>Mesa</span> <span th:text="${table.cod}"></span>
+                <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
             </button>
         </div>
         <div class="hero-actions">
@@ -1348,7 +1348,7 @@
                     </a>
                 </div>
             </div>
-            <button class="hero-action-btn" onclick="openWaiterModal()" th:if="${table != null}">
+            <button class="hero-action-btn" onclick="openWaiterModal()" th:if="${customerMenu.hasTable()}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
             </button>
         </div>
@@ -1394,7 +1394,7 @@
     </div>
 </section>
 <!-- Quick Info Bar -->
-<div class="quick-info" th:if="${table != null}">
+<div class="quick-info" th:if="${customerMenu.hasTable()}">
     <div class="quick-info-item" onclick="openWaiterModal()">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
@@ -1407,9 +1407,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
         </div>
         <span class="quick-info-label" data-i18n="tableBill">Conta</span>
-        <span class="quick-info-value">R$ 215,90</span>
+        <span class="quick-info-value" id="quickTableTotal">R$ 0,00</span>
     </div>
-    <div class="quick-info-item">
+    <div class="quick-info-item" th:if="${false}">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
@@ -1419,7 +1419,7 @@
 </div>
 
 <!-- Main Tabs -->
-<nav class="main-tabs" th:if="${table != null}">
+<nav class="main-tabs" th:if="${customerMenu.hasTable()}">
     <button class="main-tab active" onclick="switchTab('menu', this)">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
         <span data-i18n="menu">Cardápio</span>
@@ -1427,7 +1427,7 @@
     <button class="main-tab" onclick="switchTab('orders', this)">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span data-i18n="myOrders">Meus Pedidos</span>
-        <span class="tab-badge" id="ordersBadge" style="display: none;">0</span>
+        <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
     </button>
 </nav>
 
@@ -1472,7 +1472,7 @@
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
                     <div class="menu-item-footer">
                         <div class="item-tags"><span class="item-tag">Vegetariano</span></div>
-                        <button th:if="${table != null}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <button th:if="${customerMenu.hasTable()}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                     </div>
                 </div>
             </div>
@@ -1504,7 +1504,7 @@
 </div>
 
 <!-- Cart Floating Button -->
-<div class="cart-float" id="cartFloat" style="display: none;" th:if="${table != null}">
+<div class="cart-float" id="cartFloat" style="display: none;" th:if="${customerMenu.hasTable()}">
     <button class="cart-btn" onclick="openCart()">
         <div class="cart-btn-left">
             <div class="cart-icon">
@@ -1517,7 +1517,7 @@
 </div>
 
 <!-- Cart Drawer -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()" th:if="${table != null}">
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()" th:if="${customerMenu.hasTable()}">
     <div class="cart-drawer" onclick="event.stopPropagation()">
         <div class="cart-handle"></div>
         <div class="cart-header">
@@ -1549,7 +1549,7 @@
 </div>
 
 <!-- Order Sent Modal -->
-<div class="modal-overlay" id="orderSentModal" th:if="${false}">
+<div class="modal-overlay" id="orderSentModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
         <h3 class="modal-title">Pedido Enviado!</h3>
@@ -1559,7 +1559,7 @@
 </div>
 
 <!-- Confirm Call Waiter Modal -->
-<div class="modal-overlay" id="confirmWaiterModal" th:if="${false}">
+<div class="modal-overlay" id="confirmWaiterModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon warning"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
         <h3 class="modal-title">Chamar Garçom?</h3>
@@ -1570,7 +1570,7 @@
 </div>
 
 <!-- Waiter Called Modal -->
-<div class="modal-overlay" id="waiterCalledModal" th:if="${false}">
+<div class="modal-overlay" id="waiterCalledModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
         <h3 class="modal-title">Garçom Chamado!</h3>
@@ -1580,10 +1580,10 @@
 </div>
 
 <!-- Table Orders Modal -->
-<div class="modal-overlay" id="tableModal" onclick="closeTableModal()" th:if="${false}">
+<div class="modal-overlay" id="tableModal" onclick="closeTableModal()" th:if="${customerMenu.hasTable()}">
     <div class="table-modal-content" onclick="event.stopPropagation()">
         <div class="table-modal-header">
-            <h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg>Mesa 2 - Conta Completa</h2>
+            <h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg><span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span> - Conta Completa</h2>
             <button class="table-modal-close" onclick="closeTableModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
         <div class="table-modal-body" id="tableModalBody">
@@ -1639,7 +1639,7 @@
         <p data-i18n="callWaiterDesc">Um garçom será notificado e virá até sua mesa em breve.</p>
         <div class="waiter-modal-actions">
             <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel">Cancelar</button>
-            <button class="waiter-modal-btn primary" onclick="confirmCallWaiter()" data-i18n="callNow">Chamar Agora</button>
+            <button class="waiter-modal-btn primary" onclick="callWaiter()" data-i18n="callNow">Chamar Agora</button>
         </div>
     </div>
 </div>
@@ -1647,18 +1647,42 @@
     const menuItems = /*[[${customerMenu.items}]]*/[];
     // Current language
     let currentLang = /*[[${#locale.language}]]*/'pt';
+
+    const allTableItems = /*[[${customerMenu.ticketItems}]]*/[];
+
     const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
     const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
 </script>
 <script>
     let cart = [];
-    let myOrders = [];
     let currentModalItem = null;
     let modalQty = 1;
     let currentSlide = 0;
     let slideInterval;
     const SERVICE_FEE = 0.10;
+
+    // Customer identity from localStorage
+    const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+    const myCustomerId = _restaurantCustomer.id || null;
+    const myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
+
+    // Guard: if no customer id, redirect back to the table entry page
+    if (!myCustomerId) {
+        const entryPath = window.location.pathname.replace(/\/menu$/, '');
+        window.location.replace(entryPath);
+    }
+
+    let myOrders = allTableItems.filter(o => o.customerName === myCustomerName);
+
+    const tableOrders = allTableItems
+        .filter(o => o.customerName !== myCustomerName)
+        .reduce((acc, item) => {
+            if (!acc[item.customerName]) acc[item.customerName] = [];
+            acc[item.customerName].push(item);
+            return acc;
+        }, {});
+
     // Hero Carousel
     function startCarousel() {
         if(hasImage) {
@@ -1705,6 +1729,7 @@
 
     // Helper to get item text in current language
     function getItemText(item, field) {
+        if (typeof item[field] === 'string') return item[field];
         return item[field][currentLang] || item[field]['pt'];
     }
 
@@ -1721,12 +1746,18 @@
     function closeWaiterModal() {
         document.getElementById('waiterModalOverlay').classList.remove('active');
     }
-
+    //function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
+    function callWaiter() {
+        closeWaiterModal();
+        document.getElementById('waiterCalledModal').classList.add('active');
+    }
+    function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
+    /*
     function confirmCallWaiter() {
         closeWaiterModal();
         alert('Garçom notificado! Ele chegará em breve.');
     }
-    /*
+
     // Table Modal (placeholder)
     function openTableModal() {
         alert('Ver conta da mesa - Em desenvolvimento');
@@ -1834,17 +1865,64 @@
     function openCart() { document.getElementById('cartOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; }
     function closeCart() { document.getElementById('cartOverlay').classList.remove('active'); document.body.style.overflow = ''; }
 
-    function submitOrder() {
+    async function submitOrder() {
         if (cart.length === 0) return;
-        const statuses = ['sent', 'preparing'];
-        cart.forEach(item => {
-            myOrders.push({ ...item, status: statuses[Math.floor(Math.random() * statuses.length)], time: new Date() });
-        });
-        cart = [];
-        updateCartUI();
-        updateOrdersUI();
-        closeCart();
-        document.getElementById('orderSentModal').classList.add('active');
+        
+        const note = document.querySelector('.cart-note-input').value;
+        
+        const orderRequest = {
+            tickets: [{
+                customerId: myCustomerId,
+                customerName: myCustomerName,
+                note: note,
+                items: cart.map(item => ({
+                    itemId: item.id,
+                    quantity: item.qty,
+                    note: ''
+                }))
+            }]
+        };
+
+        try {
+            const response = await fetch(window.location.pathname + '/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderRequest)
+            });
+
+            if (response.ok) {
+                // For now, we'll just simulate the local update of myOrders
+                // In a real app, we'd probably re-fetch or receive a WebSocket update
+                cart.forEach(item => {
+                    myOrders.push({ 
+                        ...item, 
+                        customerId: myCustomerId,
+                        customerName: myCustomerName,
+                        name: getItemText(item, 'name'),
+                        quantity: item.qty,
+                        unitPrice: item.price,
+                        totalPrice: item.price * item.qty,
+                        status: 'sent', 
+                        statusLabel: 'Pendente',
+                        statusClass: 'sent',
+                        time: new Date() 
+                    });
+                });
+                cart = [];
+                updateCartUI();
+                updateOrdersUI();
+                updateTableTotal();
+                closeCart();
+                document.getElementById('orderSentModal').classList.add('active');
+            } else {
+                alert('Erro ao enviar pedido. Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Error submitting order:', error);
+            alert('Erro de conexão. Verifique sua internet.');
+        }
     }
 
     function closeOrderSentModal() { document.getElementById('orderSentModal').classList.remove('active'); }
@@ -1856,7 +1934,9 @@
         const list = document.getElementById('ordersList');
         const summary = document.getElementById('ordersSummary');
 
-        if (myOrders.length === 0) {
+        const filteredOrders = myOrders; // Already filtered in initialization or updates
+
+        if (filteredOrders.length === 0) {
             badge.style.display = 'none';
             empty.style.display = 'block';
             list.innerHTML = '';
@@ -1865,37 +1945,35 @@
         }
 
         badge.style.display = 'inline';
-        badge.textContent = myOrders.length;
+        badge.textContent = filteredOrders.length;
         empty.style.display = 'none';
         summary.style.display = 'block';
 
         const statusIcons = {
             sent: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+            pending: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
             preparing: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>',
             ready: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>',
             delivered: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'
         };
 
-        const t = uiTranslations[currentLang];
-        const statusLabelsTranslated = { sent: t.sent, preparing: t.preparing, ready: t.ready, delivered: t.delivered };
-
-        list.innerHTML = myOrders.map(order => `
+        list.innerHTML = filteredOrders.map(order => `
         <div class="order-item">
           <div class="order-item-header">
             <div class="order-item-info">
               <h4>${getItemText(order, 'name')}</h4>
-              <p>${formatTimeAgo(order.time)}</p>
+              <p>${order.time ? formatTimeAgo(order.time) : ''}</p>
             </div>
-            <span class="order-status ${order.status}">${statusIcons[order.status]}${statusLabelsTranslated[order.status]}</span>
+            <span class="order-status ${order.status}">${statusIcons[order.status] || ''}${order.statusLabel || ''}</span>
           </div>
           <div class="order-item-details">
-            <span class="order-item-qty">${order.qty}x</span>
-            <span class="order-item-price">${formatPrice(order.price * order.qty)}</span>
+            <span class="order-item-qty">${order.quantity}x</span>
+            <span class="order-item-price">${formatPrice(order.totalPrice)}</span>
           </div>
         </div>
       `).join('');
 
-        const subtotal = myOrders.reduce((sum, o) => sum + (o.price * o.qty), 0);
+        const subtotal = filteredOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
         document.getElementById('mySubtotal').textContent = formatPrice(subtotal);
         document.getElementById('myServiceFee').textContent = formatPrice(subtotal * SERVICE_FEE);
         document.getElementById('myTotal').textContent = formatPrice(subtotal + (subtotal * SERVICE_FEE));
@@ -1909,14 +1987,15 @@
     }
 
     // Waiter
-    //function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
+    /*
+    function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
     function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
     function callWaiter() {
         closeConfirmWaiterModal();
         document.getElementById('waiterCalledModal').classList.add('active');
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
-
+    */
     // Table modal
     function openTableModal() {
         document.getElementById('tableModal').classList.add('active');
@@ -1933,27 +2012,31 @@
         let html = '';
         let grandSubtotal = 0;
 
-        const t = uiTranslations[currentLang];
-
         // Add current user orders
         if (myOrders.length > 0) {
-            const myTotal = myOrders.reduce((sum, o) => sum + (o.price * o.qty), 0);
+            const myTotal = myOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
             grandSubtotal += myTotal;
             html += `
           <div class="person-section">
             <div class="person-header">
               <div class="person-avatar">EU</div>
-              <span class="person-name">${t.you}</span>
+              <span class="person-name">Você</span>
               <span class="person-total">${formatPrice(myTotal)}</span>
             </div>
-            ${myOrders.map(o => `<div class="person-item"><span class="person-item-name"><span class="person-item-qty">${o.qty}x</span> ${getItemText(o, 'name')}</span><span>${formatPrice(o.price * o.qty)}</span></div>`).join('')}
+            ${myOrders.map(o => `
+                <div class="person-item">
+                    <span class="person-item-name">
+                        <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
+                    </span>
+                    <span>${formatPrice(o.totalPrice)}</span>
+                </div>`).join('')}
           </div>
         `;
         }
 
         // Add other people
         for (const [name, orders] of Object.entries(tableOrders)) {
-            const personTotal = orders.reduce((sum, o) => sum + o.price, 0);
+            const personTotal = orders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
             grandSubtotal += personTotal;
             const initials = name.split(' ').map(n => n[0]).join('');
             html += `
@@ -1963,17 +2046,31 @@
               <span class="person-name">${name}</span>
               <span class="person-total">${formatPrice(personTotal)}</span>
             </div>
-            ${orders.map(o => `<div class="person-item"><span class="person-item-name"><span class="person-item-qty">${o.qty}x</span> ${getItemText(o, 'name')}</span><span>${formatPrice(o.price)}</span></div>`).join('')}
+            ${orders.map(o => `
+                <div class="person-item">
+                    <span class="person-item-name">
+                        <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
+                    </span>
+                    <span>${formatPrice(o.totalPrice)}</span>
+                </div>`).join('')}
           </div>
         `;
         }
 
-        if (!html) html = `<p style="text-align: center; color: var(--muted); padding: 2rem;">${t.noOrdersYet}</p>`;
+        if (!html) html = `<p style="text-align: center; color: var(--muted); padding: 2rem;">A mesa ainda não tem pedidos.</p>`;
         body.innerHTML = html;
 
         document.getElementById('tableSubtotal').textContent = formatPrice(grandSubtotal);
         document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
         document.getElementById('tableGrandTotal').textContent = formatPrice(grandSubtotal + (grandSubtotal * SERVICE_FEE));
+    }
+
+    function updateTableTotal() {
+        const myTotal = myOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
+        const othersTotal = Object.values(tableOrders).flat().reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
+        const grandTotal = myTotal + othersTotal;
+        const totalWithFee = grandTotal + (grandTotal * SERVICE_FEE);
+        document.getElementById('quickTableTotal').textContent = formatPrice(totalWithFee);
     }
 
     // Tab switching
@@ -2080,6 +2177,8 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         startCarousel();
+        updateOrdersUI();
+        updateTableTotal();
     });
 /*
     // Simulate order status updates

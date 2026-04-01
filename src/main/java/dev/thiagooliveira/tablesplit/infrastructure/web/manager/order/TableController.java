@@ -141,12 +141,12 @@ public class TableController {
                 .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
-                        TicketItem::getCustomerName,
+                        item -> order.getCustomerName(item.getCustomerId()),
                         Collectors.mapping(
                             item ->
                                 new TicketItemModel(
                                     item.getId(),
-                                    item.getCustomerName(),
+                                    order.getCustomerName(item.getCustomerId()),
                                     item.getName().get(Language.PT),
                                     item.getQuantity(),
                                     item.getUnitPrice(),
@@ -172,7 +172,7 @@ public class TableController {
                 .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
-                        TicketItem::getCustomerName,
+                        item -> order.getCustomerName(item.getCustomerId()),
                         Collectors.reducing(
                             BigDecimal.ZERO, TicketItem::getTotalPrice, BigDecimal::add)));
 
@@ -222,7 +222,7 @@ public class TableController {
                                   item ->
                                       new TicketItemModel(
                                           item.getId(),
-                                          item.getCustomerName(),
+                                          hist.getCustomerName(item.getCustomerId()),
                                           item.getName().get(Language.PT),
                                           item.getQuantity(),
                                           item.getUnitPrice(),
@@ -275,7 +275,7 @@ public class TableController {
       Authentication auth, @PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
     transactionalContext.execute(
-        () -> openTable.execute(tableId, context.getRestaurant().getServiceFee()));
+        () -> openTable.execute(tableId, context.getRestaurant().getServiceFee(), null, null));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.opened"));
     return "redirect:/tables?selectedTableId=" + tableId;

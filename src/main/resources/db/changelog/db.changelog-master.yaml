@@ -21,3 +21,5 @@ databaseChangeLog:
       file: db/changelog/0010-create-restaurant-images-table.yaml
   - include:
       file: db/changelog/0011-promotions-module.yaml
+  - include:
+      file: db/changelog/0012-add-customer-id-to-ticket-items.yaml

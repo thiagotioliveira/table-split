@@ -26,7 +26,7 @@ public class TicketItemEntity {
   private LocalizedTextEntity name;
 
   @Column(nullable = false)
-  private String customerName;
+  private UUID customerId;
 
   @Column(nullable = false)
   private int quantity;
@@ -47,7 +47,7 @@ public class TicketItemEntity {
     domain.setId(this.id);
     domain.setItemId(this.itemId);
     domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
-    domain.setCustomerName(this.customerName);
+    domain.setCustomerId(this.customerId);
     domain.setQuantity(this.quantity);
     domain.setUnitPrice(this.unitPrice);
     domain.setNote(this.note);
@@ -61,7 +61,7 @@ public class TicketItemEntity {
     entity.setTicket(ticket);
     entity.setItemId(domain.getItemId());
     entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
-    entity.setCustomerName(domain.getCustomerName());
+    entity.setCustomerId(domain.getCustomerId());
     entity.setQuantity(domain.getQuantity());
     entity.setUnitPrice(domain.getUnitPrice());
     entity.setNote(domain.getNote());
@@ -101,12 +101,12 @@ public class TicketItemEntity {
     this.name = name;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 
   public int getQuantity() {
