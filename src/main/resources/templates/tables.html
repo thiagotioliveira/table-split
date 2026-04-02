@@ -3040,7 +3040,7 @@
                             </div>
 
                             <!-- Dynamic Clients Section -->
-                            <div class="client-card" th:each="client : ${clients}">
+                            <div class="client-card" th:each="client : ${clients}" th:data-customer-id="${client.value[0].customerId}">
                                 <div class="client-header">
                                     <span class="client-name">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -4481,9 +4481,10 @@
         const clients = [];
         document.querySelectorAll('#clientsSection .client-card').forEach(card => {
             const nameEl = card.querySelector('.client-name span:last-child') || card.querySelector('.client-name');
+            const customerId = card.getAttribute('data-customer-id');
             if (nameEl) {
                 const name = nameEl.textContent.trim();
-                clients.push({ id: name, name: name });
+                clients.push({ id: customerId || name, name: name });
             }
         });
         return clients;
@@ -4580,6 +4581,13 @@
         document.getElementById('currentClientName').textContent = currentClient?.name || '';
     }
 
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
     function addNewClientTab() {
         const name = prompt('Nome do novo cliente:');
         if (!name || !name.trim()) return;
@@ -4588,7 +4596,7 @@
             orderClients[activeClientTab].items = { ...selectedMenuItems };
         }
         
-        const clientId = 'new_' + Date.now();
+        const clientId = generateUUID();
         orderClients[clientId] = { name: name.trim(), items: {} };
         activeClientTab = clientId;
         selectedMenuItems = {};
@@ -4780,7 +4788,7 @@
         form.appendChild(ticketNameInput);
 
         let globalItemIndex = 0;
-        clientsWithItems.forEach(([_, client]) => {
+        clientsWithItems.forEach(([clientId, client]) => {
             const items = Object.entries(client.items);
             items.forEach(([itemId, item]) => {
                 // Item ID
@@ -4804,15 +4812,30 @@
                 itemNoteInput.value = item.note || '';
                 form.appendChild(itemNoteInput);
 
-                // Individual Customer Name (Item Level)
+                // Individual Customer ID (Item Level)
                 const itemCustomerInput = document.createElement('input');
                 itemCustomerInput.type = 'hidden';
-                itemCustomerInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].customerName`;
-                itemCustomerInput.value = client.name;
+                itemCustomerInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].customerId`;
+                itemCustomerInput.value = clientId;
                 form.appendChild(itemCustomerInput);
 
                 globalItemIndex++;
             });
+        });
+
+        // Add identified customers to the request
+        clientsWithItems.forEach(([clientId, client], index) => {
+            const customerIdInput = document.createElement('input');
+            customerIdInput.type = 'hidden';
+            customerIdInput.name = `customers[${index}].id`;
+            customerIdInput.value = clientId;
+            form.appendChild(customerIdInput);
+
+            const customerNameInput = document.createElement('input');
+            customerNameInput.type = 'hidden';
+            customerNameInput.name = `customers[${index}].name`;
+            customerNameInput.value = client.name;
+            form.appendChild(customerNameInput);
         });
 
         form.submit();

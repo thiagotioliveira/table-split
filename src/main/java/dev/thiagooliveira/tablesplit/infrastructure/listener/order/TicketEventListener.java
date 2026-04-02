@@ -70,6 +70,7 @@ public class TicketEventListener {
                   }
                   return new TicketItemModel(
                       item.getId(),
+                      item.getCustomerId(),
                       order.getCustomerName(item.getCustomerId()),
                       name,
                       item.getQuantity(),
@@ -77,7 +78,8 @@ public class TicketEventListener {
                       item.getTotalPrice(),
                       item.getNote(),
                       item.getStatus().getLabel(),
-                      item.getStatus().getCssClass());
+                      item.getStatus().getCssClass(),
+                      ticket.getCreatedAt());
                 })
             .toList();
 

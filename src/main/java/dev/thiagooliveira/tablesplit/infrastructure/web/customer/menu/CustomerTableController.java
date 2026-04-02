@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
 import java.util.Locale;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -100,6 +101,16 @@ public class CustomerTableController {
     model.addAttribute("restaurant", restaurant);
     model.addAttribute("table", table);
     model.addAttribute("cuisineType", cuisineType);
+
+    if (!table.isAvailable()) {
+      getOrder
+          .execute(table.getId())
+          .ifPresent(
+              order ->
+                  model.addAttribute(
+                      "tableCustomers",
+                      order.getCustomers().stream().map(OrderCustomerModel::new).toList()));
+    }
     return "table-entry";
   }
 

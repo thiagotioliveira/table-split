@@ -132,6 +132,7 @@ public class OrderController {
                 item ->
                     new TicketItemModel(
                         item.getId(),
+                        item.getCustomerId(),
                         order.getCustomerName(item.getCustomerId()),
                         item.getName()
                             .getOrDefault(Language.PT, item.getName().values().iterator().next()),
@@ -140,7 +141,8 @@ public class OrderController {
                         item.getTotalPrice(),
                         item.getNote(),
                         item.getStatus().name(),
-                        item.getStatus().getCssClass()))
+                        item.getStatus().getCssClass(),
+                        ticket.getCreatedAt()))
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();

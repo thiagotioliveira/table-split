@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -136,25 +137,26 @@ public class TableController {
       var activeOrder = getOrder.execute(selectedTableId);
       if (activeOrder.isPresent()) {
         var order = activeOrder.get();
-        var clients =
+        Map<String, List<TicketItemModel>> clients =
             order.getTickets().stream()
-                .flatMap(t -> t.getItems().stream())
-                .collect(
-                    Collectors.groupingBy(
-                        item -> order.getCustomerName(item.getCustomerId()),
-                        Collectors.mapping(
-                            item ->
-                                new TicketItemModel(
-                                    item.getId(),
-                                    order.getCustomerName(item.getCustomerId()),
-                                    item.getName().get(Language.PT),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice(),
-                                    item.getNote(),
-                                    item.getStatus().getLabel(),
-                                    item.getStatus().getCssClass()),
-                            Collectors.toList())));
+                .flatMap(
+                    t ->
+                        t.getItems().stream()
+                            .map(
+                                item ->
+                                    new TicketItemModel(
+                                        item.getId(),
+                                        item.getCustomerId(),
+                                        order.getCustomerName(item.getCustomerId()),
+                                        item.getName().get(Language.PT),
+                                        item.getQuantity(),
+                                        item.getUnitPrice(),
+                                        item.getTotalPrice(),
+                                        item.getNote(),
+                                        item.getStatus().getLabel(),
+                                        item.getStatus().getCssClass(),
+                                        t.getCreatedAt())))
+                .collect(Collectors.groupingBy(TicketItemModel::getCustomerName));
         model.addAttribute("clients", clients);
         model.addAttribute("orderLoaded", true);
         model.addAttribute("orderServiceFee", order.getServiceFee());
@@ -217,19 +219,23 @@ public class TableController {
                               ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                               : null,
                           hist.getTickets().stream()
-                              .flatMap(t -> t.getItems().stream())
-                              .map(
-                                  item ->
-                                      new TicketItemModel(
-                                          item.getId(),
-                                          hist.getCustomerName(item.getCustomerId()),
-                                          item.getName().get(Language.PT),
-                                          item.getQuantity(),
-                                          item.getUnitPrice(),
-                                          item.getTotalPrice(),
-                                          item.getNote(),
-                                          item.getStatus().getLabel(),
-                                          item.getStatus().getCssClass()))
+                              .flatMap(
+                                  t ->
+                                      t.getItems().stream()
+                                          .map(
+                                              item ->
+                                                  new TicketItemModel(
+                                                      item.getId(),
+                                                      item.getCustomerId(),
+                                                      hist.getCustomerName(item.getCustomerId()),
+                                                      item.getName().get(Language.PT),
+                                                      item.getQuantity(),
+                                                      item.getUnitPrice(),
+                                                      item.getTotalPrice(),
+                                                      item.getNote(),
+                                                      item.getStatus().getLabel(),
+                                                      item.getStatus().getCssClass(),
+                                                      t.getCreatedAt())))
                               .toList(),
                           hist.getPayments().stream()
                               .map(

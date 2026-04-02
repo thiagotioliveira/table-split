@@ -29,13 +29,18 @@ public class CustomerMenuModel {
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));
     items.forEach(i -> this.items.add(new ItemModel(i, symbol)));
     if (activeOrder != null) {
-      activeOrder.getTickets().stream()
-          .flatMap(t -> t.getItems().stream())
+      activeOrder
+          .getTickets()
           .forEach(
-              item ->
-                  this.ticketItems.add(
-                      new TicketItemModel(
-                          item, activeOrder.getCustomerName(item.getCustomerId()))));
+              t ->
+                  t.getItems()
+                      .forEach(
+                          item ->
+                              this.ticketItems.add(
+                                  new TicketItemModel(
+                                      item,
+                                      activeOrder.getCustomerName(item.getCustomerId()),
+                                      t.getCreatedAt()))));
       activeOrder.getCustomers().stream().map(OrderCustomerModel::new).forEach(this.customers::add);
     }
   }

@@ -1,8 +1,10 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 public class TicketItemModel {
   private final String id;
@@ -17,7 +19,10 @@ public class TicketItemModel {
   private final String statusLabel;
   private final String statusClass;
 
-  public TicketItemModel(TicketItem item, String customerName) {
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private final ZonedDateTime createdAt;
+
+  public TicketItemModel(TicketItem item, String customerName, ZonedDateTime createdAt) {
     this.id = item.getId().toString();
     this.customerId = item.getCustomerId().toString();
     this.customerName = customerName;
@@ -30,6 +35,7 @@ public class TicketItemModel {
     this.status = item.getStatus().name().toLowerCase();
     this.statusLabel = item.getStatus().getLabel();
     this.statusClass = item.getStatus().getCssClass();
+    this.createdAt = createdAt;
   }
 
   public String getId() {
@@ -74,5 +80,9 @@ public class TicketItemModel {
 
   public String getStatusClass() {
     return statusClass;
+  }
+
+  public ZonedDateTime getCreatedAt() {
+    return createdAt;
   }
 }

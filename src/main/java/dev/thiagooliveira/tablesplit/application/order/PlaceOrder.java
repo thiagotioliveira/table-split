@@ -74,12 +74,16 @@ public class PlaceOrder {
                           new IllegalArgumentException(
                               "Item not found: " + itemRequest.getItemId()));
 
+          UUID customerId = itemRequest.getCustomerId();
+          if (customerId == null) {
+            if (order.getCustomers().isEmpty()) {
+              order.addCustomer(UUID.randomUUID(), "Atendimento " + table.getCod());
+            }
+            customerId = order.getCustomers().iterator().next().getId();
+          }
+
           TicketItem ticketItem =
-              new TicketItem(
-                  item,
-                  itemRequest.getQuantity(),
-                  itemRequest.getCustomerId(),
-                  itemRequest.getNote());
+              new TicketItem(item, itemRequest.getQuantity(), customerId, itemRequest.getNote());
           ticket.getItems().add(ticketItem);
         }
         order.addTicket(ticket);

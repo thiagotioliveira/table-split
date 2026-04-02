@@ -1,10 +1,13 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class TicketItemModel {
   private final UUID id;
+  private final UUID customerId;
   private final String customerName;
   private final String name;
   private final int quantity;
@@ -14,8 +17,12 @@ public class TicketItemModel {
   private final String status;
   private final String statusClass;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private final ZonedDateTime createdAt;
+
   public TicketItemModel(
       UUID id,
+      UUID customerId,
       String customerName,
       String name,
       int quantity,
@@ -23,8 +30,10 @@ public class TicketItemModel {
       BigDecimal totalPrice,
       String note,
       String status,
-      String statusClass) {
+      String statusClass,
+      ZonedDateTime createdAt) {
     this.id = id;
+    this.customerId = customerId;
     this.customerName = customerName;
     this.name = name;
     this.quantity = quantity;
@@ -33,10 +42,15 @@ public class TicketItemModel {
     this.note = note;
     this.status = status;
     this.statusClass = statusClass;
+    this.createdAt = createdAt;
   }
 
   public UUID getId() {
     return id;
+  }
+
+  public UUID getCustomerId() {
+    return customerId;
   }
 
   public String getCustomerName() {
@@ -69,5 +83,9 @@ public class TicketItemModel {
 
   public String getStatusClass() {
     return statusClass;
+  }
+
+  public ZonedDateTime getCreatedAt() {
+    return createdAt;
   }
 }
