@@ -11,8 +11,11 @@ import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantImageEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestauranteImageJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.math.BigDecimal;
@@ -29,7 +32,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
-  private static final List<String> images =
+  private static final List<String> restaurantImages =
+      List.of(
+          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
+          "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
+          "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200",
+          "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200");
+  private static final List<String> itemImages =
       List.of(
           "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/1.jpg",
           "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/1.jpg",
@@ -61,6 +70,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final CreateAccount createAccount;
   private final CreateCategory createCategory;
   private final RestaurantRepository restaurantRepository;
+  private final RestauranteImageJpaRepository restauranteImageJpaRepository;
   private final CreateItem createItem;
   private final CreateTable createTable;
   private final PasswordEncoder passwordEncoder;
@@ -75,6 +85,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       CreateAccount createAccount,
       CreateCategory createCategory,
       RestaurantRepository restaurantRepository,
+      RestauranteImageJpaRepository restauranteImageJpaRepository,
       CreateItem createItem,
       CreateTable createTable,
       PasswordEncoder passwordEncoder,
@@ -87,6 +98,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
     this.createAccount = createAccount;
     this.createCategory = createCategory;
     this.restaurantRepository = restaurantRepository;
+    this.restauranteImageJpaRepository = restauranteImageJpaRepository;
     this.createItem = createItem;
     this.createTable = createTable;
     this.passwordEncoder = passwordEncoder;
@@ -124,6 +136,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                         time.getZoneId())));
     var accountId = user.getAccountId();
     var restaurant = this.restaurantRepository.findByAccountId(accountId).orElseThrow();
+    saveRestaurantImages(restaurant);
     var categoryStarters =
         this.transactionalContext.execute(
             () ->
@@ -265,7 +278,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Breaded and fried provolone cheese cubes, served with sugarcane honey."),
                           new BigDecimal("28.00"))));
-              saveImages(items, 0);
+              saveItemImages(items, 0);
               return items;
             });
 
@@ -373,7 +386,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Thick steak with fried garlic, rice, egg farofa, and Portuguese potatoes."),
                           new BigDecimal("55.00"))));
-              saveImages(items, 6);
+              saveItemImages(items, 6);
               return items;
             });
 
@@ -450,7 +463,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Slices of creamy guava paste accompanied by fresh Minas cheese."),
                           new BigDecimal("15.00"))));
-              saveImages(items, 12);
+              saveItemImages(items, 12);
               return items;
             });
 
@@ -597,7 +610,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Full-bodied espresso coffee, freshly ground."),
                           new BigDecimal("6.00"))));
-              saveImages(items, 3);
+              saveItemImages(items, 3);
               return items;
             });
 
@@ -727,15 +740,31 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
         });
   }
 
-  private void saveImages(List<Item> items, int fator) {
+  private void saveRestaurantImages(Restaurant restaurant) {
+    restaurantImages.stream()
+        .map(
+            i -> {
+              var ri = new RestaurantImageEntity();
+              ri.setId(UUID.randomUUID());
+              ri.setName(i);
+              ri.setCover(restaurantImages.indexOf(i) == 0 || restaurantImages.indexOf(i) == 1);
+              ri.setRestaurantId(restaurant.getId());
+              return ri;
+            })
+        .forEach(this.restauranteImageJpaRepository::save);
+  }
+
+  private void saveItemImages(List<Item> items, int fator) {
     items.forEach(
-        i -> {
-          var image = new ItemImageEntity();
-          image.setItemId(i.getId());
-          image.setId(UUID.randomUUID());
-          image.setName(images.get(items.indexOf(i) + fator));
-          image.setMain(false);
-          this.imageRepository.save(image);
+        item -> {
+          for (int i = 0; i < 2; i++) {
+            var image = new ItemImageEntity();
+            image.setItemId(item.getId());
+            image.setId(UUID.randomUUID());
+            image.setName(itemImages.get(items.indexOf(item) + i + fator));
+            image.setMain(i == 0);
+            this.imageRepository.save(image);
+          }
         });
   }
 }
