@@ -108,6 +108,14 @@ public class Order {
     this.customers = customers;
   }
 
+  public void updateCustomerName(UUID customerId, String newName) {
+    if (customerId == null || newName == null) return;
+    customers.stream()
+        .filter(c -> c.getId().equals(customerId))
+        .findFirst()
+        .ifPresent(c -> c.setName(newName));
+  }
+
   public UUID getId() {
     return id;
   }

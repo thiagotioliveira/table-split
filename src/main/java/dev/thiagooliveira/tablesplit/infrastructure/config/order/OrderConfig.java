@@ -24,4 +24,9 @@ public class OrderConfig {
   public GetOrder getOrder(OrderRepository orderRepository) {
     return new GetOrder(orderRepository);
   }
+
+  @Bean
+  public UpdateCustomerName updateCustomerName(OrderRepository orderRepository) {
+    return new UpdateCustomerName(orderRepository);
+  }
 }

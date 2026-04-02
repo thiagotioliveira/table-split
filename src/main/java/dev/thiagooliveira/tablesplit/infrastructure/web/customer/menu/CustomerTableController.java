@@ -2,18 +2,17 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
-import dev.thiagooliveira.tablesplit.application.order.GetOrder;
-import dev.thiagooliveira.tablesplit.application.order.GetTables;
-import dev.thiagooliveira.tablesplit.application.order.OpenTable;
-import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
-import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.application.order.*;
+import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
+import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import java.util.Locale;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +29,7 @@ public class CustomerTableController {
   private final OpenTable openTable;
   private final PlaceOrder placeOrder;
   private final GetOrder getOrder;
+  private final UpdateCustomerName updateCustomerName;
   private final TransactionalContext transactionalContext;
 
   public CustomerTableController(
@@ -40,6 +40,7 @@ public class CustomerTableController {
       OpenTable openTable,
       PlaceOrder placeOrder,
       GetOrder getOrder,
+      UpdateCustomerName updateCustomerName,
       TransactionalContext transactionalContext) {
     this.getRestaurant = getRestaurant;
     this.getTables = getTables;
@@ -48,11 +49,39 @@ public class CustomerTableController {
     this.openTable = openTable;
     this.placeOrder = placeOrder;
     this.getOrder = getOrder;
+    this.updateCustomerName = updateCustomerName;
     this.transactionalContext = transactionalContext;
+  }
+
+  @PostMapping("/@{slug}/table/{tableCode}/customer-name")
+  @ResponseBody
+  public ResponseEntity<Void> updateCustomerName(
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @RequestBody UpdateCustomerNameRequest request) {
+    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var table = getTable(restaurant, tableCode);
+
+    transactionalContext.execute(
+        () -> updateCustomerName.execute(table.getId(), request.customerId(), request.name()));
+
+    return ResponseEntity.ok().build();
   }
 
   private Table getTable(Restaurant restaurant, String tableCode) {
     return getTables.findByRestaurantIdAndCod(restaurant.getId(), tableCode).orElseThrow();
+  }
+
+  private Table getAndOpenTable(
+      Restaurant restaurant, String tableCode, UUID customerId, String customerName) {
+    var table = getTables.findByRestaurantIdAndCod(restaurant.getId(), tableCode).orElseThrow();
+    if (table.getStatus() == TableStatus.AVAILABLE) {
+      final java.util.UUID tableId = table.getId();
+      transactionalContext.execute(
+          () -> openTable.execute(tableId, restaurant.getServiceFee(), customerId, customerName));
+      table = getTables.findById(tableId).orElse(table);
+    }
+    return table;
   }
 
   @GetMapping("/@{slug}/table/{tableCode}")
@@ -79,6 +108,9 @@ public class CustomerTableController {
       @PathVariable String slug, @PathVariable String tableCode, Model model, Locale locale) {
     var restaurant = getRestaurant.execute(slug).orElseThrow();
     var table = getTable(restaurant, tableCode);
+    if (table.isAvailable()) {
+      return String.format("redirect:/@%s/table/%s", slug, tableCode);
+    }
     var requestLanguages = java.util.List.of(Language.fromLocale(locale));
     var categories = getCategory.execute(restaurant.getId(), requestLanguages);
     var items = getItem.execute(restaurant.getId(), requestLanguages, true);
