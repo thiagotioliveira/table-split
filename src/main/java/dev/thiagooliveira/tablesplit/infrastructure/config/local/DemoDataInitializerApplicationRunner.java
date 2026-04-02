@@ -32,39 +32,88 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
+  private static final Map<String, String> itemNamePTImageUrl =
+      new HashMap<>() {
+        {
+          put(
+              "Batata-Frita Rústica",
+              "https://receitas123.com/wp-content/uploads/2023/05/batata-rustica-frita.png");
+          put("Dadinhos de Tapioca", "https://f.i.uol.com.br/folha/comida/images/11290453.jpeg");
+          put(
+              "Coxinhas de Frango",
+              "https://www.saborintenso.com/images/receitas/Coxinhas-de-Frango-SI-1.jpg");
+          put(
+              "Bolinho de Bacalhau",
+              "https://www.aquinacozinha.com/wp-content/uploads/2025/04/bolinhos_bacalhau.png");
+          put(
+              "Calabresa Acebolada",
+              "https://revistamenu.com.br/wp-content/uploads/sites/24/2021/05/linguiedercachaca-istock-1.jpg");
+          put(
+              "Provolone à Milanesa",
+              "https://guiadacozinha.com.br/wp-content/uploads/2019/10/provolone-a-milanesa-50584.jpg");
+          put(
+              "Feijoada Completa",
+              "https://canaldareceita.com.br/wp-content/uploads/2025/05/Feijoada-Completa.jpg");
+          put(
+              "Moqueca de Peixe",
+              "https://www.leiliane.com.br/wp-content/uploads/2017/08/moqueca_baiana_1.jpg");
+          put(
+              "Picanha na Brasa",
+              "https://media-cdn.tripadvisor.com/media/photo-s/0b/ee/2e/29/picanha-grelhada-na-brasa.jpg");
+          put(
+              "Baião de Dois",
+              "https://prodcontent.yoki.com.br/wp-content/uploads/2024/09/Baiao-de-dois-800x450-1.jpg");
+          put(
+              "Virado à Paulista",
+              "https://guiadacozinha.com.br/wp-content/uploads/2023/01/virado-a-paulista.jpg");
+          put(
+              "Filé Oswaldo Aranha",
+              "https://live.staticflickr.com/65535/49938386921_29dde11650_b.jpg");
+          put(
+              "Pudim de Leite",
+              "https://www.pingodoce.pt/wp-content/uploads/2016/10/pudimdeleite.jpg");
+          put(
+              "Mousse de Maracujá",
+              "https://cozinha365.com.br/wp-content/uploads/2025/02/Mousse-de-Maracuja-S-500x500.webp");
+          put(
+              "Quindim Tradicional",
+              "https://www.seara.com.br/wp-content/uploads/2025/09/quindim-tradicional-portal-minha-receita.jpg");
+          put(
+              "Romeu e Julieta",
+              "https://receitatodahora.com.br/wp-content/uploads/2024/10/sobremesa-romeu-e-julieta-2809-1200x900.jpg");
+          put(
+              "Caipirinha de Limão",
+              "https://i.panelinha.com.br/i1/bk-8730-blog-caipirinha-de-limao.webp");
+          put(
+              "Guaraná Antarctica",
+              "https://www.madeinmarket.eu/cdn/shop/products/guarana-033-lata-cx-24-unidades.jpg");
+          put(
+              "Água de Coco",
+              "https://conteudo.imguol.com.br/c/entretenimento/d7/2018/03/16/agua-de-coco-1521212503283_v2_4x3.jpg");
+          put(
+              "Chopp Gelado 300ml",
+              "https://coppus.com.br/cdn/shop/products/29d6c13f18e2a0e7c34bd6a331591e94_grande.jpg");
+          put(
+              "Suco de Abacaxi c/ Hortelã",
+              "https://pubimg.band.com.br/files/ef132c71be1be30ed8f2.png");
+          put(
+              "Cerveja Original 600ml",
+              "https://http2.mlstatic.com/D_Q_NP_737048-MLU70736934268_072023-O.webp");
+          put(
+              "Caipivodka de Morango",
+              "https://boozedrinks.pt/wp-content/uploads/2024/03/Design-sem-nome-2024-04-12T115949.946.png");
+          put(
+              "Café Expresso Gourmet",
+              "https://upload.wikimedia.org/wikipedia/commons/2/23/Captura_de_Tela_2017-08-30_%C3%A0s_23.42.42.png");
+        }
+      };
+
   private static final List<String> restaurantImages =
       List.of(
           "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
           "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
           "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200",
           "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200");
-  private static final List<String> itemImages =
-      List.of(
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/1.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/1.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/2.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/3.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/4.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/5.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/6.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/7.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/8.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/9.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/10.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/11.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/12.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/13.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/14.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/15.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/16.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/17.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/18.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/19.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/20.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/21.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/22.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/menu/23.jpg",
-          "https://themes.pixelstrap.net/zomo/landing/frontend/assets/images/product/vp-1.png");
   private final Time time;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
@@ -278,7 +327,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Breaded and fried provolone cheese cubes, served with sugarcane honey."),
                           new BigDecimal("28.00"))));
-              saveItemImages(items, 0);
+              saveItemImages(items);
               return items;
             });
 
@@ -386,7 +435,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Thick steak with fried garlic, rice, egg farofa, and Portuguese potatoes."),
                           new BigDecimal("55.00"))));
-              saveItemImages(items, 6);
+              saveItemImages(items);
               return items;
             });
 
@@ -463,7 +512,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Slices of creamy guava paste accompanied by fresh Minas cheese."),
                           new BigDecimal("15.00"))));
-              saveItemImages(items, 12);
+              saveItemImages(items);
               return items;
             });
 
@@ -610,7 +659,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Full-bodied espresso coffee, freshly ground."),
                           new BigDecimal("6.00"))));
-              saveItemImages(items, 3);
+              saveItemImages(items);
               return items;
             });
 
@@ -754,15 +803,18 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
         .forEach(this.restauranteImageJpaRepository::save);
   }
 
-  private void saveItemImages(List<Item> items, int fator) {
+  private void saveItemImages(List<Item> items) {
     items.forEach(
         item -> {
-          for (int i = 0; i < 2; i++) {
+          String itemNamePT = item.getName().get(Language.PT);
+          String imageUrl = itemNamePTImageUrl.get(itemNamePT);
+
+          if (imageUrl != null) {
             var image = new ItemImageEntity();
             image.setItemId(item.getId());
             image.setId(UUID.randomUUID());
-            image.setName(itemImages.get(items.indexOf(item) + i + fator));
-            image.setMain(i == 0);
+            image.setName(imageUrl);
+            image.setMain(true);
             this.imageRepository.save(image);
           }
         });
