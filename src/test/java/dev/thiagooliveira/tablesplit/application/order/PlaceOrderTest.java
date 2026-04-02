@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
+import dev.thiagooliveira.tablesplit.application.order.model.CustomerRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
@@ -43,6 +44,7 @@ class PlaceOrderTest {
     UUID restaurantId = UUID.randomUUID();
     String tableCod = "T1";
     String customerName = "Thiago";
+    UUID customerId = UUID.randomUUID();
     UUID itemId = UUID.randomUUID();
 
     Item item = new Item();
@@ -56,8 +58,9 @@ class PlaceOrderTest {
             tableCod,
             List.of(
                 new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
-                    customerName, null, List.of(new TicketItemRequest(itemId, 2, null)))),
-            10);
+                    null, List.of(new TicketItemRequest(itemId, customerId, 2, null)))),
+            10,
+            List.of(new CustomerRequest(customerId, customerName)));
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
     Order order = new Order(UUID.randomUUID(), restaurantId, table.getId(), 10);
@@ -71,7 +74,7 @@ class PlaceOrderTest {
 
     assertNotNull(result);
     assertEquals(1, result.getTickets().size());
-    assertEquals(customerName, result.getTickets().get(0).getItems().get(0).getCustomerName());
+    assertEquals(customerId, result.getTickets().get(0).getItems().get(0).getCustomerId());
     assertEquals(2, result.getTickets().get(0).getItems().get(0).getQuantity());
 
     verify(orderRepository).save(order);
@@ -82,6 +85,7 @@ class PlaceOrderTest {
     UUID restaurantId = UUID.randomUUID();
     String tableCod = "T1";
     UUID itemId = UUID.randomUUID();
+    UUID customerId = UUID.randomUUID();
 
     Item item = new Item();
     item.setId(itemId);
@@ -94,8 +98,9 @@ class PlaceOrderTest {
             tableCod,
             List.of(
                 new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
-                    "Customer", null, List.of(new TicketItemRequest(itemId, 1, null)))),
-            10);
+                    null, List.of(new TicketItemRequest(itemId, customerId, 1, null)))),
+            10,
+            List.of(new CustomerRequest(customerId, "Customer")));
 
     Table table = new Table(UUID.randomUUID(), restaurantId, tableCod);
     Order newOrder = new Order(UUID.randomUUID(), restaurantId, table.getId(), 10);
@@ -103,13 +108,13 @@ class PlaceOrderTest {
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod))
         .thenReturn(Optional.of(table));
     when(orderRepository.findActiveOrderByTableId(table.getId())).thenReturn(Optional.empty());
-    when(openTable.execute(table.getId(), 10)).thenReturn(newOrder);
+    when(openTable.execute(table.getId(), 10, null, null)).thenReturn(newOrder);
     when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
     Order result = placeOrder.execute(request);
 
     assertNotNull(result);
-    verify(openTable).execute(table.getId(), 10);
+    verify(openTable).execute(table.getId(), 10, null, null);
     verify(orderRepository).save(newOrder);
   }
 }

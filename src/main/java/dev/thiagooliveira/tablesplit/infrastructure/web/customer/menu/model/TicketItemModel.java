@@ -3,10 +3,10 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public class TicketItemModel {
-  private final UUID id;
+  private final String id;
+  private final String customerId;
   private final String customerName;
   private final String name;
   private final int quantity;
@@ -18,7 +18,8 @@ public class TicketItemModel {
   private final String statusClass;
 
   public TicketItemModel(TicketItem item, String customerName) {
-    this.id = item.getId();
+    this.id = item.getId().toString();
+    this.customerId = item.getCustomerId().toString();
     this.customerName = customerName;
     this.name =
         item.getName().get(Language.PT); // Default to PT or should use a preferred language?
@@ -31,8 +32,12 @@ public class TicketItemModel {
     this.statusClass = item.getStatus().getCssClass();
   }
 
-  public UUID getId() {
+  public String getId() {
     return id;
+  }
+
+  public String getCustomerId() {
+    return customerId;
   }
 
   public String getCustomerName() {

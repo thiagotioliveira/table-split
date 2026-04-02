@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
+// import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
@@ -38,7 +38,7 @@ class OpenTableTest {
 
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    Order result = openTable.execute(tableId, 10);
+    Order result = openTable.execute(tableId, 10, null, null);
 
     assertNotNull(result);
     assertEquals(restaurantId, result.getRestaurantId());
@@ -52,15 +52,19 @@ class OpenTableTest {
   }
 
   @Test
-  void shouldThrowTableAlreadyOccupied_whenTableIsOccupied() {
+  void shouldReturnExistingOrder_whenTableIsOccupied() {
     UUID tableId = UUID.randomUUID();
-    Table table = new Table(tableId, UUID.randomUUID(), "01");
+    UUID restaurantId = UUID.randomUUID();
+    Table table = new Table(tableId, restaurantId, "01");
     table.occupy();
+    Order existingOrder = new Order(UUID.randomUUID(), restaurantId, tableId, 10);
 
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
+    when(orderRepository.findActiveOrderByTableId(tableId)).thenReturn(Optional.of(existingOrder));
 
-    assertThrows(TableAlreadyOccupied.class, () -> openTable.execute(tableId, 10));
+    Order result = openTable.execute(tableId, 10, null, null);
 
-    verify(orderRepository, never()).save(any());
+    assertEquals(existingOrder, result);
+    verify(orderRepository, never()).save(any(Order.class));
   }
 }

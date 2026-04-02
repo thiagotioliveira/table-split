@@ -133,6 +133,96 @@
             gap: 0.5rem;
         }
 
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 0.5rem 0.875rem;
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .user-badge:hover { background: rgba(255, 255, 255, 0.25); }
+        .user-badge svg { width: 1rem; height: 1rem; opacity: 0.8; }
+        .user-badge-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* User Edit Modal */
+        .user-edit-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 23, 20, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .user-edit-modal.active { opacity: 1; visibility: visible; }
+        .user-edit-content {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 340px;
+            padding: 1.5rem;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .user-edit-modal.active .user-edit-content { transform: scale(1); }
+        .user-edit-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .user-edit-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .user-edit-icon svg { width: 1.25rem; height: 1.25rem; }
+        .user-edit-header h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; }
+        .user-edit-field { margin-bottom: 1.25rem; }
+        .user-edit-field label { display: block; font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.5rem; }
+        .user-edit-field input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .user-edit-field input:focus { outline: none; border-color: var(--primary); }
+        .user-edit-actions { display: flex; gap: 0.75rem; }
+        .user-edit-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .user-edit-btn.secondary { background: var(--background); border: 1px solid var(--border); color: var(--foreground); }
+        .user-edit-btn.secondary:hover { background: var(--border); }
+        .user-edit-btn.primary { background: var(--primary); border: none; color: white; }
+        .user-edit-btn.primary:hover { background: var(--primary-dark); }
+
         .hero-action-btn {
             display: flex;
             align-items: center;
@@ -634,6 +724,7 @@
             color: var(--muted);
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: 0.75rem;
@@ -898,6 +989,79 @@
         .cart-empty-icon svg { width: 2rem; height: 2rem; color: var(--muted); }
         .cart-empty-title { font-weight: 600; margin-bottom: 0.25rem; }
         .cart-empty-text { font-size: 0.875rem; color: var(--muted); }
+
+        /* Cart Client Grouping */
+        .cart-client-group { margin-bottom: 1rem; }
+        .cart-client-header {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.625rem 0.75rem; background: var(--background);
+            border-radius: var(--radius); margin-bottom: 0.5rem;
+        }
+        .cart-client-header svg { width: 1rem; height: 1rem; color: var(--primary); }
+        .cart-client-name { font-weight: 600; font-size: 0.875rem; color: var(--foreground); }
+        .cart-client-count { margin-left: auto; font-size: 0.75rem; color: var(--muted); background: var(--card); padding: 0.125rem 0.5rem; border-radius: 9999px; }
+
+        /* Cart Item Client Selector */
+        .cart-item-client { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.25rem; }
+        .cart-item-client-label { font-size: 0.6875rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .cart-item-client-select {
+            appearance: none; background: var(--background); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+            font-size: 0.75rem; font-weight: 500; color: var(--primary); cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9a050' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.375rem center; min-width: 5rem;
+        }
+        .cart-item-client-select:focus { outline: none; border-color: var(--primary); }
+
+        /* Client Selector in Item Modal */
+        .client-selector { margin-bottom: 1rem; padding: 0.875rem; background: var(--background); border-radius: var(--radius); }
+        .client-selector-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.625rem; }
+        .client-selector-label svg { width: 1rem; height: 1rem; }
+        .client-selector-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .client-option {
+            display: flex; align-items: center; gap: 0.375rem;
+            padding: 0.5rem 0.875rem; border-radius: 9999px;
+            border: 1px solid var(--border); background: var(--card);
+            font: inherit; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .client-option:hover { border-color: var(--primary); }
+        .client-option.selected { background: var(--primary); border-color: var(--primary); color: white; }
+        .client-option svg { width: 0.875rem; height: 0.875rem; }
+        .add-client-btn {
+            display: flex; align-items: center; gap: 0.375rem;
+            padding: 0.5rem 0.75rem; border-radius: 9999px;
+            border: 1px dashed var(--border); background: transparent;
+            color: var(--muted); font: inherit; font-size: 0.8125rem; cursor: pointer; transition: all 0.2s;
+        }
+        .add-client-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .add-client-btn svg { width: 0.875rem; height: 0.875rem; }
+
+        /* Add Client Modal */
+        .add-client-modal {
+            position: fixed; inset: 0; background: rgba(26, 23, 20, 0.6);
+            backdrop-filter: blur(4px); z-index: 350;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .add-client-modal.active { opacity: 1; visibility: visible; }
+        .add-client-content {
+            background: var(--card); border-radius: var(--radius-lg);
+            width: 100%; max-width: 320px; padding: 1.5rem;
+            transform: scale(0.95); transition: transform 0.3s;
+        }
+        .add-client-modal.active .add-client-content { transform: scale(1); }
+        .add-client-content h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .add-client-content p { font-size: 0.875rem; color: var(--muted); margin-bottom: 1rem; }
+        .add-client-input {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+            border-radius: var(--radius); font: inherit; font-size: 0.9375rem;
+            background: var(--background); margin-bottom: 1rem;
+        }
+        .add-client-input:focus { outline: none; border-color: var(--primary); }
+        .add-client-actions { display: flex; gap: 0.75rem; }
+        .add-client-actions button { flex: 1; padding: 0.75rem; border-radius: var(--radius); border: none; font: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .add-client-actions .btn-cancel { background: var(--background); color: var(--muted); }
+        .add-client-actions .btn-confirm { background: var(--primary); color: white; }
 
         /* Modals */
         .modal-overlay {
@@ -1175,7 +1339,8 @@
         .item-modal-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .item-modal-tag { font-size: 0.75rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--accent-light); color: var(--accent); font-weight: 500; }
         .item-modal-tag.popular { background: var(--primary-light); color: var(--primary); }
-        .item-modal-footer { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .item-modal-footer { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .item-modal-footer-actions { display: flex; align-items: center; gap: 1rem; }
         .modal-qty-selector { display: flex; align-items: center; gap: 0.75rem; background: var(--background); padding: 0.5rem; border-radius: var(--radius); }
         .modal-qty-selector button {
             width: 2.5rem;
@@ -1324,6 +1489,11 @@
             </button>
         </div>
         <div class="hero-actions">
+            <!-- User Identity Badge -->
+            <button class="user-badge" onclick="openUserEditModal()" th:if="${customerMenu.hasTable()}" id="userBadgeBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="user-badge-name" id="userBadgeName">Cliente</span>
+            </button>
             <!-- Language Selector -->
             <div class="lang-selector">
                 <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn">
@@ -1470,9 +1640,9 @@
                         </div>
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
-                    <div class="menu-item-footer">
+                    <div class="menu-item-footer" th:if="${false}">
                         <div class="item-tags"><span class="item-tag">Vegetariano</span></div>
-                        <button th:if="${customerMenu.hasTable()}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <button th:if="${false && customerMenu.hasTable()}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                     </div>
                 </div>
             </div>
@@ -1616,18 +1786,41 @@
             <div class="item-modal-tags" id="itemModalTags"></div>
         </div>
         <div class="item-modal-footer">
-            <div class="modal-qty-selector" th:if="${customerMenu.hasTable()}">
-                <button onclick="decreaseModalQty()">−</button>
-                <span id="modalQty">1</span>
-                <button onclick="increaseModalQty()">+</button>
+            <div class="client-selector" th:if="${customerMenu.hasTable()}" id="modalClientSelector">
+                <div class="client-selector-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Pedido para:
+                </div>
+                <div class="client-selector-options" id="clientOptions"></div>
             </div>
-            <button class="modal-add-btn" onclick="addFromModal()" th:if="${customerMenu.hasTable()}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                Adicionar <span id="modalTotalPrice">R$ 0,00</span>
-            </button>
+            <div class="item-modal-footer-actions" th:if="${customerMenu.hasTable()}">
+                <div class="modal-qty-selector">
+                    <button onclick="decreaseModalQty()">−</button>
+                    <span id="modalQty">1</span>
+                    <button onclick="increaseModalQty()">+</button>
+                </div>
+                <button class="modal-add-btn" onclick="addFromModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    Adicionar <span id="modalTotalPrice">R$ 0,00</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Add Client Modal -->
+<div class="add-client-modal" id="addClientModal" onclick="closeAddClientModal()">
+    <div class="add-client-content" onclick="event.stopPropagation()">
+        <h4>Adicionar pessoa</h4>
+        <p>Adicione alguém para fazer pedidos em nome dessa pessoa</p>
+        <input type="text" class="add-client-input" id="newClientName" placeholder="Nome da pessoa" maxlength="30">
+        <div class="add-client-actions">
+            <button class="btn-cancel" onclick="closeAddClientModal()">Cancelar</button>
+            <button class="btn-confirm" onclick="confirmAddClient()">Adicionar</button>
+        </div>
+    </div>
+</div>
+
 
 <!-- Waiter Modal -->
 <div class="waiter-modal-overlay" id="waiterModalOverlay" onclick="closeWaiterModal()">
@@ -1643,6 +1836,27 @@
         </div>
     </div>
 </div>
+
+<!-- User Edit Modal -->
+<div class="user-edit-modal" id="userEditModal" onclick="closeUserEditModal()">
+    <div class="user-edit-content" onclick="event.stopPropagation()">
+        <div class="user-edit-header">
+            <div class="user-edit-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h3>Editar seu nome</h3>
+        </div>
+        <div class="user-edit-field">
+            <label>Este nome será usado para identificar seus pedidos</label>
+            <input type="text" id="userNameInput" placeholder="Seu nome" maxlength="30">
+        </div>
+        <div class="user-edit-actions">
+            <button class="user-edit-btn secondary" onclick="closeUserEditModal()">Cancelar</button>
+            <button class="user-edit-btn primary" onclick="saveUserName()">Salvar</button>
+        </div>
+    </div>
+</div>
+
 <script th:inline="javascript">
     const menuItems = /*[[${customerMenu.items}]]*/[];
     // Current language
@@ -1650,6 +1864,8 @@
 
     const allTableItems = /*[[${customerMenu.ticketItems}]]*/[];
     const hasTable = /*[[${customerMenu.hasTable()}]]*/false;
+    // Customers already at the table — comes from activeOrder.customers (backend)
+    const tableCustomersFromBackend = /*[[${customerMenu.customers}]]*/[];
     const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
     const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
@@ -1665,7 +1881,7 @@
     // Customer identity from localStorage
     const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
     const myCustomerId = _restaurantCustomer.id || null;
-    const myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
+    let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
 
     // Guard: if no customer id, redirect back to the table entry page
     if (!myCustomerId) {
@@ -1673,15 +1889,34 @@
         window.location.replace(entryPath);
     }
 
-    let myOrders = allTableItems.filter(o => o.customerName === myCustomerName);
+    let myOrders = allTableItems.filter(o => 
+        o.customerId && myCustomerId && 
+        String(o.customerId).toLowerCase() === String(myCustomerId).toLowerCase()
+    );
 
-    const tableOrders = allTableItems
-        .filter(o => o.customerName !== myCustomerName)
+    let tableOrders = allTableItems
+        .filter(o => 
+            !o.customerId || !myCustomerId || 
+            String(o.customerId).toLowerCase() !== String(myCustomerId).toLowerCase()
+        )
         .reduce((acc, item) => {
             if (!acc[item.customerName]) acc[item.customerName] = [];
             acc[item.customerName].push(item);
             return acc;
         }, {});
+
+    // ── Client selector state ──────────────────────────────────────────────────
+    // Always include myself first
+    let tableClients = [{ id: myCustomerId, name: myCustomerName }];
+    // Merge other customers already registered on the order (from backend)
+    tableCustomersFromBackend.forEach(c => {
+        if (!tableClients.find(t => t.id === c.id)) {
+            tableClients.push({ id: c.id, name: c.name });
+        }
+    });
+    // The currently selected client for new cart items (defaults to me)
+    let selectedClient = { id: myCustomerId, name: myCustomerName };
+    let pendingClientChangeCartKey = null;
 
     // Hero Carousel
     function startCarousel() {
@@ -1783,6 +2018,7 @@
     }
 
     // Cart functions
+    /*
     function addToCart(itemId) {
         // Convert to string to safely match any UUID or ID type
         const item = menuItems.find(i => String(i.id) === String(itemId));
@@ -1792,7 +2028,7 @@
         else cart.push({ ...item, qty: 1 });
         updateCartUI();
     }
-
+    */
     function removeFromCart(itemId) {
         cart = cart.filter(c => String(c.id) !== String(itemId));
         updateCartUI();
@@ -1832,23 +2068,45 @@
             document.getElementById('cartNote').style.display = 'block';
             document.getElementById('cartFooter').style.display = 'block';
             document.getElementById('cartItems').style.display = 'block';
-            document.getElementById('cartItems').innerHTML = cart.map(item => `
-          <div class="cart-item">
-            <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0].url}" alt="">` : ''}</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name">${getItemText(item, 'name')}</div>
-              <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
-            </div>
-            <div class="cart-item-actions">
-              <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
-              <div class="cart-item-qty">
-                <button onclick="updateQty('${item.id}', -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
-                <span>${item.qty}</span>
-                <button onclick="updateQty('${item.id}', 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
-              </div>
-            </div>
-          </div>
-        `).join('');
+
+            // Group cart by client name
+            const grouped = {};
+            cart.forEach(item => {
+                const clientName = item.clientName || myCustomerName;
+                if (!grouped[clientName]) grouped[clientName] = [];
+                grouped[clientName].push(item);
+            });
+
+            let html = '';
+            Object.entries(grouped).forEach(([clientName, items]) => {
+                const clientCount = items.reduce((s, i) => s + i.qty, 0);
+                html += `<div class="cart-client-group">
+                  <div class="cart-client-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="cart-client-name">${clientName}</span>
+                    <span class="cart-client-count">${clientCount} ${clientCount === 1 ? 'item' : 'itens'}</span>
+                  </div>`;
+                items.forEach(item => {
+                    html += `<div class="cart-item">
+                    <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0].url}" alt="">` : ''}</div>
+                    <div class="cart-item-info">
+                      <div class="cart-item-name">${getItemText(item, 'name')}</div>
+                      <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                      <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                      <div class="cart-item-qty">
+                        <button onclick="updateQty('${item.id}', -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                        <span>${item.qty}</span>
+                        <button onclick="updateQty('${item.id}', 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                      </div>
+                    </div>
+                  </div>`;
+                });
+                html += '</div>';
+            });
+
+            document.getElementById('cartItems').innerHTML = html;
             document.getElementById('cartSubtotal').textContent = formatPrice(subtotal);
             document.getElementById('cartServiceFee').textContent = formatPrice(subtotal * SERVICE_FEE);
             document.getElementById('cartTotalFinal').textContent = formatPrice(total);
@@ -1866,17 +2124,17 @@
 
     async function submitOrder() {
         if (cart.length === 0) return;
-        
+
         const note = document.querySelector('.cart-note-input').value;
-        
+
         const orderRequest = {
+            customers: tableClients.map(c => ({ id: c.id, name: c.name })),
             tickets: [{
-                customerId: myCustomerId,
-                customerName: myCustomerName,
                 note: note,
                 items: cart.map(item => ({
                     itemId: item.id,
                     quantity: item.qty,
+                    customerId: item.clientId || myCustomerId,
                     note: ''
                 }))
             }]
@@ -1892,22 +2150,31 @@
             });
 
             if (response.ok) {
-                // For now, we'll just simulate the local update of myOrders
+                // For now, we'll just simulate the local update of the state
                 // In a real app, we'd probably re-fetch or receive a WebSocket update
                 cart.forEach(item => {
-                    myOrders.push({ 
+                    const cid = item.clientId || myCustomerId;
+                    const cname = item.clientName || myCustomerName;
+                    const orderItem = { 
                         ...item, 
-                        customerId: myCustomerId,
-                        customerName: myCustomerName,
+                        customerId: cid, 
+                        customerName: cname,
                         name: getItemText(item, 'name'),
                         quantity: item.qty,
-                        unitPrice: item.price,
+                        unitPrice: item.price, 
                         totalPrice: item.price * item.qty,
                         status: 'sent', 
-                        statusLabel: 'Pendente',
-                        statusClass: 'sent',
+                        statusLabel: 'Pendente', 
+                        statusClass: 'sent', 
                         time: new Date() 
-                    });
+                    };
+                    
+                    if (cid && myCustomerId && String(cid).toLowerCase() === String(myCustomerId).toLowerCase()) {
+                        myOrders.push(orderItem);
+                    } else {
+                        if (!tableOrders[cname]) tableOrders[cname] = [];
+                        tableOrders[cname].push(orderItem);
+                    }
                 });
                 cart = [];
                 updateCartUI();
@@ -1995,6 +2262,53 @@
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
     */
+
+    // User Edit Functions
+    function openUserEditModal() {
+        document.getElementById('userNameInput').value = myCustomerName;
+        document.getElementById('userEditModal').classList.add('active');
+    }
+
+    function closeUserEditModal() {
+        document.getElementById('userEditModal').classList.remove('active');
+    }
+
+    function saveUserName() {
+        const newName = document.getElementById('userNameInput').value.trim();
+        if (newName && newName !== myCustomerName) {
+            const oldName = myCustomerName;
+            myCustomerName = newName;
+            
+            // Update localStorage
+            const userData = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+            userData.name = newName;
+            localStorage.setItem('restaurantCustomer', JSON.stringify(userData));
+            
+            // Update tableClients list
+            const me = tableClients.find(c => String(c.id).toLowerCase() === String(myCustomerId).toLowerCase());
+            if (me) me.name = newName;
+            
+            // Update cart items that belong to me
+            cart.forEach(item => {
+                if (String(item.clientId).toLowerCase() === String(myCustomerId).toLowerCase()) {
+                    item.clientName = newName;
+                }
+            });
+            
+            // Update orders that belong to me
+            myOrders.forEach(order => {
+                order.customerName = newName;
+            });
+
+            // Refresh UI
+            document.getElementById('userBadgeName').textContent = newName;
+            updateCartUI();
+            updateOrdersUI();
+            renderClientOptions();
+        }
+        closeUserEditModal();
+    }
+
     // Table modal
     function openTableModal() {
         document.getElementById('tableModal').classList.add('active');
@@ -2167,11 +2481,88 @@
 
     function addFromModal() {
         if (!currentModalItem) return;
-        const existing = cart.find(c => c.id === currentModalItem.id);
-        if (existing) existing.qty += modalQty;
-        else cart.push({ ...currentModalItem, qty: modalQty });
+        // Key by item id + client id so same item for different clients are separate entries
+        const cartKey = currentModalItem.id + '_' + selectedClient.id;
+        const existing = cart.find(c => c.cartKey === cartKey);
+        if (existing) {
+            existing.qty += modalQty;
+        } else {
+            cart.push({
+                ...currentModalItem,
+                qty: modalQty,
+                cartKey,
+                clientId: selectedClient.id,
+                clientName: selectedClient.name
+            });
+        }
         updateCartUI();
         closeItemModal();
+    }
+
+    // ── Client selector functions ──────────────────────────────────────────────
+    function renderClientOptions() {
+        const container = document.getElementById('clientOptions');
+        if (!container) return;
+        container.innerHTML = tableClients.map(c =>
+            '<button class="client-option ' + (selectedClient.id === c.id ? 'selected' : '') + '" onclick="selectClient(\'' + c.id + '\', \'' + c.name.replace(/'/g, "\\'") + '\')">' +
+              '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+              c.name +
+            '</button>'
+        ).join('') +
+        '<button class="add-client-btn" onclick="openAddClientModal()">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>' +
+          ' Outro' +
+        '</button>';
+    }
+
+    function selectClient(id, name) {
+        selectedClient = { id, name };
+        renderClientOptions();
+    }
+
+    function changeItemClient(itemId, newClientId) {
+        if (newClientId === '__add_new__') {
+            pendingClientChangeCartKey = itemId;
+            openAddClientModal();
+            updateCartUI();
+            return;
+        }
+        const client = tableClients.find(c => c.id === newClientId);
+        if (!client) return;
+        cart.forEach(item => {
+            if (item.id === itemId) {
+                item.clientId = client.id;
+                item.clientName = client.name;
+                item.cartKey = item.id + '_' + client.id;
+            }
+        });
+        updateCartUI();
+    }
+
+    function openAddClientModal() {
+        document.getElementById('newClientName').value = '';
+        document.getElementById('addClientModal').classList.add('active');
+    }
+
+    function closeAddClientModal() {
+        document.getElementById('addClientModal').classList.remove('active');
+    }
+
+    function confirmAddClient() {
+        const newName = document.getElementById('newClientName').value.trim();
+        if (!newName) return;
+        let client = tableClients.find(c => c.name === newName);
+        if (!client) {
+            client = { id: crypto.randomUUID(), name: newName };
+            tableClients.push(client);
+        }
+        selectedClient = client;
+        renderClientOptions();
+        if (pendingClientChangeCartKey) {
+            changeItemClient(pendingClientChangeCartKey, client.id);
+            pendingClientChangeCartKey = null;
+        }
+        closeAddClientModal();
     }
 
     // Initialize
@@ -2180,6 +2571,10 @@
         if(hasTable) {
             updateOrdersUI();
             updateTableTotal();
+            renderClientOptions();
+            // Show current user name in the hero badge
+            const badge = document.getElementById('userBadgeName');
+            if (badge) badge.textContent = myCustomerName;
         }
     });
 /*

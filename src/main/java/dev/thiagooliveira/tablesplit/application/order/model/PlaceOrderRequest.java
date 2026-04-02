@@ -8,16 +8,21 @@ public class PlaceOrderRequest {
   private Integer serviceFee;
   private String tableCod;
   private List<TicketRequest> tickets;
-  private UUID customerId;
+  private List<CustomerRequest> customers;
 
   public PlaceOrderRequest() {}
 
   public PlaceOrderRequest(
-      UUID restaurantId, String tableCod, List<TicketRequest> tickets, Integer serviceFee) {
+      UUID restaurantId,
+      String tableCod,
+      List<TicketRequest> tickets,
+      Integer serviceFee,
+      List<CustomerRequest> customers) {
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.tickets = tickets;
     this.serviceFee = serviceFee;
+    this.customers = customers;
   }
 
   public UUID getRestaurantId() {
@@ -52,11 +57,11 @@ public class PlaceOrderRequest {
     this.serviceFee = serviceFee;
   }
 
-  public UUID getCustomerId() {
-    return customerId;
+  public List<CustomerRequest> getCustomers() {
+    return customers;
   }
 
-  public void setCustomerId(UUID customerId) {
-    this.customerId = customerId;
+  public void setCustomers(List<CustomerRequest> customers) {
+    this.customers = customers;
   }
 }

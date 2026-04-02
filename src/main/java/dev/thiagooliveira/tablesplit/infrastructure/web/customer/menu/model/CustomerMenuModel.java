@@ -13,6 +13,7 @@ public class CustomerMenuModel {
   private final List<CategoryModel> categories = new ArrayList<>();
   private final List<ItemModel> items = new ArrayList<>();
   private final List<TicketItemModel> ticketItems = new ArrayList<>();
+  private final List<OrderCustomerModel> customers = new ArrayList<>();
   private TableModel tableModel;
 
   public CustomerMenuModel(
@@ -35,6 +36,7 @@ public class CustomerMenuModel {
                   this.ticketItems.add(
                       new TicketItemModel(
                           item, activeOrder.getCustomerName(item.getCustomerId()))));
+      activeOrder.getCustomers().stream().map(OrderCustomerModel::new).forEach(this.customers::add);
     }
   }
 
@@ -53,6 +55,10 @@ public class CustomerMenuModel {
 
   public List<TicketItemModel> getTicketItems() {
     return ticketItems;
+  }
+
+  public List<OrderCustomerModel> getCustomers() {
+    return customers;
   }
 
   public boolean hasTable() {
