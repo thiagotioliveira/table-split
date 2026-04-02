@@ -1561,12 +1561,9 @@
     }
 
     function advanceItemStatus(itemId, currentStatus) {
-        console.log(itemId);
-        console.log(currentStatus);
-            const statuses = ['PENDING', 'PREPARING', 'READY', 'DELIVERED'];
+        const statuses = ['PENDING', 'PREPARING', 'READY', 'DELIVERED'];
         const currentIndex = statuses.indexOf(currentStatus);
         if (currentIndex < statuses.length - 1) {
-            console.log('entrou');
             changeItemStatus(itemId, statuses[currentIndex + 1]);
         }
     }

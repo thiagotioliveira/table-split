@@ -43,4 +43,9 @@ public class TicketConfig {
       OrderRepository orderRepository, EventPublisher eventPublisher) {
     return new CancelTicketItem(orderRepository, eventPublisher);
   }
+
+  @Bean
+  public CallWaiter callWaiter(TableRepository tableRepository, EventPublisher eventPublisher) {
+    return new CallWaiter(tableRepository, eventPublisher);
+  }
 }

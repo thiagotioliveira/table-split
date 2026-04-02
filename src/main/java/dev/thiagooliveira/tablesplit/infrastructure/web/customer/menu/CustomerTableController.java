@@ -31,6 +31,7 @@ public class CustomerTableController {
   private final PlaceOrder placeOrder;
   private final GetOrder getOrder;
   private final UpdateCustomerName updateCustomerName;
+  private final CallWaiter callWaiter;
   private final TransactionalContext transactionalContext;
 
   public CustomerTableController(
@@ -42,6 +43,7 @@ public class CustomerTableController {
       PlaceOrder placeOrder,
       GetOrder getOrder,
       UpdateCustomerName updateCustomerName,
+      CallWaiter callWaiter,
       TransactionalContext transactionalContext) {
     this.getRestaurant = getRestaurant;
     this.getTables = getTables;
@@ -51,6 +53,7 @@ public class CustomerTableController {
     this.placeOrder = placeOrder;
     this.getOrder = getOrder;
     this.updateCustomerName = updateCustomerName;
+    this.callWaiter = callWaiter;
     this.transactionalContext = transactionalContext;
   }
 
@@ -166,6 +169,17 @@ public class CustomerTableController {
     request.setServiceFee(restaurant.getServiceFee());
 
     transactionalContext.execute(() -> placeOrder.execute(request));
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/@{slug}/table/{tableCode}/waiter/call")
+  @ResponseBody
+  public ResponseEntity<Void> callWaiter(
+      @PathVariable String slug, @PathVariable String tableCode) {
+    var restaurant = getRestaurant.execute(slug).orElseThrow();
+
+    transactionalContext.execute(() -> callWaiter.execute(restaurant.getId(), tableCode));
 
     return ResponseEntity.ok().build();
   }

@@ -254,8 +254,7 @@ self.addEventListener('push', (event) => {
     title: 'TableSplit',
     body: 'Você tem uma nova notificação',
     icon: '/images/icons/icon-192x192.png',
-    badge: '/images/icons/icon-72x72.png',
-    tag: 'tablesplit-notification'
+    badge: '/images/icons/icon-72x72.png'
   };
   
   if (event.data) {
@@ -265,16 +264,16 @@ self.addEventListener('push', (event) => {
       data.body = event.data.text();
     }
   }
+
+  console.log('[SW] Displaying notification:', data);
   
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
       icon: data.icon,
       badge: data.badge,
-      tag: data.tag,
       vibrate: [200, 100, 200],
-      data: data.url || '/',
-      actions: data.actions || []
+      data: data.url || '/'
     })
   );
 });

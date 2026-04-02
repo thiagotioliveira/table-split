@@ -37,6 +37,10 @@ app:
   gallery:
     image:
       max-size: 1048576 #1MB
+  push:
+    public-key:
+    private-key:
+    subject: mailto:info@tablesplit.com
 
 logging:
   level:

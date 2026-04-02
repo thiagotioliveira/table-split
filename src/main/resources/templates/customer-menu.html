@@ -2031,9 +2031,25 @@
         document.getElementById('waiterModalOverlay').classList.remove('active');
     }
     //function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
-    function callWaiter() {
+    async function callWaiter() {
         closeWaiterModal();
-        document.getElementById('waiterCalledModal').classList.add('active');
+        if (hasTable && restaurantSlug && tableCode) {
+            try {
+                const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/waiter/call`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    document.getElementById('waiterCalledModal').classList.add('active');
+                } else {
+                    alert('Erro ao chamar o garçom. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('Error calling waiter:', error);
+                alert('Erro ao chamar o garçom. Verifique sua conexão.');
+            }
+        } else {
+            document.getElementById('waiterCalledModal').classList.add('active');
+        }
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
     /*

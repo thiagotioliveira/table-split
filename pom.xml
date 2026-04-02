@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>dev.thiagooliveira</groupId>
 	<artifactId>table-split</artifactId>
-	<version>0.2.1-SNAPSHOT</version>
+	<version>0.3.1-SNAPSHOT</version>
 	<name>table-split</name>
 	<description>TableSplit</description>
 	<url/>
@@ -93,6 +93,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- Web Push -->
+		<dependency>
+			<groupId>nl.martijndwars</groupId>
+			<artifactId>web-push</artifactId>
+			<version>5.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.80</version>
 		</dependency>
 	</dependencies>
 
