@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 
 import dev.thiagooliveira.tablesplit.application.order.CancelTicketItem;
+import dev.thiagooliveira.tablesplit.application.order.GetHistoryTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTicket;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
@@ -13,14 +14,19 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.HistoryResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -37,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class OrderController {
 
   private final GetTickets getTickets;
+  private final GetHistoryTickets getHistoryTickets;
   private final GetTicket getTicket;
   private final MoveTicket moveTicket;
   private final UpdateTicketItemStatus updateTicketItemStatus;
@@ -45,12 +53,14 @@ public class OrderController {
 
   public OrderController(
       GetTickets getTickets,
+      GetHistoryTickets getHistoryTickets,
       GetTicket getTicket,
       MoveTicket moveTicket,
       UpdateTicketItemStatus updateTicketItemStatus,
       CancelTicketItem cancelTicketItem,
       TransactionalContext transactionalContext) {
     this.getTickets = getTickets;
+    this.getHistoryTickets = getHistoryTickets;
     this.getTicket = getTicket;
     this.moveTicket = moveTicket;
     this.updateTicketItemStatus = updateTicketItemStatus;
@@ -80,10 +90,52 @@ public class OrderController {
         "preparingCount", ticketsByStatus.getOrDefault("PREPARING", List.of()).size());
     model.addAttribute(
         "deliveredCount", ticketsByStatus.getOrDefault("DELIVERED", List.of()).size());
+    model.addAttribute("readyCount", ticketsByStatus.getOrDefault("READY", List.of()).size());
+
+    ZonedDateTime startOfDay =
+        ZonedDateTime.now(ZoneId.systemDefault())
+            .toLocalDate()
+            .atStartOfDay(ZoneId.systemDefault());
+    ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+    long deliveredTodayCount =
+        getHistoryTickets.execute(context.getRestaurant().getId(), startOfDay, endOfDay).stream()
+            .filter(
+                t ->
+                    t.ticket().getStatus()
+                        == dev.thiagooliveira.tablesplit.domain.order.TicketStatus.DELIVERED)
+            .count();
+
+    model.addAttribute("deliveredTodayCount", deliveredTodayCount);
     model.addAttribute("totalCount", allTickets.size());
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
 
     return "orders";
+  }
+
+  @GetMapping("/history")
+  @ResponseBody
+  public HistoryResponse history(
+      Authentication auth,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+          ZonedDateTime start,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+          ZonedDateTime end) {
+    AccountContext context = (AccountContext) auth.getPrincipal();
+    List<TicketWithTable> history =
+        getHistoryTickets.execute(context.getRestaurant().getId(), start, end);
+
+    List<TicketModel> orders =
+        history.stream().map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod())).toList();
+
+    BigDecimal totalRevenue =
+        orders.stream().map(TicketModel::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    BigDecimal avgTicket =
+        orders.isEmpty()
+            ? BigDecimal.ZERO
+            : totalRevenue.divide(BigDecimal.valueOf(orders.size()), 2, RoundingMode.HALF_UP);
+
+    return new HistoryResponse(orders, orders.size(), totalRevenue, avgTicket);
   }
 
   @PostMapping("/move")

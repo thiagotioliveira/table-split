@@ -637,6 +637,142 @@
             50% { opacity: 0.5; }
         }
 
+        /* History Modal */
+        .history-filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .history-filters .date-input {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            background: var(--card);
+        }
+
+        .history-filters .btn-filter {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .history-filters .btn-filter:hover {
+            background: var(--primary-dark);
+        }
+
+        .history-filters .btn-filter svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-order {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .history-order:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .history-order-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .history-order-id {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-order-meta {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .history-order-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .history-order-total {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--muted);
+        }
+
+        .history-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.1));
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .history-summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .history-summary-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: var(--primary);
+        }
+
+        .history-summary-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
         /* Order details modal */
         .order-detail-items {
             margin-bottom: 1.5rem;
@@ -839,7 +975,7 @@
 <main class="main-content">
     <div class="dashboard-body">
         <!-- Waiter Call Alerts -->
-        <div class="waiter-alerts" id="waiterAlerts" th:if="${false}">
+        <div class="waiter-alerts" id="waiterAlerts">
             <div class="waiter-alerts-header">
                 <div class="waiter-alerts-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
@@ -896,11 +1032,11 @@
                 </button>
                 <button class="filter-btn" onclick="filterOrders('ready', this)">
                     Prontos
-                    <span class="filter-badge" th:text="${readyCount}">2</span>
+                    <span class="filter-badge" th:text="${readyCount != null ? readyCount : 0}">0</span>
                 </button>
                 <button class="filter-btn" onclick="filterOrders('delivered', this)">
                     Entregues
-                    <span class="filter-badge" th:text="${deliveredCount}">1</span>
+                    <span class="filter-badge" th:text="${deliveredCount != null ? deliveredCount : 0}">0</span>
                 </button>
             </div>
 
@@ -1015,7 +1151,6 @@
             </div>
 
             <!-- READY -->
-            <!-- READY -->
             <div class="kanban-column">
                 <div class="kanban-header">
                     <div class="kanban-title">
@@ -1094,18 +1229,62 @@
                 </div>
                 <div class="more-orders-hint">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                    <span th:text="'+' + ${deliveredCount} + ' pedidos hoje'">+0 pedidos hoje</span>
+                    <span th:text="'+' + ${deliveredTodayCount} + ' pedidos hoje'">+0 pedidos hoje</span>
                 </div>
                 <div class="kanban-footer">
-                    <a href="#" class="kanban-footer-link">
+                    <button onclick="openHistoryModal()" class="kanban-footer-link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Ver histórico completo
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </main>
+
+<!-- Order History Modal -->
+<div id="historyModal" class="modal-overlay">
+    <div class="modal" style="max-width: 36rem;">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Histórico de Pedidos
+            </h3>
+            <button class="modal-close" onclick="closeHistoryModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="history-filters">
+                <input type="datetime-local" class="date-input" id="historyDateStart" title="Data inicial">
+                <input type="datetime-local" class="date-input" id="historyDateEnd" title="Data final">
+                <button class="btn-filter" onclick="filterHistory()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Filtrar
+                </button>
+            </div>
+
+            <div class="history-summary" id="historySummary">
+                <div class="history-summary-item">
+                    <span class="history-summary-value" id="historyTotalOrders">0</span>
+                    <span class="history-summary-label">Pedidos</span>
+                </div>
+                <div class="history-summary-item">
+                    <span class="history-summary-value" id="historyTotalRevenue">R$ 0,00</span>
+                    <span class="history-summary-label">Faturamento</span>
+                </div>
+                <div class="history-summary-item">
+                    <span class="history-summary-value" id="historyAvgTicket">R$ 0,00</span>
+                    <span class="history-summary-label">Ticket Médio</span>
+                </div>
+            </div>
+
+            <div class="history-list" id="historyList">
+                <!-- Orders will be rendered here -->
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Order Detail Modal -->
 <div id="orderModal" class="modal-overlay">
@@ -1290,26 +1469,27 @@
     }
 
     // View order details
-    function viewOrder(id) {
-        console.log(id);
+    function viewHistoryOrder(id) {
+        viewOrder(id, true);
+    }
+
+    function viewOrder(id, readOnly = false) {
         document.getElementById('orderModal').dataset.ticketId = id;
-        fetch(`/orders/${id}`)
+        fetch('/orders/' + id)
             .then(res => res.json())
-            .then(order => {
-                document.getElementById('modalOrderId').textContent = 'Pedido #' + order.shortId;
-                document.getElementById('modalCustomerName').textContent = order.customerName;
-                document.getElementById('modalTableOrDelivery').textContent = 'Mesa ' + order.tableCod;
-                
-                const timeStr = new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                document.getElementById('modalOrderTime').textContent = timeStr;
+            .then(ticket => {
+                document.getElementById('modalOrderId').textContent = 'Pedido #' + ticket.shortId;
+                document.getElementById('modalTableOrDelivery').textContent = ticket.tableCod ? 'Mesa ' + ticket.tableCod : 'Delivery';
+                document.getElementById('modalCustomerName').textContent = ticket.customerName;
+                document.getElementById('modalOrderTime').textContent = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 
                 const statusBadge = document.getElementById('modalOrderStatus');
-                statusBadge.textContent = order.status;
-                statusBadge.className = 'status-badge status-' + order.statusClass;
+                statusBadge.textContent = ticket.statusLabel;
+                statusBadge.className = 'status-badge status-' + ticket.statusClass;
 
-                renderModalItems(order.items);
+                renderModalItems(ticket.items, readOnly || ticket.status === 'CANCELLED' || ticket.status === 'DELIVERED');
                 
-                const subtotal = order.total;
+                const subtotal = ticket.total;
                 const serviceFee = subtotal * 0.1;
                 const total = subtotal + serviceFee;
 
@@ -1325,9 +1505,8 @@
             });
     }
 
-    function renderModalItems(items) {
+    function renderModalItems(items, readOnly = false) {
         const container = document.getElementById('modalOrderItems');
-        console.log(items);
         container.innerHTML = items.map(item => `
             <div class="order-detail-item ${item.status === 'CANCELLED' ? 'cancelled' : ''}" data-item-id="${item.id}">
                 <div class="order-detail-item-left">
@@ -1335,7 +1514,7 @@
                         <span class="order-detail-item-qty">${item.quantity}x</span>
                         <span class="order-detail-item-name">${item.name}</span>
                     </div>
-                    ${item.status !== 'CANCELLED' ? `
+                    ${!readOnly && item.status !== 'CANCELLED' ? `
                     <div class="item-actions">
                         <select class="item-status-select" onchange="changeItemStatus('${item.id}', this.value)">
                             <option value="PENDING" ${item.status === 'PENDING' ? 'selected' : ''}>Pendente</option>
@@ -1635,6 +1814,100 @@
         const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
         if (newBadge) newBadge.textContent = parseInt(newBadge.textContent) + delta;
     }
+
+    // ===== Order History Modal =====
+    function openHistoryModal() {
+        // Set default dates (last 7 days)
+        const today = new Date();
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        document.getElementById('historyDateEnd').value = today.toISOString().slice(0, 16);
+        document.getElementById('historyDateStart').value = weekAgo.toISOString().slice(0, 16);
+
+        fetchHistory();
+        document.getElementById('historyModal').classList.add('active');
+    }
+
+    function closeHistoryModal() {
+        document.getElementById('historyModal').classList.remove('active');
+    }
+
+    function filterHistory() {
+        fetchHistory();
+    }
+
+    function fetchHistory() {
+        const start = document.getElementById('historyDateStart').value;
+        const end = document.getElementById('historyDateEnd').value;
+
+        let url = '/orders/history';
+        const params = new URLSearchParams();
+        if (start) params.append('start', new Date(start).toISOString());
+        if (end) params.append('end', new Date(end).toISOString());
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                renderHistoryList(data.orders);
+                updateHistorySummary(data);
+            });
+    }
+
+    function renderHistoryList(orders) {
+        const container = document.getElementById('historyList');
+
+        if (orders.length === 0) {
+            container.innerHTML = `
+          <div class="history-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
+            <p>Nenhum pedido encontrado</p>
+            <p style="font-size: 0.8125rem;">Tente ajustar o filtro de datas</p>
+          </div>
+        `;
+            return;
+        }
+
+        container.innerHTML = orders.map(order => `
+        <div class="history-order" onclick="viewHistoryOrder('${order.id}')">
+          <div class="history-order-info">
+            <div class="history-order-id">
+              #${order.shortId}
+              <span class="order-type-badge ${order.tableCod ? 'dine-in' : 'delivery'}" style="font-size: 0.6875rem; padding: 0.125rem 0.375rem;">
+                ${order.tableCod ? 'Mesa ' + order.tableCod : 'Delivery'}
+              </span>
+              ${order.status === 'CANCELLED' ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.6875rem; padding: 0.125rem 0.375rem;">Cancelado</span>' : ''}
+            </div>
+            <div class="history-order-meta">
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline; vertical-align: -2px; width: 14px; height: 14px; margin-right: 2px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                ${order.customerName}
+              </span>
+            </div>
+          </div>
+          <div class="history-order-right">
+            <span class="history-order-total">R$ ${order.total.toFixed(2).replace('.', ',')}</span>
+            <span style="font-size: 0.75rem; color: var(--muted);">${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateHistorySummary(data) {
+        document.getElementById('historyTotalOrders').textContent = data.totalOrders;
+        document.getElementById('historyTotalRevenue').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.totalRevenue);
+        document.getElementById('historyAvgTicket').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.avgTicket);
+    }
+
+    // Close modal on outside click
+    document.getElementById('historyModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeHistoryModal();
+        }
+    });
 
     connect();
 </script>
