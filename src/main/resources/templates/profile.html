@@ -639,6 +639,47 @@
                         </div>
                     </div>
                 </form>
+
+                <!-- Notifications Section -->
+                <div class="profile-section">
+                    <div class="profile-section-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                        <h3 th:text="#{section.notifications.title}">Notifications</h3>
+                    </div>
+
+                    <div class="profile-section-body">
+                        <div class="form-switch" style="margin-bottom: 1.5rem;">
+                            <div class="form-switch-label">
+                                <label class="form-label" style="margin-bottom: 0;">Notificações Push (Navegador)</label>
+                                <p th:text="#{section.notifications.description}">Receba alertas mesmo com o navegador em segundo plano</p>
+                            </div>
+                            <div id="pushNotificationSwitch" class="switch" onclick="togglePushNotifications(this)"></div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="PushNotifications.sendTest().catch(e => alert(e.message))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.4rem;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                Enviar notificação de teste
+                            </button>
+                        </div>
+
+                        <div class="form-switch" style="margin-bottom: 1.5rem;">
+                            <div class="form-switch-label">
+                                <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.new.orders}">New order notifications</label>
+                                <p th:text="#{notification.new.orders.hint}">Receive alerts when a customer places an order</p>
+                            </div>
+                            <div class="switch active" onclick="toggleSwitch(this)"></div>
+                        </div>
+
+                        <div class="form-switch">
+                            <div class="form-switch-label">
+                                <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.waiter.call}">Call Waiter alerts</label>
+                                <p th:text="#{notification.waiter.call.hint}">Sound notification when customer requests service</p>
+                            </div>
+                            <div class="switch active" onclick="toggleSwitch(this)"></div>
+                        </div>
+                    </div>
+                </div>
                 <form th:action="@{'/profile/password'}" method="post" th:object="${password}">
                     <!-- Password Section -->
                     <div class="profile-section">
@@ -930,6 +971,52 @@
             document.getElementById('confirmPassword').value = '';
             checkPasswordStrength();
         }
+
+        // Toggle switch helper
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+        }
+
+        // Push Notifications Logic
+        async function updatePushSwitchState() {
+            const isSupported = await PushNotifications.isSupported();
+            const pushSwitch = document.getElementById('pushNotificationSwitch');
+            
+            if (!pushSwitch) return;
+
+            if (!isSupported) {
+                pushSwitch.parentElement.style.opacity = '0.5';
+                pushSwitch.parentElement.style.pointerEvents = 'none';
+                return;
+            }
+
+            const subscription = await PushNotifications.getSubscription();
+            if (subscription) {
+                pushSwitch.classList.add('active');
+            } else {
+                pushSwitch.classList.remove('active');
+            }
+        }
+
+        async function togglePushNotifications(el) {
+            const isActive = el.classList.contains('active');
+            
+            try {
+                if (!isActive) {
+                    const success = await PushNotifications.subscribe();
+                    if (success) el.classList.add('active');
+                } else {
+                    const success = await PushNotifications.unsubscribe();
+                    if (success) el.classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Error toggling push notifications:', error);
+                alert('Erro ao configurar notificações: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updatePushSwitchState);
     </script>
+    <script src="/js/push-notifications.js?v=2"></script>
 </body>
 </html>

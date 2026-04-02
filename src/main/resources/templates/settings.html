@@ -1293,41 +1293,7 @@
             </div>
           </div>
 
-          <!-- Notifications -->
-          <div class="settings-section">
-            <div class="settings-section-header">
-              <h2 th:text="#{section.notifications.title}">Notificações</h2>
-              <p th:text="#{section.notifications.description}">Configure como você recebe alertas</p>
-            </div>
-            <div class="settings-section-body">
-              <div class="form-switch" style="margin-bottom: 1rem;">
-                <div class="form-switch-label">
-                  <label class="form-label" style="margin-bottom: 0;">Notificações Push (Navegador)</label>
-                  <p>Receba alertas mesmo com o navegador em segundo plano</p>
-                </div>
-                <div id="pushNotificationSwitch" class="switch" onclick="togglePushNotifications(this)"></div>
-              </div>
-              <button type="button" class="btn-outline" onclick="PushNotifications.sendTest().catch(e => alert(e.message))" style="margin-top: 0.5rem; font-size: 0.75rem; padding: 0.4rem 0.8rem; border-radius: 6px; width: fit-content;">
-                  <i class="fas fa-paper-plane" style="margin-right: 0.4rem;"></i> Enviar notificação de teste
-              </button>
 
-              <div class="form-switch" style="margin-bottom: 1rem; margin-top: 1rem;">
-                <div class="form-switch-label">
-                  <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.new.orders}">Notificações de novos pedidos</label>
-                  <p th:text="#{notification.new.orders.hint}">Receba alertas quando um cliente fizer um pedido</p>
-                </div>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
-              </div>
-
-              <div class="form-switch" style="margin-bottom: 1rem;">
-                <div class="form-switch-label">
-                  <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.waiter.call}">Alertas de "Chamar Garçom"</label>
-                  <p th:text="#{notification.waiter.call.hint}">Notificação sonora quando cliente solicitar atendimento</p>
-                </div>
-                <div class="switch active" onclick="toggleSwitch(this)"></div>
-              </div>
-            </div>
-          </div>
 
           <!-- Danger Zone -->
           <div class="settings-section danger-zone" th:if="${false}">
@@ -1891,41 +1857,7 @@
 
     });
   </script>
-  <script src="/js/push-notifications.js?v=2"></script>
-  <script>
-      // Push Notifications Logic for Settings
-      async function updatePushSwitchState() {
-          const isSupported = await PushNotifications.isSupported();
-          const pushSwitch = document.getElementById('pushNotificationSwitch');
-          
-          if (!isSupported) {
-              pushSwitch.parentElement.parentElement.style.opacity = '0.5';
-              pushSwitch.parentElement.parentElement.style.pointerEvents = 'none';
-              return;
-          }
 
-          const subscription = await PushNotifications.getSubscription();
-          if (subscription) {
-              pushSwitch.classList.add('active');
-          } else {
-              pushSwitch.classList.remove('active');
-          }
-      }
-
-      async function togglePushNotifications(el) {
-          const isActive = el.classList.contains('active');
-          
-          if (!isActive) {
-              const success = await PushNotifications.subscribe();
-              if (success) el.classList.add('active');
-          } else {
-              const success = await PushNotifications.unsubscribe();
-              if (success) el.classList.remove('active');
-          }
-      }
-
-      document.addEventListener('DOMContentLoaded', updatePushSwitchState);
-  </script>
 </body>
 
 </html>

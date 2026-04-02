@@ -48,7 +48,7 @@ public class PushNotificationController {
     UUID restaurantId = context.getRestaurant().getId();
     String payload =
         String.format(
-            "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/settings\"}",
+            "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/profile\"}",
             restaurantId);
     pushNotificationService.sendNotification(restaurantId, payload);
     return ResponseEntity.ok().build();
