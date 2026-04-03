@@ -9,12 +9,10 @@ public class WaiterCall {
   private final String tableCod;
   private final ZonedDateTime createdAt;
   private ZonedDateTime dismissedAt;
+  private int callCount;
 
   public WaiterCall(UUID id, UUID restaurantId, String tableCod, ZonedDateTime createdAt) {
-    this.id = id;
-    this.restaurantId = restaurantId;
-    this.tableCod = tableCod;
-    this.createdAt = createdAt;
+    this(id, restaurantId, tableCod, createdAt, null, 1);
   }
 
   public WaiterCall(
@@ -23,11 +21,28 @@ public class WaiterCall {
       String tableCod,
       ZonedDateTime createdAt,
       ZonedDateTime dismissedAt) {
+    this(id, restaurantId, tableCod, createdAt, dismissedAt, 1);
+  }
+
+  public WaiterCall(
+      UUID id,
+      UUID restaurantId,
+      String tableCod,
+      ZonedDateTime createdAt,
+      ZonedDateTime dismissedAt,
+      int callCount) {
     this.id = id;
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.createdAt = createdAt;
     this.dismissedAt = dismissedAt;
+    this.callCount = callCount;
+  }
+
+  public void incrementCount() {
+    if (!isDismissed()) {
+      this.callCount++;
+    }
   }
 
   public void dismiss() {
@@ -56,5 +71,9 @@ public class WaiterCall {
 
   public boolean isDismissed() {
     return dismissedAt != null;
+  }
+
+  public int getCallCount() {
+    return callCount;
   }
 }

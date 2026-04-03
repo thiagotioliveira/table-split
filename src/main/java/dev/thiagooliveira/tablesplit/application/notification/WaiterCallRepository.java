@@ -11,4 +11,6 @@ public interface WaiterCallRepository {
   List<WaiterCall> findAllActiveByRestaurantId(UUID restaurantId);
 
   Optional<WaiterCall> findById(UUID id);
+
+  Optional<WaiterCall> findActiveByRestaurantIdAndTableCod(UUID restaurantId, String tableCod);
 }

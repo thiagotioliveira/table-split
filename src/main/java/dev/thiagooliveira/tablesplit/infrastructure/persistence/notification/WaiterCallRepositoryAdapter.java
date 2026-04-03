@@ -35,13 +35,22 @@ public class WaiterCallRepositoryAdapter implements WaiterCallRepository {
     return jpaRepository.findById(id).map(this::toDomain);
   }
 
+  @Override
+  public Optional<WaiterCall> findActiveByRestaurantIdAndTableCod(
+      UUID restaurantId, String tableCod) {
+    return jpaRepository
+        .findByRestaurantIdAndTableCodAndDismissedAtIsNull(restaurantId, tableCod)
+        .map(this::toDomain);
+  }
+
   private WaiterCallEntity toEntity(WaiterCall domain) {
     return new WaiterCallEntity(
         domain.getId(),
         domain.getRestaurantId(),
         domain.getTableCod(),
         domain.getCreatedAt(),
-        domain.getDismissedAt());
+        domain.getDismissedAt(),
+        domain.getCallCount());
   }
 
   private WaiterCall toDomain(WaiterCallEntity entity) {
@@ -50,6 +59,7 @@ public class WaiterCallRepositoryAdapter implements WaiterCallRepository {
         entity.getRestaurantId(),
         entity.getTableCod(),
         entity.getCreatedAt(),
-        entity.getDismissedAt());
+        entity.getDismissedAt(),
+        entity.getCallCount());
   }
 }

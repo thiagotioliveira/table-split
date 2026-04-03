@@ -1264,6 +1264,13 @@
         }
 
         .waiter-modal-btn.primary:hover { background: var(--primary-dark); }
+        .waiter-modal-btn.primary:disabled {
+            background: var(--border);
+            color: var(--muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
         /* Image Carousel */
         .carousel-container {
@@ -1862,7 +1869,7 @@
         <p data-i18n="callWaiterDesc">Um garçom será notificado e virá até sua mesa em breve.</p>
         <div class="waiter-modal-actions">
             <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel">Cancelar</button>
-            <button class="waiter-modal-btn primary" onclick="callWaiter()" data-i18n="callNow">Chamar Agora</button>
+            <button class="waiter-modal-btn primary" id="callWaiterBtn" onclick="callWaiter()" data-i18n="callNow">Chamar Agora</button>
         </div>
     </div>
 </div>
@@ -2031,14 +2038,63 @@
         document.getElementById('waiterModalOverlay').classList.remove('active');
     }
     //function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
+    let waiterCallInterval;
+
+    function updateWaiterCallButton() {
+        const btn = document.getElementById('callWaiterBtn');
+        if (!btn) return;
+
+        const now = Date.now();
+        const lastCall = localStorage.getItem('lastWaiterCallTime');
+        const COOLDOWN = 60000; // 1 minute
+
+        if (lastCall && (now - lastCall < COOLDOWN)) {
+            btn.disabled = true;
+            
+            if (waiterCallInterval) clearInterval(waiterCallInterval);
+            
+            waiterCallInterval = setInterval(() => {
+                const innerNow = Date.now();
+                const remaining = Math.ceil((COOLDOWN - (innerNow - lastCall)) / 1000);
+                
+                if (remaining <= 0) {
+                    btn.disabled = false;
+                    btn.textContent = 'Chamar Agora';
+                    clearInterval(waiterCallInterval);
+                    localStorage.removeItem('lastWaiterCallTime');
+                } else {
+                    btn.textContent = `Aguarde (${remaining}s)`;
+                }
+            }, 1000);
+            
+            // Initial update
+            const initialRemaining = Math.ceil((COOLDOWN - (now - lastCall)) / 1000);
+            btn.textContent = `Aguarde (${initialRemaining}s)`;
+        } else {
+            btn.disabled = false;
+            btn.textContent = 'Chamar Agora';
+        }
+    }
+
     async function callWaiter() {
-        closeWaiterModal();
+        const now = Date.now();
+        const lastCall = localStorage.getItem('lastWaiterCallTime');
+        const COOLDOWN = 60000; // 1 minute
+
+        if (lastCall && (now - lastCall < COOLDOWN)) {
+            // Should be handled by button state, but as safety:
+            return;
+        }
+
         if (hasTable && restaurantSlug && tableCode) {
             try {
                 const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/waiter/call`, {
                     method: 'POST'
                 });
                 if (response.ok) {
+                    localStorage.setItem('lastWaiterCallTime', now);
+                    updateWaiterCallButton();
+                    closeWaiterModal();
                     document.getElementById('waiterCalledModal').classList.add('active');
                 } else {
                     alert('Erro ao chamar o garçom. Tente novamente.');
@@ -2048,6 +2104,7 @@
                 alert('Erro ao chamar o garçom. Verifique sua conexão.');
             }
         } else {
+            closeWaiterModal();
             document.getElementById('waiterCalledModal').classList.add('active');
         }
     }
@@ -2690,6 +2747,7 @@
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
+        updateWaiterCallButton();
         startCarousel();
         if(hasTable) {
             updateOrdersUI();

@@ -111,7 +111,10 @@ public class PushNotificationController {
                     call ->
                         new dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
                             .WaiterCallResponse(
-                            call.getId(), call.getTableCod(), call.getCreatedAt()))
+                            call.getId(),
+                            call.getTableCod(),
+                            call.getCreatedAt(),
+                            call.getCallCount()))
                 .toList();
 
     return ResponseEntity.ok(response);

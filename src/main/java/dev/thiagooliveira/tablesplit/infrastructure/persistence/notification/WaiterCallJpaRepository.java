@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface WaiterCallJpaRepository extends JpaRepository<WaiterCallEntity, UUID> {
   List<WaiterCallEntity> findAllByRestaurantIdAndDismissedAtIsNullOrderByCreatedAtDesc(
       UUID restaurantId);
+
+  java.util.Optional<WaiterCallEntity> findByRestaurantIdAndTableCodAndDismissedAtIsNull(
+      UUID restaurantId, String tableCod);
 }

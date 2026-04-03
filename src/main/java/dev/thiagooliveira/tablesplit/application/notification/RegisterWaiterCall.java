@@ -15,13 +15,23 @@ public class RegisterWaiterCall {
 
   public void execute(UUID restaurantId, String tableCod) {
     WaiterCall waiterCall =
-        new WaiterCall(UUID.randomUUID(), restaurantId, tableCod, ZonedDateTime.now());
+        repository
+            .findActiveByRestaurantIdAndTableCod(restaurantId, tableCod)
+            .map(
+                existing -> {
+                  existing.incrementCount();
+                  return existing;
+                })
+            .orElseGet(
+                () ->
+                    new WaiterCall(UUID.randomUUID(), restaurantId, tableCod, ZonedDateTime.now()));
+
     repository.save(waiterCall);
 
     String payload =
         String.format(
-            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/orders\"}",
-            waiterCall.getId(), tableCod, tableCod, tableCod);
+            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"count\": %d, \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/orders\"}",
+            waiterCall.getId(), tableCod, waiterCall.getCallCount(), tableCod, tableCod);
 
     broadcaster.callWaiter(restaurantId, payload);
   }

@@ -14,6 +14,7 @@ public class WaiterCallEntity {
   private String tableCod;
   private ZonedDateTime createdAt;
   private ZonedDateTime dismissedAt;
+  private Integer callCount;
 
   public WaiterCallEntity() {}
 
@@ -22,12 +23,14 @@ public class WaiterCallEntity {
       UUID restaurantId,
       String tableCod,
       ZonedDateTime createdAt,
-      ZonedDateTime dismissedAt) {
+      ZonedDateTime dismissedAt,
+      Integer callCount) {
     this.id = id;
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.createdAt = createdAt;
     this.dismissedAt = dismissedAt;
+    this.callCount = callCount;
   }
 
   public UUID getId() {
@@ -68,5 +71,13 @@ public class WaiterCallEntity {
 
   public void setDismissedAt(ZonedDateTime dismissedAt) {
     this.dismissedAt = dismissedAt;
+  }
+
+  public Integer getCallCount() {
+    return callCount;
+  }
+
+  public void setCallCount(Integer callCount) {
+    this.callCount = callCount;
   }
 }
