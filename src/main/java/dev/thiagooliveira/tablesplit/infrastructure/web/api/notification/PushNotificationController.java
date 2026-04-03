@@ -24,6 +24,8 @@ public class PushNotificationController {
   private final GetPreferences getPreferences;
   private final UpdatePreferences updatePreferences;
   private final Broadcaster broadcaster;
+  private final ListActiveWaiterCalls listActiveWaiterCalls;
+  private final DismissWaiterCall dismissWaiterCall;
 
   public PushNotificationController(
       PushNotificationService pushNotificationService,
@@ -31,13 +33,17 @@ public class PushNotificationController {
       Unsubscribe unsubscribe,
       GetPreferences getPreferences,
       UpdatePreferences updatePreferences,
-      Broadcaster broadcaster) {
+      Broadcaster broadcaster,
+      ListActiveWaiterCalls listActiveWaiterCalls,
+      DismissWaiterCall dismissWaiterCall) {
     this.pushNotificationService = pushNotificationService;
     this.subscribe = subscribe;
     this.unsubscribe = unsubscribe;
     this.getPreferences = getPreferences;
     this.updatePreferences = updatePreferences;
     this.broadcaster = broadcaster;
+    this.listActiveWaiterCalls = listActiveWaiterCalls;
+    this.dismissWaiterCall = dismissWaiterCall;
   }
 
   @PostMapping("/subscribe")
@@ -84,6 +90,36 @@ public class PushNotificationController {
             "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/profile\"}",
             restaurantId);
     broadcaster.general(restaurantId, payload);
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/active-calls")
+  public ResponseEntity<
+          java.util.List<
+              dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
+                  .WaiterCallResponse>>
+      getActiveCalls(Authentication auth) {
+    AccountContext context = (AccountContext) auth.getPrincipal();
+    UUID restaurantId = context.getRestaurant().getId();
+
+    java.util.List<
+            dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
+                .WaiterCallResponse>
+        response =
+            listActiveWaiterCalls.execute(restaurantId).stream()
+                .map(
+                    call ->
+                        new dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
+                            .WaiterCallResponse(
+                            call.getId(), call.getTableCod(), call.getCreatedAt()))
+                .toList();
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/calls/dismiss")
+  public ResponseEntity<Void> dismissCall(@RequestBody UUID id) {
+    dismissWaiterCall.execute(id);
     return ResponseEntity.ok().build();
   }
 }

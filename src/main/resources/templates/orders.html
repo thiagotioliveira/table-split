@@ -975,28 +975,15 @@
 <main class="main-content">
     <div class="dashboard-body">
         <!-- Waiter Call Alerts -->
-        <div class="waiter-alerts" id="waiterAlerts">
+        <div class="waiter-alerts" id="waiterAlerts" style="display: none;">
             <div class="waiter-alerts-header">
                 <div class="waiter-alerts-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                 </div>
                 <span class="waiter-alerts-title">Chamadas de Garçom</span>
             </div>
-            <div class="waiter-alerts-list">
-                <div class="waiter-alert-item">
-                    <span class="waiter-alert-table">Mesa 2</span>
-                    <span class="waiter-alert-time">há 2 min</span>
-                    <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
-                </div>
-                <div class="waiter-alert-item">
-                    <span class="waiter-alert-table">Mesa 5</span>
-                    <span class="waiter-alert-time">há 5 min</span>
-                    <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
-                </div>
+            <div class="waiter-alerts-list" id="waiterAlertsList">
+                <!-- Alerts will be added here dynamically -->
             </div>
         </div>
 
@@ -1653,13 +1640,36 @@
     // Dismiss waiter call
     function dismissWaiterCall(btn) {
         const item = btn.closest('.waiter-alert-item');
-        item.remove();
+        const callId = item.dataset.callId;
 
-        const alerts = document.getElementById('waiterAlerts');
-        const remaining = alerts.querySelectorAll('.waiter-alert-item').length;
+        if (callId) {
+            fetch('/api/notifications/calls/dismiss', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(callId)
+            }).then(res => {
+                if (res.ok) {
+                    removeItem(item);
+                } else {
+                    console.error('Failed to dismiss call on server');
+                    // Still remove from UI for better UX, or show error
+                    removeItem(item);
+                }
+            }).catch(err => {
+                console.error('Error dismissing call:', err);
+                removeItem(item);
+            });
+        } else {
+            removeItem(item);
+        }
 
-        if (remaining === 0) {
-            alerts.style.display = 'none';
+        function removeItem(el) {
+            el.remove();
+            const alerts = document.getElementById('waiterAlerts');
+            const remaining = alerts.querySelectorAll('.waiter-alert-item').length;
+            if (remaining === 0) {
+                alerts.style.display = 'none';
+            }
         }
     }
 
@@ -1707,6 +1717,15 @@
                     console.log('event not identified.')
                 }
             });
+
+            // Subscribe to waiter calls
+            const waiterTopic = '/topic/restaurant/' + restaurantId + '/waiter';
+            console.log('Subscribing to waiter topic:', waiterTopic);
+            stompClient.subscribe(waiterTopic, function (message) {
+                console.log('WAITER message received:', message.body);
+                const data = JSON.parse(message.body);
+                handleWaiterCall(data);
+            });
         });
     }
 
@@ -1747,6 +1766,81 @@
         /*if (card) {
             window.location.reload(); 
         }*/
+    }
+
+    function handleWaiterCall(event) {
+        if (soundEnabled) {
+            const audio = new Audio(alertSoundUrl);
+            audio.play().catch(err => {
+                console.warn('Click on the page to enable audio notification:', err);
+            });
+        }
+
+        const container = document.getElementById('waiterAlerts');
+        const list = document.getElementById('waiterAlertsList');
+        
+        // Remove existing alert for the same table if it exists to avoid duplicates
+        const existing = Array.from(list.querySelectorAll('.waiter-alert-item')).find(item => 
+            item.querySelector('.waiter-alert-table').textContent === 'Mesa ' + event.tableCod
+        );
+        if (existing) {
+            existing.remove();
+        }
+
+        const now = new Date();
+        const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const alertHtml = `
+            <div class="waiter-alert-item" data-table-cod="${event.tableCod}" data-call-id="${event.id || ''}">
+                <span class="waiter-alert-table">Mesa ${event.tableCod}</span>
+                <span class="waiter-alert-time" title="${timeFormatted}">agora</span>
+                <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+        `;
+        
+        list.insertAdjacentHTML('afterbegin', alertHtml);
+        container.style.display = 'block';
+    }
+
+    function loadActiveWaiterCalls() {
+        fetch('/api/notifications/active-calls')
+            .then(res => res.json())
+            .then(calls => {
+                if (calls && calls.length > 0) {
+                    const container = document.getElementById('waiterAlerts');
+                    const list = document.getElementById('waiterAlertsList');
+                    list.innerHTML = '';
+                    
+                    calls.forEach(call => {
+                        const callDate = new Date(call.createdAt);
+                        const timeAgo = getTimeAgo(callDate);
+                        const timeFormatted = callDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                        const alertHtml = `
+                            <div class="waiter-alert-item" data-table-cod="${call.tableCod}" data-call-id="${call.id}">
+                                <span class="waiter-alert-table">Mesa ${call.tableCod}</span>
+                                <span class="waiter-alert-time" title="${timeFormatted}">${timeAgo}</span>
+                                <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                </button>
+                            </div>
+                        `;
+                        list.insertAdjacentHTML('beforeend', alertHtml);
+                    });
+                    container.style.display = 'block';
+                }
+            })
+            .catch(err => console.error('Error loading active waiter calls:', err));
+    }
+
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 60);
+        if (interval < 1) return 'agora';
+        if (interval === 1) return 'há 1 min';
+        return `há ${interval} min`;
     }
 
     function renderTicketCard(ticket) {
@@ -1907,6 +2001,7 @@
     });
 
     connect();
+    loadActiveWaiterCalls();
 </script>
 </body>
 </html>

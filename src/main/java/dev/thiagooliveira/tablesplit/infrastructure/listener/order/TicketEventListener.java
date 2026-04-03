@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
 import dev.thiagooliveira.tablesplit.application.notification.Broadcaster;
+import dev.thiagooliveira.tablesplit.application.notification.RegisterWaiterCall;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
@@ -23,10 +24,15 @@ public class TicketEventListener {
 
   private final SimpMessagingTemplate messagingTemplate;
   private final Broadcaster broadcaster;
+  private final RegisterWaiterCall registerWaiterCall;
 
-  public TicketEventListener(SimpMessagingTemplate messagingTemplate, Broadcaster broadcaster) {
+  public TicketEventListener(
+      SimpMessagingTemplate messagingTemplate,
+      Broadcaster broadcaster,
+      RegisterWaiterCall registerWaiterCall) {
     this.messagingTemplate = messagingTemplate;
     this.broadcaster = broadcaster;
+    this.registerWaiterCall = registerWaiterCall;
   }
 
   @EventListener
@@ -65,11 +71,7 @@ public class TicketEventListener {
 
     // Send Push Notification
     try {
-      String payload =
-          String.format(
-              "{\"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
-              event.getTableCod(), event.getTableCod());
-      broadcaster.callWaiter(event.getRestaurantId(), payload);
+      registerWaiterCall.execute(event.getRestaurantId(), event.getTableCod());
     } catch (Exception e) {
       // Silently fail
     }
