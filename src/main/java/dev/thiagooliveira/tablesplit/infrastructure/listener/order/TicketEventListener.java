@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
+import dev.thiagooliveira.tablesplit.application.notification.Broadcaster;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
@@ -8,7 +9,6 @@ import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import dev.thiagooliveira.tablesplit.infrastructure.notification.PushNotificationService;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import java.time.Duration;
@@ -22,12 +22,11 @@ import org.springframework.stereotype.Component;
 public class TicketEventListener {
 
   private final SimpMessagingTemplate messagingTemplate;
-  private final PushNotificationService pushNotificationService;
+  private final Broadcaster broadcaster;
 
-  public TicketEventListener(
-      SimpMessagingTemplate messagingTemplate, PushNotificationService pushNotificationService) {
+  public TicketEventListener(SimpMessagingTemplate messagingTemplate, Broadcaster broadcaster) {
     this.messagingTemplate = messagingTemplate;
-    this.pushNotificationService = pushNotificationService;
+    this.broadcaster = broadcaster;
   }
 
   @EventListener
@@ -42,7 +41,7 @@ public class TicketEventListener {
           String.format(
               "{\"title\": \"Novo Pedido - Mesa %s\", \"body\": \"%s fez um novo pedido\", \"url\": \"/orders\"}",
               event.getTableCod(), model.getCustomerName());
-      pushNotificationService.sendNewOrderNotification(event.getRestaurantId(), payload);
+      broadcaster.newOrder(event.getRestaurantId(), payload);
     } catch (Exception e) {
       // Silently fail push if anything goes wrong
     }
@@ -70,7 +69,7 @@ public class TicketEventListener {
           String.format(
               "{\"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
               event.getTableCod(), event.getTableCod());
-      pushNotificationService.sendCallWaiterNotification(event.getRestaurantId(), payload);
+      broadcaster.callWaiter(event.getRestaurantId(), payload);
     } catch (Exception e) {
       // Silently fail
     }

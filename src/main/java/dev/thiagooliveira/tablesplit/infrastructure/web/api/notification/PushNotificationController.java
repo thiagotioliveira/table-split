@@ -1,8 +1,10 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.api.notification;
 
+import dev.thiagooliveira.tablesplit.application.notification.*;
 import dev.thiagooliveira.tablesplit.infrastructure.notification.PushNotificationService;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model.SubscriptionData;
+import dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model.UpdatePreferencesRequest;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,9 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class PushNotificationController {
 
   private final PushNotificationService pushNotificationService;
+  private final Subscribe subscribe;
+  private final Unsubscribe unsubscribe;
+  private final GetPreferences getPreferences;
+  private final UpdatePreferences updatePreferences;
+  private final Broadcaster broadcaster;
 
-  public PushNotificationController(PushNotificationService pushNotificationService) {
+  public PushNotificationController(
+      PushNotificationService pushNotificationService,
+      Subscribe subscribe,
+      Unsubscribe unsubscribe,
+      GetPreferences getPreferences,
+      UpdatePreferences updatePreferences,
+      Broadcaster broadcaster) {
     this.pushNotificationService = pushNotificationService;
+    this.subscribe = subscribe;
+    this.unsubscribe = unsubscribe;
+    this.getPreferences = getPreferences;
+    this.updatePreferences = updatePreferences;
+    this.broadcaster = broadcaster;
   }
 
   @PostMapping("/subscribe")
@@ -27,13 +45,13 @@ public class PushNotificationController {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
 
-    pushNotificationService.subscribe(restaurantId, data);
+    subscribe.execute(restaurantId, data.endpoint(), data.p256dh(), data.auth());
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("/unsubscribe")
   public ResponseEntity<Void> unsubscribe(@RequestBody String endpoint) {
-    pushNotificationService.unsubscribe(endpoint);
+    unsubscribe.execute(endpoint);
     return ResponseEntity.ok().build();
   }
 
@@ -44,19 +62,15 @@ public class PushNotificationController {
 
   @PostMapping("/status")
   public ResponseEntity<java.util.Map<String, Boolean>> getStatus(@RequestBody String endpoint) {
-    return pushNotificationService
-        .getPreferences(endpoint)
+    return getPreferences
+        .execute(endpoint)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping("/preferences")
-  public ResponseEntity<Void> updatePreferences(
-      @RequestBody
-          dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
-                  .UpdatePreferencesRequest
-              request) {
-    pushNotificationService.updatePreferences(
+  public ResponseEntity<Void> updatePreferences(@RequestBody UpdatePreferencesRequest request) {
+    updatePreferences.execute(
         request.endpoint(), request.notifyNewOrders(), request.notifyCallWaiter());
     return ResponseEntity.ok().build();
   }
@@ -69,7 +83,7 @@ public class PushNotificationController {
         String.format(
             "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/profile\"}",
             restaurantId);
-    pushNotificationService.sendNotification(restaurantId, payload);
+    broadcaster.general(restaurantId, payload);
     return ResponseEntity.ok().build();
   }
 }
