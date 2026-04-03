@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>dev.thiagooliveira</groupId>
 	<artifactId>table-split</artifactId>
-	<version>0.4.1-SNAPSHOT</version>
+	<version>0.5.1-SNAPSHOT</version>
 	<name>table-split</name>
 	<description>TableSplit</description>
 	<url/>
@@ -55,6 +55,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.liquibase</groupId>

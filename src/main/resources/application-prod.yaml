@@ -1,0 +1,13 @@
+logging:
+  level:
+    ROOT: OFF
+    org:
+      hibernate:
+        SQL: OFF
+        type:
+          descriptor:
+            sql:
+              BasicBinder: OFF
+      springframework:
+        transaction: OFF
+    dev.thiagooliveira: INFO

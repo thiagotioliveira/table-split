@@ -52,6 +52,7 @@ public class SecurityConfig {
                     // Recursos públicos
                     .requestMatchers(
                         "/",
+                        "/actuator/health",
                         "/login",
                         "/register",
                         "/css/**",

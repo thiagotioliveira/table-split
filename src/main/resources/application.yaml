@@ -28,6 +28,7 @@ cloudinary:
   root-folder: dev
 
 app:
+  version: "@project.version@"
   time:
     zone-id: Europe/Lisbon
   menu:
@@ -55,3 +56,9 @@ logging:
       springframework:
         transaction: OFF
     dev.thiagooliveira: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
