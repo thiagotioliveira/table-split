@@ -28,6 +28,15 @@ public class Restaurant {
   private String hashPrimaryColor;
   private String hashAccentColor;
   private List<RestaurantImage> images;
+  private Language defaultLanguage;
+
+  public Language getDefaultLanguage() {
+    return defaultLanguage;
+  }
+
+  public void setDefaultLanguage(Language defaultLanguage) {
+    this.defaultLanguage = defaultLanguage;
+  }
 
   public List<RestaurantImage> getImages() {
     return images;

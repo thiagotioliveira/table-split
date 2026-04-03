@@ -67,6 +67,10 @@ public class RestaurantEntity {
   @Column(nullable = false)
   private String hashAccentColor;
 
+  @Enumerated(EnumType.STRING)
+  @Column(name = "default_language", nullable = false)
+  private Language defaultLanguage;
+
   public Restaurant toDomain() {
     var domain = new Restaurant();
     domain.setId(this.id);
@@ -87,6 +91,7 @@ public class RestaurantEntity {
     domain.setDays(this.days);
     domain.setHashPrimaryColor(this.hashPrimaryColor);
     domain.setHashAccentColor(this.hashAccentColor);
+    domain.setDefaultLanguage(this.defaultLanguage);
     return domain;
   }
 
@@ -110,6 +115,7 @@ public class RestaurantEntity {
     entity.setDays(domain.getDays());
     entity.setHashPrimaryColor(domain.getHashPrimaryColor());
     entity.setHashAccentColor(domain.getHashAccentColor());
+    entity.setDefaultLanguage(domain.getDefaultLanguage());
     return entity;
   }
 
@@ -267,5 +273,13 @@ public class RestaurantEntity {
 
   public void setTags(List<Tag> tags) {
     this.tags = tags;
+  }
+
+  public Language getDefaultLanguage() {
+    return defaultLanguage;
+  }
+
+  public void setDefaultLanguage(Language defaultLanguage) {
+    this.defaultLanguage = defaultLanguage;
   }
 }

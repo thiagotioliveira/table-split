@@ -185,7 +185,13 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                         time.getZoneId())));
     var accountId = user.getAccountId();
     var restaurant = this.restaurantRepository.findByAccountId(accountId).orElseThrow();
+
     saveRestaurantImages(restaurant);
+
+    // Set tenant context for the rest of the initialization
+    String tenantId = "T_" + restaurant.getId().toString().replace("-", "_").toUpperCase();
+    dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(tenantId);
+
     var categoryStarters =
         this.transactionalContext.execute(
             () ->

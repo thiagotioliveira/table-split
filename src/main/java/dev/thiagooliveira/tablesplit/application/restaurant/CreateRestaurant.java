@@ -41,6 +41,7 @@ public class CreateRestaurant {
     restaurant.setDays(command.days());
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
+    restaurant.setDefaultLanguage(command.defaultLanguage());
     restaurantRepository.save(restaurant);
     this.eventPublisher.publishEvent(
         new RestaurantCreatedEvent(restaurant, command.numberOfTables()));

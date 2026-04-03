@@ -1,0 +1,56 @@
+package dev.thiagooliveira.tablesplit.infrastructure.tenant;
+
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.UUID;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+@Component
+public class TenantFilter extends OncePerRequestFilter {
+
+  private final GetRestaurant getRestaurant;
+
+  public TenantFilter(GetRestaurant getRestaurant) {
+    this.getRestaurant = getRestaurant;
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+
+    try {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      if (auth != null
+          && auth.isAuthenticated()
+          && auth.getPrincipal() instanceof AccountContext context) {
+        UUID restaurantId = context.getRestaurant().getId();
+        setTenantContext(restaurantId);
+      } else {
+        // Handling public routes like /@{slug}
+        String path = request.getRequestURI();
+        if (path != null && path.startsWith("/@")) {
+          String slug = path.substring(2).split("/")[0];
+          getRestaurant.execute(slug).ifPresent(r -> setTenantContext(r.getId()));
+        }
+      }
+
+      filterChain.doFilter(request, response);
+    } finally {
+      TenantContext.clear();
+    }
+  }
+
+  private void setTenantContext(UUID id) {
+    String tenantId = "T_" + id.toString().replace("-", "_").toUpperCase();
+    TenantContext.setCurrentTenant(tenantId);
+  }
+}

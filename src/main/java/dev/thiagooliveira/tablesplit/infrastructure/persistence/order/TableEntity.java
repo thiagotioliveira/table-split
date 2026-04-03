@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@jakarta.persistence.Table(name = "tables")
+@jakarta.persistence.Table(name = "restaurant_tables")
 public class TableEntity {
 
   @Id private UUID id;

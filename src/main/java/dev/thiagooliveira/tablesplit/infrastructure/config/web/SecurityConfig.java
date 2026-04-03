@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
 import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
+import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantFilter;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, TenantFilter tenantFilter)
+      throws Exception {
 
     http.csrf(csrf -> csrf.disable()) // desabilita CSRF se for necessário (por ex. APIs)
         .headers(
@@ -87,8 +89,10 @@ public class SecurityConfig {
                 form.loginPage("/login")
                     .defaultSuccessUrl("/dashboard", true) // redirect pós login
                     .permitAll())
-        .logout(
-            logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll());
+        .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll())
+        .addFilterAfter(
+            tenantFilter,
+            org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
 
     return http.build();
   }

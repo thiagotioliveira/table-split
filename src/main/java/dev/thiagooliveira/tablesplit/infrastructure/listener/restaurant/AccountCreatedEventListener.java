@@ -67,6 +67,7 @@ public class AccountCreatedEventListener {
                     List.of(new Period("10:00", "23:00"))),
                 new BusinessHours(DayOfWeek.SUNDAY.name().toLowerCase(), true, List.of())),
             "#c9a050",
-            "#e6efe9"));
+            "#e6efe9",
+            Language.PT));
   }
 }

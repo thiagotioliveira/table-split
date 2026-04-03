@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantInterceptor;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.handler.ManagerModuleInterceptor;
 import java.util.Arrays;
@@ -19,10 +20,15 @@ public class WebConfig implements WebMvcConfigurer {
 
   private final GetRestaurant getRestaurant;
   private final ManagerModuleInterceptor managerModuleInterceptor;
+  private final TenantInterceptor tenantInterceptor;
 
-  public WebConfig(GetRestaurant getRestaurant, ManagerModuleInterceptor managerModuleInterceptor) {
+  public WebConfig(
+      GetRestaurant getRestaurant,
+      ManagerModuleInterceptor managerModuleInterceptor,
+      TenantInterceptor tenantInterceptor) {
     this.getRestaurant = getRestaurant;
     this.managerModuleInterceptor = managerModuleInterceptor;
+    this.tenantInterceptor = tenantInterceptor;
   }
 
   @Bean
@@ -42,6 +48,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(localeChangeInterceptor());
+    registry.addInterceptor(tenantInterceptor).addPathPatterns("/@{slug}/**");
     registry
         .addInterceptor(managerModuleInterceptor)
         .addPathPatterns(

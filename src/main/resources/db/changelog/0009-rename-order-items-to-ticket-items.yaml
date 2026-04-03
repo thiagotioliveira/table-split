@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 0009-rename-order-items-to-ticket-items
-      author: antigravity
-      changes:
-        - renameTable:
-            oldTableName: order_items
-            newTableName: ticket_items

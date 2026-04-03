@@ -24,4 +24,5 @@ public record CreateRestaurantCommand(
     String averagePrice,
     List<BusinessHours> days,
     String hashPrimaryColor,
-    String hashAccentColor) {}
+    String hashAccentColor,
+    Language defaultLanguage) {}

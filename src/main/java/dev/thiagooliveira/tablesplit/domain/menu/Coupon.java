@@ -16,7 +16,7 @@ public class Coupon {
   private BigDecimal minOrderValue;
   private LocalDate validDate;
   private Integer usageLimit;
-  private Integer usedCount;
+  private Integer usedCount = 0;
   private List<CouponRule> rules;
   private boolean active;
 
