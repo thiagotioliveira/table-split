@@ -668,7 +668,7 @@
                                 <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.new.orders}">New order notifications</label>
                                 <p th:text="#{notification.new.orders.hint}">Receive alerts when a customer places an order</p>
                             </div>
-                            <div class="switch active" onclick="toggleSwitch(this)"></div>
+                            <div id="switchNewOrders" class="switch" onclick="toggleNotificationTypes(this)"></div>
                         </div>
 
                         <div class="form-switch">
@@ -676,7 +676,7 @@
                                 <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.waiter.call}">Call Waiter alerts</label>
                                 <p th:text="#{notification.waiter.call.hint}">Sound notification when customer requests service</p>
                             </div>
-                            <div class="switch active" onclick="toggleSwitch(this)"></div>
+                            <div id="switchCallWaiter" class="switch" onclick="toggleNotificationTypes(this)"></div>
                         </div>
                     </div>
                 </div>
@@ -993,8 +993,45 @@
             const subscription = await PushNotifications.getSubscription();
             if (subscription) {
                 pushSwitch.classList.add('active');
+                
+                // Fetch preferences via API
+                const prefs = await PushNotifications.getTopicPreferences();
+                if (prefs) {
+                    if (prefs.notifyNewOrders !== false) document.getElementById('switchNewOrders').classList.add('active');
+                    else document.getElementById('switchNewOrders').classList.remove('active');
+                    
+                    if (prefs.notifyCallWaiter !== false) document.getElementById('switchCallWaiter').classList.add('active');
+                    else document.getElementById('switchCallWaiter').classList.remove('active');
+                }
             } else {
                 pushSwitch.classList.remove('active');
+                document.getElementById('switchNewOrders').classList.remove('active');
+                document.getElementById('switchCallWaiter').classList.remove('active');
+                
+                // Dim down preferences visually if main switch is off
+                document.getElementById('switchNewOrders').parentElement.style.opacity = '0.5';
+                document.getElementById('switchCallWaiter').parentElement.style.opacity = '0.5';
+            }
+        }
+
+        async function toggleNotificationTypes(el) {
+            const subscription = await PushNotifications.getSubscription();
+            if (!subscription) {
+                alert("Você precisa ativar as Notificações Push principais antes de configurar os filtros.");
+                return;
+            }
+
+            // Visual optimistic toggle
+            el.classList.toggle('active');
+
+            const notifyNewOrders = document.getElementById('switchNewOrders').classList.contains('active');
+            const notifyCallWaiter = document.getElementById('switchCallWaiter').classList.contains('active');
+
+            const success = await PushNotifications.updateTopicPreferences(notifyNewOrders, notifyCallWaiter);
+            if (!success) {
+                // Revert if failed
+                el.classList.toggle('active');
+                alert("Falha ao atualizar preferências no servidor. Tente novamente.");
             }
         }
 
@@ -1004,10 +1041,21 @@
             try {
                 if (!isActive) {
                     const success = await PushNotifications.subscribe();
-                    if (success) el.classList.add('active');
+                    if (success) {
+                        el.classList.add('active');
+                        document.getElementById('switchNewOrders').parentElement.style.opacity = '1';
+                        document.getElementById('switchCallWaiter').parentElement.style.opacity = '1';
+                        await updatePushSwitchState(); // reload proper values
+                    }
                 } else {
                     const success = await PushNotifications.unsubscribe();
-                    if (success) el.classList.remove('active');
+                    if (success) {
+                        el.classList.remove('active');
+                        document.getElementById('switchNewOrders').classList.remove('active');
+                        document.getElementById('switchCallWaiter').classList.remove('active');
+                        document.getElementById('switchNewOrders').parentElement.style.opacity = '0.5';
+                        document.getElementById('switchCallWaiter').parentElement.style.opacity = '0.5';
+                    }
                 }
             } catch (error) {
                 console.error('Error toggling push notifications:', error);

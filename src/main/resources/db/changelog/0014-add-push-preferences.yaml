@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0014-add-push-preferences
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: push_subscriptions
+            columns:
+              - column:
+                  name: notify_new_orders
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notify_call_waiter
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false

@@ -23,3 +23,7 @@ databaseChangeLog:
       file: db/changelog/0011-promotions-module.yaml
   - include:
       file: db/changelog/0012-add-customer-id-to-ticket-items.yaml
+  - include:
+      file: db/changelog/0013-create-push-subscriptions-table.yaml
+  - include:
+      file: db/changelog/0014-add-push-preferences.yaml

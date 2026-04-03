@@ -1,5 +1,5 @@
 // TableSplit Service Worker
-const CACHE_NAME = 'tablesplit-v2';
+const CACHE_NAME = 'tablesplit-v3';
 const STATIC_CACHE = 'tablesplit-static-v1';
 const DYNAMIC_CACHE = 'tablesplit-dynamic-v1';
 

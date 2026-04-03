@@ -68,7 +68,13 @@ public class PushNotificationService {
                   restaurantId);
               repository.save(
                   new PushSubscription(
-                      sub.getId(), restaurantId, data.endpoint(), data.p256dh(), data.auth()));
+                      sub.getId(),
+                      restaurantId,
+                      data.endpoint(),
+                      data.p256dh(),
+                      data.auth(),
+                      sub.isNotifyNewOrders(),
+                      sub.isNotifyCallWaiter()));
             },
             () -> {
               logger.info("Creating NEW push subscription for restaurant: {}", restaurantId);
@@ -83,24 +89,70 @@ public class PushNotificationService {
     repository.deleteByEndpoint(endpoint);
   }
 
+  @Transactional
+  public void updatePreferences(
+      String endpoint, boolean notifyNewOrders, boolean notifyCallWaiter) {
+    logger.info("Updating preferences for endpoint: {}", endpoint);
+    repository
+        .findByEndpoint(endpoint)
+        .ifPresent(
+            sub -> {
+              sub.setNotifyNewOrders(notifyNewOrders);
+              sub.setNotifyCallWaiter(notifyCallWaiter);
+              repository.save(sub);
+            });
+  }
+
+  public java.util.Optional<java.util.Map<String, Boolean>> getPreferences(String endpoint) {
+    return repository
+        .findByEndpoint(endpoint)
+        .map(
+            sub ->
+                java.util.Map.of(
+                    "notifyNewOrders", sub.isNotifyNewOrders(),
+                    "notifyCallWaiter", sub.isNotifyCallWaiter()));
+  }
+
   public String getPublicKey() {
     return publicKey;
   }
 
+  public void sendNewOrderNotification(UUID restaurantId, String payload) {
+    List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
+    List<PushSubscription> filtered =
+        subscriptions.stream().filter(PushSubscription::isNotifyNewOrders).toList();
+
+    broadcast(restaurantId, payload, filtered, "New Order");
+  }
+
+  public void sendCallWaiterNotification(UUID restaurantId, String payload) {
+    List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
+    List<PushSubscription> filtered =
+        subscriptions.stream().filter(PushSubscription::isNotifyCallWaiter).toList();
+
+    broadcast(restaurantId, payload, filtered, "Call Waiter");
+  }
+
   public void sendNotification(UUID restaurantId, String payload) {
+    List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
+    broadcast(restaurantId, payload, subscriptions, "General");
+  }
+
+  private void broadcast(
+      UUID restaurantId, String payload, List<PushSubscription> targetSubscriptions, String topic) {
     if (pushService == null) {
       logger.warn(
           "Cannot broadcast push notification: PushService is not initialized (VAPID keys missing)");
       return;
     }
 
-    List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
     logger.info(
-        "Broadcasting notification to restaurant: {}. Total registered devices: {}",
+        "Broadcasting [{}] notification to restaurant: {}. Devices targeted: {}",
+        topic,
         restaurantId,
-        subscriptions.size());
+        targetSubscriptions.size());
 
-    for (PushSubscription sub : subscriptions) {
+    for (PushSubscription sub : targetSubscriptions) {
       try {
         Subscription subscription =
             new Subscription(

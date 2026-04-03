@@ -25,6 +25,12 @@ public class PushSubscription {
   @Column(nullable = false)
   private String auth;
 
+  @Column(name = "notify_new_orders", nullable = false)
+  private boolean notifyNewOrders = true;
+
+  @Column(name = "notify_call_waiter", nullable = false)
+  private boolean notifyCallWaiter = true;
+
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
@@ -40,6 +46,26 @@ public class PushSubscription {
     this.endpoint = endpoint;
     this.p256dh = p256dh;
     this.auth = auth;
+    this.notifyNewOrders = true;
+    this.notifyCallWaiter = true;
+    this.createdAt = ZonedDateTime.now();
+  }
+
+  public PushSubscription(
+      UUID id,
+      UUID restaurantId,
+      String endpoint,
+      String p256dh,
+      String auth,
+      boolean notifyNewOrders,
+      boolean notifyCallWaiter) {
+    this.id = id;
+    this.restaurantId = restaurantId;
+    this.endpoint = endpoint;
+    this.p256dh = p256dh;
+    this.auth = auth;
+    this.notifyNewOrders = notifyNewOrders;
+    this.notifyCallWaiter = notifyCallWaiter;
     this.createdAt = ZonedDateTime.now();
   }
 
@@ -65,5 +91,21 @@ public class PushSubscription {
 
   public ZonedDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public boolean isNotifyNewOrders() {
+    return notifyNewOrders;
+  }
+
+  public void setNotifyNewOrders(boolean notifyNewOrders) {
+    this.notifyNewOrders = notifyNewOrders;
+  }
+
+  public boolean isNotifyCallWaiter() {
+    return notifyCallWaiter;
+  }
+
+  public void setNotifyCallWaiter(boolean notifyCallWaiter) {
+    this.notifyCallWaiter = notifyCallWaiter;
   }
 }

@@ -42,6 +42,25 @@ public class PushNotificationController {
     return ResponseEntity.ok(pushNotificationService.getPublicKey());
   }
 
+  @PostMapping("/status")
+  public ResponseEntity<java.util.Map<String, Boolean>> getStatus(@RequestBody String endpoint) {
+    return pushNotificationService
+        .getPreferences(endpoint)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping("/preferences")
+  public ResponseEntity<Void> updatePreferences(
+      @RequestBody
+          dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
+                  .UpdatePreferencesRequest
+              request) {
+    pushNotificationService.updatePreferences(
+        request.endpoint(), request.notifyNewOrders(), request.notifyCallWaiter());
+    return ResponseEntity.ok().build();
+  }
+
   @PostMapping("/test")
   public ResponseEntity<Void> sendTest(Authentication auth) {
     AccountContext context = (AccountContext) auth.getPrincipal();

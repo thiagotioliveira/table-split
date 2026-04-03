@@ -42,7 +42,7 @@ public class TicketEventListener {
           String.format(
               "{\"title\": \"Novo Pedido - Mesa %s\", \"body\": \"%s fez um novo pedido\", \"url\": \"/orders\"}",
               event.getTableCod(), model.getCustomerName());
-      pushNotificationService.sendNotification(event.getRestaurantId(), payload);
+      pushNotificationService.sendNewOrderNotification(event.getRestaurantId(), payload);
     } catch (Exception e) {
       // Silently fail push if anything goes wrong
     }
@@ -70,7 +70,7 @@ public class TicketEventListener {
           String.format(
               "{\"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
               event.getTableCod(), event.getTableCod());
-      pushNotificationService.sendNotification(event.getRestaurantId(), payload);
+      pushNotificationService.sendCallWaiterNotification(event.getRestaurantId(), payload);
     } catch (Exception e) {
       // Silently fail
     }

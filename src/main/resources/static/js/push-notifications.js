@@ -130,5 +130,47 @@ const PushNotifications = {
             // Silently fail sync to avoid interrupting user experience
             console.error('[Push] Periodic sync failed:', error);
         }
+    },
+
+    async getTopicPreferences() {
+        const subscription = await this.getSubscription();
+        if (!subscription) return null;
+
+        try {
+            const response = await fetch('/api/notifications/status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: subscription.endpoint
+            });
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (err) {
+            console.error('Failed to get preferences:', err);
+        }
+        return null;
+    },
+
+    async updateTopicPreferences(notifyNewOrders, notifyCallWaiter) {
+        const subscription = await this.getSubscription();
+        if (!subscription) return false;
+
+        const data = {
+            endpoint: subscription.endpoint,
+            notifyNewOrders: notifyNewOrders,
+            notifyCallWaiter: notifyCallWaiter
+        };
+
+        try {
+            const response = await fetch('/api/notifications/preferences', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            return response.ok;
+        } catch (err) {
+            console.error('Failed to update preferences:', err);
+            return false;
+        }
     }
 };
