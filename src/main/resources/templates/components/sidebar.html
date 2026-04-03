@@ -87,7 +87,8 @@
     </div>
 </header>
 
-<script>
+    <script src="/js/push-notifications.js?v=20260403"></script>
+    <script>
     // Sidebar functions
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -144,7 +145,12 @@
     }
 
     // Run on page load
-    document.addEventListener('DOMContentLoaded', initSidebarState);
+    document.addEventListener('DOMContentLoaded', () => {
+        initSidebarState();
+        if (typeof PushNotifications !== 'undefined' && typeof PushNotifications.syncWithServer === 'function') {
+            PushNotifications.syncWithServer();
+        }
+    });
 
 </script>
 

@@ -22,6 +22,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalC
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
@@ -131,7 +132,10 @@ public class TableController {
     model.addAttribute("menuItems", menuItems);
 
     if (selectedTableId != null) {
-      var table = getTables.findById(selectedTableId).orElseThrow();
+      var table =
+          getTables
+              .findById(selectedTableId)
+              .orElseThrow(() -> new NotFoundException("error.table.not.found"));
       model.addAttribute("selectedTableObj", table);
       model.addAttribute("selectedTable", selectedTableId);
       var activeOrder = getOrder.execute(selectedTableId);
@@ -303,7 +307,10 @@ public class TableController {
       @ModelAttribute PlaceOrderRequest request,
       RedirectAttributes redirectAttributes) {
     var account = (AccountContext) auth.getPrincipal();
-    var table = getTables.findById(tableId).orElseThrow();
+    var table =
+        getTables
+            .findById(tableId)
+            .orElseThrow(() -> new NotFoundException("error.table.not.found"));
     request.setRestaurantId(table.getRestaurantId());
     request.setTableCod(table.getCod());
     request.setServiceFee(account.getRestaurant().getServiceFee());

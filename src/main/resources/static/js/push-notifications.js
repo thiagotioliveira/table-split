@@ -113,5 +113,22 @@ const PushNotifications = {
         if (!response.ok) {
             throw new Error('Erro ao enviar comando de teste');
         }
+    },
+
+    async syncWithServer() {
+        try {
+            if (!await this.isSupported()) return;
+            
+            const subscription = await this.getSubscription();
+            if (subscription) {
+                // If we have a subscription locally, ensure server has it too
+                // The backend uses 'Upsert' logic, so this is safe and transparent
+                await this.saveSubscription(subscription);
+                console.log('[Push] Subscription synchronized with server');
+            }
+        } catch (error) {
+            // Silently fail sync to avoid interrupting user experience
+            console.error('[Push] Periodic sync failed:', error);
+        }
     }
 };

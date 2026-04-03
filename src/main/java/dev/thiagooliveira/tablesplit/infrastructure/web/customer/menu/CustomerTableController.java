@@ -12,6 +12,7 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.Locale;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,10 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody UpdateCustomerNameRequest request) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
 
     transactionalContext.execute(
@@ -73,12 +77,17 @@ public class CustomerTableController {
   }
 
   private Table getTable(Restaurant restaurant, String tableCode) {
-    return getTables.findByRestaurantIdAndCod(restaurant.getId(), tableCode).orElseThrow();
+    return getTables
+        .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
+        .orElseThrow(() -> new NotFoundException("error.table.not.found"));
   }
 
   private Table getAndOpenTable(
       Restaurant restaurant, String tableCode, UUID customerId, String customerName) {
-    var table = getTables.findByRestaurantIdAndCod(restaurant.getId(), tableCode).orElseThrow();
+    var table =
+        getTables
+            .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
+            .orElseThrow(() -> new NotFoundException("error.table.not.found"));
     if (table.getStatus() == TableStatus.AVAILABLE) {
       final java.util.UUID tableId = table.getId();
       transactionalContext.execute(
@@ -90,7 +99,10 @@ public class CustomerTableController {
 
   @GetMapping("/@{slug}/table/{tableCode}")
   public String index(@PathVariable String slug, @PathVariable String tableCode, Model model) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
 
     String cuisineType = null;
@@ -120,7 +132,10 @@ public class CustomerTableController {
   @GetMapping("/@{slug}/table/{tableCode}/menu")
   public String menu(
       @PathVariable String slug, @PathVariable String tableCode, Model model, Locale locale) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
     if (table.isAvailable()) {
       return String.format("redirect:/@%s/table/%s", slug, tableCode);
@@ -143,8 +158,14 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody OpenTableRequest request) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
-    var table = getTables.findByRestaurantIdAndCod(restaurant.getId(), tableCode).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var table =
+        getTables
+            .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
+            .orElseThrow(() -> new NotFoundException("error.table.not.found"));
 
     transactionalContext.execute(
         () ->
@@ -163,7 +184,10 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody PlaceOrderRequest request) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     request.setRestaurantId(restaurant.getId());
     request.setTableCod(tableCode);
     request.setServiceFee(restaurant.getServiceFee());
@@ -177,7 +201,10 @@ public class CustomerTableController {
   @ResponseBody
   public ResponseEntity<Void> callWaiter(
       @PathVariable String slug, @PathVariable String tableCode) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
 
     transactionalContext.execute(() -> callWaiter.execute(restaurant.getId(), tableCode));
 

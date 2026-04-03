@@ -45,7 +45,11 @@ public class PushNotificationService {
   @PostConstruct
   public void init() throws GeneralSecurityException {
     Security.addProvider(new BouncyCastleProvider());
-    this.pushService = new PushService(publicKey, privateKey, subject);
+    if (publicKey != null && !publicKey.isBlank() && privateKey != null && !privateKey.isBlank()) {
+      this.pushService = new PushService(publicKey, privateKey, subject);
+    } else {
+      logger.warn("VAPID keys not configured. Push notifications will be disabled.");
+    }
   }
 
   @Transactional
@@ -84,6 +88,12 @@ public class PushNotificationService {
   }
 
   public void sendNotification(UUID restaurantId, String payload) {
+    if (pushService == null) {
+      logger.warn(
+          "Cannot broadcast push notification: PushService is not initialized (VAPID keys missing)");
+      return;
+    }
+
     List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
     logger.info(
         "Broadcasting notification to restaurant: {}. Total registered devices: {}",

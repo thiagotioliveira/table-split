@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping
-public class ProfileController {
+public class RestaurantProfileController {
 
   private final Time time;
   private final GetRestaurant getRestaurant;
   private final MessageSource messageSource;
 
-  public ProfileController(Time time, GetRestaurant getRestaurant, MessageSource messageSource) {
+  public RestaurantProfileController(
+      Time time, GetRestaurant getRestaurant, MessageSource messageSource) {
     this.time = time;
     this.getRestaurant = getRestaurant;
     this.messageSource = messageSource;

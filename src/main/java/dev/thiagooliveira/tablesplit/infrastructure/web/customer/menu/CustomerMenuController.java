@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.Locale;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +30,10 @@ public class CustomerMenuController {
 
   @GetMapping("/@{slug}/menu")
   public String index(@PathVariable String slug, Model model, Locale locale) {
-    var restaurant = getRestaurant.execute(slug).orElseThrow();
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var requestLanguages = java.util.List.of(Language.fromLocale(locale));
     var categories = getCategory.execute(restaurant.getId(), requestLanguages);
     var items = getItem.execute(restaurant.getId(), requestLanguages, true);
