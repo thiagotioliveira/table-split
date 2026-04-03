@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.notification;
 
+import dev.thiagooliveira.tablesplit.application.notification.PushSubscriptionRepository;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
-import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model.SubscriptionData;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;

@@ -1,3 +1,6 @@
+cloudinary:
+  root-folder: prod
+
 logging:
   level:
     ROOT: OFF
