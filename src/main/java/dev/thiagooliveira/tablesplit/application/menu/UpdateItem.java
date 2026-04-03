@@ -32,6 +32,7 @@ public class UpdateItem {
     item.setPrice(command.price());
     item.setDescription(command.description());
     item.setName(command.name());
+    item.setAvailable(command.available());
     item.setCategory(new Category());
     item.getCategory().setId(command.categoryId());
 

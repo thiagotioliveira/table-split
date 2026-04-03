@@ -12,4 +12,16 @@ public record UpdateItemCommand(
     ImageCommand images,
     Map<Language, String> name,
     Map<Language, String> description,
-    BigDecimal price) {}
+    BigDecimal price,
+    boolean available) {
+
+  public UpdateItemCommand(
+      UUID categoryId,
+      List<UUID> imageIdsToKeep,
+      ImageCommand images,
+      Map<Language, String> name,
+      Map<Language, String> description,
+      BigDecimal price) {
+    this(categoryId, imageIdsToKeep, images, name, description, price, true);
+  }
+}

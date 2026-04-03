@@ -64,6 +64,7 @@ public class ItemEntity {
     domain.setDescription(
         this.description != null ? this.description.getTranslations() : new HashMap<>());
     domain.setPrice(this.price);
+    domain.setAvailable(this.active);
     domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
     return domain;
   }
@@ -76,7 +77,7 @@ public class ItemEntity {
     entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
     entity.setDescription(LocalizedTextEntity.fromMap(domain.getDescription()));
     entity.setPrice(domain.getPrice());
-    entity.setActive(true);
+    entity.setActive(domain.isAvailable());
     if (domain.getImages() != null) {
       entity.setImages(
           new HashSet<>(

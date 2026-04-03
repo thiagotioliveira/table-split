@@ -36,8 +36,12 @@ public class CustomerMenuController {
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var requestLanguages = java.util.List.of(Language.fromLocale(locale));
     var categories = getCategory.execute(restaurant.getId(), requestLanguages);
-    var items = getItem.execute(restaurant.getId(), requestLanguages, true);
-    CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, items);
+    var allItems = getItem.execute(restaurant.getId(), requestLanguages, true);
+    var availableItems =
+        allItems.stream()
+            .filter(dev.thiagooliveira.tablesplit.domain.menu.Item::isAvailable)
+            .toList();
+    CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, availableItems);
     model.addAttribute("customerMenu", menuModel);
     return "customer-menu";
   }

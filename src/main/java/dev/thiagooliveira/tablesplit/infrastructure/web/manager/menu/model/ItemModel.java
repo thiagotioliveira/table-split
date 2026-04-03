@@ -16,6 +16,7 @@ public class ItemModel {
   private final Map<String, String> name;
   private final Map<String, String> description;
   private final BigDecimal price;
+  private final boolean available;
 
   public ItemModel(Item item, Map<String, String> categoryName, String symbol) {
     this.id = item.getId().toString();
@@ -24,6 +25,7 @@ public class ItemModel {
     this.name = convertMap(item.getName());
     this.description = convertMap(item.getDescription());
     this.price = item.getPrice();
+    this.available = item.isAvailable();
     this.images =
         item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
     this.imageUrls = this.images.stream().map(ImageModel::getUrl).toList();
@@ -65,5 +67,9 @@ public class ItemModel {
 
   public List<ImageModel> getImages() {
     return images;
+  }
+
+  public boolean isAvailable() {
+    return available;
   }
 }

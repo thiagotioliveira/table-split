@@ -260,7 +260,8 @@
             <p style="text-align: center; padding: 2rem;" th:if="${menu.items.isEmpty()}">Nenhum item cadastrado.</p>
             <div class="menu-items-grid" th:if="${!menu.items.isEmpty()}">
               <!-- Item 1 -->
-              <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}">
+              <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}"
+                th:style="${!item.available} ? 'opacity: 0.6;' : ''">
                 <div class="menu-item-image">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -277,8 +278,11 @@
                 <div class="menu-item-content">
                   <div class="menu-item-header">
                     <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
-                    <div class="menu-item-price">
-                      <span th:text="${menu.currencySymbol}">€</span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">28,90</span></div>
+                    <div style="display:flex; align-items:center; gap:0.4rem;">
+                      <div class="menu-item-price">
+                        <span th:text="${menu.currencySymbol}">€</span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">28,90</span></div>
+                      <span th:if="${!item.available}" style="font-size:0.65rem; font-weight:600; color:white; background:var(--destructive); border-radius:0.25rem; padding:0.1rem 0.35rem; text-transform:uppercase;">Indisponível</span>
+                    </div>
                   </div>
                   <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com
                     tomate, manjericão e azeite</p>
@@ -508,12 +512,13 @@
               placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
           </div>
 
-          <div class="form-switch" th:if="${false}">
+          <div class="form-switch">
             <div class="form-switch-label">
               <label class="form-label" style="margin-bottom: 0;">Disponível para pedidos</label>
-              <p>Desative se o item não estiver disponível</p>
+              <p>Desative se o item não estiver disponível temporariamente</p>
             </div>
-            <div id="itemAvailable" class="switch active" onclick="toggleSwitch(this)"></div>
+            <div id="itemAvailable" class="switch active" onclick="toggleAvailableSwitch(this)"></div>
+            <input type="hidden" name="available" id="itemAvailableInput" value="true">
           </div>
         </div>
         <div class="modal-footer">
@@ -791,6 +796,17 @@
           document.querySelector('#itemForm [name="price"]').value = filtered.price;
           document.querySelector('#itemForm [name="categoryId"]').value = filtered.categoryId;
 
+          // Set availability toggle
+          const availSwitch = document.getElementById('itemAvailable');
+          const availInput = document.getElementById('itemAvailableInput');
+          if (filtered.available !== false) {
+            availSwitch.classList.add('active');
+            availInput.value = 'true';
+          } else {
+            availSwitch.classList.remove('active');
+            availInput.value = 'false';
+          }
+
           // Load existing images
           if (filtered.images) {
             itemImages = filtered.images.map(img => ({
@@ -828,6 +844,14 @@
       //document.getElementById('itemTags').value = '';
       //document.getElementById('itemTags').value = '';
       clearImageGallery();
+      // Reset availability toggle
+      document.getElementById('itemAvailable').classList.add('active');
+      document.getElementById('itemAvailableInput').value = 'true';
+    }
+
+    function toggleAvailableSwitch(el) {
+      el.classList.toggle('active');
+      document.getElementById('itemAvailableInput').value = el.classList.contains('active') ? 'true' : 'false';
     }
 
     function editItem(id, lang) {

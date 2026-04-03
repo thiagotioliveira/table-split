@@ -36,6 +36,7 @@ public class UpdateItemModel {
 
   private List<UUID> imageIdsToKeep;
   private List<MultipartFile> newImages;
+  private boolean available = true;
 
   public CreateItemCommand toCreateItemCommand() {
     return new CreateItemCommand(
@@ -44,7 +45,8 @@ public class UpdateItemModel {
         toImageCommand(),
         convertLanguages(this.name),
         convertLanguages(this.description),
-        this.price);
+        this.price,
+        this.available);
   }
 
   public UpdateItemCommand toUpdateItemCommand() {
@@ -54,7 +56,8 @@ public class UpdateItemModel {
         toImageCommand(),
         convertLanguages(this.name),
         convertLanguages(this.description),
-        this.price);
+        this.price,
+        this.available);
   }
 
   private ImageCommand toImageCommand() {
@@ -137,5 +140,13 @@ public class UpdateItemModel {
 
   public void setNewImages(List<MultipartFile> newImages) {
     this.newImages = newImages;
+  }
+
+  public boolean isAvailable() {
+    return available;
+  }
+
+  public void setAvailable(boolean available) {
+    this.available = available;
   }
 }

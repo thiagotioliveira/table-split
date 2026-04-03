@@ -39,6 +39,7 @@ public class CreateItem {
     item.setCategory(new Category());
     item.getCategory().setId(command.categoryId());
     item.setPrice(command.price());
+    item.setAvailable(command.available());
     item.setImages(new ArrayList<>());
 
     if (command.images() != null && command.images().newImages() != null) {
