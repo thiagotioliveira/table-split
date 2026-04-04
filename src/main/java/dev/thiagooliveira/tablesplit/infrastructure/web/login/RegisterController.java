@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlread
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
+
   private final Time time;
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder passwordEncoder;
@@ -43,6 +45,11 @@ public class RegisterController {
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
+  }
+
+  @ModelAttribute("languages")
+  public Language[] languages() {
+    return Language.values();
   }
 
   @GetMapping

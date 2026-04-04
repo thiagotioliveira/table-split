@@ -937,8 +937,7 @@
               <div class="form-group">
                 <label for="defaultLanguage" class="form-label"><span th:text="#{page.register.step.account.language}">Languages</span> <span class="required">*</span></label>
                 <select id="defaultLanguage" class="form-input" th:field="*{user.language}">
-                  <option value="EN" selected th:text="#{page.register.step.account.language.en}">English</option>
-                  <option value="PT" th:text="#{page.register.step.account.language.pt}">Portuguese</option>
+                  <option th:each="lang : ${languages}" th:value="${lang.name()}" th:text="#{${lang.name}}">English</option>
                 </select>
                 <div th:if="${#fields.hasErrors('user.language')}" th:errors="*{user.language}" style="color: var(--error);"></div>
               </div>
