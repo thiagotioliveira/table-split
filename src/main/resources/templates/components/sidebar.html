@@ -69,7 +69,7 @@
 <!-- Header -->
 <header class="dashboard-header">
     <div class="dashboard-header-content">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3" style="flex: 1;">
             <button class="hamburger-btn" onclick="openSidebar()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
             </button>
@@ -80,10 +80,14 @@
                 <span style="font-weight: 700;" th:text="${pageTitle}">Title</span>
             </div>
         </div>
-        <h1 class="hidden lg-block" style="font-size: 1.25rem; font-weight: 600;" th:text="${pageTitle}">Title</h1>
-        <th:block th:if="${extraContent != null}">
-            <th:block th:replace="${extraContent}"></th:block>
-        </th:block>
+        <div style="flex: 1; display: flex; justify-content: center;">
+            <h1 class="hidden lg-block" style="font-size: 1.25rem; font-weight: 600; margin: 0;" th:text="${pageTitle}">Title</h1>
+        </div>
+        <div style="flex: 1; display: flex; justify-content: flex-end;">
+            <th:block th:if="${extraContent != null}">
+                <th:block th:replace="${extraContent}"></th:block>
+            </th:block>
+        </div>
     </div>
 </header>
 
