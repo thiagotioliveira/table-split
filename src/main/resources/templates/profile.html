@@ -575,33 +575,17 @@
                         </div>
                         <div class="profile-section-body">
                             <div class="language-options">
-                                <label class="language-option" th:classappend="${user.language == 'PT'} ? ' selected'" th:append onclick="selectLanguage(this, 'pt-BR')">
-                                    <input type="radio" value="PT" th:field="*{language}">
-                                    <div class="language-radio"></div>
-                                    <span class="language-flag">🇵🇹</span>
-                                    <div class="language-details">
-                                        <div class="language-name">Português</div>
-                                        <div class="language-region">Europeu</div>
-                                    </div>
-                                </label>
-                                <label class="language-option" th:classappend="${user.language == 'EN'} ? ' selected'"  onclick="selectLanguage(this, 'en-US')">
-                                    <input type="radio" value="EN" th:field="*{language}">
-                                    <div class="language-radio"></div>
-                                    <span class="language-flag">🇬🇧</span>
-                                    <div class="language-details">
-                                        <div class="language-name">English</div>
-                                        <div class="language-region">Great Britain</div>
-                                    </div>
-                                </label>
-                                <label class="language-option" onclick="selectLanguage(this, 'es-ES')" th:if="${false}">
-                                    <input type="radio" name="language" value="es-ES">
-                                    <div class="language-radio"></div>
-                                    <span class="language-flag">🇪🇸</span>
-                                    <div class="language-details">
-                                        <div class="language-name">Español</div>
-                                        <div class="language-region">España</div>
-                                    </div>
-                                </label>
+                                <th:block th:each="lang : ${context.restaurant.customerLanguages}">
+                                    <label class="language-option" th:classappend="${user.language == lang.name()} ? ' selected'" th:attr="data-lang=${lang.name().toLowerCase()}"
+                                           onclick="selectLanguage(this)">
+                                        <input type="radio" th:value="${lang.name()}" th:field="*{language}">
+                                        <div class="language-radio"></div>
+                                        <span class="language-flag" th:text="${lang.flag}">🇵🇹</span>
+                                        <div class="language-details">
+                                            <div class="language-name" th:text="#{${lang.name}}">Português</div>
+                                        </div>
+                                    </label>
+                                </th:block>
                             </div>
                         </div>
                     </div>

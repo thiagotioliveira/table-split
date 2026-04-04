@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +25,11 @@ public class ContextModel {
             restaurant.getId(),
             restaurant.getName(),
             restaurant.getCurrency(),
-            restaurant.getCustomerLanguages());
+            restaurant.getCustomerLanguages().stream()
+                .map(
+                    l ->
+                        dev.thiagooliveira.tablesplit.infrastructure.web.Language.valueOf(l.name()))
+                .toList());
     this.sidebarModules = account.getSidebarModules();
     this.footerModules = account.getFooterModules();
   }
