@@ -1197,6 +1197,84 @@
     }
 
     .waiter-modal-btn.primary:hover { background: var(--primary-dark); }
+
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+
+    .lightbox-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lightbox-content {
+      max-width: 95%;
+      max-height: 95%;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      cursor: default;
+    }
+
+    .lightbox-overlay.active .lightbox-content {
+      transform: scale(1);
+    }
+
+    .lightbox-image {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      display: block;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-close svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .lightbox-content {
+        max-width: 100%;
+      }
+      .lightbox-image {
+        border-radius: 0;
+      }
+      .lightbox-close {
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 50%;
+        padding: 8px;
+        z-index: 10;
+      }
+    }
   </style>
 </head>
 <body th:style="|--primary: ${profile.hashPrimaryColor};
@@ -1473,7 +1551,10 @@
         <a href="#" class="section-link" th:if="${profile.galleryImages.size() > 6}">Ver todas (<span th:text="${profile.galleryImages.size()}">24</span>)</a>
       </div>
       <div class="gallery-grid">
-        <div th:each="image, iter : ${profile.galleryImages}" th:if="${iter.index < 6}" class="gallery-item" th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''">
+        <div th:each="image, iter : ${profile.galleryImages}" th:if="${iter.index < 6}" class="gallery-item" 
+             th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''"
+             th:attr="data-src=${image.name}"
+             onclick="openLightbox(this.getAttribute('data-src'))">
           <img th:src="${image.name}" th:alt="${profile.name}">
           <span th:if="${iter.index == 5 and profile.galleryImages.size() > 6}" th:text="'+' + (${profile.galleryImages.size()} - 6)">+18</span>
         </div>
@@ -1600,6 +1681,16 @@
       </div>
     </div>
   </div>
+  <!-- Lightbox -->
+  <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <img src="" alt="" class="lightbox-image" id="lightboxImage">
+    </div>
+  </div>
+
   <script th:inline="javascript">
     const hasImage = /*[[${!#lists.isEmpty(profile.coverImages)}]]*/false;
     const totalSlides = /*[[${profile.coverImages.size()}]]*/0;
@@ -1660,21 +1751,22 @@
         dot.classList.add('active');
       });
     });
-    // Waiter Modal
-    /*
-    function openWaiterModal() {
-      document.getElementById('waiterModalOverlay').classList.add('active');
+    /* Lightbox functions */
+    function openLightbox(src) {
+      const overlay = document.getElementById('lightboxOverlay');
+      const img = document.getElementById('lightboxImage');
+      img.src = src;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    function closeWaiterModal() {
-      document.getElementById('waiterModalOverlay').classList.remove('active');
+    function closeLightbox() {
+      const overlay = document.getElementById('lightboxOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
     }
 
-    function confirmCallWaiter() {
-      closeWaiterModal();
-      alert('Garçom notificado! Ele chegará em breve.');
-    }
-    */
+    // Modal Waiter
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       startCarousel();
