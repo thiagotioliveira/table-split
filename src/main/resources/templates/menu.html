@@ -440,7 +440,7 @@
         </div>
 
         <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
-             th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
+             th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${languages}">
           <div class="form-group">
             <label class="form-label" th:for="'itemName-' + ${lang.name()}">
               <span th:text="#{page.menu.item.name}">Name</span> <span class="required">*</span></label>
