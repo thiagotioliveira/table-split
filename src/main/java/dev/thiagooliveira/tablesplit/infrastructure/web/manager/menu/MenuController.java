@@ -187,7 +187,7 @@ public class MenuController {
     if (!model.containsAttribute("updateItemModel")) {
       model.addAttribute("updateItemModel", new UpdateItemModel());
     }
-    model.addAttribute("languages", Language.values());
+    model.addAttribute("languages", context.getRestaurant().getCustomerLanguages());
   }
 
   @ExceptionHandler(InfrastructureException.class)

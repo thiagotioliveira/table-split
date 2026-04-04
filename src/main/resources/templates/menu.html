@@ -172,73 +172,134 @@
 </head>
 
 <body>
-  <div th:insert="~{components/sidebar :: sidebar(#{page.menu.header.title}, ~{})}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{page.menu.header.title}, ~{})}"></div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div th:replace="~{components/alert :: alert}"></div>
+<!-- Main Content -->
+<main class="main-content">
+  <div th:replace="~{components/alert :: alert}"></div>
 
-    <div style="padding: 1.5rem 1.5rem 0">
-      <button class="btn btn-primary"
-        th:attr="onclick=|openItemModal(null, '${context.restaurant.customerLanguages[0]}')|">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14" />
-          <path d="M12 5v14" />
-        </svg>
-        <span th:text="#{page.menu.item.new}">New Item</span>
-      </button>
-    </div>
+  <div style="padding: 1.5rem 1.5rem 0">
+    <button class="btn btn-primary"
+            th:attr="onclick=|openItemModal(null, '${context.restaurant.customerLanguages[0]}')|">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14" />
+        <path d="M12 5v14" />
+      </svg>
+      <span th:text="#{page.menu.item.new}">New Item</span>
+    </button>
+  </div>
 
-    <div class="dashboard-body">
-      <div class="menu-layout">
-        <!-- Categories Sidebar -->
-        <div class="categories-sidebar">
-          <div class="categories-card">
-            <div class="categories-header">
-              <h2 th:text="#{page.menu.category.title}">Categories</h2>
-              <button type="button" class="btn btn-ghost btn-sm"
-                th:attr="onclick=|openCategoryModal(null, '${context.restaurant.customerLanguages[0]}')|">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14" />
-                  <path d="M12 5v14" />
-                </svg>
-              </button>
-            </div>
+  <div class="dashboard-body">
+    <div class="menu-layout">
+      <!-- Categories Sidebar -->
+      <div class="categories-sidebar">
+        <div class="categories-card">
+          <div class="categories-header">
+            <h2 th:text="#{page.menu.category.title}">Categories</h2>
+            <button type="button" class="btn btn-ghost btn-sm"
+                    th:attr="onclick=|openCategoryModal(null, '${context.restaurant.customerLanguages[0]}')|">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+            </button>
+          </div>
 
-            <div class="categories-list">
-              <button class="category-item active" th:attr="onclick=|selectCategory(null, '${#locale.language}')|">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m7.5 4.27 9 5.15" />
-                  <path
-                    d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                  <path d="m3.3 7 8.7 5 8.7-5" />
-                  <path d="M12 22V12" />
-                </svg>
-                <span class="category-name" th:text="#{page.menu.item.all}">All items</span>
-                <span class="category-count" th:text="${menu.totalAmount}">8</span>
-              </button>
+          <div class="categories-list">
+            <button class="category-item active" th:attr="onclick=|selectCategory(null, '${#locale.language}')|">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m7.5 4.27 9 5.15" />
+                <path
+                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
+              </svg>
+              <span class="category-name" th:text="#{page.menu.item.all}">All items</span>
+              <span class="category-count" th:text="${menu.totalAmount}">8</span>
+            </button>
 
-              <div class="category-item" th:data-category-id="${category.id}"
-                th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|"
-                th:each="category : ${menu.categories}">
+            <div class="category-item" th:data-category-id="${category.id}"
+                 th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|"
+                 th:each="category : ${menu.categories}">
                 <span class="category-name"
-                  th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
-                <span class="category-count" th:text="${category.amount}">2</span>
-                <div class="category-actions">
-                  <button type="button"
-                    th:attr="onclick=|editCategory('${category.id}', '${context.restaurant.customerLanguages[0]}')|">
+                      th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
+              <span class="category-count" th:text="${category.amount}">2</span>
+              <div class="category-actions">
+                <button type="button"
+                        th:attr="onclick=|editCategory('${category.id}', '${context.restaurant.customerLanguages[0]}')|">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                  </svg>
+                </button>
+                <button class="delete"
+                        th:attr="onclick=|event.stopPropagation(); deleteCategory('${category.id}', '${#locale.language}')|">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Items Grid -->
+      <div class="menu-items-section">
+        <div class="menu-items-card">
+          <div class="menu-items-header">
+            <h2 th:text="#{page.menu.item.all}">All items</h2>
+            <p><span th:text="${menu.totalAmount}">8</span> <span th:text="#{page.menu.item.items}">items</span></p>
+          </div>
+          <p style="text-align: center; padding: 2rem;" th:if="${menu.items.isEmpty()}">Nenhum item cadastrado.</p>
+          <div class="menu-items-grid" th:if="${!menu.items.isEmpty()}">
+            <!-- Item 1 -->
+            <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}"
+                 th:style="${!item.available} ? 'opacity: 0.6;' : ''">
+              <div class="menu-item-image">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     th:if="${item.imageUrls.isEmpty()}">
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                  <line x1="16" x2="22" y1="5" y2="5" />
+                  <line x1="19" x2="19" y1="2" y2="8" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+                <img th:src="${item.imageUrls.get(0) + '?w=400'}" th:alt="${item.name[#locale.language]}"
+                     th:if="${!item.imageUrls.isEmpty()}">
+              </div>
+              <div class="menu-item-content">
+                <div class="menu-item-header">
+                  <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
+                  <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <div class="menu-item-price">
+                      <span th:text="${menu.currencySymbol}">€</span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">28,90</span></div>
+                    <span th:if="${!item.available}" style="font-size:0.65rem; font-weight:600; color:white; background:var(--destructive); border-radius:0.25rem; padding:0.1rem 0.35rem; text-transform:uppercase;">Indisponível</span>
+                  </div>
+                </div>
+                <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com
+                  tomate, manjericão e azeite</p>
+                <span class="menu-item-category" th:text="${item.categoryName[#locale.language]}">Starters</span>
+                <div class="menu-item-actions">
+                  <button class="btn btn-ghost btn-sm" th:if="${false}">Desativar</button>
+                  <button class="btn btn-ghost btn-sm"
+                          th:attr="onclick=|editItem('${item.id}', '${context.restaurant.customerLanguages[0]}')|">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                     </svg>
                   </button>
-                  <button class="delete"
-                    th:attr="onclick=|event.stopPropagation(); deleteCategory('${category.id}', '${#locale.language}')|">
+                  <button class="btn btn-ghost btn-sm" style="color: var(--destructive);"
+                          th:attr="onclick=|deleteItem('${item.id}', '${#locale.language}')|">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M3 6h18" />
                       <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                       <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -249,663 +310,597 @@
             </div>
           </div>
         </div>
-
-        <!-- Menu Items Grid -->
-        <div class="menu-items-section">
-          <div class="menu-items-card">
-            <div class="menu-items-header">
-              <h2 th:text="#{page.menu.item.all}">All items</h2>
-              <p><span th:text="${menu.totalAmount}">8</span> <span th:text="#{page.menu.item.items}">items</span></p>
-            </div>
-            <p style="text-align: center; padding: 2rem;" th:if="${menu.items.isEmpty()}">Nenhum item cadastrado.</p>
-            <div class="menu-items-grid" th:if="${!menu.items.isEmpty()}">
-              <!-- Item 1 -->
-              <div class="menu-item-card" th:data-category="${item.categoryId}" th:each="item : ${menu.items}"
-                th:style="${!item.available} ? 'opacity: 0.6;' : ''">
-                <div class="menu-item-image">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    th:if="${item.imageUrls.isEmpty()}">
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
-                    <line x1="16" x2="22" y1="5" y2="5" />
-                    <line x1="19" x2="19" y1="2" y2="8" />
-                    <circle cx="9" cy="9" r="2" />
-                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                  </svg>
-                  <img th:src="${item.imageUrls.get(0) + '?w=400'}" th:alt="${item.name[#locale.language]}"
-                    th:if="${!item.imageUrls.isEmpty()}">
-                </div>
-                <div class="menu-item-content">
-                  <div class="menu-item-header">
-                    <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
-                    <div style="display:flex; align-items:center; gap:0.4rem;">
-                      <div class="menu-item-price">
-                        <span th:text="${menu.currencySymbol}">€</span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">28,90</span></div>
-                      <span th:if="${!item.available}" style="font-size:0.65rem; font-weight:600; color:white; background:var(--destructive); border-radius:0.25rem; padding:0.1rem 0.35rem; text-transform:uppercase;">Indisponível</span>
-                    </div>
-                  </div>
-                  <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com
-                    tomate, manjericão e azeite</p>
-                  <span class="menu-item-category" th:text="${item.categoryName[#locale.language]}">Starters</span>
-                  <div class="menu-item-actions">
-                    <button class="btn btn-ghost btn-sm" th:if="${false}">Desativar</button>
-                    <button class="btn btn-ghost btn-sm"
-                      th:attr="onclick=|editItem('${item.id}', '${context.restaurant.customerLanguages[0]}')|">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                      </svg>
-                    </button>
-                    <button class="btn btn-ghost btn-sm" style="color: var(--destructive);"
-                      th:attr="onclick=|deleteItem('${item.id}', '${#locale.language}')|">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18" />
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
-  <!-- Category Modal -->
-  <div id="categoryModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="categoryModalTitle" th:text="#{page.menu.category.new}">New Category</h3>
+<!-- Category Modal -->
+<div id="categoryModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="categoryModalTitle" th:text="#{page.menu.category.new}">New Category</h3>
+    </div>
+    <form id="categoryForm" th:action="@{'/menu/categories'}" method="post" onsubmit="showLoading('Adicionando categoria')" th:object="${updateCategoryModel}">
+      <input type="hidden" th:field="*{id}">
+      <div class="modal-body">
+        <!-- Language Tabs for Category -->
+        <div class="lang-tabs" id="categoryLangTabs">
+          <button type="button" th:each="lang, stat : ${languages}"
+                  class="lang-tab" th:classappend="${stat.first} ? ' active'"
+                  th:data-lang="${lang.name()}"
+                  onclick="switchCategoryLang(this.dataset.lang, this)">
+            <span class="lang-flag" th:text="${lang.flag}">🇵🇹</span>
+            <span th:text="#{${lang.name}}">Portuguese</span>
+          </button>
+        </div>
+
+        <div class="lang-fields" th:classappend="${stat.first} ? ' active'"
+             th:id="'categoryFields-' + ${lang.name()}" th:each="lang, stat : ${languages}">
+          <div class="form-group">
+            <label class="form-label" th:for="'categoryName-' + ${lang.name()}">
+              <span th:text="#{page.menu.form.category.name}">Name</span> <span class="required">*</span>
+            </label>
+            <input type="text" th:id="'categoryName-' + ${lang.name()}" class="form-input"
+                   th:placeholder="#{page.menu.form.category.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
+            <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
+          </div>
+        </div>
+
+        <!-- Common Fields (outside language tabs) -->
+        <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+          <label class="form-label" for="categoryOrder">
+            <span th:text="#{page.menu.form.category.order}">Display order</span> <span class="required">*</span></label>
+          <input type="number" id="categoryOrder" class="form-input" placeholder="1" min="1" style="max-width: 120px;"
+                 th:field="*{order}">
+          <span class="form-error" th:if="${#fields.hasErrors('order')}" th:errors="*{order}"></span>
+          <p class="form-hint" th:text="#{page.menu.form.category.order.hint}">Categories will be ordered from
+            smallest to largest number.</p>
+        </div>
       </div>
-      <form id="categoryForm" th:action="@{'/menu/categories'}" method="post" onsubmit="showLoading('Adicionando categoria')" th:object="${updateCategoryModel}">
-        <input type="hidden" th:field="*{id}">
-        <div class="modal-body">
-          <!-- Language Tabs for Category -->
-          <div class="lang-tabs" id="categoryLangTabs">
-            <button type="button" th:each="lang, stat : ${languages}"
-                    class="lang-tab" th:classappend="${stat.first} ? ' active'" 
-                    th:data-lang="${lang.name()}"
-                    th:onclick="|switchCategoryLang('${lang.name()}', this)|">
-              <span class="lang-flag" th:text="${lang.flag}">🇵🇹</span> 
-              <span th:text="#{${lang.name}}">Portuguese</span>
-            </button>
-          </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeCategoryModal()"
+                th:text="#{button.cancel}">Cancel</button>
+        <button type="submit" class="btn btn-primary" th:text="#{button.save}">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-          <div class="lang-fields" th:classappend="${stat.first} ? ' active'"
-            th:id="'categoryFields-' + ${lang.name()}" th:each="lang, stat : ${languages}">
-            <div class="form-group">
-              <label class="form-label" th:for="'categoryName-' + ${lang.name()}">
-                <span th:text="#{page.menu.form.category.name}">Name</span> 
-                (<span th:text="${lang.name()}"></span>) <span class="required">*</span>
-              </label>
-              <input type="text" th:id="'categoryName-' + ${lang.name()}" class="form-input"
-                th:placeholder="#{page.menu.form.category.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
-              <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
-            </div>
-          </div>
-
-          <!-- Common Fields (outside language tabs) -->
-          <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-            <label class="form-label" for="categoryOrder">
-              <span th:text="#{page.menu.form.category.order}">Display order</span> <span class="required">*</span></label>
-            <input type="number" id="categoryOrder" class="form-input" placeholder="1" min="1" style="max-width: 120px;"
-              th:field="*{order}">
-            <span class="form-error" th:if="${#fields.hasErrors('order')}" th:errors="*{order}"></span>
-            <p class="form-hint" th:text="#{page.menu.form.category.order.hint}">Categories will be ordered from
-              smallest to largest number.</p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" onclick="closeCategoryModal()"
-            th:text="#{button.cancel}">Cancel</button>
-          <button type="submit" class="btn btn-primary" th:text="#{button.save}">Save</button>
-        </div>
+<!-- Delete Category Modal -->
+<div id="deleteCategoryModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 th:text="#{page.menu.modal.delete.category.message.title}">Delete Category?</h3>
+    </div>
+    <div class="modal-body">
+      <p th:text="#{page.menu.modal.delete.category.message.body}">Are you sure you want to delete this category? All
+        items linked to it will also be deleted.</p>
+      <p id="deleteCategoryName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()"
+              th:text="#{button.cancel}">Cancel</button>
+      <form th:action="@{'/menu/categories/delete'}" method="post" onsubmit="showLoading('Deletando categoria')">
+        <input type="hidden" name="categoryId" id="deleteCategoryId">
+        <button type="submit" class="btn btn-primary"
+                style="background-color: var(--destructive); border-color: var(--destructive);"
+                th:text="#{button.delete}">Delete</button>
       </form>
     </div>
   </div>
+</div>
 
-  <!-- Delete Category Modal -->
-  <div id="deleteCategoryModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 th:text="#{page.menu.modal.delete.category.message.title}">Delete Category?</h3>
-      </div>
-      <div class="modal-body">
-        <p th:text="#{page.menu.modal.delete.category.message.body}">Are you sure you want to delete this category? All
-          items linked to it will also be deleted.</p>
-        <p id="deleteCategoryName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteCategoryModal()"
-          th:text="#{button.cancel}">Cancel</button>
-        <form th:action="@{'/menu/categories/delete'}" method="post" onsubmit="showLoading('Deletando categoria')">
-          <input type="hidden" name="categoryId" id="deleteCategoryId">
-          <button type="submit" class="btn btn-primary"
-            style="background-color: var(--destructive); border-color: var(--destructive);"
-            th:text="#{button.delete}">Delete</button>
-        </form>
-      </div>
+<!-- Delete Item Modal -->
+<div id="deleteItemModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 th:text="#{page.menu.modal.delete.item.message.title}">Delete Item?</h3>
+    </div>
+    <div class="modal-body">
+      <p th:text="#{page.menu.modal.delete.item.message.body}">Are you sure you want to delete this item?</p>
+      <p id="deleteItemName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="closeDeleteItemModal()"
+              th:text="#{button.cancel}">Cancel</button>
+      <form th:action="@{'/menu/items/delete'}" method="post" onsubmit="showLoading('Deletando item')">
+        <input type="hidden" name="itemId" id="deleteItemId">
+        <button type="submit" class="btn btn-primary"
+                style="background-color: var(--destructive); border-color: var(--destructive);"
+                th:text="#{button.delete}">Delete</button>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- Delete Item Modal -->
-  <div id="deleteItemModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 th:text="#{page.menu.modal.delete.item.message.title}">Delete Item?</h3>
-      </div>
-      <div class="modal-body">
-        <p th:text="#{page.menu.modal.delete.item.message.body}">Are you sure you want to delete this item?</p>
-        <p id="deleteItemName" style="margin-top: 1rem; font-weight: 600; color: var(--destructive);"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteItemModal()"
-          th:text="#{button.cancel}">Cancel</button>
-        <form th:action="@{'/menu/items/delete'}" method="post" onsubmit="showLoading('Deletando item')">
-          <input type="hidden" name="itemId" id="deleteItemId">
-          <button type="submit" class="btn btn-primary"
-            style="background-color: var(--destructive); border-color: var(--destructive);"
-            th:text="#{button.delete}">Delete</button>
-        </form>
-      </div>
+<!-- Item Modal -->
+<div id="itemModal" class="modal-overlay">
+  <div class="modal" style="max-width: 40rem;">
+    <div class="modal-header">
+      <h3 id="itemModalTitle" th:text="#{page.menu.item.new}">New Item</h3>
     </div>
-  </div>
+    <form id="itemForm" th:action="@{'/menu/items'}" method="post" enctype="multipart/form-data"
+          onsubmit="prepareItemSubmit(event)" th:object="${updateItemModel}">
+      <input type="hidden" th:field="*{id}">
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Language Tabs for Item -->
+        <div class="lang-tabs" id="itemLangTabs">
+          <button type="button" th:each="lang, stat : ${languages}"
+                  class="lang-tab" th:classappend="${stat.first} ? ' active'"
+                  th:data-lang="${lang.name()}"
+                  onclick="switchItemLang(this.dataset.lang, this)">
+            <span class="lang-flag" th:text="${lang.flag}">🇵🇹</span>
+            <span th:text="#{${lang.name}}">Portuguese</span>
+          </button>
+        </div>
 
-  <!-- Item Modal -->
-  <div id="itemModal" class="modal-overlay">
-    <div class="modal" style="max-width: 40rem;">
-      <div class="modal-header">
-        <h3 id="itemModalTitle" th:text="#{page.menu.item.new}">New Item</h3>
-      </div>
-      <form id="itemForm" th:action="@{'/menu/items'}" method="post" enctype="multipart/form-data"
-        onsubmit="prepareItemSubmit(event)" th:object="${updateItemModel}">
-        <input type="hidden" th:field="*{id}">
-        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-          <!-- Language Tabs for Item -->
-          <div class="lang-tabs" id="itemLangTabs">
-            <button type="button" th:each="lang, stat : ${languages}"
-                    class="lang-tab" th:classappend="${stat.first} ? ' active'" 
-                    th:data-lang="${lang.name()}"
-                    th:onclick="|switchItemLang('${lang.name()}', this)|">
-              <span class="lang-flag" th:text="${lang.flag}">🇵🇹</span> 
-              <span th:text="#{${lang.name}}">Portuguese</span>
-            </button>
+        <div th:if="${#fields.hasAnyErrors()}" class="form-error-summary" style="color: var(--destructive); margin-bottom: 1rem; font-size: 0.875rem;">
+          <p th:text="#{page.promotions.form.validation.errors}">Por favor, corrija os erros abaixo.</p>
+        </div>
+
+        <div class="lang-fields" th:classappend="${stat.index == 0} ? ' active'"
+             th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${context.restaurant.customerLanguages}">
+          <div class="form-group">
+            <label class="form-label" th:for="'itemName-' + ${lang.name()}">
+              <span th:text="#{page.menu.item.name}">Name</span> <span class="required">*</span></label>
+            <input type="text" th:id="'itemName-' + ${lang.name()}" class="form-input"
+                   th:placeholder="#{page.menu.item.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
+            <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
           </div>
-
-          <div th:if="${#fields.hasAnyErrors()}" class="form-error-summary" style="color: var(--destructive); margin-bottom: 1rem; font-size: 0.875rem;">
-              <p th:text="#{page.promotions.form.validation.errors}">Por favor, corrija os erros abaixo.</p>
+          <div class="form-group">
+            <label class="form-label" th:for="'itemDesc-' + ${lang.name()}">
+              <span th:text="#{page.menu.item.description}">Description</span> <span class="required">*</span></label>
+            <textarea th:id="'itemDesc-' + ${lang.name()}" class="form-textarea"
+                      th:placeholder="#{page.menu.item.description.placeholder}" th:field="*{description[__${lang.name()}__]}"
+                      rows="3"></textarea>
+            <span class="form-error" th:if="${#fields.hasErrors('description[' + lang.name() + ']')}" th:errors="*{description[__${lang.name()}__]}"></span>
           </div>
+        </div>
 
-          <div class="lang-fields" th:classappend="${stat.first} ? ' active'"
-            th:id="'itemFields-' + ${lang.name()}" th:each="lang, stat : ${languages}">
-            <div class="form-group">
-              <label class="form-label" th:for="'itemName-' + ${lang.name()}">
-                <span th:text="#{page.menu.item.name}">Name</span> 
-                (<span th:text="${lang.name()}"></span>) <span class="required">*</span>
-              </label>
-              <input type="text" th:id="'itemName-' + ${lang.name()}" class="form-input"
-                th:placeholder="#{page.menu.item.name.placeholder}" th:field="*{name[__${lang.name()}__]}">
-              <span class="form-error" th:if="${#fields.hasErrors('name[' + lang.name() + ']')}" th:errors="*{name[__${lang.name()}__]}"></span>
-            </div>
-            <div class="form-group">
-              <label class="form-label" th:for="'itemDesc-' + ${lang.name()}">
-                <span th:text="#{page.menu.item.description}">Description</span> 
-                (<span th:text="${lang.name()}"></span>) <span class="required">*</span>
-              </label>
-              <textarea th:id="'itemDesc-' + ${lang.name()}" class="form-textarea"
-                th:placeholder="#{page.menu.item.description.placeholder}" th:field="*{description[__${lang.name()}__]}"
-                rows="3"></textarea>
-              <span class="form-error" th:if="${#fields.hasErrors('description[' + lang.name() + ']')}" th:errors="*{description[__${lang.name()}__]}"></span>
-            </div>
-          </div>
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
 
-          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="itemPrice"><span th:text="#{page.menu.item.price}">Preço</span> (<span
-                  th:text="${menu.currencySymbol}"></span>) <span class="required">*</span></label>
-              <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:field="*{price}">
-              <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="itemCategory">Categoria <span class="required">*</span></label>
-              <select id="itemCategory" class="form-select" th:field="*{categoryId}">
-                <option value="" th:text="#{page.menu.item.category.select}">Selecione uma categoria</option>
-                <option th:each="c : ${menu.categories}" th:text="${c.name[#locale.language]}" th:value="${c.id}">
-              </select>
-              <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></span>
-            </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="itemPrice"><span th:text="#{page.menu.item.price}">Preço</span> (<span
+                    th:text="${menu.currencySymbol}"></span>) <span class="required">*</span></label>
+            <input type="number" id="itemPrice" class="form-input" placeholder="0,00" step="0.01" th:field="*{price}">
+            <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Imagens do Item</label>
-            <p class="form-hint" style="margin-top: 0; margin-bottom: 0.5rem;">A primeira imagem será a principal.
-              Arraste para reordenar.</p>
-            <div class="image-gallery-upload" id="itemImagesGallery">
-              <!-- Images will be added here dynamically -->
-            </div>
-            <label class="image-upload-add" id="imageUploadTrigger">
-              <input type="file" class="image-upload-input" id="itemImageInput" name="newImages" accept="image/*"
-                multiple onchange="handleImageUpload(event)">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span>Adicionar</span>
-            </label>
-          </div>
-
-          <div class="form-group" th:if="${false}">
-            <label class="form-label">Tags</label>
-            <input type="text" id="itemTags" class="form-input"
-              placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
-          </div>
-
-          <div class="form-switch">
-            <div class="form-switch-label">
-              <label class="form-label" style="margin-bottom: 0;">Disponível para pedidos</label>
-              <p>Desative se o item não estiver disponível temporariamente</p>
-            </div>
-            <div id="itemAvailable" class="switch active" onclick="toggleAvailableSwitch(this)"></div>
-            <input type="hidden" name="available" id="itemAvailableInput" value="true">
+            <label class="form-label" for="itemCategory">Categoria <span class="required">*</span></label>
+            <select id="itemCategory" class="form-select" th:field="*{categoryId}">
+              <option value="" th:text="#{page.menu.item.category.select}">Selecione uma categoria</option>
+              <option th:each="c : ${menu.categories}" th:text="${c.name[#locale.language]}" th:value="${c.id}">
+            </select>
+            <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></span>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" onclick="closeItemModal()"
-            th:text="#{button.cancel}">Cancel</button>
-          <button class="btn btn-primary" th:text="#{button.save}">Save Changes</button>
+
+        <div class="form-group">
+          <label class="form-label">Imagens do Item</label>
+          <p class="form-hint" style="margin-top: 0; margin-bottom: 0.5rem;">A primeira imagem será a principal.
+            Arraste para reordenar.</p>
+          <div class="image-gallery-upload" id="itemImagesGallery">
+            <!-- Images will be added here dynamically -->
+          </div>
+          <label class="image-upload-add" id="imageUploadTrigger">
+            <input type="file" class="image-upload-input" id="itemImageInput" name="newImages" accept="image/*"
+                   multiple onchange="handleImageUpload(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Adicionar</span>
+          </label>
         </div>
-      </form>
-    </div>
+
+        <div class="form-group" th:if="${false}">
+          <label class="form-label">Tags</label>
+          <input type="text" id="itemTags" class="form-input"
+                 placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
+        </div>
+
+        <div class="form-switch">
+          <div class="form-switch-label">
+            <label class="form-label" style="margin-bottom: 0;">Disponível para pedidos</label>
+            <p>Desative se o item não estiver disponível temporariamente</p>
+          </div>
+          <div id="itemAvailable" class="switch active" onclick="toggleAvailableSwitch(this)"></div>
+          <input type="hidden" name="available" id="itemAvailableInput" value="true">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeItemModal()"
+                th:text="#{button.cancel}">Cancel</button>
+        <button class="btn btn-primary" th:text="#{button.save}">Save Changes</button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <script th:inline="javascript">
+<script th:inline="javascript">
 
-    const i18n = {
-      categoryModalTitleNew: /*[[#{page.menu.category.new}]]*/ 'New Category',
-      categoryModalTitleEdit: /*[[#{page.menu.category.edit}]]*/ 'Edit Category',
-      itemModalTitleNew: /*[[#{page.menu.item.new}]]*/ 'New Item',
-      itemModalTitleEdit: /*[[#{page.menu.item.edit}]]*/ 'Edit Item',
-      allItems: /*[[#{page.menu.item.all}]]*/ 'All items',
-      itemTitle: /*[[#{page.menu.item.title}]]*/ 'Category',
-      items: /*[[#{page.menu.item.items}]]*/ 'items',
-      item: /*[[#{page.menu.item.item}]]*/ 'item',
-    };
-    const categories = /*[[${menu.categories}]]*/[];
-    const items = /*[[${menu.items}]]*/[];
-    const openItemModalFlag = /*[[${openItemModal}]]*/ false;
-    const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
-    const jsCategoryId = /*[[${updateCategoryModel.id}]]*/ null;
-    const jsItemId = /*[[${updateItemModel.id}]]*/ null;
-    const primaryLang = /*[[${context.restaurant.customerLanguages[0].name()}]]*/ 'PT';
+  const i18n = {
+    categoryModalTitleNew: /*[[#{page.menu.category.new}]]*/ 'New Category',
+    categoryModalTitleEdit: /*[[#{page.menu.category.edit}]]*/ 'Edit Category',
+    itemModalTitleNew: /*[[#{page.menu.item.new}]]*/ 'New Item',
+    itemModalTitleEdit: /*[[#{page.menu.item.edit}]]*/ 'Edit Item',
+    allItems: /*[[#{page.menu.item.all}]]*/ 'All items',
+    itemTitle: /*[[#{page.menu.item.title}]]*/ 'Category',
+    items: /*[[#{page.menu.item.items}]]*/ 'items',
+    item: /*[[#{page.menu.item.item}]]*/ 'item',
+  };
+  const categories = /*[[${menu.categories}]]*/[];
+  const items = /*[[${menu.items}]]*/[];
+  const openItemModalFlag = /*[[${openItemModal}]]*/ false;
+  const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
+  const jsCategoryId = /*[[${updateCategoryModel.id}]]*/ null;
+  const jsItemId = /*[[${updateItemModel.id}]]*/ null;
+  const primaryLang = /*[[${context.restaurant.customerLanguages[0].name()}]]*/ 'PT';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      if (openCategoryModalFlag) {
-        document.getElementById('categoryModalTitle').textContent = jsCategoryId ? i18n.categoryModalTitleEdit : i18n.categoryModalTitleNew;
-        document.getElementById('categoryModal').classList.add('active');
-        switchCategoryLang(primaryLang, document.querySelector('#categoryLangTabs .lang-tab'));
-      }
-      if (openItemModalFlag) {
-        document.getElementById('itemModalTitle').textContent = jsItemId ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
-        document.getElementById('itemModal').classList.add('active');
-        switchItemLang(primaryLang, document.querySelector('#itemLangTabs .lang-tab'));
-      }
-    });
-  </script>
-
-  <script>
-    let selectedCategoryId = null;
-
-    // Category Modal
-    function openCategoryModal(id, lang) {
-      document.getElementById('categoryModalTitle').textContent = id ? i18n.categoryModalTitleEdit : i18n.categoryModalTitleNew;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (openCategoryModalFlag) {
+      document.getElementById('categoryModalTitle').textContent = jsCategoryId ? i18n.categoryModalTitleEdit : i18n.categoryModalTitleNew;
       document.getElementById('categoryModal').classList.add('active');
-      // Reset to first tab
-      switchCategoryLang(lang, document.querySelector('#categoryLangTabs .lang-tab'));
+      switchCategoryLang(primaryLang, document.querySelector('#categoryLangTabs .lang-tab'));
+    }
+    if (openItemModalFlag) {
+      document.getElementById('itemModalTitle').textContent = jsItemId ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
+      document.getElementById('itemModal').classList.add('active');
+      switchItemLang(primaryLang, document.querySelector('#itemLangTabs .lang-tab'));
+    }
+  });
+</script>
 
-      if (id) {
-        const filtered = categories.find(c => c.id === id);
-        if (filtered) {
-          document.querySelector('#categoryForm [name="id"]').value = filtered.id;
-          document.querySelector('#categoryForm [name="order"]').value = filtered.order;
+<script>
+  let selectedCategoryId = null;
 
-          // Fill names for each language
-          Object.keys(filtered.name).forEach(langKey => {
-            const input = document.getElementById('categoryName-' + langKey.toUpperCase());
-            if (input) input.value = filtered.name[langKey];
-          });
-        }
+  // Category Modal
+  function openCategoryModal(id, lang) {
+    document.getElementById('categoryModalTitle').textContent = id ? i18n.categoryModalTitleEdit : i18n.categoryModalTitleNew;
+    document.getElementById('categoryModal').classList.add('active');
+    // Reset to first tab
+    switchCategoryLang(lang, document.querySelector('#categoryLangTabs .lang-tab'));
+
+    if (id) {
+      const filtered = categories.find(c => c.id === id);
+      if (filtered) {
+        document.querySelector('#categoryForm [name="id"]').value = filtered.id;
+        document.querySelector('#categoryForm [name="order"]').value = filtered.order;
+
+        // Fill names for each language
+        Object.keys(filtered.name).forEach(langKey => {
+          const input = document.getElementById('categoryName-' + langKey.toUpperCase());
+          if (input) input.value = filtered.name[langKey];
+        });
       }
     }
+  }
 
-    function closeCategoryModal() {
-      document.getElementById('categoryModal').classList.remove('active');
-      // Clear hidden ID
-      document.querySelector('#categoryForm [name="id"]').value = '';
-      // Clear all language fields
-      ['PT', 'EN', 'es-ES'].forEach(lang => {
-        const nameInput = document.getElementById('categoryName-' + lang);
-        if (nameInput) nameInput.value = '';
-      });
-      // Clear order field
-      document.querySelector('#categoryForm [name="order"]').value = '';
+  function closeCategoryModal() {
+    document.getElementById('categoryModal').classList.remove('active');
+    // Clear hidden ID
+    document.querySelector('#categoryForm [name="id"]').value = '';
+    // Clear all language fields
+    ['PT', 'EN', 'es-ES'].forEach(lang => {
+      const nameInput = document.getElementById('categoryName-' + lang);
+      if (nameInput) nameInput.value = '';
+    });
+    // Clear order field
+    document.querySelector('#categoryForm [name="order"]').value = '';
+  }
+
+  function editCategory(id, lang) {
+    openCategoryModal(id, lang);
+  }
+
+  let categoryIdToDelete = null;
+
+  function deleteCategory(id, language) {
+    const category = categories.find(c => c.id === id);
+    if (category) {
+      categoryIdToDelete = id;
+      document.getElementById('deleteCategoryId').value = id;
+      document.getElementById('deleteCategoryName').textContent = category.name[language];
+      document.getElementById('deleteCategoryModal').classList.add('active');
     }
+  }
 
-    function editCategory(id, lang) {
-      openCategoryModal(id, lang);
-    }
+  function closeDeleteCategoryModal() {
+    document.getElementById('deleteCategoryModal').classList.remove('active');
+    document.getElementById('deleteCategoryId').value = '';
+    categoryIdToDelete = null;
+  }
 
-    let categoryIdToDelete = null;
+  function selectCategory(id, lang) {
+    selectedCategoryId = id;
 
-    function deleteCategory(id, language) {
-      const category = categories.find(c => c.id === id);
-      if (category) {
-        categoryIdToDelete = id;
-        document.getElementById('deleteCategoryId').value = id;
-        document.getElementById('deleteCategoryName').textContent = category.name[language];
-        document.getElementById('deleteCategoryModal').classList.add('active');
-      }
-    }
+    // Update active state on category buttons
+    document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
 
-    function closeDeleteCategoryModal() {
-      document.getElementById('deleteCategoryModal').classList.remove('active');
-      document.getElementById('deleteCategoryId').value = '';
-      categoryIdToDelete = null;
-    }
+    // Filter items
+    const allItems = document.querySelectorAll('.menu-item-card');
+    let visibleCount = 0;
 
-    function selectCategory(id, lang) {
-      selectedCategoryId = id;
-
-      // Update active state on category buttons
-      document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-
-      // Filter items
-      const allItems = document.querySelectorAll('.menu-item-card');
-      let visibleCount = 0;
-
-      allItems.forEach(item => {
-        if (id === null) {
-          // Show all items
+    allItems.forEach(item => {
+      if (id === null) {
+        // Show all items
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        // Filter by category
+        const itemCategory = item.getAttribute('data-category');
+        if (itemCategory === String(id)) {
           item.style.display = '';
           visibleCount++;
         } else {
-          // Filter by category
-          const itemCategory = item.getAttribute('data-category');
-          if (itemCategory === String(id)) {
-            item.style.display = '';
-            visibleCount++;
-          } else {
-            item.style.display = 'none';
-          }
+          item.style.display = 'none';
         }
-      });
-
-      // Update header title and count
-      const headerTitle = document.querySelector('.menu-items-header h2');
-      const headerCount = document.querySelector('.menu-items-header p');
-
-      if (id === null) {
-        headerTitle.textContent = i18n.allItems;
-      } else {
-        const filtered = categories.find(c => c.id === id);
-        headerTitle.textContent = filtered.name[lang] || i18n.itemTitle;
       }
-      headerCount.textContent = visibleCount + (visibleCount === 1 ? ' ' + i18n.item : ' ' + i18n.items);
+    });
+
+    // Update header title and count
+    const headerTitle = document.querySelector('.menu-items-header h2');
+    const headerCount = document.querySelector('.menu-items-header p');
+
+    if (id === null) {
+      headerTitle.textContent = i18n.allItems;
+    } else {
+      const filtered = categories.find(c => c.id === id);
+      headerTitle.textContent = filtered.name[lang] || i18n.itemTitle;
     }
+    headerCount.textContent = visibleCount + (visibleCount === 1 ? ' ' + i18n.item : ' ' + i18n.items);
+  }
 
-    // Language switching for category modal
-    function switchCategoryLang(lang, btn) {
-      document.querySelectorAll('#categoryLangTabs .lang-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('#categoryModal .lang-fields').forEach(f => f.classList.remove('active'));
-      document.getElementById('categoryFields-' + lang).classList.add('active');
-    }
+  // Language switching for category modal
+  function switchCategoryLang(lang, btn) {
+    document.querySelectorAll('#categoryLangTabs .lang-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#categoryModal .lang-fields').forEach(f => f.classList.remove('active'));
+    document.getElementById('categoryFields-' + lang).classList.add('active');
+  }
 
-    // Item Images Gallery
-    let itemImages = []; // Array to store image URLs/data
+  // Item Images Gallery
+  let itemImages = []; // Array to store image URLs/data
 
-    function handleImageUpload(event) {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
+  function handleImageUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-      Array.from(files).forEach(file => {
-        if (!file.type.startsWith('image/')) return;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          itemImages.push({
-            file: file,
-            preview: e.target.result
-          });
-          renderImageGallery();
-        };
-        reader.readAsDataURL(file);
-      });
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        itemImages.push({
+          file: file,
+          preview: e.target.result
+        });
+        renderImageGallery();
+      };
+      reader.readAsDataURL(file);
+    });
 
-      // Reset input to allow selecting same file again
-      event.target.value = '';
-    }
+    // Reset input to allow selecting same file again
+    event.target.value = '';
+  }
 
-    function renderImageGallery() {
-      const gallery = document.getElementById('itemImagesGallery');
-      gallery.innerHTML = itemImages.map((img, index) => `
+  function renderImageGallery() {
+    const gallery = document.getElementById('itemImagesGallery');
+    gallery.innerHTML = itemImages.map((img, index) => `
         <div class="image-upload-item${index === 0 ? ' primary' : ''}" draggable="true" data-index="${index}">
           <img src="${img.preview}" alt="Imagem ${index + 1}">
           <button type="button" class="image-remove-btn" onclick="removeImage(${index})">×</button>
         </div>
       `).join('');
 
-      // Add drag and drop for reordering
-      initImageDragDrop();
-    }
+    // Add drag and drop for reordering
+    initImageDragDrop();
+  }
 
-    function removeImage(index) {
-      itemImages.splice(index, 1);
-      renderImageGallery();
-    }
+  function removeImage(index) {
+    itemImages.splice(index, 1);
+    renderImageGallery();
+  }
 
-    function initImageDragDrop() {
-      const gallery = document.getElementById('itemImagesGallery');
-      const items = gallery.querySelectorAll('.image-upload-item');
+  function initImageDragDrop() {
+    const gallery = document.getElementById('itemImagesGallery');
+    const items = gallery.querySelectorAll('.image-upload-item');
 
-      items.forEach(item => {
-        item.addEventListener('dragstart', function (e) {
-          e.dataTransfer.setData('text/plain', this.dataset.index);
-          this.classList.add('dragging');
-        });
-
-        item.addEventListener('dragend', function () {
-          this.classList.remove('dragging');
-        });
-
-        item.addEventListener('dragover', function (e) {
-          e.preventDefault();
-          this.style.opacity = '0.5';
-        });
-
-        item.addEventListener('dragleave', function () {
-          this.style.opacity = '1';
-        });
-
-        item.addEventListener('drop', function (e) {
-          e.preventDefault();
-          this.style.opacity = '1';
-
-          const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-          const toIndex = parseInt(this.dataset.index);
-
-          if (fromIndex !== toIndex) {
-            const [movedImage] = itemImages.splice(fromIndex, 1);
-            itemImages.splice(toIndex, 0, movedImage);
-            renderImageGallery();
-          }
-        });
+    items.forEach(item => {
+      item.addEventListener('dragstart', function (e) {
+        e.dataTransfer.setData('text/plain', this.dataset.index);
+        this.classList.add('dragging');
       });
-    }
 
-    function clearImageGallery() {
-      itemImages = [];
-      document.getElementById('itemImagesGallery').innerHTML = '';
-      document.getElementById('itemImageInput').value = '';
-    }
+      item.addEventListener('dragend', function () {
+        this.classList.remove('dragging');
+      });
 
-    function prepareItemSubmit(event) {
-      showLoading('Adicionando item');
-      const form = document.getElementById('itemForm');
-      // Remove any previously added hidden inputs for imageIdsToKeep
-      form.querySelectorAll('input[name="imageIdsToKeep"]').forEach(input => input.remove());
+      item.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        this.style.opacity = '0.5';
+      });
 
-      const dataTransfer = new DataTransfer();
-      itemImages.forEach(img => {
-        if (img.isExisting) {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = 'imageIdsToKeep';
-          input.value = img.id;
-          form.appendChild(input);
-        } else if (img.file) {
-          dataTransfer.items.add(img.file);
+      item.addEventListener('dragleave', function () {
+        this.style.opacity = '1';
+      });
+
+      item.addEventListener('drop', function (e) {
+        e.preventDefault();
+        this.style.opacity = '1';
+
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+        const toIndex = parseInt(this.dataset.index);
+
+        if (fromIndex !== toIndex) {
+          const [movedImage] = itemImages.splice(fromIndex, 1);
+          itemImages.splice(toIndex, 0, movedImage);
+          renderImageGallery();
         }
       });
-      document.getElementById('itemImageInput').files = dataTransfer.files;
-    }
+    });
+  }
 
-    // Item Modal
-    function openItemModal(id, lang) {
-      document.getElementById('itemModalTitle').textContent = id ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
+  function clearImageGallery() {
+    itemImages = [];
+    document.getElementById('itemImagesGallery').innerHTML = '';
+    document.getElementById('itemImageInput').value = '';
+  }
+
+  function prepareItemSubmit(event) {
+    showLoading('Adicionando item');
+    const form = document.getElementById('itemForm');
+    // Remove any previously added hidden inputs for imageIdsToKeep
+    form.querySelectorAll('input[name="imageIdsToKeep"]').forEach(input => input.remove());
+
+    const dataTransfer = new DataTransfer();
+    itemImages.forEach(img => {
+      if (img.isExisting) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'imageIdsToKeep';
+        input.value = img.id;
+        form.appendChild(input);
+      } else if (img.file) {
+        dataTransfer.items.add(img.file);
+      }
+    });
+    document.getElementById('itemImageInput').files = dataTransfer.files;
+  }
+
+  // Item Modal
+  function openItemModal(id, lang) {
+    document.getElementById('itemModalTitle').textContent = id ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
+    document.getElementById('itemModal').classList.add('active');
+    // Reset to first tab
+    switchItemLang(lang, document.querySelector('#itemLangTabs .lang-tab'));
+
+    if (id) {
+      const filtered = items.find(c => c.id === id);
+      if (filtered) {
+        document.querySelector('#itemForm [name="id"]').value = filtered.id;
+        document.querySelector('#itemForm [name="price"]').value = filtered.price;
+        document.querySelector('#itemForm [name="categoryId"]').value = filtered.categoryId;
+
+        // Set availability toggle
+        const availSwitch = document.getElementById('itemAvailable');
+        const availInput = document.getElementById('itemAvailableInput');
+        if (filtered.available !== false) {
+          availSwitch.classList.add('active');
+          availInput.value = 'true';
+        } else {
+          availSwitch.classList.remove('active');
+          availInput.value = 'false';
+        }
+
+        // Load existing images
+        if (filtered.images) {
+          itemImages = filtered.images.map(img => ({
+            id: img.id,
+            preview: img.url,
+            isExisting: true
+          }));
+          renderImageGallery();
+        }
+
+        // Fill names for each language
+        Object.keys(filtered.name).forEach(langKey => {
+          const input = document.getElementById('itemName-' + langKey.toUpperCase());
+          if (input) input.value = filtered.name[langKey];
+        });
+        Object.keys(filtered.description || {}).forEach(langKey => {
+          const input = document.getElementById('itemDesc-' + langKey.toUpperCase());
+          if (input) input.value = filtered.description[langKey];
+        });
+      }
+    }
+  }
+
+  function closeItemModal() {
+    document.getElementById('itemModal').classList.remove('active');
+    // Clear all language fields
+    ['PT', 'EN', 'es-ES'].forEach(lang => {
+      const nameInput = document.getElementById('itemName-' + lang);
+      const descInput = document.getElementById('itemDesc-' + lang);
+      if (nameInput) nameInput.value = '';
+      if (descInput) descInput.value = '';
+    });
+    document.querySelector('#itemForm [name="price"]').value = '';
+    document.querySelector('#itemForm [name="categoryId"]').value = '';
+    //document.getElementById('itemTags').value = '';
+    //document.getElementById('itemTags').value = '';
+    clearImageGallery();
+    // Reset availability toggle
+    document.getElementById('itemAvailable').classList.add('active');
+    document.getElementById('itemAvailableInput').value = 'true';
+  }
+
+  function toggleAvailableSwitch(el) {
+    el.classList.toggle('active');
+    document.getElementById('itemAvailableInput').value = el.classList.contains('active') ? 'true' : 'false';
+  }
+
+  function editItem(id, lang) {
+    openItemModal(id, lang);
+  }
+
+  let itemIdToDelete = null;
+
+  function deleteItem(id, language) {
+    const item = items.find(i => i.id === id);
+    if (item) {
+      itemIdToDelete = id;
+      document.getElementById('deleteItemId').value = id;
+      document.getElementById('deleteItemName').textContent = item.name[language];
+      document.getElementById('deleteItemModal').classList.add('active');
+    }
+  }
+
+  function closeDeleteItemModal() {
+    document.getElementById('deleteItemModal').classList.remove('active');
+    document.getElementById('deleteItemId').value = '';
+    itemIdToDelete = null;
+  }
+
+  function toggleSwitch(el) {
+    el.classList.toggle('active');
+  }
+
+  // Language switching for item modal
+  function switchItemLang(lang, btn) {
+    document.querySelectorAll('#itemLangTabs .lang-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#itemModal .lang-fields').forEach(f => f.classList.remove('active'));
+    document.getElementById('itemFields-' + lang).classList.add('active');
+  }
+
+  // Close modals when clicking outside
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', function (e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+      }
+    });
+  });
+
+  // Handle Validation Errors
+  window.addEventListener('DOMContentLoaded', () => {
+    const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
+    const openItemModalFlag = /*[[${openItemModal}]]*/ false;
+
+    if (openCategoryModalFlag) {
+      document.getElementById('categoryModal').classList.add('active');
+    } else if (openItemModalFlag) {
       document.getElementById('itemModal').classList.add('active');
-      // Reset to first tab
-      switchItemLang(lang, document.querySelector('#itemLangTabs .lang-tab'));
-
-      if (id) {
-        const filtered = items.find(c => c.id === id);
-        if (filtered) {
-          document.querySelector('#itemForm [name="id"]').value = filtered.id;
-          document.querySelector('#itemForm [name="price"]').value = filtered.price;
-          document.querySelector('#itemForm [name="categoryId"]').value = filtered.categoryId;
-
-          // Set availability toggle
-          const availSwitch = document.getElementById('itemAvailable');
-          const availInput = document.getElementById('itemAvailableInput');
-          if (filtered.available !== false) {
-            availSwitch.classList.add('active');
-            availInput.value = 'true';
-          } else {
-            availSwitch.classList.remove('active');
-            availInput.value = 'false';
-          }
-
-          // Load existing images
-          if (filtered.images) {
-            itemImages = filtered.images.map(img => ({
-              id: img.id,
-              preview: img.url,
-              isExisting: true
-            }));
-            renderImageGallery();
-          }
-
-          // Fill names for each language
-          Object.keys(filtered.name).forEach(langKey => {
-            const input = document.getElementById('itemName-' + langKey.toUpperCase());
-            if (input) input.value = filtered.name[langKey];
-          });
-          Object.keys(filtered.description || {}).forEach(langKey => {
-            const input = document.getElementById('itemDesc-' + langKey.toUpperCase());
-            if (input) input.value = filtered.description[langKey];
-          });
-        }
-      }
     }
-
-    function closeItemModal() {
-      document.getElementById('itemModal').classList.remove('active');
-      // Clear all language fields
-      ['PT', 'EN', 'es-ES'].forEach(lang => {
-        const nameInput = document.getElementById('itemName-' + lang);
-        const descInput = document.getElementById('itemDesc-' + lang);
-        if (nameInput) nameInput.value = '';
-        if (descInput) descInput.value = '';
-      });
-      document.querySelector('#itemForm [name="price"]').value = '';
-      document.querySelector('#itemForm [name="categoryId"]').value = '';
-      //document.getElementById('itemTags').value = '';
-      //document.getElementById('itemTags').value = '';
-      clearImageGallery();
-      // Reset availability toggle
-      document.getElementById('itemAvailable').classList.add('active');
-      document.getElementById('itemAvailableInput').value = 'true';
-    }
-
-    function toggleAvailableSwitch(el) {
-      el.classList.toggle('active');
-      document.getElementById('itemAvailableInput').value = el.classList.contains('active') ? 'true' : 'false';
-    }
-
-    function editItem(id, lang) {
-      openItemModal(id, lang);
-    }
-
-    let itemIdToDelete = null;
-
-    function deleteItem(id, language) {
-      const item = items.find(i => i.id === id);
-      if (item) {
-        itemIdToDelete = id;
-        document.getElementById('deleteItemId').value = id;
-        document.getElementById('deleteItemName').textContent = item.name[language];
-        document.getElementById('deleteItemModal').classList.add('active');
-      }
-    }
-
-    function closeDeleteItemModal() {
-      document.getElementById('deleteItemModal').classList.remove('active');
-      document.getElementById('deleteItemId').value = '';
-      itemIdToDelete = null;
-    }
-
-    function toggleSwitch(el) {
-      el.classList.toggle('active');
-    }
-
-    // Language switching for item modal
-    function switchItemLang(lang, btn) {
-      document.querySelectorAll('#itemLangTabs .lang-tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('#itemModal .lang-fields').forEach(f => f.classList.remove('active'));
-      document.getElementById('itemFields-' + lang).classList.add('active');
-    }
-
-    // Close modals when clicking outside
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-      modal.addEventListener('click', function (e) {
-        if (e.target === this) {
-          this.classList.remove('active');
-        }
-      });
-    });
-
-    // Handle Validation Errors
-    window.addEventListener('DOMContentLoaded', () => {
-      const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
-      const openItemModalFlag = /*[[${openItemModal}]]*/ false;
-      
-      if (openCategoryModalFlag) {
-        document.getElementById('categoryModal').classList.add('active');
-      } else if (openItemModalFlag) {
-        document.getElementById('itemModal').classList.add('active');
-      }
-    });
-  </script>
-  <!-- Loading Overlay -->
-  <script th:src="@{/js/loading.js}"></script>
+  });
+</script>
+<!-- Loading Overlay -->
+<script th:src="@{/js/loading.js}"></script>
 </body>
 
 </html>
