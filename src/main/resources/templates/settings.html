@@ -802,57 +802,14 @@
                   th:text="#{page.settings.form.restaurant.cuisine.type.hint}">Select the types that best describe your restaurant.
                 </p>
                 <div class="cuisine-tags" id="cuisineTags">
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'ITALIAN'} ? ' selected' : ''" data-cuisine="ITALIAN"
-                    onclick="toggleCuisine(this)">🍝 <span th:text="#{restaurant.cuisine.type.italian}">Italian</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'JAPANESE'} ? ' selected' : ''" data-cuisine="JAPANESE"
-                    onclick="toggleCuisine(this)">🍣 <span th:text="#{restaurant.cuisine.type.japanese}">Japanese</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'BRAZILIAN'} ? ' selected' : ''"
-                    data-cuisine="BRAZILIAN" onclick="toggleCuisine(this)">🍖 <span th:text="#{restaurant.cuisine.type.brazilian}">Brazilian</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'MEXICAN'} ? ' selected' : ''" data-cuisine="MEXICAN"
-                    onclick="toggleCuisine(this)">🌮 <span th:text="#{restaurant.cuisine.type.mexican}">Mexican</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'FRENCH'} ? ' selected' : ''" data-cuisine="FRENCH"
-                    onclick="toggleCuisine(this)">🥐 <span th:text="#{restaurant.cuisine.type.french}">French</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'CHINESE'} ? ' selected' : ''" data-cuisine="CHINESE"
-                    onclick="toggleCuisine(this)">🥡 <span th:text="#{restaurant.cuisine.type.chinese}">Chinese</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'INDIANA'} ? ' selected' : ''" data-cuisine="INDIANA"
-                    onclick="toggleCuisine(this)">🍛 <span th:text="#{restaurant.cuisine.type.indian}">Indian</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'ARABIC'} ? ' selected' : ''" data-cuisine="ARABIC"
-                    onclick="toggleCuisine(this)">🧆 <span th:text="#{restaurant.cuisine.type.arabic}">Arabic</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'AMERICAN'} ? ' selected' : ''" data-cuisine="AMERICAN"
-                    onclick="toggleCuisine(this)">🍔 <span th:text="#{restaurant.cuisine.type.american}">American</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'FAST_FOOD'} ? ' selected' : ''" data-cuisine="FAST_FOOD"
-                    onclick="toggleCuisine(this)">🍟 <span th:text="#{restaurant.cuisine.type.fastfood}">Fast-Food</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'PIZZERIA'} ? ' selected' : ''" data-cuisine="PIZZERIA"
-                    onclick="toggleCuisine(this)">🍕 <span th:text="#{restaurant.cuisine.type.pizzeria}">Pizzeria</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'CONTEMPORARY'} ? ' selected' : ''" data-cuisine="CONTEMPORARY"
-                    onclick="toggleCuisine(this)">🍽️ <span th:text="#{restaurant.cuisine.type.contemporary}">Contemporary</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'SEAFOOD'} ? ' selected' : ''" data-cuisine="SEAFOOD"
-                    onclick="toggleCuisine(this)">🦐 <span th:text="#{restaurant.cuisine.type.seafood}">Sea-Food</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'VEGETARIAN'} ? ' selected' : ''"
-                    data-cuisine="VEGETARIAN" onclick="toggleCuisine(this)">🥗 <span th:text="#{restaurant.cuisine.type.vegetarian}">Vegetarian</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'STEAKHOUSE'} ? ' selected' : ''"
-                    data-cuisine="STEAKHOUSE" onclick="toggleCuisine(this)">🥩 <span th:text="#{restaurant.cuisine.type.steakhouse}">Steak House</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'CAFETERIA'} ? ' selected' : ''"
-                    data-cuisine="CAFETERIA" onclick="toggleCuisine(this)">☕ <span th:text="#{restaurant.cuisine.type.cafeteria}">Cafeteria</span></button>
-                  <button type="button" class="cuisine-tag"
-                    th:classappend="${form.cuisineType == 'SWEET_SHOP'} ? ' selected' : ''"
-                    data-cuisine="SWEET_SHOP" onclick="toggleCuisine(this)">🍰 <span th:text="#{restaurant.cuisine.type.sweetshop}">Sweet Shop</span></button>
+                  <button th:each="cuisine : ${cuisineTypeCodes}"
+                          type="button" class="cuisine-tag"
+                          th:classappend="${form.cuisineType == cuisine.name()} ? ' selected' : ''"
+                          th:attr="data-cuisine=${cuisine.name()}"
+                          onclick="toggleCuisine(this)">
+                    <span th:text="${cuisine.getIcon()}"></span>
+                    <span th:text="#{${cuisine.getLabel()}}"></span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -870,68 +827,12 @@
             </div>
             <div class="settings-section-body">
               <div class="profile-tags-container" id="profileTags">
-                <div class="profile-tag" th:each="tag, iterStat : *{tags}" th:attr="data-tag=${tag}">
-
-                  <span class="tag-emoji" th:if="${tag == 'WIFI'}">📶</span>
-                  <span th:if="${tag == 'WIFI'}" th:text="#{tags.wifi}">Wi-Fi Grátis</span>
-                  <button th:if="${tag == 'WIFI'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'WINE'}">🍷</span>
-                  <span th:if="${tag == 'WINE'}" th:text="#{tags.wine}">Vinhos</span>
-                  <button th:if="${tag == 'WINE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'PARKING'}">🅿️</span>
-                  <span th:if="${tag == 'PARKING'}" th:text="#{tags.parking}">Estacionamento</span>
-                  <button th:if="${tag == 'PARKING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'ACCESSIBLE'}">♿️</span>
-                  <span th:if="${tag == 'ACCESSIBLE'}" th:text="#{tags.accessible}">Acessível</span>
-                  <button th:if="${tag == 'ACCESSIBLE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'DELIVERY'}">🛵️</span>
-                  <span th:if="${tag == 'DELIVERY'}" th:text="#{tags.delivery}">Delivery</span>
-                  <button th:if="${tag == 'DELIVERY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'RESERVATIONS'}">📅️</span>
-                  <span th:if="${tag == 'RESERVATIONS'}" th:text="#{tags.reservations}">Reservas</span>
-                  <button th:if="${tag == 'RESERVATIONS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'KIDS_SPACE'}">👶</span>
-                  <span th:if="${tag == 'KIDS_SPACE'}" th:text="#{tags.kidsspace}">Espaço Kids</span>
-                  <button th:if="${tag == 'KIDS_SPACE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'LIVE_MUSIC'}">🎵</span>
-                  <span th:if="${tag == 'LIVE_MUSIC'}" th:text="#{tags.livemusic}">Música ao Vivo</span>
-                  <button th:if="${tag == 'LIVE_MUSIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'PET_FRIENDLY'}">🐕</span>
-                  <span th:if="${tag == 'PET_FRIENDLY'}" th:text="#{tags.petfriendly}">Pet Friendly</span>
-                  <button th:if="${tag == 'PET_FRIENDLY'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'AIR_CONDITIONING'}">❄️</span>
-                  <span th:if="${tag == 'AIR_CONDITIONING'}" th:text="#{tags.air}">Ar Condicionado</span>
-                  <button th:if="${tag == 'AIR_CONDITIONING'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'VEGAN'}">🌱</span>
-                  <span th:if="${tag == 'VEGAN'}" th:text="#{tags.vegan}">Vegano</span>
-                  <button th:if="${tag == 'VEGAN'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'GLUTEN_FREE'}">🌾</span>
-                  <span th:if="${tag == 'GLUTEN_FREE'}" th:text="#{tags.glutenfree}">Sem Glúten</span>
-                  <button th:if="${tag == 'GLUTEN_FREE'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'ROMANTIC'}">💑</span>
-                  <span th:if="${tag == 'ROMANTIC'}" th:text="#{tags.romantic}">Romântico</span>
-                  <button th:if="${tag == 'ROMANTIC'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'GROUPS'}">👥</span>
-                  <span th:if="${tag == 'GROUPS'}" th:text="#{tags.groups}">Grupos</span>
-                  <button th:if="${tag == 'GROUPS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
-                  <span class="tag-emoji" th:if="${tag == 'CARDS'}">💳</span>
-                  <span th:if="${tag == 'CARDS'}" th:text="#{tags.cards}">Cards</span>
-                  <button th:if="${tag == 'CARDS'}" type="button" class="tag-remove" onclick="removeTag(this)">×</button>
-
+                <div class="profile-tag" th:each="tag : *{tags}" th:attr="data-tag=${tag}">
+                  <th:block th:each="rt : ${restaurantTags}" th:if="${rt.name() == tag}">
+                    <span class="tag-emoji" th:text="${rt.getIcon()}"></span>
+                    <span th:text="#{${rt.getLabel()}}"></span>
+                    <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+                  </th:block>
                 </div>
                 <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
                   th:text="#{page.settings.section.tags.button.add}">
@@ -945,80 +846,12 @@
               </div>
 
               <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
-                <div class="tag-suggestion"
-                     onclick="addTag('WIFI', '📶️', 'Wi-Fi Grátis')" th:classappend="${form.tags.contains('WIFI')} ? ' selected' : ''">
-                  <span>📶</span> <span th:text="#{tags.wifi}">Wi-Fi Grátis</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('WINE', '🍷️', '#{tags.wine}')|"
-                     th:classappend="${form.tags.contains('WINE')} ? ' selected' : ''">
-                  <span>🍷️</span> <span th:text="#{tags.wine}">Wine</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('PARKING', '🅿', '#{tags.parking}')|"
-                     th:classappend="${form.tags.contains('PARKING')} ? ' selected' : ''">
-                  <span>🅿️</span> <span th:text="#{tags.parking}">Parking</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('ACCESSIBLE', '♿', '#{tags.accessible}')|"
-                     th:classappend="${form.tags.contains('ACCESSIBLE')} ? ' selected' : ''">
-                  <span>♿</span> <span th:text="#{tags.accessible}">Accessible</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('DELIVERY', '🛵', '#{tags.delivery}')|"
-                     th:classappend="${form.tags.contains('DELIVERY')} ? ' selected' : ''">
-                  <span>🛵</span> <span th:text="#{tags.delivery}">Delivery</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('RESERVATIONS', '📅', '#{tags.reservations}')|"
-                     th:classappend="${form.tags.contains('RESERVATIONS')} ? ' selected' : ''">
-                  <span>📅</span> <span th:text="#{tags.reservations}">Reservations</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('KIDS_SPACE', '👶', '#{tags.kidsspace}')|"
-                     th:classappend="${form.tags.contains('KIDS_SPACE')} ? ' selected' : ''">
-                  <span>👶</span> <span th:text="#{tags.kidsspace}">Kids Area</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('LIVE_MUSIC', '🎵', '#{tags.livemusic}')|"
-                     th:classappend="${form.tags.contains('LIVE_MUSIC')} ? ' selected' : ''">
-                  <span>🎵</span> <span th:text="#{tags.livemusic}">Live Music</span>
-                </div>
-                <div class="tag-suggestion"
-                     onclick="addTag('PET_FRIENDLY', '🐕', 'Pet Friendly')"
-                     th:attr="onclick=|addTag('PET_FRIENDLY', '🐕️', '#{tags.petfriendly}')|"
-                     th:classappend="${form.tags.contains('PET_FRIENDLY')} ? ' selected' : ''">
-                  <span>🐕</span> <span th:text="#{tags.petfriendly}">Pet Friendly</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('AIR_CONDITIONING', '❄️', '#{tags.air}')|"
-                     th:classappend="${form.tags.contains('AIR_CONDITIONING')} ? ' selected' : ''">
-                  <span>❄️</span> <span th:text="#{tags.air}">Air Conditioning</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('VEGAN', '🌱', '#{tags.vegan}')|"
-                     th:classappend="${form.tags.contains('VEGAN')} ? ' selected' : ''">
-                  <span>🌱</span> <span th:text="#{tags.vegan}">Vegan</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('GLUTEN_FREE', '🌾', '#{tags.glutenfree}')|"
-                     th:classappend="${form.tags.contains('GLUTEN_FREE')} ? ' selected' : ''">
-                  <span>🌾</span> <span th:text="#{tags.glutenfree}">Gluten Free</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('ROMANTIC', '💑', '#{tags.romantic}')|"
-                     th:classappend="${form.tags.contains('ROMANTIC')} ? ' selected' : ''">
-                  <span>💑</span> <span th:text="#{tags.romantic}">Romantic</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('GROUPS', '👥', '#{tags.groups}')|"
-                     th:classappend="${form.tags.contains('GROUPS')} ? ' selected' : ''">
-                  <span>👥</span> <span th:text="#{tags.groups}">Groups</span>
-                </div>
-                <div class="tag-suggestion"
-                     th:attr="onclick=|addTag('CARDS', '💳', '#{tags.cards}')|"
-                     th:classappend="${form.tags.contains('CARDS')} ? ' selected' : ''">
-                  <span>💳</span> <span th:text="#{tags.cards}">Cards</span>
+                <div th:each="tag : ${restaurantTags}"
+                     class="tag-suggestion"
+                     th:attr="onclick=|addTag('${tag.name()}', '${tag.getIcon()}', '#{${tag.getLabel()}}')|"
+                     th:classappend="${form.tags.contains(tag.name())} ? ' selected' : ''">
+                  <span th:text="${tag.getIcon()}"></span>
+                  <span th:text="#{${tag.getLabel()}}"></span>
                 </div>
               </div>
             </div>
