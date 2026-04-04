@@ -11,6 +11,8 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TenantProvisioningService {
 
+  private static final Logger logger = LoggerFactory.getLogger(TenantProvisioningService.class);
+
   private final DataSource dataSource;
   private static final String TENANT_CHANGELOG = "db/changelog/db.changelog-tenant-master.yaml";
 
@@ -28,16 +32,24 @@ public class TenantProvisioningService {
   }
 
   public void provisionTenant(UUID restaurantId) {
-    String tenantId = "T_" + restaurantId.toString().replace("-", "_").toUpperCase();
+    String tenantId = TenantContext.generateTenantIdentifier(restaurantId);
 
     try (Connection connection = dataSource.getConnection()) {
       // 1. Create Schema
       try (Statement statement = connection.createStatement()) {
-        statement.execute("CREATE SCHEMA IF NOT EXISTS " + tenantId);
+        String dbName = connection.getMetaData().getDatabaseProductName();
+        String sql =
+            "H2".equalsIgnoreCase(dbName)
+                ? "CREATE SCHEMA IF NOT EXISTS " + tenantId
+                : "CREATE SCHEMA IF NOT EXISTS \"" + tenantId + "\"";
+        statement.execute(sql);
       }
 
       // 2. Run Liquibase on the new schema
       runLiquibase(connection, tenantId);
+
+      // 3. Commit everything
+      connection.commit();
 
     } catch (SQLException | LiquibaseException e) {
       throw new RuntimeException(
@@ -52,7 +64,7 @@ public class TenantProvisioningService {
     String sql =
         "H2".equalsIgnoreCase(dbName)
             ? "SET SCHEMA_SEARCH_PATH " + schemaName + ", PUBLIC"
-            : "SET search_path TO " + schemaName + ", PUBLIC";
+            : "SET search_path TO \"" + schemaName + "\", PUBLIC";
 
     try (Statement statement = connection.createStatement()) {
       statement.execute(sql);
@@ -63,12 +75,13 @@ public class TenantProvisioningService {
         DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
     database.setDefaultSchemaName(schemaName);
     database.setLiquibaseSchemaName(schemaName);
+    database.setDefaultCatalogName(null);
+    database.setLiquibaseCatalogName(null);
 
-    try (Liquibase liquibase =
-        new Liquibase(TENANT_CHANGELOG, new ClassLoaderResourceAccessor(), database)) {
-      liquibase.update("");
-      System.out.println(
-          "[TenantProvisioning] Liquibase update successful for tenant schema: " + schemaName);
-    }
+    Liquibase liquibase =
+        new Liquibase(TENANT_CHANGELOG, new ClassLoaderResourceAccessor(), database);
+    liquibase.update("");
+    logger.debug(
+        "[TenantProvisioning] Liquibase update successful for tenant schema: {}", schemaName);
   }
 }

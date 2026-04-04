@@ -4,11 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /** Provides database connections and sets the schema (search_path) according to the tenant. */
 @Component("multiTenantConnectionProvider")
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider<String> {
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
   private final DataSource dataSource;
 
@@ -56,12 +61,11 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
       if ("H2".equalsIgnoreCase(dbName)) {
         sql = "SET SCHEMA_SEARCH_PATH " + tenantIdentifier + ", PUBLIC";
       } else {
-        sql = "SET search_path TO " + tenantIdentifier + ", PUBLIC";
+        sql = "SET search_path TO \"" + tenantIdentifier + "\", PUBLIC";
       }
     }
 
-    System.out.println(
-        "[MultiTenantConnection] Setting schema to: " + tenantIdentifier + " (SQL: " + sql + ")");
+    logger.debug("[MultiTenantConnection] Setting schema to: {} (SQL: {})", tenantIdentifier, sql);
     connection.createStatement().execute(sql);
   }
 

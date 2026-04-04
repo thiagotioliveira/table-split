@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:table-split;DB_CLOSE_DELAY=-1;SCHEMA=PUBLIC
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    hikari:
+      auto-commit: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false

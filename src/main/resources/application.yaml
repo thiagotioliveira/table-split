@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: h2
   application:
     name: table-split
   web:
@@ -11,8 +13,6 @@ spring:
           content:
             enabled: true
             paths: /**
-  datasource:
-    url: jdbc:h2:mem:table-split;DB_CLOSE_DELAY=-1;SCHEMA=PUBLIC
   jpa:
     hibernate:
       ddl-auto: none
@@ -60,8 +60,8 @@ logging:
               BasicBinder: INFO
       springframework:
         transaction: OFF
-    dev.thiagooliveira: DEBUG
-    liquibase: DEBUG
+    dev.thiagooliveira: INFO
+    liquibase: OFF
 
 management:
   endpoints:

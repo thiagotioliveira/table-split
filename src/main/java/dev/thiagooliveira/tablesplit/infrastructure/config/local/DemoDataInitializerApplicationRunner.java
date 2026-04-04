@@ -4,18 +4,21 @@ import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
+import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.application.menu.command.*;
-import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestauranteImageJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.math.BigDecimal;
@@ -25,6 +28,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +37,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(DemoDataInitializerApplicationRunner.class);
+
   private static final Map<String, String> itemNamePTImageUrl =
       new HashMap<>() {
         {
@@ -121,12 +130,13 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final RestaurantRepository restaurantRepository;
   private final RestauranteImageJpaRepository restauranteImageJpaRepository;
   private final CreateItem createItem;
-  private final CreateTable createTable;
   private final PasswordEncoder passwordEncoder;
   private final ItemImageJpaRepository imageRepository;
   private final CreatePromotion createPromotion;
   private final CreateCombo createCombo;
   private final CreateCoupon createCoupon;
+  private final CategoryRepository categoryRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public DemoDataInitializerApplicationRunner(
       Time time,
@@ -136,12 +146,13 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       RestaurantRepository restaurantRepository,
       RestauranteImageJpaRepository restauranteImageJpaRepository,
       CreateItem createItem,
-      CreateTable createTable,
       PasswordEncoder passwordEncoder,
       ItemImageJpaRepository imageRepository,
       CreatePromotion createPromotion,
       CreateCombo createCombo,
-      CreateCoupon createCoupon) {
+      CreateCoupon createCoupon,
+      CategoryRepository categoryRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.time = time;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
@@ -149,47 +160,87 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
     this.restaurantRepository = restaurantRepository;
     this.restauranteImageJpaRepository = restauranteImageJpaRepository;
     this.createItem = createItem;
-    this.createTable = createTable;
     this.passwordEncoder = passwordEncoder;
     this.imageRepository = imageRepository;
     this.createPromotion = createPromotion;
     this.createCombo = createCombo;
     this.createCoupon = createCoupon;
+    this.categoryRepository = categoryRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
-    var user =
-        this.transactionalContext.execute(
-            () ->
-                this.createAccount.execute(
-                    new CreateAccountCommand(
-                        new CreateUserCommand(
-                            "Thiago",
-                            "Oliveira",
-                            "thiago@thiagoti.com",
-                            "+351 963 927 988",
-                            passwordEncoder.encode("Test#123"),
-                            Language.PT),
-                        new CreateRestaurantCommand(
-                            "Cantina Brasileira",
-                            "cantinabrasileira",
-                            "Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.",
-                            "+351 963 927 944",
-                            "contato@cantinabrasileira.demo",
-                            "https://cantinabrasileira.demo",
-                            "Rua Conde Redondo - Lisboa",
-                            Currency.EUR,
-                            10,
-                            10),
-                        time.getZoneId())));
-    var accountId = user.getAccountId();
-    var restaurant = this.restaurantRepository.findByAccountId(accountId).orElseThrow();
+    User user = null;
+    try {
+      user =
+          this.transactionalContext.execute(
+              () ->
+                  this.createAccount.execute(
+                      new CreateAccountCommand(
+                          new CreateUserCommand(
+                              "Thiago",
+                              "Oliveira",
+                              "thiago@thiagoti.com",
+                              "+351 963 927 988",
+                              passwordEncoder.encode("Test#123"),
+                              Language.PT),
+                          new CreateRestaurantCommand(
+                              "Cantina Brasileira",
+                              "cantinabrasileira",
+                              "Gastronomia brasileira de excelência, unindo tradição, qualidade e ingredientes frescos em cada detalhe do nosso cardápio.",
+                              "+351 963 927 944",
+                              "contato@cantinabrasileira.demo",
+                              "https://cantinabrasileira.demo",
+                              "Rua Conde Redondo - Lisboa",
+                              Currency.EUR,
+                              10,
+                              10),
+                          time.getZoneId())));
+      logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());
+    } catch (UserAlreadyRegisteredException e) {
+      logger.info(
+          "[DemoInitializer] Demo user already registered. Skipping initial account creation.");
+    }
+
+    final Restaurant restaurant =
+        this.restaurantRepository.findBySlug("cantinabrasileira").orElse(null);
+    if (restaurant == null) {
+      logger.info("[DemoInitializer] Restaurant not found. Stopping seeding.");
+      return;
+    }
+
+    final UUID accountId = restaurant.getAccountId();
+
+    // Check if data already seeded in this tenant
+    String tenantId = TenantContext.generateTenantIdentifier(restaurant.getId());
+    TenantContext.setCurrentTenant(tenantId);
+    boolean alreadySeeded = false;
+    try {
+      final UUID rId = restaurant.getId();
+      alreadySeeded =
+          this.transactionalContext.execute(() -> this.categoryRepository.count(rId) > 0);
+    } catch (Exception e) {
+      logger.info(
+          "[DemoInitializer] Schema or categories missing for restaurant: {}", restaurant.getId());
+      logger.info("[DemoInitializer] Error was: {}", e.getMessage());
+      logger.info("[DemoInitializer] Triggering RestaurantCreatedEvent fallback...");
+      this.eventPublisher.publishEvent(new RestaurantCreatedEvent(restaurant, 10));
+      logger.info("[DemoInitializer] Event published. Resetting context.");
+      // Re-set context after listener just in case
+      TenantContext.setCurrentTenant(tenantId);
+    }
+
+    if (alreadySeeded) {
+      logger.info(
+          "[DemoInitializer] Data already seeded for restaurant: {}. Skipping.",
+          restaurant.getName());
+      return;
+    }
 
     saveRestaurantImages(restaurant);
 
     // Set tenant context for the rest of the initialization
-    String tenantId = "T_" + restaurant.getId().toString().replace("-", "_").toUpperCase();
     dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(tenantId);
 
     var categoryStarters =

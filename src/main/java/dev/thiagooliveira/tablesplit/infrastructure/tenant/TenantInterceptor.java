@@ -37,7 +37,7 @@ public class TenantInterceptor implements HandlerInterceptor {
       Optional<Restaurant> restaurant = getRestaurant.execute(slug);
       if (restaurant.isPresent()) {
         String tenantId =
-            "T_" + restaurant.get().getId().toString().replace("-", "_").toUpperCase();
+            "t_" + restaurant.get().getId().toString().replace("-", "_").toLowerCase();
         TenantContext.setCurrentTenant(tenantId);
       }
     } else {

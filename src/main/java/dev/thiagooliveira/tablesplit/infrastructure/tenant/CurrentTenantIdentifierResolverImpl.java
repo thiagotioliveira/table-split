@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.tenant;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,13 +13,16 @@ import org.springframework.stereotype.Component;
 public class CurrentTenantIdentifierResolverImpl
     implements CurrentTenantIdentifierResolver<String> {
 
+  private static final Logger logger =
+      LoggerFactory.getLogger(CurrentTenantIdentifierResolverImpl.class);
+
   public static final String DEFAULT_TENANT = "PUBLIC";
 
   @Override
   public String resolveCurrentTenantIdentifier() {
     String tenant = TenantContext.getCurrentTenant();
     String resolved = tenant != null ? tenant : DEFAULT_TENANT;
-    System.out.println("[TenantResolver] Resolved tenant: " + resolved);
+    logger.debug("[TenantResolver] Resolved tenant: {}", resolved);
     return resolved;
   }
 
