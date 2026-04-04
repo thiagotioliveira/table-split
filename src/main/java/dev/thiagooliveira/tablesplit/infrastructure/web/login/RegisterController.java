@@ -14,6 +14,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterMode
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -71,7 +72,10 @@ public class RegisterController {
   }
 
   @GetMapping
-  public String register(Model model) {
+  public String register(Authentication auth, Model model) {
+    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+      return "redirect:/dashboard";
+    }
     model.addAttribute("form", new RegisterModel());
     return "register";
   }

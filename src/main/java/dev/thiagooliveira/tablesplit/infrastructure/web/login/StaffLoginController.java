@@ -2,9 +2,11 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -17,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class StaffLoginController {
 
   @GetMapping
-  public String login(HttpServletRequest request, Model model) {
+  public String login(Authentication auth, HttpServletRequest request, Model model) {
+    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+      return "redirect:/dashboard";
+    }
     Exception exception =
         (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     if (exception != null) {
