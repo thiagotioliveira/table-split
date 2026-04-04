@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.MenuModel;
@@ -185,6 +186,7 @@ public class MenuController {
     if (!model.containsAttribute("updateItemModel")) {
       model.addAttribute("updateItemModel", new UpdateItemModel());
     }
+    model.addAttribute("languages", Language.values());
   }
 
   @ExceptionHandler(InfrastructureException.class)

@@ -1057,63 +1057,16 @@
                   th:text="#{page.settings.form.language.available.hint}">Select the languages that will be available in the digital
                   menu</p>
                 <div class="language-checkboxes" id="languageCheckboxes">
-                  <label class="language-checkbox">
-                    <input type="checkbox" value="PT" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'PT')}">
+                  <label class="language-checkbox" th:each="lang : ${languages}">
+                    <input type="checkbox" th:value="${lang.name()}" onchange="toggleLanguage(this)"
+                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == lang.name()}"
+                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, lang.name())}">
                     <span class="checkmark"></span>
-                    <span class="lang-flag">🇵🇹</span>
-                    <span class="lang-name" th:text="#{language.PT}">Portuguese</span>
+                    <span class="lang-flag" th:text="${lang.flag}">🇵🇹</span>
+                    <span class="lang-name" th:text="#{${lang.name}}">Portuguese</span>
                     <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'PT'}"
+                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == lang.name()}"
                       th:text="#{page.settings.language.badge.primary}">Primary</span>
-                  </label>
-                  <label class="language-checkbox">
-                    <input type="checkbox" value="EN" onchange="toggleLanguage(this)"
-                      th:disabled="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN'}"
-                      th:checked="${form.customerLanguages != null and #lists.contains(form.customerLanguages, 'EN')}">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇬🇧</span>
-                    <span class="lang-name" th:text="#{language.EN}">English</span>
-                    <span class="lang-badge primary"
-                      th:if="${form.customerLanguages != null and !#lists.isEmpty(form.customerLanguages) and form.customerLanguages[0] == 'EN'}"
-                      th:text="#{page.settings.language.badge.primary}">Primary</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="es-ES" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇪🇸</span>
-                    <span class="lang-name">Español</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="fr-FR" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇫🇷</span>
-                    <span class="lang-name">Français</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="it-IT" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇮🇹</span>
-                    <span class="lang-name">Italiano</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="de-DE" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇩🇪</span>
-                    <span class="lang-name">Deutsch</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="ja-JP" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇯🇵</span>
-                    <span class="lang-name">日本語 (Japanese)</span>
-                  </label>
-                  <label class="language-checkbox" th:if="${false}">
-                    <input type="checkbox" value="zh-CN" onchange="toggleLanguage(this)">
-                    <span class="checkmark"></span>
-                    <span class="lang-flag">🇨🇳</span>
-                    <span class="lang-name">中文 (Chinese)</span>
                   </label>
                 </div>
               </div>

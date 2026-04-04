@@ -1232,23 +1232,20 @@
       </button>
       <div class="nav-actions">
         <div class="lang-selector">
-          <button class="lang-btn" onclick="toggleLangDropdown()" th:if="${#locale.language == 'pt'}">
-            <span id="currentLangFlag">🇵🇹</span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <button class="lang-btn" onclick="toggleLangDropdown()" th:if="${#locale.language == 'en'}">
-            <span id="currentLangFlag">🇬🇧</span>
+          <button class="lang-btn" onclick="toggleLangDropdown()" id="langBtn" th:if="${profile.customerLanguages.size() > 1}">
+            <span id="currentLangFlag" th:each="lang : ${profile.customerLanguages}" 
+                  th:if="${#locale.language.toUpperCase() == lang.name()}"
+                  th:text="${lang.flag}">🇵🇹</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="lang-dropdown" id="langDropdown">
-            <a href="?lang=pt" class="lang-option" th:classappend="${#locale.language == 'pt'} ? ' active'" style="text-decoration: none;">
-              <span class="flag">🇵🇹</span><span>Português</span>
-              <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            </a>
-            <a href="?lang=en" class="lang-option" th:classappend="${#locale.language == 'en'} ? ' active'" style="text-decoration: none;">
-              <span class="flag">🇬🇧</span><span>English</span>
-              <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            </a>
+            <th:block th:each="lang : ${profile.customerLanguages}">
+              <a th:href="'?lang=' + ${lang.name().toLowerCase()}" class="lang-option" th:classappend="${#locale.language.toUpperCase() == lang.name()} ? ' active'" style="text-decoration: none;">
+                <span class="flag" th:text="${lang.flag}">🇵🇹</span>
+                <span th:text="#{${lang.name}}">Português</span>
+                <svg class="check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </a>
+            </th:block>
           </div>
         </div>
         <button class="nav-btn" th:if="${false}">

@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.RestaurantImageModel;
 import java.net.URLEncoder;
@@ -36,6 +37,7 @@ public class ProfileModel {
   private final String hashGradientColor;
   private final String hashPrimaryShadowColor;
   private final List<RestaurantImageModel> images;
+  private final List<Language> customerLanguages;
 
   private final String menuLink;
 
@@ -102,6 +104,8 @@ public class ProfileModel {
         restaurant.getImages() == null
             ? List.of()
             : restaurant.getImages().stream().map(RestaurantImageModel::new).toList();
+    this.customerLanguages =
+        restaurant.getCustomerLanguages().stream().map(Language::fromDomain).toList();
   }
 
   public String getCuisineType() {
@@ -212,5 +216,9 @@ public class ProfileModel {
 
     String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
     return "https://www.google.com/maps?q=" + encodedAddress + "&output=embed";
+  }
+
+  public List<Language> getCustomerLanguages() {
+    return customerLanguages;
   }
 }

@@ -8,6 +8,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings.model.SettingsModel;
@@ -44,6 +45,7 @@ public class SettingsController {
     model.addAttribute("module", Module.SETTINGS);
     model.addAttribute("context", context);
     model.addAttribute("form", new SettingsModel(restaurant));
+    model.addAttribute("languages", Language.values());
     return "settings";
   }
 
@@ -55,6 +57,7 @@ public class SettingsController {
       Model model,
       RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
+      model.addAttribute("languages", Language.values());
       return "settings";
     }
     var context = (AccountContext) auth.getPrincipal();
