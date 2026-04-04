@@ -10,6 +10,8 @@ public interface ItemRepository {
 
   Optional<Item> findById(UUID id);
 
+  List<Item> findByRestaurantId(UUID restaurantId);
+
   List<Item> findAll(UUID restaurantId, List<Language> languages);
 
   Item save(Item item);

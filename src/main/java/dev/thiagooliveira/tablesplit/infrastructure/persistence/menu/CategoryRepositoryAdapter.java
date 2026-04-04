@@ -18,6 +18,13 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
+  public List<Category> findByRestaurantId(UUID restaurantId) {
+    return this.categoryJpaRepository.findByRestaurantId(restaurantId).stream()
+        .map(CategoryEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public List<Category> findAll(UUID restaurantId, List<Language> languages) {
     var dtos =
         this.categoryJpaRepository.findAllByRestaurantIdAndLanguagesOrderByNumOrder(

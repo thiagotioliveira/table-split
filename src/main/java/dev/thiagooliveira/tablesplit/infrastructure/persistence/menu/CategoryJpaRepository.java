@@ -17,6 +17,8 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, UUI
   List<CategoryDto> findAllByRestaurantIdAndLanguagesOrderByNumOrder(
       @Param("restaurantId") UUID restaurantId, @Param("languages") List<Language> languages);
 
+  List<CategoryEntity> findByRestaurantId(UUID restaurantId);
+
   long countByRestaurantId(UUID restaurantId);
 
   long countByRestaurantIdAndActiveTrue(UUID restaurantId);

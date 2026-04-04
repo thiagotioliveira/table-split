@@ -3,8 +3,10 @@ package dev.thiagooliveira.tablesplit.application.restaurant;
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import java.util.List;
 import java.util.UUID;
 
 public class UpdateRestaurant {
@@ -28,6 +30,16 @@ public class UpdateRestaurant {
                 throw new SlugAlreadyExist();
               });
     }
+    var oldLanguages =
+        restaurant.getCustomerLanguages() != null
+            ? restaurant.getCustomerLanguages()
+            : List.<Language>of();
+    var newLanguages =
+        command.customerLanguages() != null ? command.customerLanguages() : List.<Language>of();
+
+    List<Language> added = newLanguages.stream().filter(l -> !oldLanguages.contains(l)).toList();
+    List<Language> removed = oldLanguages.stream().filter(l -> !newLanguages.contains(l)).toList();
+
     restaurant.setName(command.name());
     restaurant.setSlug(command.slug().toLowerCase().trim());
     restaurant.setDescription(command.description());
@@ -45,7 +57,7 @@ public class UpdateRestaurant {
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurantRepository.save(restaurant);
-    this.eventPublisher.publishEvent(new RestaurantUpdatedEvent(restaurant));
+    this.eventPublisher.publishEvent(new RestaurantUpdatedEvent(restaurant, added, removed));
     return restaurant;
   }
 }

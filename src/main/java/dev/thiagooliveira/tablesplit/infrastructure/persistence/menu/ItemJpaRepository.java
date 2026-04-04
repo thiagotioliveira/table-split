@@ -25,6 +25,8 @@ public interface ItemJpaRepository extends JpaRepository<ItemEntity, UUID> {
   List<ItemProjection> findAllByCategoryRestaurantIdAndLanguages(
       @Param("restaurantId") UUID restaurantId, @Param("languages") List<Language> languages);
 
+  List<ItemEntity> findByCategoryRestaurantId(UUID restaurantId);
+
   long countByCategoryRestaurantId(UUID restaurantId);
 
   long countByCategoryRestaurantIdAndActiveTrue(UUID restaurantId);

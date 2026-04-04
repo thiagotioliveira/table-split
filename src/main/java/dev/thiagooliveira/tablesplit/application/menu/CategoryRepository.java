@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface CategoryRepository {
 
+  List<Category> findByRestaurantId(UUID restaurantId);
+
   List<Category> findAll(UUID restaurantId, List<Language> languages);
 
   Optional<Category> findById(UUID categoryId);

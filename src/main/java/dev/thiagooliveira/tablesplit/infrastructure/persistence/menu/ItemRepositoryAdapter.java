@@ -23,6 +23,13 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
+  public List<Item> findByRestaurantId(UUID restaurantId) {
+    return this.itemJpaRepository.findByCategoryRestaurantId(restaurantId).stream()
+        .map(ItemEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public List<Item> findAll(UUID restaurantId, List<Language> languages) {
     var projections =
         this.itemJpaRepository.findAllByCategoryRestaurantIdAndLanguages(restaurantId, languages);

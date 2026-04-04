@@ -35,7 +35,7 @@ public class AccountCreatedEventListener {
             restaurantDetails.getAddress(),
             null,
             List.of(),
-            List.of(Language.PT, Language.EN),
+            List.of(Language.PT),
             restaurantDetails.getCurrency(),
             restaurantDetails.getServiceFee(),
             restaurantDetails.getNumberOfTables(),
