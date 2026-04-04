@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -50,6 +51,7 @@ public class SettingsController {
     model.addAttribute("languages", Language.values());
     model.addAttribute("cuisineTypeCodes", CuisineType.values());
     model.addAttribute("restaurantTags", RestaurantTag.values());
+    model.addAttribute("averagePriceCodes", AveragePrice.values());
     return "settings";
   }
 
@@ -64,6 +66,7 @@ public class SettingsController {
       model.addAttribute("languages", Language.values());
       model.addAttribute("cuisineTypeCodes", CuisineType.values());
       model.addAttribute("restaurantTags", RestaurantTag.values());
+      model.addAttribute("averagePriceCodes", AveragePrice.values());
       return "settings";
     }
     var context = (AccountContext) auth.getPrincipal();

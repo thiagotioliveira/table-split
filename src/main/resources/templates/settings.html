@@ -951,11 +951,9 @@
                   <label class="form-label" for="averagePrice"><span th:text="#{page.settings.form.average.price}">Average Price</span> <span class="required">*</span></label>
                   <div class="input-with-addon">
                     <select id="averagePrice" class="form-select" th:field="*{averagePrice}">
-                      <option value="1-20" selected>$ 1 - $ 20</option>
-                      <option value="20-50">$ 20 - $ 50</option>
-                      <option value="50-100">$ 50 - $ 100</option>
-                      <option value="100-200">$ 100 - $ 200</option>
-                      <option value="200-450">$ 200 - $ 450</option>
+                      <option th:each="price : ${averagePriceCodes}"
+                              th:value="${price.name()}"
+                              th:text="${price.getLabel()}">5-20</option>
                     </select>
                     <div th:if="${#fields.hasErrors('averagePrice')}" th:errors="*{averagePrice}" style="color:red">
                     </div>
