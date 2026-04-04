@@ -541,6 +541,135 @@
         display: none;
       }
     }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+    }
+    .feature-icon-new {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .feature-icon-new svg {
+      width: 24px;
+      height: 24px;
+    }
+    .feature-title-new {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .feature-desc-new {
+      font-size: 0.9375rem;
+      color: var(--muted);
+    }
+
+    /* Benefits */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .benefit-card {
+      display: flex;
+      gap: 1rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .benefit-icon-new {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      color: var(--success);
+    }
+    .benefit-title-new {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .benefit-desc-new {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* Double Column Flow */
+    .how-grid-new {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+    .how-column-new h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .how-icon-new {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .how-icon-new.primary { background: var(--primary-light); color: var(--primary); }
+    .how-icon-new.accent { background: var(--success-light); color: var(--success); }
+    
+    .steps-new {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .step-new {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .step-number-new {
+      background: var(--muted-bg);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .benefits-grid, .how-grid-new {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -573,94 +702,180 @@
         </svg>
         100% gratuito para começar
       </div>
-      <h1>Cardápio digital <span>simples e elegante</span></h1>
-      <p>Crie o perfil público do seu restaurante e disponibilize seu cardápio completo para seus clientes visualizarem online.</p>
+      <h1 class="hero-title">
+        Divisão de Conta <span class="gradient">Automática</span> para Restaurantes
+      </h1>
+      <p class="hero-subtitle">
+        Seus clientes escaneiam o QR Code, fazem pedidos individualmente e cada um paga apenas o que consumiu. Simples assim.
+      </p>
       <div class="hero-actions">
-        <a href="/login" class="btn btn-primary btn-lg">Criar meu cardápio</a>
-        <a href="/@donamaria.restaurant" class="btn btn-outline btn-lg">Ver demonstração</a>
+        <a href="/register" class="btn btn-primary btn-lg">Criar conta grátis</a>
+        <a href="/@cantinabrasileira" class="btn btn-outline btn-lg">Ver demonstração</a>
+      </div>
+
+      <!-- Preview Cards adapted to the design -->
+      <style>
+        .hero-preview {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1.5rem;
+          margin-top: 4rem;
+        }
+        .preview-item-new {
+          background: white;
+          padding: 1.5rem;
+          border-radius: 16px;
+          border: 1px solid var(--border);
+          text-align: left;
+        }
+        .preview-icon-new {
+          width: 40px;
+          height: 40px;
+          background: var(--primary-light);
+          color: var(--primary);
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1rem;
+          font-weight: 800;
+          position: relative;
+        }
+        .preview-icon-new svg { width: 20px; height: 20px; }
+        .preview-step-num {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          width: 18px;
+          height: 18px;
+          background: var(--primary);
+          color: white;
+          font-size: 10px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .preview-title-new { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .preview-desc-new { font-size: 0.8125rem; color: var(--muted); line-height: 1.4; }
+        @media (max-width: 768px) { .hero-preview { grid-template-columns: 1fr; } }
+      </style>
+      <div class="hero-preview">
+        <div class="preview-item-new">
+          <div class="preview-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
+            <span class="preview-step-num">1</span>
+          </div>
+          <h3 class="preview-title-new">Cliente Escaneia</h3>
+          <p class="preview-desc-new">QR Code na mesa abre o menu digital instantaneamente</p>
+        </div>
+        <div class="preview-item-new">
+          <div class="preview-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+            <span class="preview-step-num">2</span>
+          </div>
+          <h3 class="preview-title-new">Faz o Pedido</h3>
+          <p class="preview-desc-new">Cada pessoa adiciona seus itens individualmente</p>
+        </div>
+        <div class="preview-item-new">
+          <div class="preview-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+            <span class="preview-step-num">3</span>
+          </div>
+          <h3 class="preview-title-new">Conta Dividida</h3>
+          <p class="preview-desc-new">Sistema calcula automaticamente o valor de cada um</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- MVP Flow Section -->
-  <section class="section">
+  <!-- Features Section -->
+  <section id="funcionalidades" class="section">
     <div class="section-inner">
       <div class="section-header">
-        <h2>Como funciona</h2>
-        <p>Em poucos passos você tem seu cardápio digital pronto para compartilhar com seus clientes.</p>
+        <h2>Tudo que seu restaurante precisa</h2>
+        <p>Funcionalidades pensadas para melhorar a experiência dos seus clientes e facilitar a gestão</p>
       </div>
       
-      <div class="flow-grid">
-        <!-- Card 1: Perfil do Restaurante -->
-        <div class="flow-card">
-          <div class="flow-number">1</div>
-          <h3>Configure seu restaurante</h3>
-          <p>Personalize as informações do seu estabelecimento para criar uma identidade única.</p>
-          <div class="flow-features">
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Nome, logo e descrição
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
+          </div>
+          <h3 class="feature-title-new">QR Code por Mesa</h3>
+          <p class="feature-desc-new">Cada mesa tem seu próprio código. Clientes acessam o menu digitalizando com o celular.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="feature-title-new">Pedidos Individuais</h3>
+          <p class="feature-desc-new">Cada pessoa na mesa registra seus próprios itens. Sem confusão na hora de pagar.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+          </div>
+          <h3 class="feature-title-new">Divisão Automática</h3>
+          <p class="feature-desc-new">O sistema calcula exatamente quanto cada pessoa deve pagar, incluindo taxa de serviço.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Flow Section -->
+  <section id="como-funciona" class="section alt-section">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Como Funciona</h2>
+        <p>Um fluxo simples e intuitivo para restaurantes e clientes</p>
+      </div>
+      
+      <div class="how-grid-new">
+        <div class="how-column-new">
+          <h3>
+            <div class="how-icon-new primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Endereço e contato
+            <span>Para o Restaurante</span>
+          </h3>
+          <div class="steps-new">
+            <div class="step-new">
+              <div class="step-number-new">1</div>
+              <p>Crie sua conta e cadastre seu restaurante</p>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Horário de funcionamento
+            <div class="step-new">
+              <div class="step-number-new">2</div>
+              <p>Adicione as mesas e configure o menu</p>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Tipo de cozinha e tags
+            <div class="step-new">
+              <div class="step-number-new">3</div>
+              <p>Imprima os QR Codes e coloque nas mesas</p>
             </div>
           </div>
         </div>
-
-        <!-- Card 2: Gestão do Cardápio -->
-        <div class="flow-card">
-          <div class="flow-number">2</div>
-          <h3>Monte seu cardápio</h3>
-          <p>Organize seus itens em categorias e adicione todos os detalhes necessários.</p>
-          <div class="flow-features">
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Categorias personalizadas
+        
+        <div class="how-column-new">
+          <h3>
+            <div class="how-icon-new accent">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Nome, descrição e preço
+            <span>Para o Cliente</span>
+          </h3>
+          <div class="steps-new">
+            <div class="step-new">
+              <div class="step-number-new">1</div>
+              <p>Escaneie o QR Code da mesa com seu celular</p>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Múltiplas fotos por item
+            <div class="step-new">
+              <div class="step-number-new">2</div>
+              <p>Informe seu nome e entre na sessão da mesa</p>
             </div>
-            <div class="flow-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Suporte a múltiplos idiomas
+            <div class="step-new">
+              <div class="step-number-new">3</div>
+              <p>Navegue pelo menu e faça seus pedidos</p>
             </div>
           </div>
         </div>
@@ -762,6 +977,57 @@
     </div>
   </section>
 
+  <!-- Benefits Section -->
+  <section id="beneficios" class="section">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Benefícios para seu Negócio</h2>
+      </div>
+      
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <div>
+            <h3 class="benefit-title-new">Menos Erros</h3>
+            <p class="benefit-desc-new">Elimina conferência manual de pedidos e divisão de conta</p>
+          </div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <div>
+            <h3 class="benefit-title-new">Mais Agilidade</h3>
+            <p class="benefit-desc-new">Clientes fazem pedidos diretamente, sem esperar garçom</p>
+          </div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <div>
+            <h3 class="benefit-title-new">Melhor Experiência</h3>
+            <p class="benefit-desc-new">Interface moderna que impressiona seus clientes</p>
+          </div>
+        </div>
+        
+        <div class="benefit-card">
+          <div class="benefit-icon-new">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <div>
+            <h3 class="benefit-title-new">Controle Total</h3>
+            <p class="benefit-desc-new">Acompanhe tudo em tempo real pelo painel de gestão</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA Section -->
   <section class="cta-section">
     <h2>Pronto para digitalizar seu cardápio?</h2>
@@ -771,7 +1037,7 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <p th:text="#{app.footer}">&copy; 2026 TableSplit. All rights reserved.</p>
+    <p class="footer-copy">&copy; 2026 TableSplit. All rights reserved.</p>
   </footer>
 </body>
 </html>
