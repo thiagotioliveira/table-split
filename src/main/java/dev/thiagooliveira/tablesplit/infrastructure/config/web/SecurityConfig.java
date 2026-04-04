@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.WebAttributes;
 
 @Configuration
 @EnableWebSecurity
@@ -91,6 +92,9 @@ public class SecurityConfig {
                 form.loginPage("/login")
                     .failureHandler(
                         (request, response, exception) -> {
+                          request
+                              .getSession()
+                              .setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, exception);
                           String slug = request.getParameter("slug");
                           if (slug != null && !slug.isEmpty()) {
                             response.sendRedirect("/login-staff?error&slug=" + slug);
