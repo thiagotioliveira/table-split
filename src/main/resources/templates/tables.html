@@ -2837,56 +2837,6 @@
 </div>
 <!-- Main Content -->
 <main class="main-content">
-    <!-- Header -->
-    <header class="dashboard-header" th:if="${false}">
-        <div class="dashboard-header-content">
-            <div class="flex items-center gap-3">
-                <button class="hamburger-btn" onclick="openSidebar()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                </button>
-                <button class="tables-toggle-btn" onclick="openTablesPanel()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-                    <span class="badge">12</span>
-                </button>
-                <div class="lg-hidden flex items-center gap-3">
-                    <div class="logo-icon" style="width: 2rem; height: 2rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-                    </div>
-                    <span style="font-weight: 700;">TableSplit</span>
-                </div>
-            </div>
-            <h1 class="hidden lg-block" style="font-size: 1.25rem; font-weight: 600;" th:if="${false}">Painel do Garçom</h1>
-            <div class="flex items-center gap-3" th:if="${false}">
-                <!-- Notifications Bell -->
-                <div style="position: relative;">
-                    <button class="notifications-bell has-urgent" id="notificationsBell" onclick="toggleNotifications()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span class="badge" id="notificationsBadge">3</span>
-                    </button>
-
-                    <div class="notifications-panel" id="notificationsPanel">
-                        <div class="notifications-panel-header">
-                            <h4>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                                Chamadas de Garçom
-                            </h4>
-                            <button class="clear-notifications" onclick="clearAllNotifications()">Limpar tudo</button>
-                        </div>
-                        <div class="notifications-list" id="notificationsList">
-                            <!-- Populated by JS -->
-                        </div>
-                        <div class="notifications-panel-footer">
-                            <a href="#" class="view-all-notifications" onclick="openAllNotificationsModal(); return false;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                                Ver todas as notificações
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
     <div class="dashboard-body" style="padding: 0;">
         <div th:replace="~{components/alert :: alert}"></div>
         <!-- Tables Overlay (Mobile) -->
