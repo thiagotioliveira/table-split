@@ -54,7 +54,9 @@ public class ProfileModel {
     this.website = restaurant.getWebsite();
     this.phone = restaurant.getPhone();
     this.messageSource = messageSource;
-    String[] values = restaurant.getAveragePrice().split("-");
+    String label =
+        restaurant.getAveragePrice() != null ? restaurant.getAveragePrice().getLabel() : "0-0";
+    String[] values = label.split("-");
     var symbol = restaurant.getCurrency().getSymbol();
     this.averagePrice = String.format("%s %s - %s %s", symbol, values[0], symbol, values[1]);
     this.email = restaurant.getEmail();

@@ -54,8 +54,9 @@ public class RestaurantEntity {
   @Column(nullable = false)
   private int serviceFee;
 
-  @Column(nullable = false)
-  private String averagePrice;
+  @Column(nullable = false, length = 20)
+  @Enumerated(EnumType.STRING)
+  private AveragePrice averagePrice;
 
   @Convert(converter = BusinessHoursJsonListConverter.class)
   @Column(columnDefinition = "TEXT")
@@ -235,11 +236,11 @@ public class RestaurantEntity {
     this.serviceFee = serviceFee;
   }
 
-  public String getAveragePrice() {
+  public AveragePrice getAveragePrice() {
     return averagePrice;
   }
 
-  public void setAveragePrice(String averagePrice) {
+  public void setAveragePrice(AveragePrice averagePrice) {
     this.averagePrice = averagePrice;
   }
 

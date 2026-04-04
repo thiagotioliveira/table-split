@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.domain.event;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import java.util.UUID;
@@ -40,6 +41,7 @@ public class AccountCreatedEvent implements DomainEvent {
         int serviceFee,
         int numberOfTables,
         CuisineType cuisineType,
+        AveragePrice averagePrice,
         java.util.List<Tag> tags) {
       this.restaurantDetails =
           new RestaurantDetails(
@@ -55,6 +57,7 @@ public class AccountCreatedEvent implements DomainEvent {
               serviceFee,
               numberOfTables,
               cuisineType,
+              averagePrice,
               tags);
     }
 
@@ -76,6 +79,7 @@ public class AccountCreatedEvent implements DomainEvent {
     private final int serviceFee;
     private final int numberOfTables;
     private final CuisineType cuisineType;
+    private final AveragePrice averagePrice;
     private final java.util.List<Tag> tags;
 
     public RestaurantDetails(
@@ -91,6 +95,7 @@ public class AccountCreatedEvent implements DomainEvent {
         int serviceFee,
         int numberOfTables,
         CuisineType cuisineType,
+        AveragePrice averagePrice,
         java.util.List<Tag> tags) {
       this.name = name;
       this.slug = slug;
@@ -104,6 +109,7 @@ public class AccountCreatedEvent implements DomainEvent {
       this.serviceFee = serviceFee;
       this.numberOfTables = numberOfTables;
       this.cuisineType = cuisineType;
+      this.averagePrice = averagePrice;
       this.tags = tags;
     }
 
@@ -153,6 +159,10 @@ public class AccountCreatedEvent implements DomainEvent {
 
     public CuisineType getCuisineType() {
       return cuisineType;
+    }
+
+    public AveragePrice getAveragePrice() {
+      return averagePrice;
     }
 
     public java.util.List<Tag> getTags() {

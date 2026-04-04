@@ -16,6 +16,8 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.UserCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
+import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +61,8 @@ class CreateAccountTest {
             Currency.BRL,
             10,
             10,
-            "BRAZILIAN",
+            CuisineType.BRAZILIAN,
+            AveragePrice.PRICE_20_50,
             List.of());
     CreateAccountCommand command =
         new CreateAccountCommand(userCommand, restaurantCommand, ZoneId.of("UTC"));

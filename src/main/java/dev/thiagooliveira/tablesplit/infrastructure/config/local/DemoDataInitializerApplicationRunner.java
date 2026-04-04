@@ -13,6 +13,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
@@ -201,6 +202,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               10,
                               10,
                               CuisineType.BRAZILIAN,
+                              AveragePrice.PRICE_20_50,
                               List.of(
                                   Tag.ACCESSIBLE,
                                   Tag.WIFI,

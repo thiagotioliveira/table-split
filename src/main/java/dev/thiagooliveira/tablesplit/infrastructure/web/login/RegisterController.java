@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -62,6 +63,11 @@ public class RegisterController {
   @ModelAttribute("restaurantTags")
   public RestaurantTag[] restaurantTags() {
     return RestaurantTag.values();
+  }
+
+  @ModelAttribute("averagePriceCodes")
+  public AveragePrice[] averagePriceCodes() {
+    return AveragePrice.values();
   }
 
   @GetMapping

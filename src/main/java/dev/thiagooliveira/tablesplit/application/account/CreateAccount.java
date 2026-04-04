@@ -70,6 +70,7 @@ public class CreateAccount {
                 command.restaurant().serviceFee(),
                 command.restaurant().numberOfTables(),
                 command.restaurant().cuisineType(),
+                command.restaurant().averagePrice(),
                 command.restaurant().tags())));
 
     return user;

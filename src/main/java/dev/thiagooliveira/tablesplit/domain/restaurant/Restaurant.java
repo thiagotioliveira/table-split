@@ -23,7 +23,7 @@ public class Restaurant {
   private List<Language> customerLanguages;
   private Currency currency;
   private int serviceFee;
-  private String averagePrice;
+  private AveragePrice averagePrice;
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
@@ -249,11 +249,11 @@ public class Restaurant {
     this.serviceFee = serviceFee;
   }
 
-  public String getAveragePrice() {
+  public AveragePrice getAveragePrice() {
     return averagePrice;
   }
 
-  public void setAveragePrice(String averagePrice) {
+  public void setAveragePrice(AveragePrice averagePrice) {
     this.averagePrice = averagePrice;
   }
 

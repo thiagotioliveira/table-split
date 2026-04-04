@@ -171,7 +171,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: average_price
-                  type: varchar(10)
+                  type: varchar(50)
                   constraints:
                     nullable: false
               - column:

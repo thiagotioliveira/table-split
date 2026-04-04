@@ -1317,6 +1317,15 @@
                       <span class="service-fee-label">%</span>
                     </div>
                   </div>
+                  <div class="form-group">
+                    <label for="averagePrice" class="form-label">Preço Médio <span class="required">*</span></label>
+                    <select id="averagePrice" class="form-input" th:field="*{restaurant.averagePrice}">
+                      <option value="" disabled selected>Selecione uma faixa de preço</option>
+                      <option th:each="price : ${averagePriceCodes}"
+                              th:value="${price}"
+                              th:text="${price.getLabel()}">5-20</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

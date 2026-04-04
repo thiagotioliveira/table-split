@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.account.command;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 
@@ -15,4 +16,5 @@ public record CreateRestaurantCommand(
     int serviceFee,
     int numberOfTables,
     CuisineType cuisineType,
+    AveragePrice averagePrice,
     java.util.List<Tag> tags) {}

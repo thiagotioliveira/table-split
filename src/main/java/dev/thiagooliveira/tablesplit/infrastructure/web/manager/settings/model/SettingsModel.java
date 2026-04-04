@@ -50,7 +50,7 @@ public class SettingsModel {
   private int serviceFee;
 
   @NotBlank
-  @Size(max = 10)
+  @Size(max = 20)
   private String averagePrice;
 
   private List<BusinessHoursModel> days = new ArrayList<>();
@@ -85,7 +85,8 @@ public class SettingsModel {
             : restaurant.getCustomerLanguages().stream().map(Enum::name).toList();
     this.currency = restaurant.getCurrency().name();
     this.serviceFee = restaurant.getServiceFee();
-    this.averagePrice = restaurant.getAveragePrice();
+    this.averagePrice =
+        restaurant.getAveragePrice() == null ? null : restaurant.getAveragePrice().name();
     this.days =
         restaurant.getDays() == null
             ? List.of()
@@ -120,7 +121,7 @@ public class SettingsModel {
         domainLanguage,
         Currency.valueOf(this.currency),
         this.serviceFee,
-        this.averagePrice,
+        this.averagePrice == null ? null : AveragePrice.valueOf(this.averagePrice),
         domainDays,
         this.hashPrimaryColor,
         this.hashAccentColor);

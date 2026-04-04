@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
@@ -20,6 +21,7 @@ public class RestaurantModel {
   @NotNull private Currency currency;
   @NotNull private Integer serviceFee = 10;
   private CuisineType cuisineType;
+  private AveragePrice averagePrice;
   private java.util.List<RestaurantTag> tags = new java.util.ArrayList<>();
 
   @Min(0)
@@ -42,9 +44,18 @@ public class RestaurantModel {
             ? dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType.valueOf(
                 this.cuisineType.name())
             : null,
+        this.averagePrice,
         this.tags != null
             ? this.tags.stream().map(t -> Tag.valueOf(t.name())).toList()
             : java.util.List.of());
+  }
+
+  public AveragePrice getAveragePrice() {
+    return averagePrice;
+  }
+
+  public void setAveragePrice(AveragePrice averagePrice) {
+    this.averagePrice = averagePrice;
   }
 
   public String getName() {

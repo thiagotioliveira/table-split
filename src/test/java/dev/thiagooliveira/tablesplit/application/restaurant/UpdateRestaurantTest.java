@@ -9,6 +9,7 @@ import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlread
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,7 @@ class UpdateRestaurantTest {
         List.of(Language.EN),
         Currency.EUR,
         15,
-        "$$",
+        AveragePrice.PRICE_20_50,
         new ArrayList<>(),
         "#FFFFFF",
         "#000000");
