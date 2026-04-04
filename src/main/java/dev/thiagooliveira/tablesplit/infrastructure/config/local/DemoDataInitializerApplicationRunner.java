@@ -197,7 +197,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Rua Conde Redondo - Lisboa",
                               Currency.EUR,
                               10,
-                              10),
+                              10,
+                              "BRAZILIAN",
+                              List.of()),
                           time.getZoneId())));
       logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());
     } catch (UserAlreadyRegisteredException e) {

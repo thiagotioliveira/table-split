@@ -7,6 +7,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalC
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
+import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -50,6 +52,16 @@ public class RegisterController {
   @ModelAttribute("languages")
   public Language[] languages() {
     return Language.values();
+  }
+
+  @ModelAttribute("cuisineTypeCodes")
+  public CuisineType[] cuisineTypeCodes() {
+    return CuisineType.values();
+  }
+
+  @ModelAttribute("restaurantTags")
+  public RestaurantTag[] restaurantTags() {
+    return RestaurantTag.values();
   }
 
   @GetMapping

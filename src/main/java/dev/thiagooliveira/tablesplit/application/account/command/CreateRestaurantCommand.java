@@ -1,7 +1,5 @@
 package dev.thiagooliveira.tablesplit.application.account.command;
 
-import dev.thiagooliveira.tablesplit.domain.common.Currency;
-
 public record CreateRestaurantCommand(
     String name,
     String slug,
@@ -10,6 +8,8 @@ public record CreateRestaurantCommand(
     String email,
     String website,
     String address,
-    Currency currency,
+    dev.thiagooliveira.tablesplit.domain.common.Currency currency,
     int serviceFee,
-    int numberOfTables) {}
+    int numberOfTables,
+    String cuisineType,
+    java.util.List<String> tags) {}

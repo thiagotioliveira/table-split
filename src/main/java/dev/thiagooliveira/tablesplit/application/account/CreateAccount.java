@@ -67,7 +67,9 @@ public class CreateAccount {
                 command.restaurant().address(),
                 command.restaurant().currency(),
                 command.restaurant().serviceFee(),
-                command.restaurant().numberOfTables())));
+                command.restaurant().numberOfTables(),
+                command.restaurant().cuisineType(),
+                command.restaurant().tags())));
 
     return user;
   }

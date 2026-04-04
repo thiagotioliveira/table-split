@@ -34,7 +34,9 @@ public class AccountCreatedEvent implements DomainEvent {
         String address,
         Currency currency,
         int serviceFee,
-        int numberOfTables) {
+        int numberOfTables,
+        String cuisineType,
+        java.util.List<String> tags) {
       this.restaurantDetails =
           new RestaurantDetails(
               name,
@@ -46,7 +48,9 @@ public class AccountCreatedEvent implements DomainEvent {
               address,
               currency,
               serviceFee,
-              numberOfTables);
+              numberOfTables,
+              cuisineType,
+              tags);
     }
 
     public RestaurantDetails getRestaurantDetails() {
@@ -65,6 +69,8 @@ public class AccountCreatedEvent implements DomainEvent {
     private final Currency currency;
     private final int serviceFee;
     private final int numberOfTables;
+    private final String cuisineType;
+    private final java.util.List<String> tags;
 
     public RestaurantDetails(
         String name,
@@ -76,7 +82,9 @@ public class AccountCreatedEvent implements DomainEvent {
         String address,
         Currency currency,
         int serviceFee,
-        int numberOfTables) {
+        int numberOfTables,
+        String cuisineType,
+        java.util.List<String> tags) {
       this.name = name;
       this.slug = slug;
       this.description = description;
@@ -87,6 +95,8 @@ public class AccountCreatedEvent implements DomainEvent {
       this.currency = currency;
       this.serviceFee = serviceFee;
       this.numberOfTables = numberOfTables;
+      this.cuisineType = cuisineType;
+      this.tags = tags;
     }
 
     public String getName() {
@@ -127,6 +137,14 @@ public class AccountCreatedEvent implements DomainEvent {
 
     public int getNumberOfTables() {
       return numberOfTables;
+    }
+
+    public String getCuisineType() {
+      return cuisineType;
+    }
+
+    public java.util.List<String> getTags() {
+      return tags;
     }
   }
 }

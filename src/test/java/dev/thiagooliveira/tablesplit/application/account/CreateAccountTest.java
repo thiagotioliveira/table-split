@@ -17,6 +17,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.UserCreatedEvent;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,9 @@ class CreateAccountTest {
             "Rua Teste",
             Currency.BRL,
             10,
-            10);
+            10,
+            "BRAZILIAN",
+            List.of());
     CreateAccountCommand command =
         new CreateAccountCommand(userCommand, restaurantCommand, ZoneId.of("UTC"));
 

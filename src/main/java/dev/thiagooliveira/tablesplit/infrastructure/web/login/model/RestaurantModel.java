@@ -2,6 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +18,8 @@ public class RestaurantModel {
   @NotBlank private String address;
   @NotNull private Currency currency;
   @NotNull private Integer serviceFee = 10;
+  private CuisineType cuisineType;
+  private java.util.List<RestaurantTag> tags = new java.util.ArrayList<>();
 
   @Min(0)
   @NotNull
@@ -32,7 +36,9 @@ public class RestaurantModel {
         this.address,
         this.currency,
         this.serviceFee,
-        this.numberOfTables);
+        this.numberOfTables,
+        this.cuisineType != null ? this.cuisineType.name() : null,
+        this.tags != null ? this.tags.stream().map(Enum::name).toList() : java.util.List.of());
   }
 
   public String getName() {
@@ -113,5 +119,21 @@ public class RestaurantModel {
 
   public void setNumberOfTables(Integer numberOfTables) {
     this.numberOfTables = numberOfTables;
+  }
+
+  public CuisineType getCuisineType() {
+    return cuisineType;
+  }
+
+  public void setCuisineType(CuisineType cuisineType) {
+    this.cuisineType = cuisineType;
+  }
+
+  public java.util.List<RestaurantTag> getTags() {
+    return tags;
+  }
+
+  public void setTags(java.util.List<RestaurantTag> tags) {
+    this.tags = tags;
   }
 }

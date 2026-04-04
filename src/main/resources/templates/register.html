@@ -621,6 +621,106 @@
       color: var(--muted-foreground);
     }
 
+    /* Profile Tags */
+    .profile-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      cursor: grab;
+    }
+
+    .profile-tag .tag-emoji {
+      font-size: 1rem;
+    }
+
+    .profile-tag .tag-remove {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--muted);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+
+    .profile-tag .tag-remove:hover {
+      background: var(--destructive);
+      color: white;
+    }
+
+    .add-tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-tag-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tag-suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 640px) {
+      .tag-suggestions {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .tag-suggestion {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tag-suggestion:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    .tag-suggestion.selected {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
     /* Buttons */
     .form-actions {
       display: flex;
@@ -1072,24 +1172,28 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="description"><span th:test="#{page.register.step.restaurant.description}">Description</span> <span class="optional">(opcional)</span></label>
+                  <label for="description"><span th:text="#{page.register.step.restaurant.description}">Description</span> <span class="optional">(opcional)</span></label>
                   <textarea id="description" class="form-input" th:placeholder="#{page.register.step.restaurant.description.placeholder}" rows="3"
                             th:field="*{restaurant.description}"></textarea>
                 </div>
 
-                <div class="form-group" th:if="${false}">
-                  <label>Tipo de cozinha</label>
+                <div id="hiddenTagsContainer"></div>
+                <div id="hiddenCuisineContainer"></div>
+
+                <div class="form-group">
+                  <label class="form-label" th:text="#{page.settings.form.restaurant.cuisine.type}">Cuisine Type</label>
+                  <p class="form-hint" style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 0.75rem;"
+                    th:text="#{page.settings.form.restaurant.cuisine.type.hint}">Select the types that best describe your restaurant.
+                  </p>
                   <div class="cuisine-tags" id="cuisineTags">
-                    <button type="button" class="cuisine-tag" data-value="brasileira">🇧🇷 Brasileira</button>
-                    <button type="button" class="cuisine-tag" data-value="italiana">🇮🇹 Italiana</button>
-                    <button type="button" class="cuisine-tag" data-value="japonesa">🇯🇵 Japonesa</button>
-                    <button type="button" class="cuisine-tag" data-value="mexicana">🇲🇽 Mexicana</button>
-                    <button type="button" class="cuisine-tag" data-value="arabe">🇸🇦 Árabe</button>
-                    <button type="button" class="cuisine-tag" data-value="hamburgueria">🍔 Hamburgueria</button>
-                    <button type="button" class="cuisine-tag" data-value="pizzaria">🍕 Pizzaria</button>
-                    <button type="button" class="cuisine-tag" data-value="churrascaria">🥩 Churrascaria</button>
-                    <button type="button" class="cuisine-tag" data-value="bar">🍺 Bar</button>
-                    <button type="button" class="cuisine-tag" data-value="cafeteria">☕ Cafeteria</button>
+                    <button th:each="cuisine : ${cuisineTypeCodes}"
+                            type="button" class="cuisine-tag"
+                            th:classappend="${form.restaurant.cuisineType == cuisine} ? ' selected' : ''"
+                            th:attr="data-cuisine=${cuisine.name()}"
+                            onclick="toggleCuisine(this)">
+                      <span th:text="${cuisine.getIcon()}"></span>
+                      <span th:text="#{${cuisine.getLabel()}}"></span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1130,6 +1234,41 @@
                   <input type="text" id="address" class="form-input" th:placeholder="#{page.register.step.restaurant.contact.address.placeholder}"
                          th:field="*{restaurant.address}">
                   <div th:if="${#fields.hasErrors('restaurant.address')}" th:errors="*{restaurant.address}" style="color: var(--error);"></div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" th:text="#{page.settings.section.tags.title}">Profile Tags</label>
+                  <p class="form-hint" style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 0.75rem;"
+                    th:text="#{page.settings.section.tags.description}">Features and amenities of your restaurant</p>
+
+                  <div class="profile-tags-container" id="profileTags">
+                    <div class="profile-tag" th:each="t : *{restaurant.tags}" th:attr="data-tag=${t}">
+                      <th:block th:each="rt : ${restaurantTags}" th:if="${rt.name() == t.name()}">
+                        <span class="tag-emoji" th:text="${rt.getIcon()}"></span>
+                        <span th:text="#{${rt.getLabel()}}"></span>
+                        <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+                      </th:block>
+                    </div>
+                    <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
+                      th:text="#{page.settings.section.tags.button.add}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                      </svg>
+                      Add tag
+                    </button>
+                  </div>
+
+                  <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
+                    <div th:each="rt : ${restaurantTags}"
+                         class="tag-suggestion"
+                         th:attr="onclick=|addTag('${rt.name()}', '${rt.getIcon()}', '#{${rt.getLabel()}}')|"
+                         th:classappend="${#lists.contains(form.restaurant.tags, rt)} ? ' selected' : ''">
+                      <span th:text="${rt.getIcon()}"></span>
+                      <span th:text="#{${rt.getLabel()}}"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1411,19 +1550,112 @@
       }
     }
 
-    // Cuisine tags
-    document.querySelectorAll('.cuisine-tag').forEach(tag => {
-      tag.addEventListener('click', function() {
-        const value = this.dataset.value;
-        
-        if (this.classList.contains('selected')) {
-          this.classList.remove('selected');
-          selectedCuisines = selectedCuisines.filter(c => c !== value);
+    // Cuisine & Tags management
+    function toggleCuisine(element) {
+      const cuisine = element.dataset.cuisine;
+      const isSelected = element.classList.contains('selected');
+
+      // Clear previous selection (only one allowed)
+      document.querySelectorAll('#cuisineTags .cuisine-tag').forEach(tag => {
+        tag.classList.remove('selected');
+      });
+
+      if (!isSelected) {
+        element.classList.add('selected');
+      }
+
+      syncHiddenCuisines();
+    }
+
+    function syncHiddenCuisines() {
+      const selected = document.querySelector('#cuisineTags .cuisine-tag.selected');
+      const container = document.getElementById('hiddenCuisineContainer');
+      container.innerHTML = '';
+
+      if (selected) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'restaurant.cuisineType';
+        input.value = selected.dataset.cuisine;
+        container.appendChild(input);
+      }
+    }
+
+    function showTagSuggestions() {
+      const suggestions = document.getElementById('tagSuggestions');
+      suggestions.style.display = suggestions.style.display === 'none' ? 'grid' : 'none';
+      updateTagSuggestions();
+    }
+
+    function updateTagSuggestions() {
+      const container = document.getElementById('profileTags');
+      const suggestions = document.querySelectorAll('#tagSuggestions .tag-suggestion');
+
+      suggestions.forEach(suggestion => {
+        const tagId = suggestion.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (container.querySelector(`[data-tag="${tagId}"]`)) {
+          suggestion.classList.add('selected');
         } else {
-          this.classList.add('selected');
-          selectedCuisines.push(value);
+          suggestion.classList.remove('selected');
         }
       });
+    }
+
+    function addTag(id, emoji, label) {
+      const container = document.getElementById('profileTags');
+      const addBtn = container.querySelector('.add-tag-btn');
+
+      if (container.querySelector(`[data-tag="${id}"]`)) {
+        removeTagById(id);
+        updateTagSuggestions();
+        syncHiddenTags();
+        return;
+      }
+
+      const tag = document.createElement('div');
+      tag.className = 'profile-tag';
+      tag.dataset.tag = id;
+      tag.innerHTML = `
+        <span class="tag-emoji">${emoji}</span>
+        <span>${label}</span>
+        <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+      `;
+
+      container.insertBefore(tag, addBtn);
+      updateTagSuggestions();
+      syncHiddenTags();
+    }
+
+    function removeTag(btn) {
+      btn.closest('.profile-tag').remove();
+      updateTagSuggestions();
+      syncHiddenTags();
+    }
+
+    function removeTagById(id) {
+      const tag = document.querySelector(`#profileTags [data-tag="${id}"]`);
+      if (tag) tag.remove();
+    }
+
+    function syncHiddenTags() {
+      const container = document.getElementById('hiddenTagsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const tags = document.querySelectorAll('#profileTags .profile-tag');
+      tags.forEach((tag, index) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `restaurant.tags[${index}]`;
+        input.value = tag.dataset.tag;
+        container.appendChild(input);
+      });
+    }
+
+    // Ensure sync before submit
+    document.querySelector('form').addEventListener('submit', function () {
+      syncHiddenTags();
+      syncHiddenCuisines();
     });
 
     // Table counter
