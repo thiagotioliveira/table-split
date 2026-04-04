@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Funcionário - TableSplit</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#c9a050">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="TableSplit">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/images/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/icon-192x192.png">
+
   <link rel="icon" type="image/png" href="https://mochausercontent.com/e63f87c6-1d6d-4ec6-b4a6-7c0bcafe05fb/tablesplit-logo-orange.png">
   <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
   <style>
@@ -193,7 +207,7 @@
         </div>
         <span style="font-weight: 700; font-size: 1.25rem;">TableSplit</span>
       </a>
-
+      <div th:replace="~{components/alert :: alert}"></div>
       <div class="auth-header">
         <h1>Acesso Funcionário</h1>
         <p>Use suas credenciais para entrar</p>
@@ -217,6 +231,7 @@
                     <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
                 <input type="text" id="slug" name="slug" class="form-input" placeholder="meu-restaurante" required
+                       th:value="${param.slug}"
                        oninput="updateSlugPreview()">
             </div>
           <div class="slug-preview">
@@ -261,11 +276,15 @@
       </div>
     </div>
   </div>
+  <!-- PWA Install Helper -->
+  <script src="/pwa-install.js"></script>
 </body>
 <script>
   function updateSlugPreview() {
     const slug = document.getElementById('slug').value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     document.getElementById('slugPreview').textContent = slug || 'meu-restaurante';
   }
+  
+  document.addEventListener('DOMContentLoaded', updateSlugPreview);
 </script>
 </html>

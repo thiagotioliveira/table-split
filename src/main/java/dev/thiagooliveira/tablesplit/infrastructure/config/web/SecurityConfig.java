@@ -89,6 +89,15 @@ public class SecurityConfig {
         .formLogin(
             form ->
                 form.loginPage("/login")
+                    .failureHandler(
+                        (request, response, exception) -> {
+                          String slug = request.getParameter("slug");
+                          if (slug != null && !slug.isEmpty()) {
+                            response.sendRedirect("/login-staff?error&slug=" + slug);
+                          } else {
+                            response.sendRedirect("/login?error");
+                          }
+                        })
                     .defaultSuccessUrl("/dashboard", true) // redirect pós login
                     .permitAll())
         .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll())
