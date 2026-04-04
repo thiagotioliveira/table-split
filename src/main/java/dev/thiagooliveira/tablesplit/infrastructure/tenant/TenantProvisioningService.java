@@ -48,10 +48,14 @@ public class TenantProvisioningService {
       // 2. Run Liquibase on the new schema
       runLiquibase(connection, tenantId);
 
-      // 3. Commit everything
-      connection.commit();
+      // 3. Commit only if NOT in a Spring transaction (to avoid committing test transactions)
+      if (!org.springframework.transaction.support.TransactionSynchronizationManager
+              .isActualTransactionActive()
+          && !connection.getAutoCommit()) {
+        connection.commit();
+      }
 
-    } catch (SQLException | LiquibaseException e) {
+    } catch (SQLException | liquibase.exception.LiquibaseException e) {
       throw new RuntimeException(
           "Failed to provision tenant schema for restaurant: " + restaurantId, e);
     }

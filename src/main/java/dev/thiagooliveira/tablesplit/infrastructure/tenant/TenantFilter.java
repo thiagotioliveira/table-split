@@ -50,7 +50,7 @@ public class TenantFilter extends OncePerRequestFilter {
   }
 
   private void setTenantContext(UUID id) {
-    String tenantId = "t_" + id.toString().replace("-", "_").toLowerCase();
+    String tenantId = TenantContext.generateTenantIdentifier(id);
     TenantContext.setCurrentTenant(tenantId);
   }
 }
