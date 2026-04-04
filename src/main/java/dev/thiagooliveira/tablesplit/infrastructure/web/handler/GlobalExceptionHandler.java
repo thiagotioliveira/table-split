@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 
 import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
+import dev.thiagooliveira.tablesplit.infrastructure.web.exception.ForbiddenException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
@@ -39,6 +40,20 @@ public class GlobalExceptionHandler {
     model.addAttribute("message", ex.getMessage());
     model.addAttribute("errorType", ex.getClass().getSimpleName());
     return "404";
+  }
+
+  @ExceptionHandler(ForbiddenException.class)
+  public String handleForbiddenException(ForbiddenException ex, Model model) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
+    if (authenticated) {
+      model.addAttribute("homeLink", "/dashboard");
+    } else {
+      model.addAttribute("homeLink", "/");
+    }
+    model.addAttribute("message", ex.getMessage());
+    model.addAttribute("errorType", ex.getClass().getSimpleName());
+    return "403";
   }
 
   @ExceptionHandler(InfrastructureException.class)

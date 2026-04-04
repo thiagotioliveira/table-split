@@ -21,6 +21,6 @@ public class ManagerControllerAdvice {
     var module = (Module) request.getAttribute("currentModule");
     if (module != null) {
       model.addAttribute("module", module);
-    } else throw new RuntimeException("never to be here");
+    }
   }
 }

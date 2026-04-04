@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web;
 
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import java.util.List;
+import java.util.Set;
 
 public enum Module {
   DASHBOARD(
@@ -114,6 +115,10 @@ public enum Module {
     this.icon = icon;
   }
 
+  public static Set<Module> staffAvailableModules() {
+    return Set.of(MENU, PROMOTIONS, TABLES, ORDERS, RESERVATION, GALLERY, REPORTS);
+  }
+
   public static List<Module> sidebarModules(Plan plan) {
     return plan.getModules().stream()
         .map(m -> Module.valueOf(m.name()))
@@ -126,6 +131,15 @@ public enum Module {
     return plan.getModules().stream()
         .map(m -> Module.valueOf(m.name()))
         .filter(Module::isInSidebarFooter)
+        .sorted((o1, o2) -> o1.index.compareTo(o2.index))
+        .toList();
+  }
+
+  public static List<Module> filterModules(
+      java.util.Set<dev.thiagooliveira.tablesplit.domain.account.Module> modules, boolean sidebar) {
+    return modules.stream()
+        .map(m -> Module.valueOf(m.name()))
+        .filter(m -> sidebar ? m.isInSidebarNav() : m.isInSidebarFooter())
         .sorted((o1, o2) -> o1.index.compareTo(o2.index))
         .toList();
   }

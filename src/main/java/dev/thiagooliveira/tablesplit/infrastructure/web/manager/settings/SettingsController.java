@@ -77,5 +77,6 @@ public class SettingsController {
     context.getRestaurant().setName(restaurant.getName());
     context.getRestaurant().setCurrency(restaurant.getCurrency());
     context.getRestaurant().setCustomerLanguages(restaurant.getCustomerLanguages());
+    context.getRestaurant().setDefaultLanguage(restaurant.getDefaultLanguage());
   }
 }

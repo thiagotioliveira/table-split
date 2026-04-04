@@ -1,8 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 
+import dev.thiagooliveira.tablesplit.domain.account.Module;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
+import dev.thiagooliveira.tablesplit.domain.account.Staff;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import java.util.Set;
 import java.util.UUID;
 
 public class UserContext {
@@ -13,6 +16,7 @@ public class UserContext {
   private Language language;
   private String password;
   private final Role role;
+  private Set<Module> modules;
 
   public UserContext(User user) {
     this.id = user.getId();
@@ -22,6 +26,17 @@ public class UserContext {
     this.email = user.getEmail();
     this.password = user.getPassword();
     this.role = user.getRole();
+  }
+
+  public UserContext(Staff staff) {
+    this.id = staff.getId();
+    this.firstName = staff.getFirstName();
+    this.lastName = staff.getLastName();
+    this.language = staff.getLanguage();
+    this.email = staff.getEmail();
+    this.password = staff.getPassword();
+    this.role = staff.getRole();
+    this.modules = staff.getModules();
   }
 
   public UUID getId() {
@@ -70,5 +85,13 @@ public class UserContext {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Set<Module> getModules() {
+    return modules;
+  }
+
+  public void setModules(Set<Module> modules) {
+    this.modules = modules;
   }
 }

@@ -7,7 +7,7 @@
   --primary-dark: #a88535;
   --destructive-light: rgba(239, 68, 68, 0.1);
 
-  --accent: #2d5a47;
+  --accent: #FFEDD5;
   --accent-light: rgba(45, 90, 71, 0.12);
 
   /* Backgrounds */
@@ -1696,7 +1696,7 @@ a {
 .form-label {
   display: block;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.5rem;
 }
 

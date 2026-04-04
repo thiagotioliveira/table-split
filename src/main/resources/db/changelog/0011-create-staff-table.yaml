@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0011-create-staff-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: staff
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: true
+        - addForeignKeyConstraint:
+            baseTableName: staff
+            baseColumnNames: restaurant_id
+            referencedTableName: restaurants
+            referencedTableSchemaName: public
+            referencedColumnNames: id
+            constraintName: fk_staff_restaurant
+        - createIndex:
+            indexName: idx_staff_restaurant_id
+            tableName: staff
+            columns:
+              - column:
+                  name: restaurant_id
+        - createIndex:
+            indexName: idx_staff_email
+            tableName: staff
+            columns:
+              - column:
+                  name: email
+        - createTable:
+            tableName: staff_modules
+            columns:
+              - column:
+                  name: staff_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: module
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: staff_modules
+            baseColumnNames: staff_id
+            referencedTableName: staff
+            referencedColumnNames: id
+            constraintName: fk_staff_modules_staff

@@ -13,6 +13,7 @@ public class RestaurantContext {
   private Currency currency;
   private int serviceFee;
   private List<Language> customerLanguages;
+  private Language defaultLanguage;
 
   public RestaurantContext(Restaurant restaurant) {
     this.id = restaurant.getId();
@@ -21,6 +22,7 @@ public class RestaurantContext {
     this.currency = restaurant.getCurrency();
     this.serviceFee = restaurant.getServiceFee();
     this.customerLanguages = restaurant.getCustomerLanguages();
+    this.defaultLanguage = restaurant.getDefaultLanguage();
   }
 
   public UUID getId() {
@@ -65,5 +67,13 @@ public class RestaurantContext {
 
   public void setServiceFee(int serviceFee) {
     this.serviceFee = serviceFee;
+  }
+
+  public Language getDefaultLanguage() {
+    return defaultLanguage;
+  }
+
+  public void setDefaultLanguage(Language defaultLanguage) {
+    this.defaultLanguage = defaultLanguage;
   }
 }

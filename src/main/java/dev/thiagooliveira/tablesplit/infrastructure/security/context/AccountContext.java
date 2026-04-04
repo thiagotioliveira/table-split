@@ -2,12 +2,11 @@ package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 
 import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
+import dev.thiagooliveira.tablesplit.domain.account.Staff;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,6 +29,19 @@ public class AccountContext implements UserDetails {
     this.restaurant = new RestaurantContext(restaurant);
     this.sidebarModules = Module.sidebarModules(account.getPlan());
     this.footerModules = Module.footerModules(account.getPlan());
+  }
+
+  public AccountContext(Account account, Staff staff, Restaurant restaurant) {
+    var sidebarModules = new HashSet<>(staff.getModules());
+    sidebarModules.add(dev.thiagooliveira.tablesplit.domain.account.Module.DASHBOARD);
+    var footerModules = Set.of(dev.thiagooliveira.tablesplit.domain.account.Module.USER_PROFILE);
+    this.id = account.getId();
+    this.active = account.isActive() && staff.isEnabled();
+    this.plan = account.getPlan();
+    this.user = new UserContext(staff);
+    this.restaurant = new RestaurantContext(restaurant);
+    this.sidebarModules = Module.filterModules(sidebarModules, true);
+    this.footerModules = Module.filterModules(footerModules, false);
   }
 
   @Override

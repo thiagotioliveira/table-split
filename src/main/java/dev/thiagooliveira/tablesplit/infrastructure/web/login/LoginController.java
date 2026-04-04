@@ -36,11 +36,6 @@ public class LoginController {
     return "login";
   }
 
-  @GetMapping("/login-staff")
-  public String loginStaff(HttpServletRequest request, Model model) {
-    return "login-staff";
-  }
-
   @GetMapping("/forgot-password")
   public String forgotPassword() {
     return "forgot-password";
