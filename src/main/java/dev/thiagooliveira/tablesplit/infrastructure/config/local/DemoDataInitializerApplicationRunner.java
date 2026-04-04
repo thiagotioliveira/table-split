@@ -13,6 +13,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
+import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageJpaRepository;
@@ -198,7 +199,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Currency.EUR,
                               10,
                               10,
-                              "BRAZILIAN",
+                              CuisineType.BRAZILIAN,
                               List.of()),
                           time.getZoneId())));
       logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());

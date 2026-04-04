@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import java.util.UUID;
 
 public class AccountCreatedEvent implements DomainEvent {
@@ -35,7 +36,7 @@ public class AccountCreatedEvent implements DomainEvent {
         Currency currency,
         int serviceFee,
         int numberOfTables,
-        String cuisineType,
+        CuisineType cuisineType,
         java.util.List<String> tags) {
       this.restaurantDetails =
           new RestaurantDetails(
@@ -69,7 +70,7 @@ public class AccountCreatedEvent implements DomainEvent {
     private final Currency currency;
     private final int serviceFee;
     private final int numberOfTables;
-    private final String cuisineType;
+    private final CuisineType cuisineType;
     private final java.util.List<String> tags;
 
     public RestaurantDetails(
@@ -83,7 +84,7 @@ public class AccountCreatedEvent implements DomainEvent {
         Currency currency,
         int serviceFee,
         int numberOfTables,
-        String cuisineType,
+        CuisineType cuisineType,
         java.util.List<String> tags) {
       this.name = name;
       this.slug = slug;
@@ -139,7 +140,7 @@ public class AccountCreatedEvent implements DomainEvent {
       return numberOfTables;
     }
 
-    public String getCuisineType() {
+    public CuisineType getCuisineType() {
       return cuisineType;
     }
 

@@ -1,5 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.account.command;
 
+import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
+
 public record CreateRestaurantCommand(
     String name,
     String slug,
@@ -11,5 +13,5 @@ public record CreateRestaurantCommand(
     dev.thiagooliveira.tablesplit.domain.common.Currency currency,
     int serviceFee,
     int numberOfTables,
-    String cuisineType,
+    CuisineType cuisineType,
     java.util.List<String> tags) {}

@@ -5,7 +5,6 @@ import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestau
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
-import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import java.time.DayOfWeek;
@@ -35,9 +34,7 @@ public class AccountCreatedEventListener {
             restaurantDetails.getPhone(),
             restaurantDetails.getEmail(),
             restaurantDetails.getAddress(),
-            restaurantDetails.getCuisineType() != null
-                ? CuisineType.valueOf(restaurantDetails.getCuisineType())
-                : null,
+            restaurantDetails.getCuisineType() != null ? restaurantDetails.getCuisineType() : null,
             restaurantDetails.getTags() != null
                 ? restaurantDetails.getTags().stream().map(Tag::valueOf).toList()
                 : List.of(),
