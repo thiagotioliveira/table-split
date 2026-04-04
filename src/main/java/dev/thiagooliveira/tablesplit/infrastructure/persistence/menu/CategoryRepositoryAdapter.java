@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 import dev.thiagooliveira.tablesplit.application.menu.CategoryRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,7 +55,20 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
 
   @Override
   public void save(Category category) {
-    this.categoryJpaRepository.save(CategoryEntity.fromDomain(category));
+    var entity =
+        this.categoryJpaRepository
+            .findById(category.getId())
+            .orElseGet(
+                () -> {
+                  var newEntity = new CategoryEntity();
+                  newEntity.setId(category.getId());
+                  newEntity.setRestaurantId(category.getRestaurantId());
+                  return newEntity;
+                });
+    entity.setNumOrder(category.getOrder());
+    entity.setName(LocalizedTextEntity.fromMap(category.getName()));
+    entity.setActive(true);
+    this.categoryJpaRepository.save(entity);
   }
 
   @Override
