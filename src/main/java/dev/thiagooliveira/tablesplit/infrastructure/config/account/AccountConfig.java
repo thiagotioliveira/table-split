@@ -22,8 +22,8 @@ public class AccountConfig {
   }
 
   @Bean
-  public EditStaff editStaff(StaffRepository staffRepository) {
-    return new EditStaff(staffRepository);
+  public UpdateStaff editStaff(StaffRepository staffRepository) {
+    return new UpdateStaff(staffRepository);
   }
 
   @Bean

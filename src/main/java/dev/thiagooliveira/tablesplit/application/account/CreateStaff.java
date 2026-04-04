@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateStaffCommand;
+import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
 import java.util.UUID;
@@ -14,6 +15,13 @@ public class CreateStaff {
   }
 
   public Staff execute(CreateStaffCommand command) {
+    this.staffRepository
+        .findByEmail(command.email())
+        .ifPresent(
+            existing -> {
+              throw new StaffAlreadyRegisteredException();
+            });
+
     var staff = new Staff();
     staff.setId(UUID.randomUUID());
     staff.setRestaurantId(command.restaurantId());

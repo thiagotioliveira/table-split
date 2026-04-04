@@ -1,13 +1,14 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.application.account.command.UpdateStaffCommand;
+import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
 
-public class EditStaff {
+public class UpdateStaff {
 
   private final StaffRepository staffRepository;
 
-  public EditStaff(StaffRepository staffRepository) {
+  public UpdateStaff(StaffRepository staffRepository) {
     this.staffRepository = staffRepository;
   }
 
@@ -16,6 +17,15 @@ public class EditStaff {
         this.staffRepository
             .findById(command.id())
             .orElseThrow(() -> new IllegalArgumentException("Staff not found"));
+
+    this.staffRepository
+        .findByEmail(command.email())
+        .ifPresent(
+            existing -> {
+              if (!existing.getId().equals(command.id())) {
+                throw new StaffAlreadyRegisteredException();
+              }
+            });
 
     staff.setFirstName(command.firstName());
     staff.setLastName(command.lastName());

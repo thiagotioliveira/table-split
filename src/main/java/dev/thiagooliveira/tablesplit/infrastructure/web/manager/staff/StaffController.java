@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.staff;
 
 import dev.thiagooliveira.tablesplit.application.account.*;
+import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -24,7 +25,7 @@ public class StaffController {
 
   private final GetStaff getStaff;
   private final CreateStaff createStaff;
-  private final EditStaff editStaff;
+  private final UpdateStaff updateStaff;
   private final DeleteStaff deleteStaff;
   private final PasswordEncoder passwordEncoder;
   private final TransactionalContext transactionalContext;
@@ -32,13 +33,13 @@ public class StaffController {
   public StaffController(
       GetStaff getStaff,
       CreateStaff createStaff,
-      EditStaff editStaff,
+      UpdateStaff updateStaff,
       DeleteStaff deleteStaff,
       PasswordEncoder passwordEncoder,
       TransactionalContext transactionalContext) {
     this.getStaff = getStaff;
     this.createStaff = createStaff;
-    this.editStaff = editStaff;
+    this.updateStaff = updateStaff;
     this.deleteStaff = deleteStaff;
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
@@ -110,7 +111,7 @@ public class StaffController {
 
     form.setId(id.toString());
     this.transactionalContext.execute(
-        () -> this.editStaff.execute(form.toUpdateCommand(passwordEncoder)));
+        () -> this.updateStaff.execute(form.toUpdateCommand(passwordEncoder)));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("staff.edit.success"));
     return "redirect:/staff";
@@ -120,6 +121,13 @@ public class StaffController {
   public String delete(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
     this.transactionalContext.execute(() -> this.deleteStaff.execute(id));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("staff.delete.success"));
+    return "redirect:/staff";
+  }
+
+  @ExceptionHandler(StaffAlreadyRegisteredException.class)
+  public String handleStaffAlreadyRegistered(
+      StaffAlreadyRegisteredException ex, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("alert", AlertModel.error("staff.email.already_exists"));
     return "redirect:/staff";
   }
 }
