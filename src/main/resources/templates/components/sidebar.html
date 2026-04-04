@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<th:block th:fragment="sidebar(pageTitle, extraContent)">
+<th:block th:fragment="sidebar(pageTitle, extraContent, showHeaderOnLg)">
+    <th:block th:with="showHeaderOnLg=${showHeaderOnLg == null ? true : showHeaderOnLg}">
 
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -67,7 +68,7 @@
 </aside>
 
 <!-- Header -->
-<header class="dashboard-header">
+<header class="dashboard-header" th:classappend="${!showHeaderOnLg} ? 'lg-hidden'">
     <div class="dashboard-header-content">
         <div class="flex items-center gap-3" style="flex: 1;">
             <button class="hamburger-btn" onclick="openSidebar()">
@@ -158,4 +159,6 @@
 
 </script>
 
+    </th:block>
+</th:block>
 </html>

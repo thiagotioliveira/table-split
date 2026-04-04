@@ -974,7 +974,7 @@
     </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar(#{page.orders.header.title}, ~{::tablesButton})}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{page.orders.header.title}, ~{::tablesButton}, false)}"></div>
 <!-- fragmento local -->
 <div th:remove="all">
     <div th:fragment="tablesButton">

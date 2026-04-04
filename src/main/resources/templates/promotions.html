@@ -1293,7 +1293,7 @@
     </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar(#{page.promotions.header.title}, ~{})}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{page.promotions.header.title}, ~{}, true)}"></div>
 <!-- Main Content -->
 <main class="main-content">
     <div th:replace="~{components/alert :: alert}"></div>

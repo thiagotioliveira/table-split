@@ -720,7 +720,7 @@
 <body>
 <!-- Main Content -->
 <main class="main-content">
-    <div th:insert="~{components/sidebar :: sidebar(#{page.account.header.title}, ~{})}"></div>
+    <div th:insert="~{components/sidebar :: sidebar(#{page.account.header.title}, ~{}, true)}"></div>
 
     <div class="dashboard-body">
         <div th:replace="~{components/alert :: alert}"></div>

@@ -550,7 +550,7 @@
     </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar(#{page.report.header.title}, ~{})}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{page.report.header.title}, ~{}, false)}"></div>
 <!-- Main -->
 <main class="main-content">
     <!-- Header -->
