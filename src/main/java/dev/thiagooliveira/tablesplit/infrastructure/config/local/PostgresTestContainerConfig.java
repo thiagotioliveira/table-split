@@ -1,5 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.local;
 
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +24,12 @@ public class PostgresTestContainerConfig {
     return new PostgreSQLContainer<>("postgres:16-alpine")
         .withDatabaseName("tablesplit")
         .withUsername("postgres")
-        .withPassword("password");
+        .withPassword("password")
+        .withCreateContainerCmdModifier(
+            cmd ->
+                cmd.withHostConfig(
+                    new HostConfig()
+                        .withPortBindings(
+                            new PortBinding(Ports.Binding.bindPort(5432), new ExposedPort(5432)))));
   }
 }
