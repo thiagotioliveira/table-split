@@ -65,6 +65,7 @@ public class CreateAccount {
                 command.restaurant().email(),
                 command.restaurant().website(),
                 command.restaurant().address(),
+                userCommand.language(),
                 command.restaurant().currency(),
                 command.restaurant().serviceFee(),
                 command.restaurant().numberOfTables(),

@@ -1,7 +1,9 @@
 package dev.thiagooliveira.tablesplit.domain.event;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import java.util.UUID;
 
 public class AccountCreatedEvent implements DomainEvent {
@@ -33,11 +35,12 @@ public class AccountCreatedEvent implements DomainEvent {
         String email,
         String website,
         String address,
+        Language language,
         Currency currency,
         int serviceFee,
         int numberOfTables,
         CuisineType cuisineType,
-        java.util.List<String> tags) {
+        java.util.List<Tag> tags) {
       this.restaurantDetails =
           new RestaurantDetails(
               name,
@@ -47,6 +50,7 @@ public class AccountCreatedEvent implements DomainEvent {
               email,
               website,
               address,
+              language,
               currency,
               serviceFee,
               numberOfTables,
@@ -67,11 +71,12 @@ public class AccountCreatedEvent implements DomainEvent {
     private final String email;
     private final String website;
     private final String address;
+    private final Language language;
     private final Currency currency;
     private final int serviceFee;
     private final int numberOfTables;
     private final CuisineType cuisineType;
-    private final java.util.List<String> tags;
+    private final java.util.List<Tag> tags;
 
     public RestaurantDetails(
         String name,
@@ -81,11 +86,12 @@ public class AccountCreatedEvent implements DomainEvent {
         String email,
         String website,
         String address,
+        Language language,
         Currency currency,
         int serviceFee,
         int numberOfTables,
         CuisineType cuisineType,
-        java.util.List<String> tags) {
+        java.util.List<Tag> tags) {
       this.name = name;
       this.slug = slug;
       this.description = description;
@@ -93,6 +99,7 @@ public class AccountCreatedEvent implements DomainEvent {
       this.email = email;
       this.website = website;
       this.address = address;
+      this.language = language;
       this.currency = currency;
       this.serviceFee = serviceFee;
       this.numberOfTables = numberOfTables;
@@ -128,6 +135,10 @@ public class AccountCreatedEvent implements DomainEvent {
       return address;
     }
 
+    public Language getLanguage() {
+      return language;
+    }
+
     public Currency getCurrency() {
       return currency;
     }
@@ -144,7 +155,7 @@ public class AccountCreatedEvent implements DomainEvent {
       return cuisineType;
     }
 
-    public java.util.List<String> getTags() {
+    public java.util.List<Tag> getTags() {
       return tags;
     }
   }

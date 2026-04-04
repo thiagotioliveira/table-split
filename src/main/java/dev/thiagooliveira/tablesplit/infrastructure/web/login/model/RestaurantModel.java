@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login.model;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import jakarta.validation.constraints.Min;
@@ -37,8 +38,13 @@ public class RestaurantModel {
         this.currency,
         this.serviceFee,
         this.numberOfTables,
-        this.cuisineType != null ? this.cuisineType.name() : null,
-        this.tags != null ? this.tags.stream().map(Enum::name).toList() : java.util.List.of());
+        this.cuisineType != null
+            ? dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType.valueOf(
+                this.cuisineType.name())
+            : null,
+        this.tags != null
+            ? this.tags.stream().map(t -> Tag.valueOf(t.name())).toList()
+            : java.util.List.of());
   }
 
   public String getName() {

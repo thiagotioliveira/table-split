@@ -15,6 +15,7 @@ import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.*;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemImageJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantImageEntity;
@@ -200,7 +201,14 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               10,
                               10,
                               CuisineType.BRAZILIAN,
-                              List.of()),
+                              List.of(
+                                  Tag.ACCESSIBLE,
+                                  Tag.WIFI,
+                                  Tag.AIR_CONDITIONING,
+                                  Tag.CARDS,
+                                  Tag.DELIVERY,
+                                  Tag.PET_FRIENDLY,
+                                  Tag.RESERVATIONS)),
                           time.getZoneId())));
       logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());
     } catch (UserAlreadyRegisteredException e) {
