@@ -17,13 +17,21 @@ public class AccountConfig {
   }
 
   @Bean
-  public CreateStaff createStaff(StaffRepository staffRepository) {
-    return new CreateStaff(staffRepository);
+  public CreateStaff createStaff(
+      StaffRepository staffRepository,
+      UserRepository userRepository,
+      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
+          restaurantRepository) {
+    return new CreateStaff(staffRepository, userRepository, restaurantRepository);
   }
 
   @Bean
-  public UpdateStaff editStaff(StaffRepository staffRepository) {
-    return new UpdateStaff(staffRepository);
+  public UpdateStaff editStaff(
+      StaffRepository staffRepository,
+      UserRepository userRepository,
+      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
+          restaurantRepository) {
+    return new UpdateStaff(staffRepository, userRepository, restaurantRepository);
   }
 
   @Bean
