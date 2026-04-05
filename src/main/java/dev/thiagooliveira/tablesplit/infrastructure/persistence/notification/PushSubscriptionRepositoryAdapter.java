@@ -39,6 +39,24 @@ public class PushSubscriptionRepositoryAdapter implements PushSubscriptionReposi
   }
 
   @Override
+  public List<PushSubscription> findAllByUserIdAndRestaurantId(UUID userId, UUID restaurantId) {
+    return this.pushSubscriptionJpaRepository
+        .findAllByUserIdAndRestaurantId(userId, restaurantId)
+        .stream()
+        .map(PushSubscriptionEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<PushSubscription> findAllByStaffIdAndRestaurantId(UUID staffId, UUID restaurantId) {
+    return this.pushSubscriptionJpaRepository
+        .findAllByStaffIdAndRestaurantId(staffId, restaurantId)
+        .stream()
+        .map(PushSubscriptionEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public void deleteByEndpoint(String endpoint) {
     this.pushSubscriptionJpaRepository.deleteByEndpoint(endpoint);
   }

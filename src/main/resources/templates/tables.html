@@ -2822,6 +2822,104 @@
             justify-content: flex-end;
             gap: 0.75rem;
         }
+        /* Waiter Call Alert */
+        .waiter-alerts {
+            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .waiter-alerts-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .waiter-alerts-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ring 1s ease-in-out infinite;
+        }
+
+        @keyframes ring {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+
+        .waiter-alerts-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .waiter-alerts-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .waiter-alerts-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .waiter-alert-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+
+        .waiter-alert-table {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .waiter-alert-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .waiter-alert-badge {
+            background: var(--destructive);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 999px;
+            margin-left: -0.25rem;
+            margin-right: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.25rem;
+        }
+
+        .waiter-alert-dismiss {
+            background: none;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+        }
+
+        .waiter-alert-dismiss:hover {
+            color: var(--destructive);
+        }
 </style>
 </head>
 <body>
@@ -2839,6 +2937,19 @@
 <main class="main-content">
     <div class="dashboard-body" style="padding: 0;">
         <div th:replace="~{components/alert :: alert}"></div>
+        
+        <!-- Waiter Call Alerts -->
+        <div class="waiter-alerts" id="waiterAlerts" style="display: none;">
+            <div class="waiter-alerts-header">
+                <div class="waiter-alerts-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                </div>
+                <span class="waiter-alerts-title">Chamadas de Garçom</span>
+            </div>
+            <div class="waiter-alerts-list" id="waiterAlertsList">
+                <!-- Alerts will be added here dynamically -->
+            </div>
+        </div>
         <!-- Tables Overlay (Mobile) -->
         <div class="tables-overlay" id="tablesOverlay" onclick="closeTablesPanel()"></div>
 
@@ -4794,15 +4905,160 @@
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
-        const topic = '/topic/restaurant/' + restaurantId + '/tables';
-        console.log('Subscribing to topic:', topic);
         stompClient.connect({}, function (frame) {
             stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tables', function (message) {
                 const event = JSON.parse(message.body);
                 updateTableStatus(event);
             });
+
+            // Subscribe to waiter calls
+            const waiterTopic = '/topic/restaurant/' + restaurantId + '/waiter';
+            console.log('Subscribing to waiter topic:', waiterTopic);
+            stompClient.subscribe(waiterTopic, function (message) {
+                console.log('WAITER message received:', message.body);
+                const data = JSON.parse(message.body);
+                handleWaiterCall(data);
+            });
         });
     }
+
+    const alertSoundUrl = '/sounds/bell.mp3';
+    let soundEnabled = true;
+
+    function handleWaiterCall(event) {
+        console.log('Handling waiter call event:', event);
+        
+        if (soundEnabled) {
+            const audio = new Audio(alertSoundUrl);
+            audio.play().catch(err => {
+                console.warn('Click on the page to enable audio notification:', err);
+            });
+        }
+
+        const container = document.getElementById('waiterAlerts');
+        const list = document.getElementById('waiterAlertsList');
+        
+        // Find existing alert for the same table
+        const existing = Array.from(list.querySelectorAll('.waiter-alert-item')).find(item => 
+            item.dataset.tableCod === String(event.tableCod)
+        );
+
+        const now = new Date();
+        const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const countBadge = (event.count && event.count > 1) ? `<span class="waiter-alert-badge">${event.count}</span>` : '';
+
+        if (existing) {
+            // Update existing alert
+            existing.dataset.callId = event.id;
+            const timeSpan = existing.querySelector('.waiter-alert-time');
+            timeSpan.title = timeFormatted;
+            timeSpan.textContent = 'agora';
+            
+            // Handle badge
+            let badge = existing.querySelector('.waiter-alert-badge');
+            if (event.count > 1) {
+                if (badge) {
+                    badge.textContent = event.count;
+                } else {
+                    existing.querySelector('.waiter-alert-table').insertAdjacentHTML('afterend', countBadge);
+                }
+            } else if (badge) {
+                badge.remove();
+            }
+        } else {
+            // Create new alert
+            const alertHtml = `
+                <div class="waiter-alert-item" data-table-cod="${event.tableCod}" data-call-id="${event.id || ''}">
+                    <span class="waiter-alert-table">Mesa ${event.tableCod}</span>
+                    ${countBadge}
+                    <span class="waiter-alert-time" title="${timeFormatted}">agora</span>
+                    <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            `;
+            list.insertAdjacentHTML('afterbegin', alertHtml);
+        }
+        
+        container.style.display = 'block';
+    }
+
+    function loadActiveWaiterCalls() {
+        fetch('/api/notifications/active-calls')
+            .then(res => res.json())
+            .then(calls => {
+                if (calls && calls.length > 0) {
+                    const container = document.getElementById('waiterAlerts');
+                    const list = document.getElementById('waiterAlertsList');
+                    list.innerHTML = '';
+                    
+                    calls.forEach(call => {
+                        const callDate = new Date(call.createdAt);
+                        const timeAgo = getTimeAgo(callDate);
+                        const timeFormatted = callDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const countBadge = (call.count && call.count > 1) ? `<span class="waiter-alert-badge">${call.count}</span>` : '';
+
+                        const alertHtml = `
+                            <div class="waiter-alert-item" data-table-cod="${call.tableCod}" data-call-id="${call.id}">
+                                <span class="waiter-alert-table">Mesa ${call.tableCod}</span>
+                                ${countBadge}
+                                <span class="waiter-alert-time" title="${timeFormatted}">${timeAgo}</span>
+                                <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                </button>
+                            </div>
+                        `;
+                        list.insertAdjacentHTML('beforeend', alertHtml);
+                    });
+                    container.style.display = 'block';
+                }
+            })
+            .catch(err => console.error('Error loading active waiter calls:', err));
+    }
+
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 60);
+        if (interval < 1) return 'agora';
+        if (interval === 1) return 'há 1 min';
+        return `há ${interval} min`;
+    }
+
+    function dismissWaiterCall(btn) {
+        const item = btn.closest('.waiter-alert-item');
+        const callId = item.dataset.callId;
+
+        if (callId) {
+            fetch('/api/notifications/calls/dismiss', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(callId)
+            }).then(res => {
+                if (res.ok) {
+                    removeItem(item);
+                } else {
+                    console.error('Failed to dismiss call on server');
+                    removeItem(item);
+                }
+            }).catch(err => {
+                console.error('Error dismissing call:', err);
+                removeItem(item);
+            });
+        } else {
+            removeItem(item);
+        }
+    }
+
+    function removeItem(el) {
+        el.remove();
+        const alerts = document.getElementById('waiterAlerts');
+        const remaining = alerts.querySelectorAll('.waiter-alert-item').length;
+        if (remaining === 0) {
+            alerts.style.display = 'none';
+        }
+    }
+
+    loadActiveWaiterCalls();
 
     function updateTableStatus(event) {
         console.log('Table status changed:', event);

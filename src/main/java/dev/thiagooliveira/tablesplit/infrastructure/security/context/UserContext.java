@@ -26,6 +26,7 @@ public class UserContext {
     this.email = user.getEmail();
     this.password = user.getPassword();
     this.role = user.getRole();
+    this.modules = Set.of(Module.values());
   }
 
   public UserContext(Staff staff) {

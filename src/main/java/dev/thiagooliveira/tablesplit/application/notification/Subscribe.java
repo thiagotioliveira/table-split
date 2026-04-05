@@ -11,20 +11,39 @@ public class Subscribe {
     this.repository = repository;
   }
 
-  public void execute(UUID restaurantId, String endpoint, String p256dh, String auth) {
+  public void executeForUser(
+      UUID restaurantId, UUID userId, String endpoint, String p256dh, String auth) {
     repository
         .findByEndpoint(endpoint)
         .ifPresentOrElse(
-            existing ->
+            existing -> {
+              PushSubscription sub =
+                  PushSubscription.forUser(restaurantId, userId, endpoint, p256dh, auth);
+              sub.setId(existing.getId());
+              sub.setNotifyNewOrders(existing.isNotifyNewOrders());
+              sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
+              repository.save(sub);
+            },
+            () ->
                 repository.save(
-                    new PushSubscription(
-                        existing.getId(),
-                        restaurantId,
-                        endpoint,
-                        p256dh,
-                        auth,
-                        existing.isNotifyNewOrders(),
-                        existing.isNotifyCallWaiter())),
-            () -> repository.save(new PushSubscription(restaurantId, endpoint, p256dh, auth)));
+                    PushSubscription.forUser(restaurantId, userId, endpoint, p256dh, auth)));
+  }
+
+  public void executeForStaff(
+      UUID restaurantId, UUID staffId, String endpoint, String p256dh, String auth) {
+    repository
+        .findByEndpoint(endpoint)
+        .ifPresentOrElse(
+            existing -> {
+              PushSubscription sub =
+                  PushSubscription.forStaff(restaurantId, staffId, endpoint, p256dh, auth);
+              sub.setId(existing.getId());
+              sub.setNotifyNewOrders(existing.isNotifyNewOrders());
+              sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
+              repository.save(sub);
+            },
+            () ->
+                repository.save(
+                    PushSubscription.forStaff(restaurantId, staffId, endpoint, p256dh, auth)));
   }
 }

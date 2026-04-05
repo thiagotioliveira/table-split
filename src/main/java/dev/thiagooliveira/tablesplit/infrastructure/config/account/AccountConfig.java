@@ -30,8 +30,9 @@ public class AccountConfig {
       StaffRepository staffRepository,
       UserRepository userRepository,
       dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
-          restaurantRepository) {
-    return new UpdateStaff(staffRepository, userRepository, restaurantRepository);
+          restaurantRepository,
+      EventPublisher eventPublisher) {
+    return new UpdateStaff(staffRepository, userRepository, restaurantRepository, eventPublisher);
   }
 
   @Bean

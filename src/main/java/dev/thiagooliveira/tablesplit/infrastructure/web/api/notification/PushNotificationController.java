@@ -6,6 +6,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model.SubscriptionData;
 import dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model.UpdatePreferencesRequest;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/notifications")
 public class PushNotificationController {
+
+  private static final Logger logger = LoggerFactory.getLogger(PushNotificationController.class);
 
   private final PushNotificationService pushNotificationService;
   private final Subscribe subscribe;
@@ -51,7 +55,13 @@ public class PushNotificationController {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
 
-    subscribe.execute(restaurantId, data.endpoint(), data.p256dh(), data.auth());
+    UUID id = context.getUser().getId();
+    if (context.getUser().getRole()
+        == dev.thiagooliveira.tablesplit.domain.account.Role.RESTAURANT_ADMIN) {
+      subscribe.executeForUser(restaurantId, id, data.endpoint(), data.p256dh(), data.auth());
+    } else {
+      subscribe.executeForStaff(restaurantId, id, data.endpoint(), data.p256dh(), data.auth());
+    }
     return ResponseEntity.ok().build();
   }
 
@@ -63,7 +73,12 @@ public class PushNotificationController {
 
   @GetMapping("/public-key")
   public ResponseEntity<String> getPublicKey() {
-    return ResponseEntity.ok(pushNotificationService.getPublicKey());
+    String key = pushNotificationService.getPublicKey();
+    logger.debug(
+        "Serving Public Key to browser: {}", (key != null ? key.substring(0, 10) + "..." : "NULL"));
+    return ResponseEntity.ok()
+        .header("Cache-Control", "no-cache, no-store, must-revalidate")
+        .body(key);
   }
 
   @PostMapping("/status")
@@ -85,6 +100,7 @@ public class PushNotificationController {
   public ResponseEntity<Void> sendTest(Authentication auth) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
+    logger.debug("Received test notification request for restaurant: {}", restaurantId);
     String payload =
         String.format(
             "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/profile\"}",

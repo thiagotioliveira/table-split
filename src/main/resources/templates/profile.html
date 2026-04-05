@@ -631,7 +631,7 @@
                         <h3 th:text="#{section.notifications.title}">Notifications</h3>
                     </div>
 
-                    <div class="profile-section-body">
+                    <div class="profile-section-body" th:if="${user.isNotificationSessionAllowed()}">
                         <div class="form-switch" style="margin-bottom: 1.5rem;">
                             <div class="form-switch-label">
                                 <label class="form-label" style="margin-bottom: 0;">Notificações Push (Navegador)</label>
@@ -647,7 +647,7 @@
                             </button>
                         </div>
 
-                        <div class="form-switch" style="margin-bottom: 1.5rem;">
+                        <div class="form-switch" style="margin-bottom: 1.5rem;" th:if="${user.hasOrdersModule()}">
                             <div class="form-switch-label">
                                 <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.new.orders}">New order notifications</label>
                                 <p th:text="#{notification.new.orders.hint}">Receive alerts when a customer places an order</p>
@@ -655,7 +655,7 @@
                             <div id="switchNewOrders" class="switch" onclick="toggleNotificationTypes(this)"></div>
                         </div>
 
-                        <div class="form-switch">
+                        <div class="form-switch" th:if="${user.hasTablesModule()}">
                             <div class="form-switch-label">
                                 <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.waiter.call}">Call Waiter alerts</label>
                                 <p th:text="#{notification.waiter.call.hint}">Sound notification when customer requests service</p>
@@ -975,26 +975,35 @@
             }
 
             const subscription = await PushNotifications.getSubscription();
+            const switchOrders = document.getElementById('switchNewOrders');
+            const switchWaiter = document.getElementById('switchCallWaiter');
+
             if (subscription) {
                 pushSwitch.classList.add('active');
                 
                 // Fetch preferences via API
                 const prefs = await PushNotifications.getTopicPreferences();
                 if (prefs) {
-                    if (prefs.notifyNewOrders !== false) document.getElementById('switchNewOrders').classList.add('active');
-                    else document.getElementById('switchNewOrders').classList.remove('active');
+                    if (switchOrders) {
+                        if (prefs.notifyNewOrders !== false) switchOrders.classList.add('active');
+                        else switchOrders.classList.remove('active');
+                    }
                     
-                    if (prefs.notifyCallWaiter !== false) document.getElementById('switchCallWaiter').classList.add('active');
-                    else document.getElementById('switchCallWaiter').classList.remove('active');
+                    if (switchWaiter) {
+                        if (prefs.notifyCallWaiter !== false) switchWaiter.classList.add('active');
+                        else switchWaiter.classList.remove('active');
+                    }
                 }
             } else {
                 pushSwitch.classList.remove('active');
-                document.getElementById('switchNewOrders').classList.remove('active');
-                document.getElementById('switchCallWaiter').classList.remove('active');
-                
-                // Dim down preferences visually if main switch is off
-                document.getElementById('switchNewOrders').parentElement.style.opacity = '0.5';
-                document.getElementById('switchCallWaiter').parentElement.style.opacity = '0.5';
+                if (switchOrders) {
+                    switchOrders.classList.remove('active');
+                    switchOrders.parentElement.style.opacity = '0.5';
+                }
+                if (switchWaiter) {
+                    switchWaiter.classList.remove('active');
+                    switchWaiter.parentElement.style.opacity = '0.5';
+                }
             }
         }
 

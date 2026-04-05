@@ -671,7 +671,7 @@
               <label th:each="m : ${availableModules}" class="module-checkbox" th:data-module="${m.name()}">
                 <input type="checkbox" name="modules" th:value="${m.name()}">
                 <div class="module-checkbox-icon" th:utext="${m.icon}"></div>
-                <span class="module-checkbox-label" th:text="${m.name()}">Module</span>
+                <span class="module-checkbox-label" th:text="#{${m.getName()}}">Module</span>
               </label>
             </div>
           </div>

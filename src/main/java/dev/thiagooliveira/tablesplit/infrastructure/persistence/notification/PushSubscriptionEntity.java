@@ -17,6 +17,12 @@ public class PushSubscriptionEntity {
   @Column(name = "restaurant_id", nullable = false)
   private UUID restaurantId;
 
+  @Column(name = "user_id")
+  private UUID userId;
+
+  @Column(name = "staff_id")
+  private UUID staffId;
+
   @Column(nullable = false, unique = true, length = 512)
   private String endpoint;
 
@@ -41,6 +47,8 @@ public class PushSubscriptionEntity {
     PushSubscription domain = new PushSubscription();
     domain.setId(this.id);
     domain.setRestaurantId(this.restaurantId);
+    domain.setUserId(this.userId);
+    domain.setStaffId(this.staffId);
     domain.setEndpoint(this.endpoint);
     domain.setP256dh(this.p256dh);
     domain.setAuth(this.auth);
@@ -54,6 +62,8 @@ public class PushSubscriptionEntity {
     PushSubscriptionEntity entity = new PushSubscriptionEntity();
     entity.id = domain.getId();
     entity.restaurantId = domain.getRestaurantId();
+    entity.userId = domain.getUserId();
+    entity.staffId = domain.getStaffId();
     entity.endpoint = domain.getEndpoint();
     entity.p256dh = domain.getP256dh();
     entity.auth = domain.getAuth();
@@ -69,6 +79,14 @@ public class PushSubscriptionEntity {
 
   public UUID getRestaurantId() {
     return restaurantId;
+  }
+
+  public UUID getUserId() {
+    return userId;
+  }
+
+  public UUID getStaffId() {
+    return staffId;
   }
 
   public String getEndpoint() {

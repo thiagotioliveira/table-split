@@ -18,6 +18,14 @@ const PushNotifications = {
         return outputArray;
     },
 
+    // Helper to convert ArrayBuffer to Base64URL
+    arrayBufferToBase64Url(buffer) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    },
+
     async isSupported() {
         return 'serviceWorker' in navigator && 'PushManager' in window;
     },
@@ -97,8 +105,8 @@ const PushNotifications = {
         
         const data = {
             endpoint: subscription.endpoint,
-            p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(key))),
-            auth: btoa(String.fromCharCode.apply(null, new Uint8Array(token)))
+            p256dh: this.arrayBufferToBase64Url(key),
+            auth: this.arrayBufferToBase64Url(token)
         };
 
         await fetch('/api/notifications/subscribe', {
@@ -109,9 +117,18 @@ const PushNotifications = {
     },
 
     async sendTest() {
-        const response = await fetch('/api/notifications/test', { method: 'POST' });
-        if (!response.ok) {
-            throw new Error('Erro ao enviar comando de teste');
+        console.log('[Push] Sending test notification...');
+        try {
+            const response = await fetch('/api/notifications/test', { method: 'POST' });
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error('Erro ao enviar comando de teste: ' + error);
+            }
+            console.log('[Push] Test notification command sent successfully');
+            return true;
+        } catch (e) {
+            console.error('[Push] Test notification error:', e);
+            throw e;
         }
     },
 

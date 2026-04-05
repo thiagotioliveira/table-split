@@ -17,7 +17,8 @@ public class UserProfileModel {
   private String lastName;
 
   @NotBlank @Email private String email;
-  @NotBlank private String language;
+  private String language;
+  private java.util.Set<dev.thiagooliveira.tablesplit.domain.account.Module> modules;
 
   public UserProfileModel() {}
 
@@ -26,6 +27,21 @@ public class UserProfileModel {
     this.lastName = context.getLastName();
     this.email = context.getEmail();
     this.language = context.getLanguage().name();
+    this.modules = context.getModules();
+  }
+
+  public boolean hasOrdersModule() {
+    return this.modules != null
+        && this.modules.contains(dev.thiagooliveira.tablesplit.domain.account.Module.ORDERS);
+  }
+
+  public boolean hasTablesModule() {
+    return this.modules != null
+        && this.modules.contains(dev.thiagooliveira.tablesplit.domain.account.Module.TABLES);
+  }
+
+  public boolean isNotificationSessionAllowed() {
+    return hasOrdersModule() || hasTablesModule();
   }
 
   public UpdateUserCommand toCommand() {

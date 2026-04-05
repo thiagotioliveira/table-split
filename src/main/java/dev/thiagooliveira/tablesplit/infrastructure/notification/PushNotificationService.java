@@ -3,15 +3,12 @@ package dev.thiagooliveira.tablesplit.infrastructure.notification;
 import dev.thiagooliveira.tablesplit.application.notification.PushSubscriptionRepository;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
 import jakarta.annotation.PostConstruct;
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Security;
-import java.util.concurrent.ExecutionException;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
 import nl.martijndwars.webpush.Subscription;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,9 +38,17 @@ public class PushNotificationService
 
   @PostConstruct
   public void init() throws GeneralSecurityException {
-    Security.addProvider(new BouncyCastleProvider());
+    if (Security.getProvider("BC") == null) {
+      Security.insertProviderAt(new BouncyCastleProvider(), 1);
+    }
+
     if (publicKey != null && !publicKey.isBlank() && privateKey != null && !privateKey.isBlank()) {
-      this.pushService = new PushService(publicKey, privateKey, subject);
+      logger.debug(
+          "Initializing PushService with Public Key starting with: {}...",
+          publicKey.substring(0, 10));
+      logger.debug("Subject: {}", subject);
+      this.pushService = new PushService(publicKey.trim(), privateKey.trim(), subject);
+      logger.debug("PushService initialized successfully.");
     } else {
       logger.warn("VAPID keys not configured. Push notifications will be disabled.");
     }
@@ -58,18 +63,32 @@ public class PushNotificationService
     }
 
     try {
+      String p256dh = sub.getP256dh().replace('+', '-').replace('/', '_');
+      String auth = sub.getAuth().replace('+', '-').replace('/', '_');
+
+      logger.debug("Preparing notification for endpoint: {}", sub.getEndpoint());
+
       Subscription subscription =
-          new Subscription(
-              sub.getEndpoint(), new Subscription.Keys(sub.getP256dh(), sub.getAuth()));
+          new Subscription(sub.getEndpoint(), new Subscription.Keys(p256dh, auth));
 
       Notification notification = new Notification(subscription, payload);
-      pushService.send(notification);
-    } catch (GeneralSecurityException
-        | IOException
-        | JoseException
-        | ExecutionException
-        | InterruptedException e) {
-      logger.error("Failed to send push notification to {}: {}", sub.getEndpoint(), e.getMessage());
+      var response = pushService.send(notification, nl.martijndwars.webpush.Encoding.AES128GCM);
+      int statusCode = response.getStatusLine().getStatusCode();
+
+      logger.debug("Service provider response code: {}", statusCode);
+
+      if (statusCode >= 200 && statusCode < 300) {
+        logger.debug("Notification accepted by provider.");
+      } else {
+        logger.error(
+            "REJECTED! Status: {} {}", statusCode, response.getStatusLine().getReasonPhrase());
+        if (response.getEntity() != null) {
+          String errorBody = org.apache.http.util.EntityUtils.toString(response.getEntity());
+          logger.error("Error body from provider: {}", errorBody);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("CRITICAL ERROR in send()", e);
       if (e.getMessage() != null
           && (e.getMessage().contains("410") || e.getMessage().contains("404"))) {
         logger.warn("Subscription expired, removing: {}", sub.getEndpoint());
@@ -79,6 +98,6 @@ public class PushNotificationService
   }
 
   public String getPublicKey() {
-    return publicKey;
+    return publicKey != null ? publicKey.trim() : null;
   }
 }

@@ -1,13 +1,12 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.local;
 
-import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
-import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
-import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
-import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
+import dev.thiagooliveira.tablesplit.application.account.*;
+import dev.thiagooliveira.tablesplit.application.account.command.*;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.application.menu.command.*;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.account.Module;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
@@ -142,6 +141,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final CreateCoupon createCoupon;
   private final CategoryRepository categoryRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final CreateStaff createStaff;
+  private final StaffRepository staffRepository;
 
   public DemoDataInitializerApplicationRunner(
       Time time,
@@ -157,7 +158,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       CreateCombo createCombo,
       CreateCoupon createCoupon,
       CategoryRepository categoryRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      org.springframework.context.ApplicationEventPublisher eventPublisher,
+      CreateStaff createStaff,
+      StaffRepository staffRepository) {
     this.time = time;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
@@ -172,6 +175,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
     this.createCoupon = createCoupon;
     this.categoryRepository = categoryRepository;
     this.eventPublisher = eventPublisher;
+    this.createStaff = createStaff;
+    this.staffRepository = staffRepository;
   }
 
   @Override
@@ -251,6 +256,33 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
           "[DemoInitializer] Data already seeded for restaurant: {}. Skipping.",
           restaurant.getName());
       return;
+    }
+
+    // Seed Staff
+    try {
+      this.transactionalContext.execute(
+          () -> {
+            boolean exists =
+                this.staffRepository.findByEmail("jose@cantinabrasileira.demo").isPresent();
+            if (exists) {
+              return null;
+            }
+
+            this.createStaff.execute(
+                new CreateStaffCommand(
+                    restaurant.getId(),
+                    "José",
+                    "Garçom",
+                    "jose@cantinabrasileira.demo",
+                    "+351 900 000 001",
+                    passwordEncoder.encode("Test#123"),
+                    Language.PT,
+                    Set.of(Module.ORDERS, Module.TABLES)));
+            return null;
+          });
+      logger.info("[DemoInitializer] Seeded mock staff: José Garçom");
+    } catch (Exception e) {
+      logger.info("[DemoInitializer] Mock staff seed error: {}", e.getMessage());
     }
 
     saveRestaurantImages(restaurant);

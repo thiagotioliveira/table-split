@@ -13,5 +13,9 @@ public interface PushSubscriptionRepository {
 
   List<PushSubscription> findAllByRestaurantId(UUID restaurantId);
 
+  List<PushSubscription> findAllByUserIdAndRestaurantId(UUID userId, UUID restaurantId);
+
+  List<PushSubscription> findAllByStaffIdAndRestaurantId(UUID staffId, UUID restaurantId);
+
   void deleteByEndpoint(String endpoint);
 }

@@ -1,23 +1,29 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
+import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.command.UpdateStaffCommand;
 import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
+import dev.thiagooliveira.tablesplit.domain.event.StaffUpdatedEvent;
+import java.util.stream.Collectors;
 
 public class UpdateStaff {
 
   private final StaffRepository staffRepository;
   private final UserRepository userRepository;
   private final RestaurantRepository restaurantRepository;
+  private final EventPublisher eventPublisher;
 
   public UpdateStaff(
       StaffRepository staffRepository,
       UserRepository userRepository,
-      RestaurantRepository restaurantRepository) {
+      RestaurantRepository restaurantRepository,
+      EventPublisher eventPublisher) {
     this.staffRepository = staffRepository;
     this.userRepository = userRepository;
     this.restaurantRepository = restaurantRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   public Staff execute(UpdateStaffCommand command) {
@@ -34,14 +40,9 @@ public class UpdateStaff {
     this.userRepository
         .findByEmail(command.email())
         .ifPresent(
-            owner -> {
-              if (owner.getAccountId().equals(restaurant.getAccountId())) {
-                throw new StaffAlreadyRegisteredException();
-              }
-            });
-    this.staffRepository
-        .findById(command.id())
-        .orElseThrow(() -> new IllegalArgumentException("Staff not found"));
+            (u -> {
+              throw new IllegalArgumentException("User already registered");
+            }));
 
     this.staffRepository
         .findByEmail(command.email())
@@ -51,6 +52,15 @@ public class UpdateStaff {
                 throw new StaffAlreadyRegisteredException();
               }
             });
+
+    var oldModules = staff.getModules();
+    var newModules = command.modules();
+
+    var addedModules =
+        newModules.stream().filter(m -> !oldModules.contains(m)).collect(Collectors.toSet());
+
+    var removedModules =
+        oldModules.stream().filter(m -> !newModules.contains(m)).collect(Collectors.toSet());
 
     staff.setFirstName(command.firstName());
     staff.setLastName(command.lastName());
@@ -64,6 +74,15 @@ public class UpdateStaff {
     }
 
     this.staffRepository.save(staff);
+
+    eventPublisher.publishEvent(
+        new StaffUpdatedEvent(
+            staff.getId(),
+            restaurant.getId(),
+            restaurant.getAccountId(),
+            addedModules,
+            removedModules));
+
     return staff;
   }
 }
