@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
+import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.infrastructure.web.BaseIT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -45,7 +47,10 @@ class RegisterControllerIT extends BaseIT {
                 .param("restaurant.website", "www.standalone.com")
                 .param("restaurant.address", "Rua Standalone, 123")
                 .param("restaurant.currency", Currency.BRL.name())
-                .param("restaurant.serviceFee", "10"))
+                .param("restaurant.serviceFee", "10")
+                .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
+                .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
+                .param("restaurant.numberOfTables", "10"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/dashboard"));
 
@@ -75,7 +80,10 @@ class RegisterControllerIT extends BaseIT {
                 .param("restaurant.email", "first@rest.com")
                 .param("restaurant.address", "Rua 1")
                 .param("restaurant.currency", Currency.EUR.name())
-                .param("restaurant.serviceFee", "10"))
+                .param("restaurant.serviceFee", "10")
+                .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
+                .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
+                .param("restaurant.numberOfTables", "1"))
         .andExpect(status().is3xxRedirection());
 
     // Second registration with same email
@@ -96,7 +104,10 @@ class RegisterControllerIT extends BaseIT {
                 .param("restaurant.email", "second@rest.com")
                 .param("restaurant.address", "Rua 2")
                 .param("restaurant.currency", Currency.EUR.name())
-                .param("restaurant.serviceFee", "10"))
+                .param("restaurant.serviceFee", "10")
+                .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
+                .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
+                .param("restaurant.numberOfTables", "1"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/register"))
         .andExpect(flash().attributeExists("alert"));

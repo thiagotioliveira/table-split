@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
@@ -51,7 +52,7 @@ class SettingsControllerIT extends AuthenticatedIT {
                 .param("address", "Updated Address")
                 .param("currency", Currency.EUR.name())
                 .param("serviceFee", "15")
-                .param("averagePrice", "50-100")
+                .param("averagePrice", AveragePrice.PRICE_50_100.name())
                 .param("hashPrimaryColor", "#000000")
                 .param("hashAccentColor", "#ffffff")
                 .param("cuisineType", CuisineType.BRAZILIAN.name())

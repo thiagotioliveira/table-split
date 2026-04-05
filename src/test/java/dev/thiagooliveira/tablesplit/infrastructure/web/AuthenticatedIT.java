@@ -5,8 +5,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,7 +43,11 @@ public abstract class AuthenticatedIT extends BaseIT {
                 .param("restaurant.website", "www.authenticated-it.com")
                 .param("restaurant.address", "Rua Authenticated, 123")
                 .param("restaurant.currency", Currency.BRL.name())
-                .param("restaurant.serviceFee", "10"))
+                .param("restaurant.serviceFee", "10")
+                .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
+                .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
+                .param("restaurant.tags", RestaurantTag.WIFI.name(), RestaurantTag.PARKING.name())
+                .param("restaurant.numberOfTables", "10"))
         .andExpect(status().is3xxRedirection());
 
     accountContext = userDetailsService.loadUserByUsername("authenticated.it@example.com");
