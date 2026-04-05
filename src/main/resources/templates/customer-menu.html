@@ -1918,8 +1918,8 @@
     const myCustomerId = _restaurantCustomer.id || null;
     let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
 
-    // Guard: if no customer id, redirect back to the table entry page
-    if (!myCustomerId) {
+    // Guard: if at a table but no customer id, redirect back to the table entry page
+    if (hasTable && !myCustomerId) {
         const entryPath = window.location.pathname.replace(/\/menu$/, '');
         window.location.replace(entryPath);
     }

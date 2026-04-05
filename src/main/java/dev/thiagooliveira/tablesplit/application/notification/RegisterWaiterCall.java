@@ -30,7 +30,7 @@ public class RegisterWaiterCall {
 
     String payload =
         String.format(
-            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"count\": %d, \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/orders\"}",
+            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"count\": %d, \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
             waiterCall.getId(), tableCod, waiterCall.getCallCount(), tableCod, tableCod);
 
     broadcaster.callWaiter(restaurantId, payload);
