@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class OrderHistoryModel {
   private final String id;
@@ -13,7 +14,7 @@ public class OrderHistoryModel {
   private final String closedAt;
   private final List<TicketItemModel> items;
   private final List<OrderHistoryPaymentModel> payments;
-  private final Map<UUID, String> customerNames;
+  private final Map<String, String> customerNames;
 
   public OrderHistoryModel(
       String id,
@@ -33,7 +34,12 @@ public class OrderHistoryModel {
     this.closedAt = closedAt;
     this.items = items;
     this.payments = payments;
-    this.customerNames = customerNames;
+    this.customerNames = customerNames.entrySet()
+            .stream()
+            .collect(Collectors.toMap(
+                    entry -> entry.getKey().toString(),
+                    Map.Entry::getValue
+            ));
   }
 
   public String getId() {
@@ -68,7 +74,7 @@ public class OrderHistoryModel {
     return payments;
   }
 
-  public Map<UUID, String> getCustomerNames() {
+  public Map<String, String> getCustomerNames() {
     return customerNames;
   }
 }
