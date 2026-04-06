@@ -25,7 +25,7 @@ public class ProcessPayment {
 
   public Order execute(
       UUID tableId,
-      String customerName,
+      UUID customerId,
       BigDecimal amount,
       dev.thiagooliveira.tablesplit.domain.order.PaymentMethod method,
       String note) {
@@ -36,7 +36,7 @@ public class ProcessPayment {
                 () -> new IllegalArgumentException("No active order found for table: " + tableId));
 
     Payment payment =
-        new Payment(UUID.randomUUID(), order.getId(), customerName, amount, method, note);
+        new Payment(UUID.randomUUID(), order.getId(), customerId, amount, method, note);
     order.addPayment(payment);
 
     orderRepository.save(order);

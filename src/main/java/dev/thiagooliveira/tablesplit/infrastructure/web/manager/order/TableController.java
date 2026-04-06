@@ -195,9 +195,28 @@ public class TableController {
         model.addAttribute("orderServiceFeeApplied", order.feeApplied());
         model.addAttribute("orderSubtotal", order.calculateSubtotal());
         model.addAttribute("orderTotal", order.calculateTotal());
-        model.addAttribute("payments", order.getPayments());
+        model.addAttribute(
+            "payments",
+            order.getPayments().stream()
+                .map(
+                    p ->
+                        new OrderHistoryPaymentModel(
+                            p.getId().toString(),
+                            p.getCustomerId(),
+                            p.getAmount(),
+                            p.getPaidAt(),
+                            p.getMethod().name(),
+                            p.getNote()))
+                .toList());
         model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
         model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
+        model.addAttribute(
+            "customerNames",
+            order.getCustomers().stream()
+                .collect(
+                    Collectors.toMap(
+                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
+                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName)));
 
         Map<UUID, BigDecimal> clientSubtotals =
             order.getTickets().stream()
@@ -212,12 +231,11 @@ public class TableController {
                         Collectors.reducing(
                             BigDecimal.ZERO, TicketItem::getTotalPrice, BigDecimal::add)));
 
-        Map<String, BigDecimal> clientPaid =
+        Map<UUID, BigDecimal> clientPaid =
             order.getPayments().stream()
-                .filter(p -> !"unknown".equals(p.getCustomerName()))
                 .collect(
                     Collectors.groupingBy(
-                        dev.thiagooliveira.tablesplit.domain.order.Payment::getCustomerName,
+                        dev.thiagooliveira.tablesplit.domain.order.Payment::getCustomerId,
                         Collectors.reducing(
                             BigDecimal.ZERO,
                             dev.thiagooliveira.tablesplit.domain.order.Payment::getAmount,
@@ -240,7 +258,7 @@ public class TableController {
                       .orElse(null);
 
               if (customer != null) {
-                BigDecimal paid = clientPaid.getOrDefault(customer.getName(), BigDecimal.ZERO);
+                BigDecimal paid = clientPaid.getOrDefault(customer.getId(), BigDecimal.ZERO);
                 clientBalances.put(customer, totalWithFee.subtract(paid));
               }
             });
@@ -285,13 +303,19 @@ public class TableController {
                                   pay ->
                                       new OrderHistoryPaymentModel(
                                           pay.getId().toString(),
-                                          pay.getCustomerName(),
+                                          pay.getCustomerId(),
                                           pay.getAmount(),
-                                          pay.getPaidAt()
-                                              .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                                          pay.getPaidAt(),
                                           pay.getMethod().name(),
                                           pay.getNote()))
-                              .toList()))
+                              .toList(),
+                          hist.getCustomers().stream()
+                              .collect(
+                                  Collectors.toMap(
+                                      dev.thiagooliveira.tablesplit.domain.order.OrderCustomer
+                                          ::getId,
+                                      dev.thiagooliveira.tablesplit.domain.order.OrderCustomer
+                                          ::getName))))
               .toList());
     }
 
@@ -363,14 +387,14 @@ public class TableController {
   @PostMapping("/{tableId}/payment")
   public String processPayment(
       @PathVariable UUID tableId,
-      @RequestParam String customerName,
+      @RequestParam UUID customerId,
       @RequestParam BigDecimal amount,
       @RequestParam(required = false, defaultValue = "CASH") PaymentMethod method,
       @RequestParam(required = false) String note,
       RedirectAttributes redirectAttributes) {
 
     transactionalContext.execute(
-        () -> processPayment.execute(tableId, customerName, amount, method, note));
+        () -> processPayment.execute(tableId, customerId, amount, method, note));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.processed"));
     return "redirect:/tables?selectedTableId=" + tableId;

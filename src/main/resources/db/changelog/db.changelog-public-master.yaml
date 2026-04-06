@@ -1,7 +1,215 @@
 databaseChangeLog:
-  - include:
-      file: db/changelog/0001-public-initial.yaml
-  - include:
-      file: db/changelog/0008-change-cuisine-type-to-single-value.yaml
-  - include:
-      file: db/changelog/0010-create-restaurant-images-table.yaml
+  - changeSet:
+      id: public-initial-consolidated
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plan
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(255)
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_users_accounts
+        - createTable:
+            tableName: restaurants
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: website
+                  type: varchar(255)
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(255)
+              - column:
+                  name: cuisine_type
+                  type: varchar(50)
+              - column:
+                  name: tags
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_languages
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_fee
+                  type: smallint
+                  constraints:
+                    nullable: false
+                  defaultValueNumeric: 0
+              - column:
+                  name: average_price
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: days
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_primary_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_accent_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_restaurants_slug
+            tableName: restaurants
+            unique: true
+            columns:
+              - column:
+                  name: slug
+        - addForeignKeyConstraint:
+            baseTableName: restaurants
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_restaurants_accounts
+        - createTable:
+            tableName: restaurant_images
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cover
+                  type: boolean
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: restaurant_images
+            baseColumnNames: restaurant_id
+            referencedTableName: restaurants
+            referencedColumnNames: id
+            constraintName: fk_restaurant_images_restaurant

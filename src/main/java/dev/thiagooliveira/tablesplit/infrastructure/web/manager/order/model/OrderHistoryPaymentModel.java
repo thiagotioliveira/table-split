@@ -1,24 +1,26 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 public class OrderHistoryPaymentModel {
   private final String id;
-  private final String customerName;
+  private final UUID customerId;
   private final BigDecimal amount;
-  private final String paidAt;
+  private final ZonedDateTime paidAt;
   private final String method;
   private final String note;
 
   public OrderHistoryPaymentModel(
       String id,
-      String customerName,
+      UUID customerId,
       BigDecimal amount,
-      String paidAt,
+      ZonedDateTime paidAt,
       String method,
       String note) {
     this.id = id;
-    this.customerName = customerName;
+    this.customerId = customerId;
     this.amount = amount;
     this.paidAt = paidAt;
     this.method = method;
@@ -29,15 +31,15 @@ public class OrderHistoryPaymentModel {
     return id;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
   public BigDecimal getAmount() {
     return amount;
   }
 
-  public String getPaidAt() {
+  public ZonedDateTime getPaidAt() {
     return paidAt;
   }
 

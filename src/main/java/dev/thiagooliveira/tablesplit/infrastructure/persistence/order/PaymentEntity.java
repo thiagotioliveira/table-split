@@ -16,8 +16,8 @@ public class PaymentEntity {
   @Column(name = "order_id", nullable = false)
   private UUID orderId;
 
-  @Column(name = "customer_name")
-  private String customerName;
+  @Column(name = "customer_id", nullable = false)
+  private UUID customerId;
 
   @Column(nullable = false)
   private BigDecimal amount;
@@ -37,7 +37,7 @@ public class PaymentEntity {
     PaymentEntity entity = new PaymentEntity();
     entity.setId(payment.getId());
     entity.setOrderId(payment.getOrderId());
-    entity.setCustomerName(payment.getCustomerName());
+    entity.setCustomerId(payment.getCustomerId());
     entity.setAmount(payment.getAmount());
     entity.setPaidAt(payment.getPaidAt());
     entity.setMethod(payment.getMethod());
@@ -49,7 +49,7 @@ public class PaymentEntity {
     Payment payment = new Payment();
     payment.setId(this.id);
     payment.setOrderId(this.orderId);
-    payment.setCustomerName(this.customerName);
+    payment.setCustomerId(this.customerId);
     payment.setAmount(this.amount);
     payment.setPaidAt(this.paidAt);
     payment.setMethod(this.method);
@@ -73,12 +73,12 @@ public class PaymentEntity {
     this.orderId = orderId;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 
   public BigDecimal getAmount() {

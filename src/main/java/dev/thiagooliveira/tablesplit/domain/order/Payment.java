@@ -7,7 +7,7 @@ import java.util.UUID;
 public class Payment {
   private UUID id;
   private UUID orderId;
-  private String customerName;
+  private UUID customerId;
   private BigDecimal amount;
   private ZonedDateTime paidAt;
 
@@ -19,13 +19,13 @@ public class Payment {
   public Payment(
       UUID id,
       UUID orderId,
-      String customerName,
+      UUID customerId,
       BigDecimal amount,
       PaymentMethod method,
       String note) {
     this.id = id;
     this.orderId = orderId;
-    this.customerName = customerName;
+    this.customerId = customerId;
     this.amount = amount;
     this.method = method;
     this.note = note;
@@ -48,12 +48,12 @@ public class Payment {
     this.orderId = orderId;
   }
 
-  public String getCustomerName() {
-    return customerName;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setCustomerName(String customerName) {
-    this.customerName = customerName;
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
   }
 
   public BigDecimal getAmount() {

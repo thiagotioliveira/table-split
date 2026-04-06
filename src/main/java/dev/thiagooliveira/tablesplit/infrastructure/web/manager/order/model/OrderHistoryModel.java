@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class OrderHistoryModel {
   private final String id;
@@ -11,6 +13,7 @@ public class OrderHistoryModel {
   private final String closedAt;
   private final List<TicketItemModel> items;
   private final List<OrderHistoryPaymentModel> payments;
+  private final Map<UUID, String> customerNames;
 
   public OrderHistoryModel(
       String id,
@@ -20,7 +23,8 @@ public class OrderHistoryModel {
       String openedAt,
       String closedAt,
       List<TicketItemModel> items,
-      List<OrderHistoryPaymentModel> payments) {
+      List<OrderHistoryPaymentModel> payments,
+      Map<UUID, String> customerNames) {
     this.id = id;
     this.tableId = tableId;
     this.serviceFee = serviceFee;
@@ -29,6 +33,7 @@ public class OrderHistoryModel {
     this.closedAt = closedAt;
     this.items = items;
     this.payments = payments;
+    this.customerNames = customerNames;
   }
 
   public String getId() {
@@ -61,5 +66,9 @@ public class OrderHistoryModel {
 
   public List<OrderHistoryPaymentModel> getPayments() {
     return payments;
+  }
+
+  public Map<UUID, String> getCustomerNames() {
+    return customerNames;
   }
 }

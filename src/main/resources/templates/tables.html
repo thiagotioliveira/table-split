@@ -3181,7 +3181,7 @@
                                 <div class="payment-history-item" th:each="payment : ${payments}">
                                     <div class="payment-info">
                                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <span class="payment-customer" th:text="${payment.customerName}">Cliente</span>
+                                            <span class="payment-customer" th:text="${customerNames[payment.customerId]}">Cliente</span>
                                             <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600;" th:text="${payment.method}">MB_WAY</span>
                                         </div>
                                         <span class="payment-time" th:text="${#temporals.format(payment.paidAt, 'HH:mm')}">12:00</span>
@@ -3189,7 +3189,7 @@
                                             Observação
                                         </div>
                                     </div>
-                                    <span class="payment-amount" th:text="${'- ${currencySymbol} ' + #numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}">- ${currencySymbol} 0,00</span>
+                                    <span class="payment-amount" th:text="${'-'+currencySymbol +' '+ #numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}">-$ 0,00</span>
                                 </div>
                                 <div class="bill-row paid">
                                     <span>Total Pago</span>
@@ -3232,11 +3232,17 @@
         form.method = 'POST';
         form.action = `/tables/${selectedTable}/payment`;
 
-        const nameInput = document.createElement('input');
-        nameInput.type = 'hidden';
-        nameInput.name = 'customerName';
-        nameInput.value = 'unknown';
-        form.appendChild(nameInput);
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'customerId';
+        // Pick the first available customer ID from the table if none is specified for whole table payment
+        const firstCustomerId = document.querySelector('input[name="customerId"]')?.value;
+        if (!firstCustomerId) {
+            alert('Não há clientes registrados para esta mesa.');
+            return;
+        }
+        idInput.value = firstCustomerId;
+        form.appendChild(idInput);
 
         const amountInput = document.createElement('input');
         amountInput.type = 'hidden';
@@ -3501,13 +3507,13 @@
     }
 
     function processPartialPayment() {
-        const selectedRadio = document.querySelector('input[name="customerName"]:checked');
+        const selectedRadio = document.querySelector('input[name="customerId"]:checked');
         if (!selectedRadio) {
             alert('Selecione um cliente para o pagamento');
             return;
         }
 
-        const customerName = selectedRadio.value;
+        const customerId = selectedRadio.value;
         const amount = document.getElementById('partialPaymentAmount').value;
 
         if (!amount || parseFloat(amount) <= 0) {
@@ -3522,11 +3528,11 @@
         form.method = 'POST';
         form.action = `/tables/${selectedTable}/payment`;
 
-        const nameInput = document.createElement('input');
-        nameInput.type = 'hidden';
-        nameInput.name = 'customerName';
-        nameInput.value = customerName;
-        form.appendChild(nameInput);
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'customerId';
+        idInput.value = customerId;
+        form.appendChild(idInput);
 
         const amountInput = document.createElement('input');
         amountInput.type = 'hidden';
@@ -3827,7 +3833,7 @@
                 <div class="payment-history-item">
                     <div class="payment-info">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="payment-customer">${payment.customerName}</span>
+                            <span class="payment-customer">${order.customerNames[payment.customerId]}</span>
                             <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600;">${payment.method}</span>
                         </div>
                         <span class="payment-time">${formatTimeOnly(payment.paidAt)}</span>
@@ -4138,7 +4144,7 @@
             <p style="margin-bottom: 1rem; color: var(--muted);">Selecione o cliente que irá pagar:</p>
             <div class="client-payment-list">
                 <div class="client-payment-card" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
-                    <input type="radio" name="customerName" th:value="${client.key.name}" class="client-payment-check" 
+                    <input type="radio" name="customerId" th:value="${client.key.id}" class="client-payment-check" 
                            th:data-value="${clientBalances[client.key]}" onchange="updatePartialPaymentAmount(this)">
                     <div class="client-payment-info">
                         <div class="client-payment-name" th:text="${client.key.name}">Cliente</div>
@@ -4149,10 +4155,9 @@
             </div>
 
             <div class="form-group" style="margin-top: 1.5rem;">
-                <label>Valor do Pagamento</label>
-                <div class="input-with-prefix" style="position: relative;">
-                    <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--muted);">${currencySymbol}</span>
-                    <input type="number" step="0.01" id="partialPaymentAmount" class="modal-input" placeholder="0,00" style="padding-left: 3rem;">
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--primary-light); border-radius: var(--radius); display: flex; justify-content: space-between; font-weight: 600;">
+                    <span th:text="${'Valor do Pagamento ('+currencySymbol+'):'}">Valor do Pagamento ($):</span>
+                    <input type="number" step="0.01" id="partialPaymentAmount" class="form-input" placeholder="0,00" style="padding-left: 3rem;">
                 </div>
             </div>
 
@@ -4845,12 +4850,12 @@
         // Single Ticket for all items
         const ticketIndex = 0;
         
-        // Ticket Customer Name (Generic or Table identifier)
-        const ticketNameInput = document.createElement('input');
-        ticketNameInput.type = 'hidden';
-        ticketNameInput.name = `tickets[${ticketIndex}].customerName`;
-        ticketNameInput.value = `Atendimento ${currentTableCod}`;
-        form.appendChild(ticketNameInput);
+        // Ticket Note (Optional)
+        const ticketNoteInput = document.createElement('input');
+        ticketNoteInput.type = 'hidden';
+        ticketNoteInput.name = `tickets[${ticketIndex}].note`;
+        ticketNoteInput.value = `Atendimento ${currentTableCod}`;
+        form.appendChild(ticketNoteInput);
 
         let globalItemIndex = 0;
         clientsWithItems.forEach(([clientId, client]) => {
