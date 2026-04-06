@@ -15,8 +15,10 @@ public class TicketConfig {
 
   @Bean
   public UpdateTicketItemStatus updateTicketItemStatus(
-      OrderRepository orderRepository, EventPublisher eventPublisher) {
-    return new UpdateTicketItemStatus(orderRepository, eventPublisher);
+      OrderRepository orderRepository,
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
+    return new UpdateTicketItemStatus(orderRepository, eventPublisher, syncTableStatus);
   }
 
   @Bean
@@ -33,9 +35,9 @@ public class TicketConfig {
   @Bean
   public MoveTicket moveTicket(
       OrderRepository orderRepository,
-      TableRepository tableRepository,
-      EventPublisher eventPublisher) {
-    return new MoveTicket(orderRepository, tableRepository, eventPublisher);
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
+    return new MoveTicket(orderRepository, eventPublisher, syncTableStatus);
   }
 
   @Bean

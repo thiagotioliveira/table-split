@@ -2929,7 +2929,7 @@
     <div th:fragment="tablesButton">
         <button class="tables-toggle-btn" onclick="openTablesPanel()">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-            <span class="badge">12</span>
+            <span class="badge" th:text="${countWaiting}" th:if="${countWaiting > 0}">12</span>
         </button>
     </div>
 </div>
@@ -3101,13 +3101,13 @@
                             </div>
 
                             <!-- Dynamic Clients Section -->
-                            <div class="client-card" th:each="client : ${clients}" th:data-customer-id="${client.value[0].customerId}">
+                            <div class="client-card" th:each="client : ${clients}" th:data-customer-id="${client.key.id}">
                                 <div class="client-header">
                                     <span class="client-name">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                        <span th:text="${client.key}">Cliente</span>
+                                        <span th:text="${client.key.name}">Cliente</span>
                                     </span>
-                                    <span class="client-subtotal" th:text="${'R$ ' + #numbers.formatDecimal(#aggregates.sum(client.value.![totalPrice]), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                                    <span class="client-subtotal" th:text="${'R$ ' + #numbers.formatDecimal(!client.value.empty ? #aggregates.sum(client.value.![totalPrice]) : 0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                                 </div>
                                 <div class="client-orders">
                                     <div class="order-item" th:each="item : ${client.value}">
@@ -3138,9 +3138,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="add-order-btn" th:attr="onclick=|openOrderModal(selectedTable, selectedTableCod, '${client.key}')|">
+                                <button class="add-order-btn" th:attr="onclick=|openOrderModal(selectedTable, selectedTableCod, '${client.key.name}')|">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                    Adicionar pedido para <span th:text="${client.key}">Cliente</span>
+                                    Adicionar pedido para <span th:text="${client.key.name}">Cliente</span>
                                 </button>
                             </div>
 
@@ -4031,7 +4031,7 @@
             <div class="bill-clients-list">
                 <div class="bill-client-row" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
                     <div>
-                        <div style="font-weight: 600;" th:text="${client.key}">Cliente</div>
+                        <div style="font-weight: 600;" th:text="${client.key.name}">Cliente</div>
                         <div style="font-size: 0.8rem; color: var(--muted);" 
                              th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
                     </div>
@@ -4134,10 +4134,10 @@
             <p style="margin-bottom: 1rem; color: var(--muted);">Selecione o cliente que irá pagar:</p>
             <div class="client-payment-list">
                 <div class="client-payment-card" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
-                    <input type="radio" name="customerName" th:value="${client.key}" class="client-payment-check" 
+                    <input type="radio" name="customerName" th:value="${client.key.name}" class="client-payment-check" 
                            th:data-value="${clientBalances[client.key]}" onchange="updatePartialPaymentAmount(this)">
                     <div class="client-payment-info">
-                        <div class="client-payment-name" th:text="${client.key}">Cliente</div>
+                        <div class="client-payment-name" th:text="${client.key.name}">Cliente</div>
                         <div class="client-payment-items" th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
                     </div>
                     <div class="client-payment-value" th:text="${'R$ ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">R$ 0,00</div>

@@ -191,4 +191,13 @@ public class Order {
   public void setPayments(List<Payment> payments) {
     this.payments = payments;
   }
+
+  public boolean hasWaitingTickets() {
+    return tickets.stream()
+        .anyMatch(
+            t ->
+                t.getStatus() == TicketStatus.PENDING
+                    || t.getStatus() == TicketStatus.PREPARING
+                    || t.getStatus() == TicketStatus.READY);
+  }
 }

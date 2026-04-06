@@ -5,7 +5,6 @@ import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
@@ -21,18 +20,21 @@ public class PlaceOrder {
   private final OrderRepository orderRepository;
   private final ItemRepository itemRepository;
   private final EventPublisher eventPublisher;
+  private final SyncTableStatus syncTableStatus;
 
   public PlaceOrder(
       OpenTable openTable,
       TableRepository tableRepository,
       OrderRepository orderRepository,
       ItemRepository itemRepository,
-      EventPublisher eventPublisher) {
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
     this.openTable = openTable;
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
     this.itemRepository = itemRepository;
     this.eventPublisher = eventPublisher;
+    this.syncTableStatus = syncTableStatus;
   }
 
   public Order execute(PlaceOrderRequest request) {
@@ -91,10 +93,8 @@ public class PlaceOrder {
       }
     }
 
-    table.waiting();
-    tableRepository.save(table);
     orderRepository.save(order);
-    eventPublisher.publishEvent(new TableStatusChangedEvent(table));
+    syncTableStatus.execute(order);
 
     return order;
   }

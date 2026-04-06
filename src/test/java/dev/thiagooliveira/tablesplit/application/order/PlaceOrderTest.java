@@ -26,6 +26,7 @@ class PlaceOrderTest {
   private OrderRepository orderRepository;
   private ItemRepository itemRepository;
   private EventPublisher eventPublisher;
+  private SyncTableStatus syncTableStatus;
   private PlaceOrder placeOrder;
 
   @BeforeEach
@@ -35,8 +36,15 @@ class PlaceOrderTest {
     orderRepository = mock(OrderRepository.class);
     itemRepository = mock(ItemRepository.class);
     eventPublisher = mock(EventPublisher.class);
+    syncTableStatus = mock(SyncTableStatus.class);
     placeOrder =
-        new PlaceOrder(openTable, tableRepository, orderRepository, itemRepository, eventPublisher);
+        new PlaceOrder(
+            openTable,
+            tableRepository,
+            orderRepository,
+            itemRepository,
+            eventPublisher,
+            syncTableStatus);
   }
 
   @Test

@@ -25,6 +25,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CustomerModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryPaymentModel;
@@ -34,7 +35,6 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -114,6 +114,7 @@ public class TableController {
     model.addAttribute("count", result.count());
     model.addAttribute("countAvailable", result.countAvailable());
     model.addAttribute("countOccupied", result.countOccupied());
+    model.addAttribute("countWaiting", result.countWaiting());
     model.addAttribute("orderLoaded", false);
 
     var languages = context.getRestaurant().getCustomerLanguages();
@@ -141,26 +142,51 @@ public class TableController {
       var activeOrder = getOrder.execute(selectedTableId);
       if (activeOrder.isPresent()) {
         var order = activeOrder.get();
-        Map<String, List<TicketItemModel>> clients =
-            order.getTickets().stream()
-                .flatMap(
-                    t ->
-                        t.getItems().stream()
-                            .map(
-                                item ->
-                                    new TicketItemModel(
-                                        item.getId(),
-                                        item.getCustomerId(),
-                                        order.getCustomerName(item.getCustomerId()),
-                                        item.getName().get(Language.PT),
-                                        item.getQuantity(),
-                                        item.getUnitPrice(),
-                                        item.getTotalPrice(),
-                                        item.getNote(),
-                                        item.getStatus().getLabel(),
-                                        item.getStatus().getCssClass(),
-                                        t.getCreatedAt())))
-                .collect(Collectors.groupingBy(TicketItemModel::getCustomerName));
+        Map<CustomerModel, List<TicketItemModel>> clients = new java.util.LinkedHashMap<>();
+        Map<CustomerModel, BigDecimal> clientBalances = new java.util.LinkedHashMap<>();
+
+        List<CustomerModel> customerModels =
+            order.getCustomers().stream()
+                .map(c -> new CustomerModel(c.getId(), c.getName()))
+                .sorted(java.util.Comparator.comparing(CustomerModel::getName))
+                .collect(Collectors.toList());
+
+        customerModels.forEach(
+            c -> {
+              clients.put(c, new java.util.ArrayList<>());
+              clientBalances.put(c, BigDecimal.ZERO);
+            });
+
+        order.getTickets().stream()
+            .flatMap(
+                t ->
+                    t.getItems().stream()
+                        .map(
+                            item ->
+                                new TicketItemModel(
+                                    item.getId(),
+                                    item.getCustomerId(),
+                                    order.getCustomerName(item.getCustomerId()),
+                                    item.getName().get(Language.PT),
+                                    item.getQuantity(),
+                                    item.getUnitPrice(),
+                                    item.getTotalPrice(),
+                                    item.getNote(),
+                                    item.getStatus().getLabel(),
+                                    item.getStatus().getCssClass(),
+                                    t.getCreatedAt())))
+            .forEach(
+                item -> {
+                  CustomerModel customer =
+                      customerModels.stream()
+                          .filter(c -> c.getId().equals(item.getCustomerId()))
+                          .findFirst()
+                          .orElseGet(
+                              () ->
+                                  new CustomerModel(item.getCustomerId(), item.getCustomerName()));
+                  clients.computeIfAbsent(customer, k -> new java.util.ArrayList<>()).add(item);
+                });
+
         model.addAttribute("clients", clients);
         model.addAttribute("orderLoaded", true);
         model.addAttribute("orderServiceFee", order.getServiceFee());
@@ -169,16 +195,14 @@ public class TableController {
         model.addAttribute("orderTotal", order.calculateTotal());
         model.addAttribute("payments", order.getPayments());
         model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
-        model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
         model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
 
-        Map<String, BigDecimal> clientBalances = new HashMap<>();
-        Map<String, BigDecimal> clientSubtotals =
+        Map<UUID, BigDecimal> clientSubtotals =
             order.getTickets().stream()
                 .flatMap(t -> t.getItems().stream())
                 .collect(
                     Collectors.groupingBy(
-                        item -> order.getCustomerName(item.getCustomerId()),
+                        TicketItem::getCustomerId,
                         Collectors.reducing(
                             BigDecimal.ZERO, TicketItem::getTotalPrice, BigDecimal::add)));
 
@@ -199,11 +223,20 @@ public class TableController {
                     .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
 
         clientSubtotals.forEach(
-            (name, subtotal) -> {
+            (customerId, subtotal) -> {
               BigDecimal totalWithFee =
                   subtotal.multiply(feeFactor).setScale(2, RoundingMode.HALF_UP);
-              BigDecimal paid = clientPaid.getOrDefault(name, BigDecimal.ZERO);
-              clientBalances.put(name, totalWithFee.subtract(paid));
+
+              CustomerModel customer =
+                  customerModels.stream()
+                      .filter(c -> c.getId().equals(customerId))
+                      .findFirst()
+                      .orElse(null);
+
+              if (customer != null) {
+                BigDecimal paid = clientPaid.getOrDefault(customer.getName(), BigDecimal.ZERO);
+                clientBalances.put(customer, totalWithFee.subtract(paid));
+              }
             });
 
         model.addAttribute("clientBalances", clientBalances);

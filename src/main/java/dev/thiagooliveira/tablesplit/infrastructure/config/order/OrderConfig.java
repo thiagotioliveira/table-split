@@ -15,9 +15,15 @@ public class OrderConfig {
       TableRepository tableRepository,
       OrderRepository orderRepository,
       ItemRepository itemRepository,
-      EventPublisher eventPublisher) {
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
     return new PlaceOrder(
-        openTable, tableRepository, orderRepository, itemRepository, eventPublisher);
+        openTable,
+        tableRepository,
+        orderRepository,
+        itemRepository,
+        eventPublisher,
+        syncTableStatus);
   }
 
   @Bean

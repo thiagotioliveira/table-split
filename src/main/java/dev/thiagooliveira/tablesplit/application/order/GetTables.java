@@ -39,8 +39,17 @@ public class GetTables {
                         == dev.thiagooliveira.tablesplit.domain.order.TableStatus.OCCUPIED)
             .count();
 
-    return new Result(tables, count, countAvailable, countOccupied);
+    long countWaiting =
+        tables.stream()
+            .filter(
+                table ->
+                    table.getStatus()
+                        == dev.thiagooliveira.tablesplit.domain.order.TableStatus.WAITING)
+            .count();
+
+    return new Result(tables, count, countAvailable, countOccupied, countWaiting);
   }
 
-  public record Result(List<Table> tables, long count, long countAvailable, long countOccupied) {}
+  public record Result(
+      List<Table> tables, long count, long countAvailable, long countOccupied, long countWaiting) {}
 }

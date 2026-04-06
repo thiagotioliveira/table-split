@@ -11,10 +11,15 @@ public class UpdateTicketItemStatus {
 
   private final OrderRepository orderRepository;
   private final EventPublisher eventPublisher;
+  private final SyncTableStatus syncTableStatus;
 
-  public UpdateTicketItemStatus(OrderRepository orderRepository, EventPublisher eventPublisher) {
+  public UpdateTicketItemStatus(
+      OrderRepository orderRepository,
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
     this.orderRepository = orderRepository;
     this.eventPublisher = eventPublisher;
+    this.syncTableStatus = syncTableStatus;
   }
 
   public void execute(UUID itemId, TicketStatus newStatus) {
@@ -47,5 +52,6 @@ public class UpdateTicketItemStatus {
             });
 
     orderRepository.save(order);
+    syncTableStatus.execute(order);
   }
 }

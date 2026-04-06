@@ -32,4 +32,10 @@ public class TableConfig {
       EventPublisher eventPublisher) {
     return new CloseTable(tableRepository, orderRepository, eventPublisher);
   }
+
+  @Bean
+  public SyncTableStatus syncTableStatus(
+      TableRepository tableRepository, EventPublisher eventPublisher) {
+    return new SyncTableStatus(tableRepository, eventPublisher);
+  }
 }
