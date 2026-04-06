@@ -115,6 +115,8 @@ public class TableController {
     model.addAttribute("countAvailable", result.countAvailable());
     model.addAttribute("countOccupied", result.countOccupied());
     model.addAttribute("countWaiting", result.countWaiting());
+    model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
+    model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("orderLoaded", false);
 
     var languages = context.getRestaurant().getCustomerLanguages();
@@ -200,6 +202,10 @@ public class TableController {
         Map<UUID, BigDecimal> clientSubtotals =
             order.getTickets().stream()
                 .flatMap(t -> t.getItems().stream())
+                .filter(
+                    item ->
+                        item.getStatus()
+                            != dev.thiagooliveira.tablesplit.domain.order.TicketStatus.CANCELLED)
                 .collect(
                     Collectors.groupingBy(
                         TicketItem::getCustomerId,

@@ -108,6 +108,8 @@ public class OrderController {
     model.addAttribute("deliveredTodayCount", deliveredTodayCount);
     model.addAttribute("totalCount", allTickets.size());
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
+    model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
+    model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
 
     return "orders";
   }

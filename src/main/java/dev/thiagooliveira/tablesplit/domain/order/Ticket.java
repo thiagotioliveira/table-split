@@ -30,7 +30,10 @@ public class Ticket {
   }
 
   public BigDecimal calculateTotal() {
-    return items.stream().map(TicketItem::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return items.stream()
+        .filter(item -> item.getStatus() != TicketStatus.CANCELLED)
+        .map(TicketItem::getTotalPrice)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public UUID getId() {

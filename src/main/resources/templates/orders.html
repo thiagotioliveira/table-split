@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:inline="javascript">
+        const currencySymbol = [[${currencySymbol}]];
+        const currencyCode = [[${currencyCode}]];
+    </script>
     <style>
         /* Orders specific styles */
         .orders-header {
@@ -981,7 +985,7 @@
                             </div>
                             <div class="order-total">
                                 <span class="order-total-label">Total</span>
-                                <span class="order-total-value" th:text="${'R$ ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">R$ 0,00</span>
+                                <span class="order-total-value" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">${currencySymbol} 0,00</span>
                             </div>
                         </div>
                         <div class="order-footer">
@@ -1163,11 +1167,11 @@
                     <span class="history-summary-label">Pedidos</span>
                 </div>
                 <div class="history-summary-item">
-                    <span class="history-summary-value" id="historyTotalRevenue">R$ 0,00</span>
+                    <span class="history-summary-value" id="historyTotalRevenue">${currencySymbol} 0,00</span>
                     <span class="history-summary-label">Faturamento</span>
                 </div>
                 <div class="history-summary-item">
-                    <span class="history-summary-value" id="historyAvgTicket">R$ 0,00</span>
+                    <span class="history-summary-value" id="historyAvgTicket">${currencySymbol} 0,00</span>
                     <span class="history-summary-label">Ticket Médio</span>
                 </div>
             </div>
@@ -1223,15 +1227,15 @@
             <div class="order-detail-summary">
                 <div class="order-detail-row">
                     <span>Subtotal</span>
-                    <span id="modalSubtotal">R$ 0,00</span>
+                    <span id="modalSubtotal">${currencySymbol} 0,00</span>
                 </div>
                 <div class="order-detail-row">
                     <span>Taxa de serviço (10%)</span>
-                    <span id="modalServiceFee">R$ 0,00</span>
+                    <span id="modalServiceFee">${currencySymbol} 0,00</span>
                 </div>
                 <div class="order-detail-row total">
                     <span>Total</span>
-                    <span class="value" id="modalTotal">R$ 0,00</span>
+                    <span class="value" id="modalTotal">${currencySymbol} 0,00</span>
                 </div>
             </div>
         </div>
@@ -1434,7 +1438,7 @@
     }
 
     function formatCurrency(value) {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: currencyCode }).format(value);
     }
 
     function changeItemStatus(itemId, status) {
@@ -1771,7 +1775,7 @@
             </div>
           </div>
           <div class="history-order-right">
-            <span class="history-order-total">R$ ${order.total.toFixed(2).replace('.', ',')}</span>
+            <span class="history-order-total">${currencySymbol} ${order.total.toFixed(2).replace('.', ',')}</span>
             <span style="font-size: 0.75rem; color: var(--muted);">${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
         </div>
