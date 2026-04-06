@@ -13,6 +13,7 @@ public record UpdateItemCommand(
     Map<Language, String> name,
     Map<Language, String> description,
     BigDecimal price,
+    List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags,
     boolean available) {
 
   public UpdateItemCommand(
@@ -22,6 +23,6 @@ public record UpdateItemCommand(
       Map<Language, String> name,
       Map<Language, String> description,
       BigDecimal price) {
-    this(categoryId, imageIdsToKeep, images, name, description, price, true);
+    this(categoryId, imageIdsToKeep, images, name, description, price, List.of(), true);
   }
 }

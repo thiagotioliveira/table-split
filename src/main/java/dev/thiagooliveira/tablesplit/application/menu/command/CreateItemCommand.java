@@ -13,6 +13,7 @@ public record CreateItemCommand(
     Map<Language, String> name,
     Map<Language, String> description,
     BigDecimal price,
+    List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags,
     boolean available) {
 
   public CreateItemCommand(
@@ -21,7 +22,8 @@ public record CreateItemCommand(
       ImageCommand images,
       Map<Language, String> name,
       Map<Language, String> description,
-      BigDecimal price) {
-    this(categoryId, imageIdsToKeep, images, name, description, price, true);
+      BigDecimal price,
+      List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags) {
+    this(categoryId, imageIdsToKeep, images, name, description, price, tags, true);
   }
 }

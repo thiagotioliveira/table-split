@@ -17,6 +17,7 @@ public class ItemModel {
   private final Map<String, String> description;
   private final BigDecimal price;
   private final boolean available;
+  private final List<TagModel> tags;
 
   public ItemModel(Item item, Map<String, String> categoryName, String symbol) {
     this.id = item.getId().toString();
@@ -29,6 +30,17 @@ public class ItemModel {
     this.images =
         item.getImages().stream().map(img -> new ImageModel(img.getId(), img.getName())).toList();
     this.imageUrls = this.images.stream().map(ImageModel::getUrl).toList();
+    this.tags =
+        item.getTags() != null
+            ? item.getTags().stream()
+                .map(
+                    t -> {
+                      var it =
+                          dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.fromDomain(t);
+                      return new TagModel(it.name(), it.getIcon(), it.getLabel());
+                    })
+                .toList()
+            : List.of();
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -71,5 +83,33 @@ public class ItemModel {
 
   public boolean isAvailable() {
     return available;
+  }
+
+  public List<TagModel> getTags() {
+    return tags;
+  }
+
+  public static class TagModel {
+    private final String name;
+    private final String icon;
+    private final String labelKey;
+
+    public TagModel(String name, String icon, String labelKey) {
+      this.name = name;
+      this.icon = icon;
+      this.labelKey = labelKey;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getIcon() {
+      return icon;
+    }
+
+    public String getLabelKey() {
+      return labelKey;
+    }
   }
 }

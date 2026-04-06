@@ -37,6 +37,7 @@ public class UpdateItemModel {
   private List<UUID> imageIdsToKeep;
   private List<MultipartFile> newImages;
   private boolean available = true;
+  private List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags;
 
   public CreateItemCommand toCreateItemCommand() {
     return new CreateItemCommand(
@@ -46,6 +47,7 @@ public class UpdateItemModel {
         convertLanguages(this.name),
         convertLanguages(this.description),
         this.price,
+        this.tags == null ? List.of() : this.tags,
         this.available);
   }
 
@@ -57,6 +59,7 @@ public class UpdateItemModel {
         convertLanguages(this.name),
         convertLanguages(this.description),
         this.price,
+        this.tags == null ? List.of() : this.tags,
         this.available);
   }
 
@@ -148,5 +151,13 @@ public class UpdateItemModel {
 
   public void setAvailable(boolean available) {
     this.available = available;
+  }
+
+  public List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags) {
+    this.tags = tags;
   }
 }

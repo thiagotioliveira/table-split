@@ -346,7 +346,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Batatas rústicas fritas na hora, temperadas com sal marinho e alecrim fresco.",
                               Language.EN,
                               "Freshly fried rustic potatoes, seasoned with sea salt and fresh rosemary."),
-                          new BigDecimal("18.00"))));
+                          new BigDecimal("18.00"),
+                          List.of(ItemTag.NEW, ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -361,7 +363,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Cubos de tapioca com queijo coalho, servidos com geleia de pimenta defumada.",
                               Language.EN,
                               "Tapioca cubes with coalho cheese, served with smoked pepper jelly."),
-                          new BigDecimal("22.00"))));
+                          new BigDecimal("22.00"),
+                          List.of(ItemTag.VEGETARIAN, ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -377,7 +381,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Massa crocante recheada com frango desfiado temperado e requeijão cremoso.",
                               Language.EN,
                               "Crispy dough filled with seasoned shredded chicken and creamy curd cheese."),
-                          new BigDecimal("15.00"))));
+                          new BigDecimal("15.00"),
+                          List.of(ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -392,7 +398,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Tradicional bolinho de bacalhau crocante e sequinho, receita da casa.",
                               Language.EN,
                               "Traditional crispy and dry codfish balls, house recipe."),
-                          new BigDecimal("21.00"))));
+                          new BigDecimal("21.00"),
+                          List.of(ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -411,7 +419,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Linguiça calabresa frita com cebolas caramelizadas e um toque de cachaça.",
                               Language.EN,
                               "Fried calabresa sausage with caramelized onions and a touch of cachaça."),
-                          new BigDecimal("25.00"))));
+                          new BigDecimal("25.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -430,7 +440,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Cubos de queijo provolone empanados e fritos, servidos com mel de engenho.",
                               Language.EN,
                               "Breaded and fried provolone cheese cubes, served with sugarcane honey."),
-                          new BigDecimal("28.00"))));
+                          new BigDecimal("28.00"),
+                          List.of(ItemTag.VEGETARIAN))));
+
               saveItemImages(items);
               return items;
             });
@@ -458,7 +470,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "A clássica feijoada com carnes nobres, arroz, couve, farofa e laranja.",
                               Language.EN,
                               "Classic black bean stew with noble meats, served with rice, kale, farofa, and orange."),
-                          new BigDecimal("45.00"))));
+                          new BigDecimal("45.00"),
+                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -473,7 +487,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Cozido de peixe no leite de coco, dendê e coentro. Acompanha arroz e pirão.",
                               Language.EN,
                               "Fish stew in coconut milk, dende oil, and coriander. Served with rice and pirão."),
-                          new BigDecimal("65.00"))));
+                          new BigDecimal("65.00"),
+                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -488,7 +504,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Corte nobre de picanha grelhada no sal grosso, arroz biro-biro e farofa.",
                               Language.EN,
                               "Noble cut of picanha grilled with rock salt, biro-biro rice, and farofa."),
-                          new BigDecimal("75.00"))));
+                          new BigDecimal("75.00"),
+                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -503,7 +521,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Arroz com feijão-fradinho, queijo coalho, carne-seca e temperos nordestinos.",
                               Language.EN,
                               "Rice with black-eyed peas, coalho cheese, dried meat, and northeastern spices."),
-                          new BigDecimal("35.00"))));
+                          new BigDecimal("35.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -519,7 +539,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Prato bandeirante com tutu de feijão, arroz, lombo, ovo frito e couve.",
                               Language.EN,
                               "Traditional state dish with bean puree, rice, pork loin, fried egg, and kale."),
-                          new BigDecimal("38.00"))));
+                          new BigDecimal("38.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -538,7 +560,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Filé alto com alho frito, arroz, farofa de ovos e batatas portuguesas.",
                               Language.EN,
                               "Thick steak with fried garlic, rice, egg farofa, and Portuguese potatoes."),
-                          new BigDecimal("55.00"))));
+                          new BigDecimal("55.00"),
+                          List.of())));
+
               saveItemImages(items);
               return items;
             });
@@ -562,7 +586,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "O clássico pudim com calda de caramelo brilhante e textura aveludada.",
                               Language.EN,
                               "Classic Brazilian pudding with shiny caramel sauce and velvety texture."),
-                          new BigDecimal("14.00"))));
+                          new BigDecimal("14.00"),
+                          List.of(ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -581,7 +607,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Refrescante mousse de maracujá com calda de sementes crocantes.",
                               Language.EN,
                               "Refreshing passion fruit mousse with crunchy seed syrup."),
-                          new BigDecimal("10.00"))));
+                          new BigDecimal("10.00"),
+                          List.of(ItemTag.VEGETARIAN, ItemTag.GLUTEN_FREE))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -600,7 +628,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Doce à base de gemas e coco ralado, com um brilho e cor inconfundíveis.",
                               Language.EN,
                               "Egg yolk and coconut dessert with an unmistakable shine and color."),
-                          new BigDecimal("12.00"))));
+                          new BigDecimal("12.00"),
+                          List.of(ItemTag.VEGETARIAN, ItemTag.GLUTEN_FREE))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -615,7 +645,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Fatias de goiabada cascão cremosa acompanhadas de queijo minas frescal.",
                               Language.EN,
                               "Slices of creamy guava paste accompanied by fresh Minas cheese."),
-                          new BigDecimal("15.00"))));
+                          new BigDecimal("15.00"),
+                          List.of(ItemTag.VEGETARIAN, ItemTag.GLUTEN_FREE))));
+
               saveItemImages(items);
               return items;
             });
@@ -640,7 +672,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Bebida nacional preparada com cachaça, limão taiti fresco e gelo.",
                               Language.EN,
                               "National drink prepared with cachaça, fresh Tahiti lime, and ice."),
-                          new BigDecimal("18.00"))));
+                          new BigDecimal("18.00"),
+                          List.of(ItemTag.POPULAR))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -655,7 +689,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "O refrigerante original da Amazônia, com sabor único e refrescante.",
                               Language.EN,
                               "The original Amazon soda, with a unique and refreshing flavor."),
-                          new BigDecimal("8.00"))));
+                          new BigDecimal("8.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -670,7 +706,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Água de coco natural e geladinha, servida diretamente na fruta.",
                               Language.EN,
                               "Natural and chilled coconut water, served directly in the fruit."),
-                          new BigDecimal("12.00"))));
+                          new BigDecimal("12.00"),
+                          List.of(ItemTag.VEGAN, ItemTag.GLUTEN_FREE))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -686,7 +724,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Caneca de chopp pilsen trincando, com colarinho cremoso.",
                               Language.EN,
                               "Frosty mug of pilsen beer with a creamy foam head."),
-                          new BigDecimal("10.00"))));
+                          new BigDecimal("10.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -705,7 +745,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Refrescante suco natural batido com hortelã fresca.",
                               Language.EN,
                               "Refreshing natural juice blended with fresh mint."),
-                          new BigDecimal("10.00"))));
+                          new BigDecimal("10.00"),
+                          List.of(ItemTag.VEGAN, ItemTag.GLUTEN_FREE))));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -724,7 +766,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Garrafa de 600ml de uma das cervejas mais tradicionais do Brasil.",
                               Language.EN,
                               "600ml bottle of one of Brazil's most traditional beers."),
-                          new BigDecimal("16.00"))));
+                          new BigDecimal("16.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -743,7 +787,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Versão da caipirinha com vodka e morangos selecionados.",
                               Language.EN,
                               "Vodka-based caipirinha version with selected strawberries."),
-                          new BigDecimal("22.00"))));
+                          new BigDecimal("22.00"),
+                          List.of())));
+
               items.add(
                   this.createItem.execute(
                       accountId,
@@ -762,7 +808,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Café expresso encorpado, moído na hora.",
                               Language.EN,
                               "Full-bodied espresso coffee, freshly ground."),
-                          new BigDecimal("6.00"))));
+                          new BigDecimal("6.00"),
+                          List.of())));
+
               saveItemImages(items);
               return items;
             });

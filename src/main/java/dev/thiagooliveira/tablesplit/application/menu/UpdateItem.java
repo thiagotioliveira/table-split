@@ -33,6 +33,7 @@ public class UpdateItem {
     item.setDescription(command.description());
     item.setName(command.name());
     item.setAvailable(command.available());
+    item.setTags(command.tags());
     item.setCategory(new Category());
     item.getCategory().setId(command.categoryId());
 

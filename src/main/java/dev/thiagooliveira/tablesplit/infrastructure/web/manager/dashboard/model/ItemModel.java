@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.dashboard.model;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;

@@ -15,6 +15,7 @@ public class Item {
   private Map<Language, String> description;
   private BigDecimal price;
   private PromotionInfo promotion;
+  private List<ItemTag> tags;
 
   public UUID getId() {
     return id;
@@ -78,6 +79,14 @@ public class Item {
 
   public void setPromotion(PromotionInfo promotion) {
     this.promotion = promotion;
+  }
+
+  public List<ItemTag> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<ItemTag> tags) {
+    this.tags = tags;
   }
 
   public record PromotionInfo(

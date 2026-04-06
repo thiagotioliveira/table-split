@@ -43,6 +43,8 @@ public class CustomerMenuController {
             .toList();
     CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, availableItems);
     model.addAttribute("customerMenu", menuModel);
+    model.addAttribute(
+        "itemTags", dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.values());
     return "customer-menu";
   }
 }

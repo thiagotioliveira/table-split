@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0013-create-item-tags-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: item_tags
+            columns:
+              - column:
+                  name: item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_tags_item
+                    referencedTableName: items
+                    referencedColumnNames: id
+              - column:
+                  name: tag
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: item_tags
+            columnNames: item_id, tag
+            constraintName: pk_item_tags

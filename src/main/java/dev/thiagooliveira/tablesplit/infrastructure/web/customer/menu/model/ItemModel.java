@@ -18,6 +18,7 @@ public class ItemModel {
   private final BigDecimal price;
   private final String priceFormatted;
   private PromotionInfo promotion;
+  private final List<TagModel> tags;
 
   public ItemModel(Item item, String symbol) {
     this.id = item.getId().toString();
@@ -36,6 +37,17 @@ public class ItemModel {
               item.getPromotion().discountType().name(),
               item.getPromotion().discountValue());
     }
+    this.tags =
+        item.getTags() != null
+            ? item.getTags().stream()
+                .map(
+                    t -> {
+                      var it =
+                          dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.fromDomain(t);
+                      return new TagModel(it.name(), it.getIcon(), it.getLabel());
+                    })
+                .toList()
+            : List.of();
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -76,6 +88,10 @@ public class ItemModel {
     return promotion;
   }
 
+  public List<TagModel> getTags() {
+    return tags;
+  }
+
   public static class PromotionInfo {
     private final UUID promotionId;
     private final BigDecimal promotionalPrice;
@@ -107,6 +123,30 @@ public class ItemModel {
 
     public BigDecimal getDiscountValue() {
       return discountValue;
+    }
+  }
+
+  public static class TagModel {
+    private final String name;
+    private final String icon;
+    private final String labelKey;
+
+    public TagModel(String name, String icon, String labelKey) {
+      this.name = name;
+      this.icon = icon;
+      this.labelKey = labelKey;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getIcon() {
+      return icon;
+    }
+
+    public String getLabelKey() {
+      return labelKey;
     }
   }
 }

@@ -1673,8 +1673,10 @@
                         </div>
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
-                    <div class="menu-item-footer" th:if="${false}">
-                        <div class="item-tags"><span class="item-tag">Vegetariano</span></div>
+                    <div class="menu-item-footer">
+                        <div class="item-tags">
+                            <span class="item-tag" th:each="tag : ${item.tags}" th:classappend="${tag.name == 'POPULAR'} ? 'popular'" th:text="${tag.icon + ' ' + #messages.msg(tag.labelKey)}">Vegetariano</span>
+                        </div>
                         <button th:if="${false && customerMenu.hasTable()}" class="add-btn" th:data-id="${item.id}" onclick="event.stopPropagation(); addToCart(this.getAttribute('data-id'))"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                     </div>
                 </div>
@@ -1892,6 +1894,11 @@
 
 <script th:inline="javascript">
     const menuItems = /*[[${customerMenu.items}]]*/[];
+    const tagLabels = {
+        /*[# th:each="tag : ${itemTags}"]*/
+        "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
+        /*[/]*/
+    };
     // Current language
     let currentLang = /*[[${#locale.language}]]*/'pt';
 
@@ -2603,7 +2610,10 @@
 
         // Tags
         const tagsEl = document.getElementById('itemModalTags');
-        tagsEl.innerHTML = (item.tags || []).map(t => `<span class="item-modal-tag ${['Popular','Favorito'].includes(t) ? 'popular' : ''}">${t}</span>`).join('');
+        tagsEl.innerHTML = (item.tags || []).map(t => {
+            const label = tagLabels[t.name] || t.name;
+            return `<span class="item-modal-tag ${t.name === 'POPULAR' ? 'popular' : ''}">${t.icon} ${label}</span>`;
+        }).join('');
 
         document.getElementById('itemModalOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';

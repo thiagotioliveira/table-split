@@ -168,6 +168,107 @@
     .image-upload-input {
       display: none;
     }
+
+    /* Profile Tags */
+    .profile-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+    }
+
+    .profile-tag .tag-emoji {
+      font-size: 1rem;
+    }
+
+    .profile-tag .tag-remove {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--muted);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      line-height:1;
+    }
+
+    .profile-tag .tag-remove:hover {
+      background: var(--destructive);
+      color: white;
+    }
+
+    .add-tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-tag-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tag-suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 640px) {
+      .tag-suggestions {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .tag-suggestion {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tag-suggestion:hover {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
+    .tag-suggestion.selected {
+      border-color: var(--primary);
+      background: var(--accent);
+    }
+
   </style>
 </head>
 
@@ -496,11 +597,39 @@
           </label>
         </div>
 
-        <div class="form-group" th:if="${false}">
-          <label class="form-label">Tags</label>
-          <input type="text" id="itemTags" class="form-input"
-                 placeholder="Vegetariano, Picante, Popular... (separados por vírgula)">
+        <div class="form-group">
+          <label class="form-label" th:text="#{page.menu.item.tags}">Tags</label>
+          <div id="hiddenTagsContainer"></div>
+          <div class="profile-tags-container" id="profileTags">
+            <div class="profile-tag" th:each="tag : *{tags}" th:attr="data-tag=${tag}">
+              <th:block th:each="it : ${itemTags}" th:if="${it.name() == tag.name()}">
+                <span class="tag-emoji" th:text="${it.getIcon()}"></span>
+                <span th:text="#{${it.getLabel()}}"></span>
+                <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+              </th:block>
+            </div>
+            <button type="button" class="add-tag-btn" onclick="showTagSuggestions()"
+                    th:text="#{page.settings.section.tags.button.add}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              Add tag
+            </button>
+          </div>
+
+          <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
+            <div th:each="tag : ${itemTags}"
+                 class="tag-suggestion"
+                 th:attr="onclick=|addTag('${tag.name()}', '${tag.getIcon()}', '#{${tag.getLabel()}}')|"
+                 th:classappend="${updateItemModel.tags != null and updateItemModel.tags.contains(tag)} ? ' selected' : ''">
+              <span th:text="${tag.getIcon()}"></span>
+              <span th:text="#{${tag.getLabel()}}"></span>
+            </div>
+          </div>
         </div>
+
 
         <div class="form-switch">
           <div class="form-switch-label">
@@ -532,6 +661,12 @@
     items: /*[[#{page.menu.item.items}]]*/ 'items',
     item: /*[[#{page.menu.item.item}]]*/ 'item',
   };
+  const tagLabels = {
+    /*[# th:each="tag : ${itemTags}"]*/
+    "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
+    /*[/]*/
+  };
+
   const categories = /*[[${menu.categories}]]*/[];
   const items = /*[[${menu.items}]]*/[];
   const openItemModalFlag = /*[[${openItemModal}]]*/ false;
@@ -752,6 +887,7 @@
   }
 
   function prepareItemSubmit(event) {
+    syncHiddenTags();
     showLoading('Adicionando item');
     const form = document.getElementById('itemForm');
     // Remove any previously added hidden inputs for imageIdsToKeep
@@ -807,6 +943,25 @@
           renderImageGallery();
         }
 
+        if (filtered.tags) {
+          const tagsContainer = document.getElementById('profileTags');
+          const addBtn = tagsContainer.querySelector('.add-tag-btn');
+          tagsContainer.querySelectorAll('.profile-tag').forEach(t => t.remove());
+          filtered.tags.forEach(tag => {
+            const tagEl = document.createElement('div');
+            tagEl.className = 'profile-tag';
+            tagEl.dataset.tag = tag.name;
+            tagEl.innerHTML = `
+                <span class="tag-emoji">${tag.icon}</span>
+                <span>${tagLabels[tag.name] || tag.name}</span>
+                <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+            `;
+
+            tagsContainer.insertBefore(tagEl, addBtn);
+          });
+        }
+        syncHiddenTags();
+
         // Fill names for each language
         Object.keys(filtered.name).forEach(langKey => {
           const input = document.getElementById('itemName-' + langKey.toUpperCase());
@@ -834,6 +989,13 @@
     //document.getElementById('itemTags').value = '';
     //document.getElementById('itemTags').value = '';
     clearImageGallery();
+    // Clear tags
+    const tagsContainer = document.getElementById('profileTags');
+    const addBtn = tagsContainer.querySelector('.add-tag-btn');
+    tagsContainer.querySelectorAll('.profile-tag').forEach(t => t.remove());
+    document.getElementById('hiddenTagsContainer').innerHTML = '';
+    document.getElementById('tagSuggestions').style.display = 'none';
+
     // Reset availability toggle
     document.getElementById('itemAvailable').classList.add('active');
     document.getElementById('itemAvailableInput').value = 'true';
@@ -898,6 +1060,74 @@
       document.getElementById('itemModal').classList.add('active');
     }
   });
+
+  // Tag functions
+  function syncHiddenTags() {
+    const container = document.getElementById('hiddenTagsContainer');
+    container.innerHTML = '';
+    const tags = document.querySelectorAll('#profileTags .profile-tag');
+    tags.forEach((tag) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = `tags`;
+      input.value = tag.dataset.tag;
+      container.appendChild(input);
+    });
+  }
+
+  function showTagSuggestions() {
+    const suggestions = document.getElementById('tagSuggestions');
+    suggestions.style.display = suggestions.style.display === 'none' ? 'grid' : 'none';
+    updateTagSuggestions();
+  }
+
+  function updateTagSuggestions() {
+    const existingTags = Array.from(document.querySelectorAll('#profileTags .profile-tag')).map(t => t.dataset.tag);
+    document.querySelectorAll('.tag-suggestion').forEach(s => {
+      const tagAttr = s.getAttribute('onclick');
+      if (tagAttr) {
+          const match = tagAttr.match(/addTag\('([^']+)'/);
+          if (match) {
+              const tagId = match[1];
+              s.classList.toggle('selected', existingTags.includes(tagId));
+          }
+      }
+    });
+  }
+
+  function addTag(id, icon, label) {
+    const tagsContainer = document.getElementById('profileTags');
+    const existingTags = Array.from(tagsContainer.querySelectorAll('.profile-tag')).map(t => t.dataset.tag);
+
+    if (existingTags.includes(id)) {
+      removeTagById(id);
+    } else {
+      const addBtn = tagsContainer.querySelector('.add-tag-btn');
+      const tagEl = document.createElement('div');
+      tagEl.className = 'profile-tag';
+      tagEl.dataset.tag = id;
+      tagEl.innerHTML = `
+        <span class="tag-emoji">${icon}</span>
+        <span>${label}</span>
+        <button type="button" class="tag-remove" onclick="removeTag(this)">×</button>
+      `;
+      tagsContainer.insertBefore(tagEl, addBtn);
+    }
+    updateTagSuggestions();
+    syncHiddenTags();
+  }
+
+  function removeTag(btn) {
+    btn.parentElement.remove();
+    updateTagSuggestions();
+    syncHiddenTags();
+  }
+
+  function removeTagById(id) {
+    const tag = document.querySelector(`#profileTags .profile-tag[data-tag="${id}"]`);
+    if (tag) tag.remove();
+  }
+
 </script>
 <!-- Loading Overlay -->
 <script th:src="@{/js/loading.js}"></script>

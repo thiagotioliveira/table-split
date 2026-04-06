@@ -188,6 +188,8 @@ public class MenuController {
       model.addAttribute("updateItemModel", new UpdateItemModel());
     }
     model.addAttribute("languages", context.getRestaurant().getCustomerLanguages());
+    model.addAttribute(
+        "itemTags", dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.values());
   }
 
   @ExceptionHandler(InfrastructureException.class)

@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -33,6 +34,12 @@ public class ItemEntity {
 
   @OneToMany(mappedBy = "itemId", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ItemImageEntity> images = new HashSet<>();
+
+  @ElementCollection(targetClass = ItemTag.class)
+  @CollectionTable(name = "item_tags", joinColumns = @JoinColumn(name = "item_id"))
+  @Column(name = "tag", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Set<ItemTag> tags = new HashSet<>();
 
   @Override
   public boolean equals(Object o) {
@@ -66,6 +73,7 @@ public class ItemEntity {
     domain.setPrice(this.price);
     domain.setAvailable(this.active);
     domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
+    domain.setTags(new ArrayList<>(this.tags));
     return domain;
   }
 
@@ -84,6 +92,9 @@ public class ItemEntity {
               domain.getImages().stream()
                   .map(ItemImageEntity::fromDomain)
                   .collect(Collectors.toSet())));
+    }
+    if (domain.getTags() != null) {
+      entity.setTags(new HashSet<>(domain.getTags()));
     }
     return entity;
   }
@@ -142,5 +153,13 @@ public class ItemEntity {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public Set<ItemTag> getTags() {
+    return tags;
+  }
+
+  public void setTags(Set<ItemTag> tags) {
+    this.tags = tags;
   }
 }
