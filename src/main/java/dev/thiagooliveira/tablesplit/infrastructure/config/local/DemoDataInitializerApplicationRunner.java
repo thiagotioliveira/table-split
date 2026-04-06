@@ -123,9 +123,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
 
   private static final List<String> restaurantImages =
       List.of(
-          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
-          "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
           "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200",
+          "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
+          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
           "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200");
   private final Time time;
   private final TransactionalContext transactionalContext;
