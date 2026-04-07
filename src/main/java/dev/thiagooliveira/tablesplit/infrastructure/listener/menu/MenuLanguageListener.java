@@ -101,6 +101,7 @@ public class MenuLanguageListener {
           "[MenuLanguageListener] Error updating menu languages for restaurant: {}",
           restaurantId,
           e);
+      throw e;
     } finally {
       if (originalTenant != null) {
         TenantContext.setCurrentTenant(originalTenant);

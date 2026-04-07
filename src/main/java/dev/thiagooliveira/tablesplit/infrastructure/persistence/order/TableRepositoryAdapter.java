@@ -31,7 +31,7 @@ public class TableRepositoryAdapter implements TableRepository {
 
   @Override
   public List<Table> findAllByRestaurantId(UUID restaurantId) {
-    return tableJpaRepository.findAllByRestaurantId(restaurantId).stream()
+    return tableJpaRepository.findAllByRestaurantIdOrderByCod(restaurantId).stream()
         .map(TableEntity::toDomain)
         .collect(Collectors.toList());
   }

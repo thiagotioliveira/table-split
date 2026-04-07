@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface TableJpaRepository extends JpaRepository<TableEntity, UUID> {
   Optional<TableEntity> findByRestaurantIdAndCod(UUID restaurantId, String cod);
 
-  java.util.List<TableEntity> findAllByRestaurantId(UUID restaurantId);
+  java.util.List<TableEntity> findAllByRestaurantIdOrderByCod(UUID restaurantId);
 }

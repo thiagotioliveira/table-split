@@ -1,11 +1,17 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.account.Account;
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
@@ -13,14 +19,22 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AuthenticatedIT;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class SettingsControllerIT extends AuthenticatedIT {
 
   @Autowired private RestaurantRepository restaurantRepository;
+  @Autowired private AccountRepository accountRepository;
+
+  @MockitoSpyBean
+  private dev.thiagooliveira.tablesplit.infrastructure.listener.menu.MenuLanguageListener
+      menuLanguageListener;
 
   @Test
   void shouldReturnSettingsView_whenAuthenticated() throws Exception {
@@ -101,5 +115,93 @@ class SettingsControllerIT extends AuthenticatedIT {
                     "averagePrice",
                     "hashPrimaryColor",
                     "hashAccentColor"));
+  }
+
+  @Test
+  void shouldFail_whenSlugAlreadyExists() throws Exception {
+    // 1. Create a second account
+    Account account = new Account();
+    account.setId(UUID.randomUUID());
+    account.setPlan(Plan.PRO);
+    account.setActive(true);
+    account.setCreatedAt(OffsetDateTime.now());
+    accountRepository.save(account);
+
+    // 2. Create another restaurant associated with that account
+    Restaurant other = new Restaurant();
+    other.setId(UUID.randomUUID());
+    other.setAccountId(account.getId());
+    other.setName("Other Restaurant");
+    other.setSlug("already-taken");
+    other.setEmail("other@example.com");
+    other.setAddress("Other Address");
+    other.setPhone("123456789");
+    other.setCurrency(Currency.EUR);
+    other.setDefaultLanguage(Language.PT);
+    other.setHashPrimaryColor("#000000");
+    other.setHashAccentColor("#ffffff");
+    other.setServiceFee(10);
+    other.setAveragePrice(AveragePrice.PRICE_20_50);
+    other.setCuisineType(CuisineType.ITALIAN);
+    restaurantRepository.save(other);
+
+    // 3. Try to update our restaurant to use the same slug
+    mockMvc
+        .perform(
+            post("/settings")
+                .with(user(accountContext))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("name", "My Restaurant")
+                .param("slug", "already-taken") // Conflict!
+                .param("description", "Desc")
+                .param("email", "my@example.com")
+                .param("address", "My Address")
+                .param("currency", Currency.BRL.name())
+                .param("serviceFee", "10")
+                .param("averagePrice", AveragePrice.PRICE_100_150.name())
+                .param("customerLanguages", Language.PT.name())
+                .param("hashPrimaryColor", "#ff0000")
+                .param("hashAccentColor", "#00ff00")
+                .param("cuisineType", CuisineType.ITALIAN.name()))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(
+            redirectedUrl(
+                "/register")) // ExceptionHandler redirects to /register for slug conflicts
+        .andExpect(flash().attributeExists("alert"));
+  }
+
+  @Test
+  void shouldRollback_whenListenerFails() throws Exception {
+    // 1. Force the listener to fail
+    doThrow(new RuntimeException("Simulated Listener Failure"))
+        .when(menuLanguageListener)
+        .onRestaurantUpdated(any());
+
+    String originalName = accountContext.getRestaurant().getName();
+
+    // 2. Try to update - this will throw an exception that bubbles up
+    // In a real request this shows an error page, here MockMvc will receive the exception
+    try {
+      mockMvc.perform(
+          post("/settings")
+              .with(user(accountContext))
+              .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+              .param("name", "New Name That Should Rollback")
+              .param("slug", "new-slug-rollback")
+              .param("currency", Currency.BRL.name())
+              .param("serviceFee", "10")
+              .param("averagePrice", AveragePrice.PRICE_100_150.name())
+              .param("customerLanguages", Language.PT.name())
+              .param("hashPrimaryColor", "#ff0000")
+              .param("hashAccentColor", "#00ff00")
+              .param("cuisineType", CuisineType.ITALIAN.name()));
+    } catch (Exception e) {
+      // Expected exception from the listener
+    }
+
+    // 3. Verify that the name was NOT updated in the database
+    Restaurant notUpdated =
+        restaurantRepository.findById(accountContext.getRestaurant().getId()).orElseThrow();
+    assertEquals(originalName, notUpdated.getName(), "The update should have been rolled back!");
   }
 }

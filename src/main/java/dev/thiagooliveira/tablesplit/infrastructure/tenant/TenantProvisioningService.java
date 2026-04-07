@@ -48,10 +48,8 @@ public class TenantProvisioningService {
       // 2. Run Liquibase on the new schema
       runLiquibase(connection, tenantId);
 
-      // 3. Commit only if NOT in a Spring transaction (to avoid committing test transactions)
-      if (!org.springframework.transaction.support.TransactionSynchronizationManager
-              .isActualTransactionActive()
-          && !connection.getAutoCommit()) {
+      // 3. Explicitly commit to ensure the schema is visible to other connections/transactions
+      if (!connection.getAutoCommit()) {
         connection.commit();
       }
 
