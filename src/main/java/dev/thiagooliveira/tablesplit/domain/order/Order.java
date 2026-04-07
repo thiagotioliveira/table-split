@@ -33,7 +33,8 @@ public class Order {
 
   public void addPayment(Payment payment) {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
-      throw new IllegalStateException("Cannot add payment to a closed or cancelled order");
+      throw new IllegalOrderStatusException(
+          this.tableId, IllegalOrderStatusException.Reason.PAYMENT_NOT_ALLOWED);
     }
 
     BigDecimal remaining = calculateRemainingAmount();
@@ -49,7 +50,8 @@ public class Order {
 
   public void removePayment(UUID paymentId) {
     if (this.status == OrderStatus.CANCELLED) {
-      throw new IllegalStateException("Cannot remove payment from a cancelled order");
+      throw new IllegalOrderStatusException(
+          this.tableId, IllegalOrderStatusException.Reason.PAYMENT_REMOVAL_NOT_ALLOWED);
     }
     this.payments.removeIf(p -> p.getId().equals(paymentId));
     if (this.status == OrderStatus.CLOSED && !isFullyPaid()) {
@@ -72,7 +74,8 @@ public class Order {
 
   public void addTicket(Ticket ticket) {
     if (this.status != OrderStatus.OPEN) {
-      throw new IllegalStateException("Cannot add tickets to a non-open order");
+      throw new IllegalOrderStatusException(
+          this.tableId, IllegalOrderStatusException.Reason.TICKET_NOT_ALLOWED);
     }
     this.tickets.add(ticket);
   }
@@ -97,8 +100,8 @@ public class Order {
 
   public void close() {
     if (this.status != OrderStatus.OPEN && this.status != OrderStatus.PENDING) {
-      throw new IllegalStateException(
-          "Cannot close an order that is already finished or cancelled");
+      throw new IllegalOrderStatusException(
+          this.tableId, IllegalOrderStatusException.Reason.CLOSE_NOT_ALLOWED);
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = ZonedDateTime.now();
@@ -217,5 +220,14 @@ public class Order {
                 t.getStatus() == TicketStatus.PENDING
                     || t.getStatus() == TicketStatus.PREPARING
                     || t.getStatus() == TicketStatus.READY);
+  }
+
+  public boolean isInvalid() {
+    return tickets.isEmpty()
+        || tickets.stream()
+            .allMatch(
+                t ->
+                    t.getItems().stream()
+                        .allMatch(item -> item.getStatus() == TicketStatus.CANCELLED));
   }
 }

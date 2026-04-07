@@ -20,4 +20,12 @@ public class GetOrder {
   public List<Order> findAllByTableId(UUID tableId) {
     return orderRepository.findAllByTableIdOrderByOpenedAtDesc(tableId);
   }
+
+  public List<Order> findAllFiltered(
+      UUID tableId,
+      dev.thiagooliveira.tablesplit.domain.order.OrderStatus status,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end) {
+    return orderRepository.findAllByTableIdAndStatusAndOpenedAtBetween(tableId, status, start, end);
+  }
 }

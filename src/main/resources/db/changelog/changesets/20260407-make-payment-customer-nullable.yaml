@@ -2,6 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: 20260407-make-payment-customer-nullable-v2
       author: antigravity
+      validCheckSum: "9:44c62a4d2a9b5d350f0a2e45f74ea229"
       changes:
         - dropNotNullConstraint:
             tableName: payments

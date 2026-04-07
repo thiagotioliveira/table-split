@@ -9,8 +9,7 @@ import java.util.UUID;
 public class TicketItem {
   private UUID id;
   private UUID itemId;
-  private Map<Language, String>
-      name; // Using Map to match Item domain for now, will map to localized_text_id in entity
+  private Map<Language, String> name = new java.util.HashMap<>();
   private UUID customerId;
   private int quantity;
   private BigDecimal unitPrice;

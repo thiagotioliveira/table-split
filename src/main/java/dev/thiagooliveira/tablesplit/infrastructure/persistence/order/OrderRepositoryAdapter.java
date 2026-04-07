@@ -37,6 +37,17 @@ public class OrderRepositoryAdapter implements OrderRepository {
   }
 
   @Override
+  public List<Order> findAllByTableIdAndStatusAndOpenedAtBetween(
+      UUID tableId,
+      OrderStatus status,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end) {
+    return orderJpaRepository.findAllFiltered(tableId, status, start, end).stream()
+        .map(OrderEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public void save(Order order) {
     orderJpaRepository.save(OrderEntity.fromDomain(order));
   }
@@ -56,5 +67,10 @@ public class OrderRepositoryAdapter implements OrderRepository {
   @Override
   public Optional<Order> findByTicketItemId(UUID itemId) {
     return orderJpaRepository.findByTicketItemId(itemId).map(OrderEntity::toDomain);
+  }
+
+  @Override
+  public void delete(UUID id) {
+    orderJpaRepository.deleteById(id);
   }
 }

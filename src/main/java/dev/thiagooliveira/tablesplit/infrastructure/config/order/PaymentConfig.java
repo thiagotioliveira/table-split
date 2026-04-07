@@ -14,9 +14,9 @@ public class PaymentConfig {
   @Bean
   public ProcessPayment processPayment(
       OrderRepository orderRepository,
-      TableRepository tableRepository,
-      EventPublisher eventPublisher) {
-    return new ProcessPayment(orderRepository, tableRepository, eventPublisher);
+      EventPublisher eventPublisher,
+      dev.thiagooliveira.tablesplit.application.order.CloseTable closeTable) {
+    return new ProcessPayment(orderRepository, eventPublisher, closeTable);
   }
 
   @Bean

@@ -2005,12 +2005,40 @@
             gap: 1rem;
             margin-bottom: 1.25rem;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .history-filters .form-group {
             flex: 1;
             min-width: 150px;
             margin-bottom: 0;
+        }
+
+        .btn-filter {
+            padding: 0.625rem 1.25rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            height: 42px;
+        }
+
+        .btn-filter:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-filter svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         .history-table-container {
@@ -2022,13 +2050,21 @@
 
         .history-table {
             width: 100%;
+            min-width: 700px; /* Force minimum width to show all columns on mobile */
             border-collapse: collapse;
             font-size: 0.85rem;
         }
 
+        .history-table th,
+        .history-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            white-space: nowrap; /* Avoid text wrapping in cells */
+        }
+
         .history-table th {
             text-align: left;
-            padding: 0.85rem 1rem;
             background: var(--background-secondary);
             border-bottom: 2px solid var(--border);
             font-weight: 600;
@@ -2036,12 +2072,6 @@
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .history-table td {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
         }
 
         .history-table tbody tr {
@@ -3289,7 +3319,7 @@
 <script th:inline="javascript">
     const menuItems = /*[[${menuItems}]]*/[];
     const tables = /*[[${tables}]]*/ [];
-    const orderHistory = /*[[${orderHistory}]]*/ [];
+    let orderHistory = /*[[${orderHistory}]]*/ [];
     const orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
 
@@ -3647,16 +3677,22 @@
         document.getElementById('historyModal').classList.add('active');
         document.getElementById('historyTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTableCod).padStart(2, '0')}` : '';
 
-        // Set default date range (last 30 days)
-        const today = new Date();
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(today.getDate() - 30);
+        // Set default date range (last 7 days)
+        const now = new Date();
+        const start = new Date();
+        start.setDate(now.getDate() - 7);
 
-        document.getElementById('historyDateEnd').value = today.toISOString().split('T')[0];
-        document.getElementById('historyDateStart').value = thirtyDaysAgo.toISOString().split('T')[0];
+        const formatForInput = (date) => {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        };
+
+        document.getElementById('historyDateEnd').value = formatForInput(now);
+        document.getElementById('historyDateStart').value = formatForInput(start);
         document.getElementById('historyStatusFilter').value = 'all';
 
-        renderOrderHistory();
+        // Clear table content as requested
+        document.getElementById('ordersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">Clique em filtrar para carregar o histórico</td></tr>';
     }
 
     function closeHistoryModal() {
@@ -3664,70 +3700,84 @@
     }
 
     function filterOrderHistory() {
-        renderOrderHistory();
+        const start = document.getElementById('historyDateStart').value;
+        const end = document.getElementById('historyDateEnd').value;
+        const status = document.getElementById('historyStatusFilter').value;
+
+        if (start && end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays > 31) {
+                alert('O intervalo máximo permitido é de 1 mês.');
+                return;
+            }
+        }
+
+        let url = `/tables/${selectedTable}/history`;
+        const params = new URLSearchParams();
+        if (start) params.append('start', new Date(start).toISOString());
+        if (end) params.append('end', new Date(end).toISOString());
+        if (status && status !== 'all') params.append('status', status);
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error('Erro ao buscar histórico');
+                return res.json();
+            })
+            .then(data => {
+                orderHistory = data;
+                renderOrderHistory(data);
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro ao buscar histórico');
+            });
     }
 
-    function renderOrderHistory() {
+    function renderOrderHistory(orders) {
+        const ordersToRender = orders !== undefined ? orders : orderHistory;
         const tbody = document.getElementById('ordersTableBody');
-        const startDate = document.getElementById('historyDateStart').value;
-        const endDate = document.getElementById('historyDateEnd').value;
-        const statusFilter = document.getElementById('historyStatusFilter').value;
-        // Filter orders by selected table and filters
-        let filteredOrders = orderHistory.filter(order => {
-            if (selectedTable && order.tableId !== String(selectedTable)) {
-                return false;
-            }
-            if (!order.openedAt) {
-                return false;
-            }
+        
+        tbody.innerHTML = '';
 
-            try {
-                const orderDate = new Date(order.openedAt).toISOString().split('T')[0];
-                if (startDate && orderDate < startDate) return false;
-                if (endDate && orderDate > endDate) return false;
-            } catch (e) {
-                return false;
-            }
-
-            if (statusFilter !== 'all' && order.status !== statusFilter) {
-                return false;
-            }
-
-            return true;
-        });
-        if (filteredOrders.length === 0) {
-            tbody.innerHTML = `
-          <tr>
-            <td colspan="6">
-              <div class="empty-table-message">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                <p>Nenhum pedido encontrado para os filtros selecionados</p>
-              </div>
-            </td>
-          </tr>
-        `;
+        if (ordersToRender.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">Nenhum pedido encontrado</td></tr>';
             return;
         }
 
-        tbody.innerHTML = filteredOrders.map(order => {
-            const total = calculateOrderTotal(order);
-            const shortId = order.id.substring(0, 8).toUpperCase();
-            const openedAt = formatDateTime(order.openedAt);
-            const closedAt = order.closedAt ? formatDateTime(order.closedAt) : '-';
-            const statusBadge = getStatusBadge(order.status);
-
-            return `
-          <tr onclick="openOrderDetail('${order.id}')">
-            <td><strong>#${shortId}</strong></td>
-            <td>${openedAt}</td>
-            <td>${closedAt}</td>
-            <td>${order.serviceFee}%</td>
-            <td>${statusBadge}</td>
-            <td><strong>${currencySymbol} ${total.toFixed(2).replace('.', ',')}</strong></td>
-          </tr>
-        `;
-        }).join('');
+        for (let i = 0; i < ordersToRender.length; i++) {
+            const order = ordersToRender[i];
+            const total = order.items.reduce((acc, item) => acc + item.totalPrice, 0) * (1 + (order.serviceFee || 0) / 100);
+            
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                const date = new Date(dateStr);
+                const pad = (n) => String(n).padStart(2, '0');
+                return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            };
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${order.id.substring(0, 8)}</td>
+                <td>${formatDate(order.openedAt)}</td>
+                <td>${formatDate(order.closedAt)}</td>
+                <td>${order.serviceFee}%</td>
+                <td><span class="order-status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
+                <td style="font-weight: 600;">${currencySymbol || 'R$'} ${total.toFixed(2)}</td>
+            `;
+            tr.style.cursor = 'pointer';
+            tr.onclick = () => openOrderDetail(order.id);
+            tbody.appendChild(tr);
+        }
     }
+
 
     function calculateOrderTotal(order) {
         if (!order.items) return 0;
@@ -4302,21 +4352,25 @@
             <div class="history-filters">
                 <div class="form-group">
                     <label>Data Início</label>
-                    <input type="date" class="form-input" id="historyDateStart" onchange="filterOrderHistory()">
+                    <input type="datetime-local" class="form-input" id="historyDateStart">
                 </div>
                 <div class="form-group">
                     <label>Data Fim</label>
-                    <input type="date" class="form-input" id="historyDateEnd" onchange="filterOrderHistory()">
+                    <input type="datetime-local" class="form-input" id="historyDateEnd">
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-input" id="historyStatusFilter" onchange="filterOrderHistory()">
+                    <select class="form-input" id="historyStatusFilter">
                         <option value="all">Todos</option>
                         <option value="OPEN">Aberta</option>
                         <option value="CLOSED">Fechada</option>
                         <option value="CANCELLED">Cancelada</option>
                     </select>
                 </div>
+                <button class="btn-filter" onclick="filterOrderHistory()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Filtrar
+                </button>
             </div>
             <div class="history-table-container">
                 <table class="history-table">

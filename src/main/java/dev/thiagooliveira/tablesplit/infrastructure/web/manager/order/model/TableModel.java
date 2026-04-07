@@ -5,19 +5,19 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public class TableModel {
-  private final UUID id;
+  private final String id;
   private final String cod;
   private final TableStatus status;
   private final BigDecimal balance;
 
   public TableModel(UUID id, String cod, TableStatus status, BigDecimal balance) {
-    this.id = id;
+    this.id = id.toString();
     this.cod = cod;
     this.status = status;
     this.balance = balance;
   }
 
-  public UUID getId() {
+  public String getId() {
     return id;
   }
 

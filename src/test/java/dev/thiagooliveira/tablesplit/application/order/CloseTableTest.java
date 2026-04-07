@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.event.TableClosedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
@@ -67,6 +68,6 @@ class CloseTableTest {
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    assertThrows(IllegalStateException.class, () -> closeTable.execute(orderId));
+    assertThrows(IllegalOrderStatusException.class, () -> closeTable.execute(orderId));
   }
 }

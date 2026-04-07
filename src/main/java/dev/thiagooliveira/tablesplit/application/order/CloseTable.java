@@ -26,10 +26,20 @@ public class CloseTable {
     Order order = orderRepository.findById(orderId).orElseThrow();
     Table table = tableRepository.findById(order.getTableId()).orElseThrow();
 
-    order.close();
-    table.release();
+    if (order.isInvalid()) {
+      orderRepository.delete(order.getId());
+      table.release();
+      tableRepository.save(table);
+      eventPublisher.publishEvent(new TableStatusChangedEvent(table));
+      return order;
+    }
 
-    orderRepository.save(order);
+    if (order.getStatus() != dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
+      order.close();
+      orderRepository.save(order);
+    }
+
+    table.release();
     tableRepository.save(table);
 
     eventPublisher.publishEvent(new TableStatusChangedEvent(table));

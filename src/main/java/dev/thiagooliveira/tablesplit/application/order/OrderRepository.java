@@ -13,6 +13,9 @@ public interface OrderRepository {
 
   List<Order> findAllByTableIdOrderByOpenedAtDesc(UUID tableId);
 
+  List<Order> findAllByTableIdAndStatusAndOpenedAtBetween(
+      UUID tableId, OrderStatus status, java.time.ZonedDateTime start, java.time.ZonedDateTime end);
+
   List<Order> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
 
   Optional<Order> findByTicketId(UUID ticketId);
@@ -20,4 +23,6 @@ public interface OrderRepository {
   Optional<Order> findByTicketItemId(UUID itemId);
 
   void save(Order order);
+
+  void delete(UUID id);
 }

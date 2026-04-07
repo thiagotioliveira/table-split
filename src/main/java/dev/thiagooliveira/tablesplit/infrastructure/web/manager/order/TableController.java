@@ -14,7 +14,9 @@ import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.domain.common.DomainException;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
@@ -287,63 +289,85 @@ public class TableController {
         clientBalances.putAll(tempBalances);
         model.addAttribute("clientBalances", clientBalances);
       }
-      model.addAttribute(
-          "orderHistory",
-          getOrder.findAllByTableId(selectedTableId).stream()
-              .map(
-                  hist ->
-                      new OrderHistoryModel(
-                          hist.getId().toString(),
-                          hist.getTableId().toString(),
-                          hist.getServiceFee(),
-                          hist.getStatus().name(),
-                          hist.getOpenedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-                          hist.getClosedAt() != null
-                              ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-                              : null,
-                          hist.getTickets().stream()
-                              .flatMap(
-                                  t ->
-                                      t.getItems().stream()
-                                          .map(
-                                              item ->
-                                                  new TicketItemModel(
-                                                      item.getId(),
-                                                      item.getCustomerId(),
-                                                      hist.getCustomerName(item.getCustomerId()),
-                                                      item.getName().get(Language.PT),
-                                                      item.getQuantity(),
-                                                      item.getUnitPrice(),
-                                                      item.getTotalPrice(),
-                                                      item.getNote(),
-                                                      item.getStatus().getLabel(),
-                                                      item.getStatus().getCssClass(),
-                                                      t.getCreatedAt())))
-                              .toList(),
-                          hist.getPayments().stream()
-                              .map(
-                                  pay ->
-                                      new OrderHistoryPaymentModel(
-                                          pay.getId().toString(),
-                                          pay.getCustomerId(),
-                                          pay.getAmount(),
-                                          pay.getPaidAt(),
-                                          pay.getMethod().name(),
-                                          pay.getNote()))
-                              .toList(),
-                          hist.getCustomers().stream()
-                              .collect(
-                                  Collectors.toMap(
-                                      dev.thiagooliveira.tablesplit.domain.order.OrderCustomer
-                                          ::getId,
-                                      dev.thiagooliveira.tablesplit.domain.order.OrderCustomer
-                                          ::getName))))
-              .toList());
+      model.addAttribute("orderHistory", java.util.Collections.emptyList());
     }
 
     model.addAttribute("createTableForm", new CreateTableForm());
 
     return "tables";
+  }
+
+  @GetMapping("/{tableId}/history")
+  @ResponseBody
+  public List<OrderHistoryModel> tableHistory(
+      @PathVariable UUID tableId,
+      @RequestParam(required = false) dev.thiagooliveira.tablesplit.domain.order.OrderStatus status,
+      @RequestParam(required = false)
+          @org.springframework.format.annotation.DateTimeFormat(
+              iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+          java.time.ZonedDateTime start,
+      @RequestParam(required = false)
+          @org.springframework.format.annotation.DateTimeFormat(
+              iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
+          java.time.ZonedDateTime end) {
+
+    if (start != null && end != null) {
+      if (java.time.Duration.between(start, end).toDays() > 31) {
+        throw new IllegalArgumentException("Interval maximum is 1 month");
+      }
+    }
+
+    return getOrder.findAllFiltered(tableId, status, start, end).stream()
+        .map(this::mapToOrderHistoryModel)
+        .toList();
+  }
+
+  private OrderHistoryModel mapToOrderHistoryModel(
+      dev.thiagooliveira.tablesplit.domain.order.Order hist) {
+    return new OrderHistoryModel(
+        hist.getId().toString(),
+        hist.getTableId().toString(),
+        hist.getServiceFee(),
+        hist.getStatus().name(),
+        hist.getOpenedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+        hist.getClosedAt() != null
+            ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            : null,
+        hist.getTickets().stream()
+            .flatMap(
+                t ->
+                    t.getItems().stream()
+                        .map(
+                            item ->
+                                new TicketItemModel(
+                                    item.getId(),
+                                    item.getCustomerId(),
+                                    hist.getCustomerName(item.getCustomerId()),
+                                    item.getName().get(Language.PT),
+                                    item.getQuantity(),
+                                    item.getUnitPrice(),
+                                    item.getTotalPrice(),
+                                    item.getNote(),
+                                    item.getStatus().getLabel(),
+                                    item.getStatus().getCssClass(),
+                                    t.getCreatedAt())))
+            .toList(),
+        hist.getPayments().stream()
+            .map(
+                pay ->
+                    new OrderHistoryPaymentModel(
+                        pay.getId().toString(),
+                        pay.getCustomerId(),
+                        pay.getAmount(),
+                        pay.getPaidAt(),
+                        pay.getMethod().name(),
+                        pay.getNote()))
+            .toList(),
+        hist.getCustomers().stream()
+            .collect(
+                Collectors.toMap(
+                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
+                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName)));
   }
 
   @PostMapping("/create")
@@ -459,12 +483,31 @@ public class TableController {
     return "redirect:/tables";
   }
 
-  @ExceptionHandler(OverpaymentException.class)
-  public String handleOverpaymentException(
-      OverpaymentException e, RedirectAttributes redirectAttributes) {
-    redirectAttributes.addFlashAttribute(
-        "alert", AlertModel.error("error.payment.amount.exceeds.remaining"));
-    return "redirect:/tables?selectedTableId=" + e.getTableId();
+  @ExceptionHandler(DomainException.class)
+  public String handleDomainException(DomainException e, RedirectAttributes redirectAttributes) {
+    String messageKey = "error.domain.generic";
+    UUID tableId = null;
+
+    if (e instanceof IllegalOrderStatusException ise) {
+      tableId = ise.getTableId();
+      messageKey =
+          switch (ise.getReason()) {
+            case PAYMENT_NOT_ALLOWED -> "error.order.payment.not.allowed";
+            case PAYMENT_REMOVAL_NOT_ALLOWED -> "error.order.payment.removal.not.allowed";
+            case TICKET_NOT_ALLOWED -> "error.order.ticket.not.allowed";
+            case CLOSE_NOT_ALLOWED -> "error.order.close.not.allowed";
+          };
+    } else if (e instanceof OverpaymentException oe) {
+      tableId = oe.getTableId();
+      messageKey = "error.payment.amount.exceeds.remaining";
+    }
+
+    redirectAttributes.addFlashAttribute("alert", AlertModel.error(messageKey));
+
+    if (tableId != null) {
+      return "redirect:/tables?selectedTableId=" + tableId;
+    }
+    return "redirect:/tables";
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
