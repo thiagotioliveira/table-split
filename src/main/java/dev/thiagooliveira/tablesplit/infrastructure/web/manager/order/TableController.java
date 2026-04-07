@@ -15,6 +15,7 @@ import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExi
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
@@ -214,13 +215,14 @@ public class TableController {
                 .toList());
         model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
         model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
-        model.addAttribute(
-            "customerNames",
+        Map<UUID, String> customerNames =
             order.getCustomers().stream()
                 .collect(
                     Collectors.toMap(
                         dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
-                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName)));
+                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName));
+        customerNames.put(null, "Mesa");
+        model.addAttribute("customerNames", customerNames);
 
         Map<UUID, BigDecimal> clientSubtotals =
             order.getTickets().stream()
@@ -250,23 +252,39 @@ public class TableController {
                 BigDecimal.valueOf(order.getServiceFee())
                     .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
 
-        clientSubtotals.forEach(
-            (customerId, subtotal) -> {
-              BigDecimal totalWithFee =
-                  subtotal.multiply(feeFactor).setScale(2, RoundingMode.HALF_UP);
+        // Initial surplus from generic table payments (customerId == null)
+        BigDecimal totalSurplus = clientPaid.getOrDefault(null, BigDecimal.ZERO);
 
-              CustomerModel customer =
-                  customerModels.stream()
-                      .filter(c -> c.getId().equals(customerId))
-                      .findFirst()
-                      .orElse(null);
+        // 1. Calculate raw individual balances and collect surpluses
+        Map<CustomerModel, BigDecimal> tempBalances = new java.util.LinkedHashMap<>();
+        for (CustomerModel customer : customerModels) {
+          BigDecimal subtotal = clientSubtotals.getOrDefault(customer.getId(), BigDecimal.ZERO);
+          BigDecimal totalWithFee = subtotal.multiply(feeFactor).setScale(2, RoundingMode.HALF_UP);
+          BigDecimal paid = clientPaid.getOrDefault(customer.getId(), BigDecimal.ZERO);
+          BigDecimal bal = totalWithFee.subtract(paid);
 
-              if (customer != null) {
-                BigDecimal paid = clientPaid.getOrDefault(customer.getId(), BigDecimal.ZERO);
-                clientBalances.put(customer, totalWithFee.subtract(paid));
-              }
-            });
+          if (bal.compareTo(BigDecimal.ZERO) < 0) {
+            totalSurplus = totalSurplus.add(bal.abs());
+            tempBalances.put(customer, BigDecimal.ZERO);
+          } else {
+            tempBalances.put(customer, bal);
+          }
+        }
 
+        // 2. Redistribute totalSurplus to cover remaining debts
+        if (totalSurplus.compareTo(BigDecimal.ZERO) > 0) {
+          for (CustomerModel customer : customerModels) {
+            BigDecimal bal = tempBalances.get(customer);
+            if (bal.compareTo(BigDecimal.ZERO) > 0) {
+              BigDecimal deduction = bal.min(totalSurplus);
+              tempBalances.put(customer, bal.subtract(deduction));
+              totalSurplus = totalSurplus.subtract(deduction);
+              if (totalSurplus.compareTo(BigDecimal.ZERO) <= 0) break;
+            }
+          }
+        }
+
+        clientBalances.putAll(tempBalances);
         model.addAttribute("clientBalances", clientBalances);
       }
       model.addAttribute(
@@ -391,7 +409,7 @@ public class TableController {
   @PostMapping("/{tableId}/payment")
   public String processPayment(
       @PathVariable UUID tableId,
-      @RequestParam UUID customerId,
+      @RequestParam(required = false) UUID customerId,
       @RequestParam BigDecimal amount,
       @RequestParam(required = false, defaultValue = "CASH") PaymentMethod method,
       @RequestParam(required = false) String note,
@@ -438,6 +456,21 @@ public class TableController {
   @ExceptionHandler(TableAlreadyExists.class)
   public String handleTableAlreadyExists(RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute("alert", AlertModel.error("error.table.already.exists"));
+    return "redirect:/tables";
+  }
+
+  @ExceptionHandler(OverpaymentException.class)
+  public String handleOverpaymentException(
+      OverpaymentException e, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute(
+        "alert", AlertModel.error("error.payment.amount.exceeds.remaining"));
+    return "redirect:/tables?selectedTableId=" + e.getTableId();
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public String handleIllegalArgumentException(
+      IllegalArgumentException e, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
     return "redirect:/tables";
   }
 

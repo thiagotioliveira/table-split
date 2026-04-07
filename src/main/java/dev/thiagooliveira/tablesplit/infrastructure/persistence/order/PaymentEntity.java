@@ -17,7 +17,7 @@ public class PaymentEntity {
   @JoinColumn(name = "order_id", nullable = false)
   private OrderEntity order;
 
-  @Column(name = "customer_id", nullable = false)
+  @Column(name = "customer_id", nullable = true)
   private UUID customerId;
 
   @Column(nullable = false)

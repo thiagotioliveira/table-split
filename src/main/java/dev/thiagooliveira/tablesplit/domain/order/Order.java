@@ -35,6 +35,12 @@ public class Order {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
       throw new IllegalStateException("Cannot add payment to a closed or cancelled order");
     }
+
+    BigDecimal remaining = calculateRemainingAmount();
+    if (payment.getAmount().compareTo(remaining) > 0) {
+      throw new OverpaymentException(this.tableId);
+    }
+
     this.payments.add(payment);
     if (isFullyPaid()) {
       close();
@@ -104,6 +110,7 @@ public class Order {
   }
 
   public String getCustomerName(UUID id) {
+    if (id == null) return "Mesa";
     return customers.stream()
         .filter(c -> c.getId().equals(id))
         .map(OrderCustomer::getName)

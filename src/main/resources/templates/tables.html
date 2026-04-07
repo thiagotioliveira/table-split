@@ -3306,16 +3306,11 @@
         form.method = 'POST';
         form.action = `/tables/${selectedTable}/payment`;
 
+        // We don't send customerId for "Close Table" payment as it's a generic settlement
         const idInput = document.createElement('input');
         idInput.type = 'hidden';
         idInput.name = 'customerId';
-        // Pick the first available customer ID from the table if none is specified for whole table payment
-        const firstCustomerId = document.querySelector('input[name="customerId"]')?.value;
-        if (!firstCustomerId) {
-            alert('Não há clientes registrados para esta mesa.');
-            return;
-        }
-        idInput.value = firstCustomerId;
+        idInput.value = ''; // Null in backend
         form.appendChild(idInput);
 
         const amountInput = document.createElement('input');
@@ -4124,7 +4119,7 @@
         </div>
         <div class="modal-body">
             <div class="bill-clients-list">
-                <div class="bill-client-row" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+                <div class="bill-client-row" th:each="client : ${clients}">
                     <div>
                         <div style="font-weight: 600;" th:text="${client.key.name}">Cliente</div>
                         <div style="font-size: 0.8rem; color: var(--muted);" 
@@ -4215,14 +4210,19 @@
         <div class="modal-body">
             <p style="margin-bottom: 1rem; color: var(--muted);">Selecione o cliente que irá pagar:</p>
             <div class="client-payment-list">
-                <div class="client-payment-card" th:each="client : ${clients}" th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+                <div class="client-payment-card" th:each="client : ${clients}">
                     <input type="radio" name="customerId" th:value="${client.key.id}" class="client-payment-check" 
                            th:data-value="${clientBalances[client.key]}" onchange="updatePartialPaymentAmount(this)">
                     <div class="client-payment-info">
                         <div class="client-payment-name" th:text="${client.key.name}">Cliente</div>
                         <div class="client-payment-items" th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
                     </div>
-                    <div class="client-payment-value" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
+                    <div class="client-payment-value">
+                        <span th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
+                              style="font-size: 0.7rem; padding: 2px 8px; background: #22c55e; color: white; border-radius: 20px; font-weight: 600;">PAGO</span>
+                        <span th:unless="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
+                              th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                    </div>
                 </div>
             </div>
 

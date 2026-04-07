@@ -915,3 +915,5 @@ databaseChangeLog:
                   name: restaurant_id
               - column:
                   name: table_cod
+  - include:
+      file: db/changelog/changesets/20260407-make-payment-customer-nullable.yaml

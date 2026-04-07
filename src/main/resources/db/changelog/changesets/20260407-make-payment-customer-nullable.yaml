@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260407-make-payment-customer-nullable-v2
+      author: antigravity
+      changes:
+        - dropNotNullConstraint:
+            tableName: payments
+            columnName: customer_id
+            columnDataType: uuid
