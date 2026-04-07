@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
 import dev.thiagooliveira.tablesplit.application.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.application.order.TableRepository;
@@ -16,5 +17,11 @@ public class PaymentConfig {
       TableRepository tableRepository,
       EventPublisher eventPublisher) {
     return new ProcessPayment(orderRepository, tableRepository, eventPublisher);
+  }
+
+  @Bean
+  public DeletePayment deletePayment(
+      OrderRepository orderRepository, TableRepository tableRepository) {
+    return new DeletePayment(orderRepository, tableRepository);
   }
 }

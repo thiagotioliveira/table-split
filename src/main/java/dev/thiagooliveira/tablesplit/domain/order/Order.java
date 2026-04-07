@@ -41,6 +41,17 @@ public class Order {
     }
   }
 
+  public void removePayment(UUID paymentId) {
+    if (this.status == OrderStatus.CANCELLED) {
+      throw new IllegalStateException("Cannot remove payment from a cancelled order");
+    }
+    this.payments.removeIf(p -> p.getId().equals(paymentId));
+    if (this.status == OrderStatus.CLOSED && !isFullyPaid()) {
+      this.status = OrderStatus.OPEN;
+      this.closedAt = null;
+    }
+  }
+
   public BigDecimal calculatePaidAmount() {
     return payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }

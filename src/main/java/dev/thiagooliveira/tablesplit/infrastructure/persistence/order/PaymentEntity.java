@@ -13,8 +13,9 @@ public class PaymentEntity {
 
   @Id private UUID id;
 
-  @Column(name = "order_id", nullable = false)
-  private UUID orderId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id", nullable = false)
+  private OrderEntity order;
 
   @Column(name = "customer_id", nullable = false)
   private UUID customerId;
@@ -33,10 +34,10 @@ public class PaymentEntity {
 
   public PaymentEntity() {}
 
-  public static PaymentEntity fromDomain(Payment payment) {
+  public static PaymentEntity fromDomain(Payment payment, OrderEntity order) {
     PaymentEntity entity = new PaymentEntity();
     entity.setId(payment.getId());
-    entity.setOrderId(payment.getOrderId());
+    entity.setOrder(order);
     entity.setCustomerId(payment.getCustomerId());
     entity.setAmount(payment.getAmount());
     entity.setPaidAt(payment.getPaidAt());
@@ -48,7 +49,7 @@ public class PaymentEntity {
   public Payment toDomain() {
     Payment payment = new Payment();
     payment.setId(this.id);
-    payment.setOrderId(this.orderId);
+    payment.setOrderId(this.order != null ? this.order.getId() : null);
     payment.setCustomerId(this.customerId);
     payment.setAmount(this.amount);
     payment.setPaidAt(this.paidAt);
@@ -65,12 +66,12 @@ public class PaymentEntity {
     this.id = id;
   }
 
-  public UUID getOrderId() {
-    return orderId;
+  public OrderEntity getOrder() {
+    return order;
   }
 
-  public void setOrderId(UUID orderId) {
-    this.orderId = orderId;
+  public void setOrder(OrderEntity order) {
+    this.order = order;
   }
 
   public UUID getCustomerId() {

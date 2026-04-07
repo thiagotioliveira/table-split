@@ -33,8 +33,11 @@ public class OrderEntity {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<TicketEntity> tickets = new ArrayList<>();
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  @JoinColumn(name = "order_id")
+  @OneToMany(
+      mappedBy = "order",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
   private List<PaymentEntity> payments = new ArrayList<>();
 
   @ElementCollection
@@ -90,7 +93,10 @@ public class OrderEntity {
     }
     if (domain.getPayments() != null) {
       entity.setPayments(
-          new ArrayList<>(domain.getPayments().stream().map(PaymentEntity::fromDomain).toList()));
+          new ArrayList<>(
+              domain.getPayments().stream()
+                  .map(payment -> PaymentEntity.fromDomain(payment, entity))
+                  .toList()));
     }
     if (domain.getCustomers() != null) {
       entity.setCustomers(

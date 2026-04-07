@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.CloseTable;
 import dev.thiagooliveira.tablesplit.application.order.CreateTable;
+import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
@@ -61,6 +62,7 @@ public class TableController {
   private final PlaceOrder placeOrder;
   private final GetOrder getOrder;
   private final ProcessPayment processPayment;
+  private final DeletePayment deletePayment;
   private final UpdateTicketItemStatus updateTicketItemStatus;
 
   public TableController(
@@ -74,6 +76,7 @@ public class TableController {
       PlaceOrder placeOrder,
       GetOrder getOrder,
       ProcessPayment processPayment,
+      DeletePayment deletePayment,
       UpdateTicketItemStatus updateTicketItemStatus) {
     this.transactionalContext = transactionalContext;
     this.openTable = openTable;
@@ -85,6 +88,7 @@ public class TableController {
     this.placeOrder = placeOrder;
     this.getOrder = getOrder;
     this.processPayment = processPayment;
+    this.deletePayment = deletePayment;
     this.updateTicketItemStatus = updateTicketItemStatus;
   }
 
@@ -397,6 +401,18 @@ public class TableController {
         () -> processPayment.execute(tableId, customerId, amount, method, note));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.processed"));
+    return "redirect:/tables?selectedTableId=" + tableId;
+  }
+
+  @PostMapping("/{tableId}/payment/{paymentId}/delete")
+  public String deletePayment(
+      @PathVariable UUID tableId,
+      @PathVariable UUID paymentId,
+      RedirectAttributes redirectAttributes) {
+
+    transactionalContext.execute(() -> deletePayment.execute(tableId, paymentId));
+
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.deleted"));
     return "redirect:/tables?selectedTableId=" + tableId;
   }
 
