@@ -11,8 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script th:inline="javascript">
-        const currencySymbol = [[${currencySymbol}]];
-        const currencyCode = [[${currencyCode}]];
+        const currencySymbol = /*[[${currencySymbol}]]*/'';
+        const currencyCode = /*[[${currencyCode}]]*/'';
     </script>
     <style>
         /* New Order Modal Styles */
@@ -3495,20 +3495,15 @@
 
     function openPartialPaymentModal() {
         document.getElementById('partialPaymentModal').classList.add('active');
-        updatePartialTotal();
+        const amountInput = document.getElementById('partialPaymentAmount');
+        if (amountInput) amountInput.value = '';
+        document.querySelectorAll('input[name="customerId"]').forEach(r => r.checked = false);
     }
 
     function closePartialPaymentModal() {
         document.getElementById('partialPaymentModal').classList.remove('active');
     }
 
-    function updatePartialTotal() {
-        let total = 0;
-        document.querySelectorAll('.client-payment-check:checked').forEach(cb => {
-            total += parseFloat(cb.dataset.value);
-        });
-        document.getElementById('partialPaymentTotal').textContent = `${currencySymbol} ${total.toFixed(2).replace('.', ',')}`;
-    }
 
     function processPartialPayment() {
         const selectedRadio = document.querySelector('input[name="customerId"]:checked');
