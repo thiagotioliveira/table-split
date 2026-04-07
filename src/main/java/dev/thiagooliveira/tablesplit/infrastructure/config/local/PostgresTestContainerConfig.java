@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Profile;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
- * Configuration to start a PostgreSQL container using Testcontainers when the 'postgres' profile is
+ * Configuration to start a PostgreSQL container using Testcontainers when the 'test-container-postgres' profile is
  * active. This avoids the need to manually run docker-compose during local development.
  */
 @Configuration
-@Profile("postgres")
+@Profile("test-container-postgres")
 public class PostgresTestContainerConfig {
 
   @Bean

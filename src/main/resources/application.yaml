@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: h2
   application:
     name: table-split
   web:

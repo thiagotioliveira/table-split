@@ -1480,6 +1480,40 @@
         .table-total-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; }
         .table-total-row.grand { font-size: 1.125rem; font-weight: 700; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.5rem; }
         .table-total-row.grand .value { color: var(--primary); }
+        .table-total-row.paid { color: var(--accent); font-weight: 600; }
+        .table-total-row.remaining { font-size: 1.125rem; font-weight: 700; padding-top: 0.75rem; border-top: 1px dashed var(--border); margin-top: 0.5rem; }
+        .table-total-row.remaining .value { color: var(--primary); }
+
+        .payments-history {
+            background: var(--info-light);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px dashed var(--border);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .payments-history h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+        .payment-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .payment-history-item:last-of-type { border-bottom: none; }
+        .payment-info { display: flex; flex-direction: column; }
+        .payment-customer { font-size: 0.875rem; font-weight: 500; }
+        .payment-time { font-size: 0.75rem; color: var(--muted); }
+        .payment-amount { font-size: 0.875rem; font-weight: 600; color: var(--accent); }
 
         /* Responsive */
         @media (min-width: 640px) {
@@ -1795,9 +1829,12 @@
             <!-- Populated by JS -->
         </div>
         <div class="table-modal-footer">
+            <div id="paymentsHistoryContainer"></div>
             <div class="table-total-row"><span>Subtotal da Mesa</span><span id="tableSubtotal">R$ 0,00</span></div>
             <div class="table-total-row"><span>Taxa de serviço (10%)</span><span id="tableServiceFee">R$ 0,00</span></div>
             <div class="table-total-row grand"><span>Total da Mesa</span><span class="value" id="tableGrandTotal">R$ 0,00</span></div>
+            <div class="table-total-row paid" id="tablePaidRow" style="display: none;"><span>Total Pago</span><span id="tablePaidAmount">R$ 0,00</span></div>
+            <div class="table-total-row remaining" id="tableRemainingRow" style="display: none;"><span>Saldo Restante</span><span class="value" id="tableRemainingAmount">R$ 0,00</span></div>
         </div>
     </div>
 </div>
@@ -1911,6 +1948,16 @@
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
     const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
     const tableCode = /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'';
+    const activePayments = /*[[${customerMenu.payments}]]*/[];
+    const tableCustomersNames = /*[[${customerMenu.customers}]]*/[]; // Reuse customers to get names
+    const paymentMethods = {
+        /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
+        "[(${method.name()})]": {
+            label: [[#{${method.getLabel()}}]],
+            icon: `[(${method.getIcon()})]`
+        },
+        /*[/]*/
+    };
 </script>
 <script>
     let cart = [];
@@ -2541,7 +2588,61 @@
 
         document.getElementById('tableSubtotal').textContent = formatPrice(grandSubtotal);
         document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
-        document.getElementById('tableGrandTotal').textContent = formatPrice(grandSubtotal + (grandSubtotal * SERVICE_FEE));
+        const totalAmount = grandSubtotal + (grandSubtotal * SERVICE_FEE);
+        document.getElementById('tableGrandTotal').textContent = formatPrice(totalAmount);
+
+        // Payments History
+        const paymentsContainer = document.getElementById('paymentsHistoryContainer');
+        const paidRow = document.getElementById('tablePaidRow');
+        const remainingRow = document.getElementById('tableRemainingRow');
+        const grandTotalRow = document.querySelector('.table-total-row.grand');
+
+        if (activePayments && activePayments.length > 0) {
+            let totalPaid = activePayments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+            let paymentsHtml = `
+                <div class="payments-history">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                        Pagamentos Realizados
+                    </h3>
+                    ${activePayments.map(p => {
+                        const customer = tableCustomersFromBackend.find(c => String(c.id) === String(p.customerId)) || { name: 'Cliente' };
+                        const paidTime = parseDate(p.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const methodInfo = paymentMethods[p.method] || { label: p.method, icon: '' };
+                        return `
+                        <div class="payment-history-item">
+                            <div class="payment-info">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="payment-customer">${customer.name}</span>
+                                    <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                        ${methodInfo.icon}
+                                        <span style="line-height: 1;">${methodInfo.label}</span>
+                                    </span>
+                                </div>
+                                <span class="payment-time">${paidTime}</span>
+                            </div>
+                            <span class="payment-amount">-${formatPrice(p.amount)}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            `;
+            paymentsContainer.innerHTML = paymentsHtml;
+            document.getElementById('tablePaidAmount').textContent = formatPrice(totalPaid);
+            document.getElementById('tableRemainingAmount').textContent = formatPrice(totalAmount - totalPaid);
+            
+            paidRow.style.display = 'flex';
+            remainingRow.style.display = 'flex';
+            grandTotalRow.style.borderTop = 'none';
+            grandTotalRow.style.marginTop = '0';
+            grandTotalRow.style.paddingTop = '0';
+        } else {
+            paymentsContainer.innerHTML = '';
+            paidRow.style.display = 'none';
+            remainingRow.style.display = 'none';
+            grandTotalRow.style.borderTop = '1px dashed var(--border)';
+            grandTotalRow.style.marginTop = '0.5rem';
+            grandTotalRow.style.paddingTop = '0.75rem';
+        }
     }
 
     function updateTableTotal() {
@@ -2549,7 +2650,13 @@
         const othersTotal = Object.values(tableOrders).flat().reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
         const grandTotal = myTotal + othersTotal;
         const totalWithFee = grandTotal + (grandTotal * SERVICE_FEE);
-        document.getElementById('quickTableTotal').textContent = formatPrice(totalWithFee);
+        
+        let totalPaid = 0;
+        if (typeof activePayments !== 'undefined' && activePayments) {
+            totalPaid = activePayments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+        }
+        
+        document.getElementById('quickTableTotal').textContent = formatPrice(totalWithFee - totalPaid);
     }
 
     // Tab switching

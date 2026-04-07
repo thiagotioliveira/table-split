@@ -10,4 +10,4 @@ logging:
               BasicBinder: INFO
       springframework:
         transaction: INFO
-    dev.thiagooliveira: DEBUG
+    dev.thiagooliveira: INFO

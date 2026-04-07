@@ -1148,12 +1148,12 @@
         .payment-amount {
             font-size: 0.875rem;
             font-weight: 600;
-            color: #10b981;
+            color: var(--green);
         }
 
         .bill-row.paid {
             margin-top: 0.5rem;
-            color: #10b981 !important;
+            color: var(--green) !important;
             font-weight: 600;
         }
 
@@ -3182,7 +3182,11 @@
                                     <div class="payment-info">
                                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                                             <span class="payment-customer" th:text="${customerNames[payment.customerId]}">Cliente</span>
-                                            <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600;" th:text="${payment.method}">MB_WAY</span>
+                                            <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px;" 
+                                                  th:with="method=${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).valueOf(payment.method)}">
+                                                <span th:utext="${method.getIcon()}" style="display: flex; align-items: center;"></span>
+                                                <span th:text="#{${method.getLabel()}}">MB_WAY</span>
+                                            </span>
                                         </div>
                                         <span class="payment-time" th:text="${#temporals.format(payment.paidAt, 'HH:mm')}">12:00</span>
                                         <div class="payment-note" th:if="${payment.note != null and !payment.note.empty}" style="font-size: 0.75rem; font-style: italic; color: var(--muted); margin-top: 4px; padding-left: 0.5rem; border-left: 2px solid var(--border);" th:text="${payment.note}">

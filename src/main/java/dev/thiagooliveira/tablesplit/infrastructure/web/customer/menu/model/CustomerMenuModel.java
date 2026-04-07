@@ -14,6 +14,7 @@ public class CustomerMenuModel {
   private final List<ItemModel> items = new ArrayList<>();
   private final List<TicketItemModel> ticketItems = new ArrayList<>();
   private final List<OrderCustomerModel> customers = new ArrayList<>();
+  private final List<PaymentModel> payments = new ArrayList<>();
   private TableModel tableModel;
 
   public CustomerMenuModel(
@@ -42,6 +43,7 @@ public class CustomerMenuModel {
                                       activeOrder.getCustomerName(item.getCustomerId()),
                                       t.getCreatedAt()))));
       activeOrder.getCustomers().stream().map(OrderCustomerModel::new).forEach(this.customers::add);
+      activeOrder.getPayments().stream().map(PaymentModel::new).forEach(this.payments::add);
     }
   }
 
@@ -84,5 +86,9 @@ public class CustomerMenuModel {
 
   public List<ItemModel> getItems() {
     return items;
+  }
+
+  public List<PaymentModel> getPayments() {
+    return payments;
   }
 }

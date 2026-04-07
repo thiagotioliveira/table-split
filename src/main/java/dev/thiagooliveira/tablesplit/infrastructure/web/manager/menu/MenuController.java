@@ -179,8 +179,8 @@ public class MenuController {
     var items = this.getItem.execute(context.getRestaurant().getId(), languages, true);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
-    model.addAttribute("module", Module.MENU);
-    model.addAttribute("context", context);
+    // model.addAttribute("module", Module.MENU);
+    // model.addAttribute("context", context);
     if (!model.containsAttribute("updateCategoryModel")) {
       model.addAttribute("updateCategoryModel", new UpdateCategoryModel());
     }

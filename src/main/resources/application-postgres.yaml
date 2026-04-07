@@ -1,5 +1,9 @@
 spring:
   datasource:
+    url: jdbc:postgresql://localhost:5432/tablesplit
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
     hikari:
       auto-commit: false
   h2:

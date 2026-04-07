@@ -34,12 +34,9 @@ public class OrderHistoryModel {
     this.closedAt = closedAt;
     this.items = items;
     this.payments = payments;
-    this.customerNames = customerNames.entrySet()
-            .stream()
-            .collect(Collectors.toMap(
-                    entry -> entry.getKey().toString(),
-                    Map.Entry::getValue
-            ));
+    this.customerNames =
+        customerNames.entrySet().stream()
+            .collect(Collectors.toMap(entry -> entry.getKey().toString(), Map.Entry::getValue));
   }
 
   public String getId() {

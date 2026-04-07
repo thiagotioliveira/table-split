@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
-@ActiveProfiles("integration-test")
+@ActiveProfiles({"integration-test", "h2"})
 @Transactional
 public abstract class BaseIT {
 
