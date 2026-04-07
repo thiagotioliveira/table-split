@@ -99,12 +99,26 @@ public class Order {
   }
 
   public void close() {
-    if (this.status != OrderStatus.OPEN && this.status != OrderStatus.PENDING) {
-      throw new IllegalOrderStatusException(
-          this.tableId, IllegalOrderStatusException.Reason.CLOSE_NOT_ALLOWED);
+    if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
+      return;
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = ZonedDateTime.now();
+
+    if (this.tickets != null) {
+      this.tickets.forEach(
+          ticket -> {
+            ticket
+                .getItems()
+                .forEach(
+                    item -> {
+                      if (item.getStatus() != TicketStatus.CANCELLED) {
+                        item.setStatus(TicketStatus.DELIVERED);
+                      }
+                    });
+            ticket.recalculateStatus();
+          });
+    }
   }
 
   public void addCustomer(UUID id, String name) {

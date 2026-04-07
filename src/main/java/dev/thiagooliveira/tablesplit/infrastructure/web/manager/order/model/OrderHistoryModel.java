@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,7 @@ public class OrderHistoryModel {
   private final List<TicketItemModel> items;
   private final List<OrderHistoryPaymentModel> payments;
   private final Map<String, String> customerNames;
+  private final BigDecimal total;
 
   public OrderHistoryModel(
       String id,
@@ -25,7 +27,8 @@ public class OrderHistoryModel {
       String closedAt,
       List<TicketItemModel> items,
       List<OrderHistoryPaymentModel> payments,
-      Map<UUID, String> customerNames) {
+      Map<UUID, String> customerNames,
+      BigDecimal total) {
     this.id = id;
     this.tableId = tableId;
     this.serviceFee = serviceFee;
@@ -36,7 +39,11 @@ public class OrderHistoryModel {
     this.payments = payments;
     this.customerNames =
         customerNames.entrySet().stream()
-            .collect(Collectors.toMap(entry -> entry.getKey().toString(), Map.Entry::getValue));
+            .collect(
+                Collectors.toMap(
+                    entry -> entry.getKey() != null ? entry.getKey().toString() : "null",
+                    Map.Entry::getValue));
+    this.total = total;
   }
 
   public String getId() {
@@ -73,5 +80,9 @@ public class OrderHistoryModel {
 
   public Map<String, String> getCustomerNames() {
     return customerNames;
+  }
+
+  public BigDecimal getTotal() {
+    return total;
   }
 }

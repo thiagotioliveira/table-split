@@ -324,6 +324,16 @@ public class TableController {
 
   private OrderHistoryModel mapToOrderHistoryModel(
       dev.thiagooliveira.tablesplit.domain.order.Order hist) {
+    Map<UUID, String> customerNames =
+        hist.getCustomers().stream()
+            .collect(
+                Collectors.toMap(
+                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
+                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName,
+                    (v1, v2) -> v1,
+                    java.util.HashMap::new));
+    customerNames.put(null, "Mesa");
+
     return new OrderHistoryModel(
         hist.getId().toString(),
         hist.getTableId().toString(),
@@ -363,11 +373,8 @@ public class TableController {
                         pay.getMethod().name(),
                         pay.getNote()))
             .toList(),
-        hist.getCustomers().stream()
-            .collect(
-                Collectors.toMap(
-                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
-                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName)));
+        customerNames,
+        hist.calculateTotal());
   }
 
   @PostMapping("/create")

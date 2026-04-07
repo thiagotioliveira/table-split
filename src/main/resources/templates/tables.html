@@ -3754,7 +3754,7 @@
 
         for (let i = 0; i < ordersToRender.length; i++) {
             const order = ordersToRender[i];
-            const total = order.items.reduce((acc, item) => acc + item.totalPrice, 0) * (1 + (order.serviceFee || 0) / 100);
+            const total = order.total;
             
             const formatDate = (dateStr) => {
                 if (!dateStr) return '-';
