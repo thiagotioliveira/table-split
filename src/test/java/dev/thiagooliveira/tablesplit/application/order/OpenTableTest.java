@@ -20,6 +20,7 @@ class OpenTableTest {
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
   private EventPublisher eventPublisher;
+  private SyncTableStatus syncTableStatus;
   private OpenTable openTable;
 
   @BeforeEach
@@ -27,7 +28,8 @@ class OpenTableTest {
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
     eventPublisher = mock(EventPublisher.class);
-    openTable = new OpenTable(tableRepository, orderRepository, eventPublisher);
+    syncTableStatus = mock(SyncTableStatus.class);
+    openTable = new OpenTable(tableRepository, orderRepository, eventPublisher, syncTableStatus);
   }
 
   @Test

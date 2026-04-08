@@ -21,8 +21,9 @@ public class TableConfig {
   public OpenTable openTable(
       TableRepository tableRepository,
       OrderRepository orderRepository,
-      EventPublisher eventPublisher) {
-    return new OpenTable(tableRepository, orderRepository, eventPublisher);
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
+    return new OpenTable(tableRepository, orderRepository, eventPublisher, syncTableStatus);
   }
 
   @Bean

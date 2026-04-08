@@ -35,11 +35,11 @@ public class TicketEventListener {
     this.registerWaiterCall = registerWaiterCall;
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketCreated(TicketCreatedEvent event) {
     TicketModel model = mapToModel(event.getTicket(), event.getOrder(), event.getTableCod());
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/tickets", model);
+    notifyRestaurant(event.getRestaurantId(), model);
 
     // Send Push Notification
     try {
@@ -53,12 +53,14 @@ public class TicketEventListener {
     }
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
     notifyRestaurant(event.getRestaurantId(), event);
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketItemStatusChanged(TicketItemStatusChangedEvent event) {
     notifyRestaurant(event.getRestaurantId(), event);
   }
@@ -77,7 +79,8 @@ public class TicketEventListener {
     }
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTableStatusChanged(TableStatusChangedEvent event) {
     notifyRestaurant(event.getRestaurantId(), event);
   }

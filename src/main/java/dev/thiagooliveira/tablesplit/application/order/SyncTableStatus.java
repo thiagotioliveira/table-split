@@ -26,15 +26,13 @@ public class SyncTableStatus {
       if (table.getStatus() != TableStatus.WAITING) {
         table.waiting();
         tableRepository.save(table);
-        eventPublisher.publishEvent(new TableStatusChangedEvent(table));
       }
     } else {
-      // If no waiting tickets, and it's not available, it must be occupied
       if (table.getStatus() == TableStatus.WAITING) {
         table.occupy();
         tableRepository.save(table);
-        eventPublisher.publishEvent(new TableStatusChangedEvent(table));
       }
     }
+    eventPublisher.publishEvent(new TableStatusChangedEvent(table));
   }
 }

@@ -13,14 +13,17 @@ public class OpenTable {
   private final TableRepository tableRepository;
   private final OrderRepository orderRepository;
   private final EventPublisher eventPublisher;
+  private final SyncTableStatus syncTableStatus;
 
   public OpenTable(
       TableRepository tableRepository,
       OrderRepository orderRepository,
-      EventPublisher eventPublisher) {
+      EventPublisher eventPublisher,
+      SyncTableStatus syncTableStatus) {
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
     this.eventPublisher = eventPublisher;
+    this.syncTableStatus = syncTableStatus;
   }
 
   public Order execute(UUID tableId, int serviceFee, UUID customerId, String customerName) {
@@ -38,6 +41,7 @@ public class OpenTable {
       if (customerId != null) {
         currentOrder.addCustomer(customerId, customerName);
         orderRepository.save(currentOrder);
+        syncTableStatus.execute(currentOrder);
       }
       return currentOrder;
     }
