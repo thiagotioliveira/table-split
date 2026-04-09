@@ -68,6 +68,36 @@
             font-weight: 700;
         }
 
+        .menu-item-card {
+            position: relative;
+        }
+
+        .promo-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--destructive);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+
+        .price-promo {
+            color: var(--green) !important;
+            font-size: 0.95rem !important;
+            font-weight: 800;
+        }
+
         .menu-filter-btn {
             padding: 0.4rem 0.8rem;
             font-size: 0.8rem;
@@ -509,10 +539,10 @@
             color: var(--green);
         }
 
-        .table-status.occupied {
+        /*.table-status.occupied {
             background: var(--primary-light);
             color: var(--primary);
-        }
+        }*/
 
         .table-status.waiting {
             background: rgba(234, 179, 8, 0.1);
@@ -1710,7 +1740,7 @@
 
         .table-status.occupied {
             background: #fef2f2;
-            color: #ef4444;
+            color: var(--destructive);
         }
 
         .table-status.waiting {
@@ -1726,10 +1756,10 @@
         }
 
         .status-available .table-status-dot { background-color: #10b981; }
-        .status-occupied .table-status-dot { background-color: #ef4444; }
+        .status-occupied .table-status-dot { background-color: var(--destructive); }
         .status-waiting .table-status-dot { background-color: #f59e0b; }
 
-        .table-card.occupied { border-left: 4px solid #ef4444; }
+        .table-card.occupied { border-left: 4px solid var(--destructive); }
         .table-card.waiting { border-left: 4px solid #f59e0b; }
         .table-card.available { border-left: 4px solid #10b981; }
 
@@ -2307,7 +2337,7 @@
       margin-bottom: 1rem;
       border-bottom: 2px solid var(--border);
       padding-bottom: 0;
-      overflow-x: auto;
+      /*overflow-x: auto;*/
     }
 
     .order-tab {
@@ -2358,8 +2388,8 @@
     }
 
     .order-tab.active .tab-badge {
-      background: white;
-      color: var(--primary);
+      background: var(--destructive);
+      color: white;
     }
 
     .category-chips {
@@ -2404,6 +2434,7 @@
     }
 
     #orderModal .menu-item-card {
+      position: relative;
       padding: 1.25rem;
       background: var(--card);
       border: 1px solid var(--border);
@@ -2413,6 +2444,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      overflow: visible;
     }
 
     #orderModal .menu-item-card:hover {
@@ -2422,9 +2454,9 @@
     }
 
     #orderModal .menu-item-card.selected {
-      background: var(--primary);
+      background: var(--background-secondary);
       border-color: var(--primary);
-      color: white;
+      color: var(--foreground);
     }
 
     #orderModal .menu-item-card h4 {
@@ -2545,7 +2577,7 @@
       color: white;
       border-color: var(--primary);
     }
-
+/*
     .item-note-input {
       width: 100%;
       margin-top: 0.5rem;
@@ -2558,7 +2590,7 @@
     .item-note-input:focus {
       border-color: var(--primary);
     }
-
+*/
 
         /* Cancel Modal Styles */
         .cancel-modal-content {
@@ -4119,10 +4151,20 @@
                      class="menu-item-card" 
                      th:data-id="${item.id}"
                      th:data-category="${item.categoryId}"
-                     th:data-price="${item.price}"
+                     th:data-price="${item.promotion != null ? item.promotion.promotionalPrice : item.price}"
                      th:attr="onclick=|toggleMenuItem(this)|">
+                    <div th:if="${item.promotion != null}" class="promo-badge" 
+                         th:text="${item.promotion.discountType == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue, 0, 0) + '% OFF') : (item.promotion.discountType == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'COMMA') : 'PROMO')}">
+                        PROMO
+                    </div>
                     <h4 th:text="${item.name[#locale.language]}">Nome do Item</h4>
-                    <div class="price" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
+                    <div class="menu-item-price">
+                        <span th:if="${item.promotion != null}" class="price-original" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                        <span th:class="${item.promotion != null ? 'price-promo' : ''}" 
+                              th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotion != null ? item.promotion.promotionalPrice : item.price, 1, 'POINT', 2, 'COMMA')}">
+                            0,00
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -4873,7 +4915,7 @@
                 <div style="flex: 1;">
                     <strong>${item.name}</strong>
                     <div style="color: var(--primary); font-weight: 600;">${currencySymbol} ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
-                    <input type="text" class="item-note-input" placeholder="Observação (ex: sem cebola)" 
+                    <input type="text" class="form-input" placeholder="Observação (ex: sem cebola)"
                         value="${item.note}" onchange="updateItemNote('${id}', this.value)">
                 </div>
                 <div class="qty-controls" style="margin-left: 1rem;">

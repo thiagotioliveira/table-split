@@ -132,11 +132,20 @@ public class TableController {
             .map(c -> new CategoryModel(c.getId(), convertMap(c.getName())))
             .collect(Collectors.toList());
     var menuItems =
-        this.getItem.execute(context.getRestaurant().getId(), languages).stream()
+        this.getItem.execute(context.getRestaurant().getId(), languages, true).stream()
             .map(
                 i ->
                     new ItemModel(
-                        i.getId(), convertMap(i.getName()), i.getPrice(), i.getCategory().getId()))
+                        i.getId(),
+                        convertMap(i.getName()),
+                        i.getPrice(),
+                        i.getCategory().getId(),
+                        i.getPromotion() != null
+                            ? new ItemModel.PromotionModel(
+                                i.getPromotion().promotionalPrice(),
+                                i.getPromotion().discountType().name(),
+                                i.getPromotion().discountValue())
+                            : null))
             .collect(Collectors.toList());
     model.addAttribute("categories", categories);
     model.addAttribute("menuItems", menuItems);

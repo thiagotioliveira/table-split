@@ -9,12 +9,19 @@ public class ItemModel {
   private final Map<String, String> name;
   private final BigDecimal price;
   private final String categoryId;
+  private final PromotionModel promotion;
 
-  public ItemModel(UUID id, Map<String, String> name, BigDecimal price, UUID categoryId) {
+  public ItemModel(
+      UUID id,
+      Map<String, String> name,
+      BigDecimal price,
+      UUID categoryId,
+      PromotionModel promotion) {
     this.id = id.toString();
     this.name = name;
     this.price = price;
     this.categoryId = categoryId.toString();
+    this.promotion = promotion;
   }
 
   public String getId() {
@@ -32,4 +39,11 @@ public class ItemModel {
   public String getCategoryId() {
     return categoryId;
   }
+
+  public PromotionModel getPromotion() {
+    return promotion;
+  }
+
+  public record PromotionModel(
+      BigDecimal promotionalPrice, String discountType, BigDecimal discountValue) {}
 }
