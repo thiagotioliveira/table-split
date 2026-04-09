@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,12 +20,14 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
   @Override
   public Optional<Item> findById(UUID id) {
-    return this.itemJpaRepository.findById(id).map(ItemEntity::toDomain);
+    return this.itemJpaRepository.findByIdAndDeletedAtIsNull(id).map(ItemEntity::toDomain);
   }
 
   @Override
   public List<Item> findByRestaurantId(UUID restaurantId) {
-    return this.itemJpaRepository.findByCategoryRestaurantId(restaurantId).stream()
+    return this.itemJpaRepository
+        .findByCategoryRestaurantIdAndDeletedAtIsNull(restaurantId)
+        .stream()
         .map(ItemEntity::toDomain)
         .toList();
   }
@@ -61,7 +64,17 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
   @Override
   public void delete(UUID itemId) {
-    this.itemJpaRepository.deleteById(itemId);
+    var itemEntity = this.itemJpaRepository.findById(itemId).orElseThrow();
+
+    if (this.itemJpaRepository.existsInTicketItems(itemId)) {
+      // Exclusão lógica
+      itemEntity.setDeletedAt(OffsetDateTime.now());
+      itemEntity.setActive(false);
+      this.itemJpaRepository.save(itemEntity);
+    } else {
+      // Exclusão física
+      this.itemJpaRepository.deleteById(itemId);
+    }
   }
 
   @Override
@@ -77,5 +90,10 @@ public class ItemRepositoryAdapter implements ItemRepository {
   @Override
   public long countInactive(UUID restaurantId) {
     return this.itemJpaRepository.countByCategoryRestaurantIdAndActiveFalse(restaurantId);
+  }
+
+  @Override
+  public boolean existsInTicketItems(UUID itemId) {
+    return this.itemJpaRepository.existsInTicketItems(itemId);
   }
 }

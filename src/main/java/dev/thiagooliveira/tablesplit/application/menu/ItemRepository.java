@@ -18,6 +18,8 @@ public interface ItemRepository {
 
   void delete(UUID itemId);
 
+  boolean existsInTicketItems(UUID itemId);
+
   long count(UUID restaurantId);
 
   long countActive(UUID restaurantId);

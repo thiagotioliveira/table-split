@@ -919,3 +919,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260407-make-payment-customer-nullable.yaml
   - include:
       file: db/changelog/changesets/20260408-make-ticket-item-name-nullable.yaml
+  - include:
+      file: db/changelog/changesets/20260409-add-deleted-at-to-items.yaml

@@ -22,12 +22,17 @@ public class DeleteItem {
   public void execute(UUID accountId, UUID itemId) {
     Item item = this.itemRepository.findById(itemId).orElseThrow();
 
-    if (item.getImages() != null) {
-      item.getImages()
-          .forEach(
-              image ->
-                  this.imageStorage.deleteItem(
-                      accountId, item.getRestaurantId(), itemId, image.getId()));
+    boolean hasTicketItems = this.itemRepository.existsInTicketItems(itemId);
+
+    if (hasTicketItems) {
+      // Exclusão lógica - deletar imagens do storage
+      if (item.getImages() != null) {
+        item.getImages()
+            .forEach(
+                image ->
+                    this.imageStorage.deleteItem(
+                        accountId, item.getRestaurantId(), itemId, image.getId()));
+      }
     }
 
     this.itemRepository.delete(itemId);

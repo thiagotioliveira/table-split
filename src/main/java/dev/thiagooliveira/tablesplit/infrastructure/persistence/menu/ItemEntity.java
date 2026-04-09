@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,9 @@ public class ItemEntity {
 
   @Column(nullable = false)
   private boolean active;
+
+  @Column(name = "deleted_at")
+  private OffsetDateTime deletedAt;
 
   @OneToMany(mappedBy = "itemId", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ItemImageEntity> images = new HashSet<>();
@@ -161,5 +165,13 @@ public class ItemEntity {
 
   public void setTags(Set<ItemTag> tags) {
     this.tags = tags;
+  }
+
+  public OffsetDateTime getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(OffsetDateTime deletedAt) {
+    this.deletedAt = deletedAt;
   }
 }
