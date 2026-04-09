@@ -57,7 +57,8 @@ public class MenuConfig {
   }
 
   @Bean
-  public DeleteItem deleteItem(EventPublisher eventPublisher, ItemRepository itemRepository) {
-    return new DeleteItem(eventPublisher, itemRepository);
+  public DeleteItem deleteItem(
+      EventPublisher eventPublisher, ItemRepository itemRepository, ImageStorage imageStorage) {
+    return new DeleteItem(eventPublisher, itemRepository, imageStorage);
   }
 }
