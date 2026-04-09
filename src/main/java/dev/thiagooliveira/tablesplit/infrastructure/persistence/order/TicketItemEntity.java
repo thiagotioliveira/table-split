@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -20,10 +19,6 @@ public class TicketItemEntity {
 
   @Column(nullable = false)
   private UUID itemId;
-
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "name_localized_text_id")
-  private LocalizedTextEntity name;
 
   @Column(nullable = false)
   private UUID customerId;
@@ -46,7 +41,7 @@ public class TicketItemEntity {
     TicketItem domain = new TicketItem();
     domain.setId(this.id);
     domain.setItemId(this.itemId);
-    domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
+    domain.setName(new HashMap<>()); // Nome será obtido do Item quando necessário
     domain.setCustomerId(this.customerId);
     domain.setQuantity(this.quantity);
     domain.setUnitPrice(this.unitPrice);
@@ -60,7 +55,6 @@ public class TicketItemEntity {
     entity.setId(domain.getId());
     entity.setTicket(ticket);
     entity.setItemId(domain.getItemId());
-    entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
     entity.setCustomerId(domain.getCustomerId());
     entity.setQuantity(domain.getQuantity());
     entity.setUnitPrice(domain.getUnitPrice());
@@ -91,14 +85,6 @@ public class TicketItemEntity {
 
   public void setItemId(UUID itemId) {
     this.itemId = itemId;
-  }
-
-  public LocalizedTextEntity getName() {
-    return name;
-  }
-
-  public void setName(LocalizedTextEntity name) {
-    this.name = name;
   }
 
   public UUID getCustomerId() {

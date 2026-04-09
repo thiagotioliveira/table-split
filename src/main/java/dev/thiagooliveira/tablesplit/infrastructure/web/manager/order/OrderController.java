@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 
+import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.CancelTicketItem;
 import dev.thiagooliveira.tablesplit.application.order.GetHistoryTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTicket;
@@ -50,6 +51,7 @@ public class OrderController {
   private final UpdateTicketItemStatus updateTicketItemStatus;
   private final CancelTicketItem cancelTicketItem;
   private final TransactionalContext transactionalContext;
+  private final GetItem getItem;
 
   public OrderController(
       GetTickets getTickets,
@@ -58,7 +60,8 @@ public class OrderController {
       MoveTicket moveTicket,
       UpdateTicketItemStatus updateTicketItemStatus,
       CancelTicketItem cancelTicketItem,
-      TransactionalContext transactionalContext) {
+      TransactionalContext transactionalContext,
+      GetItem getItem) {
     this.getTickets = getTickets;
     this.getHistoryTickets = getHistoryTickets;
     this.getTicket = getTicket;
@@ -66,6 +69,7 @@ public class OrderController {
     this.updateTicketItemStatus = updateTicketItemStatus;
     this.cancelTicketItem = cancelTicketItem;
     this.transactionalContext = transactionalContext;
+    this.getItem = getItem;
   }
 
   @GetMapping
@@ -183,20 +187,34 @@ public class OrderController {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
-                item ->
-                    new TicketItemModel(
-                        item.getId(),
-                        item.getCustomerId(),
-                        order.getCustomerName(item.getCustomerId()),
-                        item.getName()
-                            .getOrDefault(Language.PT, item.getName().values().iterator().next()),
-                        item.getQuantity(),
-                        item.getUnitPrice(),
-                        item.getTotalPrice(),
-                        item.getNote(),
-                        item.getStatus().name(),
-                        item.getStatus().getCssClass(),
-                        ticket.getCreatedAt()))
+                item -> {
+                  String itemName =
+                      getItem
+                          .findByIdIncludingDeleted(item.getItemId())
+                          .map(
+                              foundItem ->
+                                  foundItem
+                                      .getName()
+                                      .getOrDefault(
+                                          Language.PT,
+                                          foundItem.getName().isEmpty()
+                                              ? "Item"
+                                              : foundItem.getName().values().iterator().next()))
+                          .orElse("Item não encontrado");
+
+                  return new TicketItemModel(
+                      item.getId(),
+                      item.getCustomerId(),
+                      order.getCustomerName(item.getCustomerId()),
+                      itemName,
+                      item.getQuantity(),
+                      item.getUnitPrice(),
+                      item.getTotalPrice(),
+                      item.getNote(),
+                      item.getStatus().name(),
+                      item.getStatus().getCssClass(),
+                      ticket.getCreatedAt());
+                })
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();

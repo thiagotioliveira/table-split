@@ -27,6 +27,14 @@ public class GetItem {
     return this.execute(restaurantId, languages, false);
   }
 
+  public Optional<Item> findById(UUID itemId) {
+    return this.itemRepository.findById(itemId);
+  }
+
+  public Optional<Item> findByIdIncludingDeleted(UUID itemId) {
+    return this.itemRepository.findByIdIncludingDeleted(itemId);
+  }
+
   public List<Item> execute(
       UUID restaurantId, List<Language> languages, boolean includePromotions) {
     var items = this.itemRepository.findAll(restaurantId, languages);

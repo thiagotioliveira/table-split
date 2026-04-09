@@ -176,7 +176,7 @@ public class TableController {
                                     item.getId(),
                                     item.getCustomerId(),
                                     order.getCustomerName(item.getCustomerId()),
-                                    item.getName().get(Language.PT),
+                                    getItemName(item.getItemId()),
                                     item.getQuantity(),
                                     item.getUnitPrice(),
                                     item.getTotalPrice(),
@@ -353,7 +353,7 @@ public class TableController {
                                     item.getId(),
                                     item.getCustomerId(),
                                     hist.getCustomerName(item.getCustomerId()),
-                                    item.getName().get(Language.PT),
+                                    getItemName(item.getItemId()),
                                     item.getQuantity(),
                                     item.getUnitPrice(),
                                     item.getTotalPrice(),
@@ -528,5 +528,19 @@ public class TableController {
     return map.entrySet().stream()
         .collect(
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
+  }
+
+  private String getItemName(UUID itemId) {
+    return getItem
+        .findByIdIncludingDeleted(itemId)
+        .map(
+            item ->
+                item.getName()
+                    .getOrDefault(
+                        Language.PT,
+                        item.getName().isEmpty()
+                            ? "Item"
+                            : item.getName().values().iterator().next()))
+        .orElse("Item não encontrado");
   }
 }

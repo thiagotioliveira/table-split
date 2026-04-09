@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove-name-from-ticket-items
+      author: system
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: ticket_items
+            constraintName: fk_ticket_items_localized_text
+        - dropColumn:
+            tableName: ticket_items
+            columnName: name_localized_text_id

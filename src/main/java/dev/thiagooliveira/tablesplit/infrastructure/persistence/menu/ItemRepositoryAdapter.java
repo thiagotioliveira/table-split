@@ -24,6 +24,11 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
+  public Optional<Item> findByIdIncludingDeleted(UUID id) {
+    return this.itemJpaRepository.findById(id).map(ItemEntity::toDomain);
+  }
+
+  @Override
   public List<Item> findByRestaurantId(UUID restaurantId) {
     return this.itemJpaRepository
         .findByCategoryRestaurantIdAndDeletedAtIsNull(restaurantId)

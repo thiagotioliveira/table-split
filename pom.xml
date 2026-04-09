@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>dev.thiagooliveira</groupId>
 	<artifactId>table-split</artifactId>
-	<version>0.6.8-SNAPSHOT</version>
+	<version>0.6.9-SNAPSHOT</version>
 	<name>table-split</name>
 	<description>TableSplit</description>
 	<url/>
