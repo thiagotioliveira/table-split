@@ -522,6 +522,7 @@
         }
 
         .table-number {
+            text-align: center;
             font-weight: 700;
             font-size: 0.95rem;
         }
@@ -1761,7 +1762,7 @@
 
         .table-card.occupied { border-left: 4px solid var(--destructive); }
         .table-card.waiting { border-left: 4px solid #f59e0b; }
-        .table-card.available { border-left: 4px solid #10b981; }
+        .table-card.available { border-left: 4px solid var(--green); }
 
         .order-total-row {
             display: flex;
@@ -3251,17 +3252,17 @@
                                         </div>
                                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                                             <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
-                                                <div th:if="${item.promotion != null}" class="promo-badge"
-                                                     th:text="${item.promotion.discountType() == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue(), 0, 0) + '% OFF') : (item.promotion.discountType() == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue(), 1, 'POINT', 2, 'COMMA') : 'PROMO')}"
+                                                <div th:if="${item.promotionSnapshot != null}" class="promo-badge"
+                                                     th:text="${item.promotionSnapshot.discountType() == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotionSnapshot.discountValue(), 0, 0) + '% OFF') : (item.promotionSnapshot.discountType() == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotionSnapshot.discountValue(), 1, 'POINT', 2, 'COMMA') : 'PROMO')}"
                                                      style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
                                                     PROMO
                                                 </div>
                                                 <div style="text-align: right;">
-                                                    <div th:if="${item.promotion != null}" style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;" 
-                                                         th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotion.originalPrice() * item.quantity, 1, 'POINT', 2, 'COMMA')}">Original</div>
+                                                    <div th:if="${item.promotionSnapshot != null}" style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;" 
+                                                         th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotionSnapshot.originalPrice() * item.quantity, 1, 'POINT', 2, 'COMMA')}">Original</div>
                                                     <span class="order-item-price" 
-                                                          th:class="${item.promotion != null ? 'order-item-price' : 'order-item-price'}"
-                                                          th:style="${item.promotion != null ? 'color: var(--green) !important; font-weight: 800;' : ''}"
+                                                          th:class="${item.promotionSnapshot != null ? 'order-item-price' : 'order-item-price'}"
+                                                          th:style="${item.promotionSnapshot != null ? 'color: var(--green) !important; font-weight: 800;' : ''}"
                                                           th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                                                 </div>
                                             </div>
@@ -3921,11 +3922,10 @@
                 </h3>
             </div>
         `;
-
         Object.keys(clients).forEach(clientName => {
             const clientItems = clients[clientName];
             const subtotal = clientItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-            
+
             clientsHtml += `
             <div class="client-card">
                 <div class="client-header">

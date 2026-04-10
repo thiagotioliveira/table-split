@@ -60,7 +60,7 @@ public class TicketItemEntity {
     domain.setStatus(this.status);
 
     // Restore promotion snapshot if exists
-    if (this.promotionId != null) {
+    if (this.discountType != null) {
       domain.setPromotionSnapshot(
           new TicketItem.PromotionSnapshot(
               this.promotionId, this.originalPrice, this.discountType, this.discountValue));

@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
@@ -116,6 +117,7 @@ public class CustomerTableController {
     model.addAttribute("restaurant", restaurant);
     model.addAttribute("table", table);
     model.addAttribute("cuisineType", cuisineType);
+    model.addAttribute("itemTags", ItemTag.values());
 
     if (!table.isAvailable()) {
       getOrder
@@ -148,6 +150,7 @@ public class CustomerTableController {
     CustomerMenuModel menuModel =
         new CustomerMenuModel(restaurant, categories, items, table, activeOrder);
     model.addAttribute("customerMenu", menuModel);
+    model.addAttribute("itemTags", ItemTag.values());
 
     return "customer-menu";
   }

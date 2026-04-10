@@ -2228,7 +2228,10 @@
 
     function updateCartUI() {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const subtotal = cart.reduce((sum, item) => {
+            const effectivePrice = item.promotion ? item.promotion.promotionalPrice : item.price;
+            return sum + (effectivePrice * item.qty);
+        }, 0);
         const total = subtotal + (subtotal * SERVICE_FEE);
 
         document.getElementById('cartFloat').style.display = totalItems > 0 ? 'block' : 'none';
@@ -2263,7 +2266,12 @@
                     <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0].url}" alt="">` : ''}</div>
                     <div class="cart-item-info">
                       <div class="cart-item-name">${getItemText(item, 'name')}</div>
-                      <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
+                      <div class="cart-item-price">
+                        ${item.promotion ? `
+                            <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">${formatPrice(item.price * item.qty)}</div>
+                            <div style="color: var(--green); font-weight: 700;">${formatPrice(item.promotion.promotionalPrice * item.qty)}</div>
+                        ` : formatPrice(item.price * item.qty)}
+                      </div>
                     </div>
                     <div class="cart-item-actions">
                       <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
@@ -2706,18 +2714,20 @@
                 ? `-${Math.round(item.promotion.discountValue)}%` 
                 : `-${formatPrice(item.promotion.discountValue)}`;
             priceContainer.innerHTML = `
-          <span class="promo-badge">${discountLabel}</span>
-          <span class="price-original">${formatPrice(item.price)}</span>
-          <span class="price-promo">${formatPrice(item.promotion.promotionalPrice)}</span>
-        `;
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="price-original" style="font-size: 0.95rem;">${formatPrice(item.price)}</span>
+                        <span class="promo-badge" style="font-size: 0.65rem; padding: 2px 6px;">${discountLabel}</span>
+                    </div>
+                    <span class="price-promo" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${formatPrice(item.promotion.promotionalPrice)}</span>
+                </div>
+            `;
         } else {
             priceContainer.innerHTML = formatPrice(item.price);
         }
-        document.getElementById('itemModalPrice').textContent = formatPrice(item.price);
         document.getElementById('itemModalDesc').textContent = getItemText(item, 'description');
         if(hasTable) {
-            document.getElementById('modalQty').textContent = modalQty;
-            document.getElementById('modalTotalPrice').textContent = formatPrice(item.price);
+            updateModalQty();
         }
 
         // Carousel
@@ -2777,7 +2787,11 @@
     function decreaseModalQty() { if (modalQty > 1) { modalQty--; updateModalQty(); } }
     function updateModalQty() {
         document.getElementById('modalQty').textContent = modalQty;
-        if (currentModalItem) document.getElementById('modalTotalPrice').textContent = formatPrice(currentModalItem.price * modalQty);
+        if (currentModalItem) {
+            const totalPriceEl = document.getElementById('modalTotalPrice');
+            const effectivePrice = currentModalItem.promotion ? currentModalItem.promotion.promotionalPrice : currentModalItem.price;
+            totalPriceEl.textContent = formatPrice(effectivePrice * modalQty);
+        }
     }
 
     function addFromModal() {

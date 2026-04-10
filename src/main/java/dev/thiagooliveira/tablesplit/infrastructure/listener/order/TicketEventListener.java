@@ -117,7 +117,8 @@ public class TicketEventListener {
                       item.getNote(),
                       item.getStatus().getLabel(),
                       item.getStatus().getCssClass(),
-                      ticket.getCreatedAt());
+                      ticket.getCreatedAt(),
+                      getItemPromotionInfo(item));
                 })
             .toList();
 
@@ -138,5 +139,18 @@ public class TicketEventListener {
         itemModels,
         ticket.calculateTotal(),
         urgent);
+  }
+
+  private TicketItemModel.PromotionInfo getItemPromotionInfo(
+      dev.thiagooliveira.tablesplit.domain.order.TicketItem ticketItem) {
+    if (ticketItem.getPromotionSnapshot() != null) {
+      var snapshot = ticketItem.getPromotionSnapshot();
+      return new TicketItemModel.PromotionInfo(
+          snapshot.originalPrice(),
+          ticketItem.getUnitPrice(),
+          snapshot.discountType(),
+          snapshot.discountValue());
+    }
+    return null;
   }
 }
