@@ -927,3 +927,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260411-add-promotion-fields-to-ticket-items.yaml
   - include:
       file: db/changelog/changesets/20260411-fix-ticket-items-unit-price-scale.yaml
+  - include:
+      file: db/changelog/changesets/20260411-add-deleted-at-to-restaurant-tables.yaml

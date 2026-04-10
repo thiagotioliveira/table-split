@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
   Optional<OrderEntity> findByTableIdAndStatus(UUID tableId, OrderStatus status);
 
+  boolean existsByTableId(UUID tableId);
+
   List<OrderEntity> findAllByTableIdOrderByOpenedAtDesc(UUID tableId);
 
   List<OrderEntity> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);

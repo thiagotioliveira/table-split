@@ -3086,6 +3086,7 @@
         <div class="tables-overlay" id="tablesOverlay" onclick="closeTablesPanel()"></div>
 
         <form id="openTableForm" th:action="@{/tables/open-dummy}" method="post" style="display: none;"></form>
+        <form id="deleteTableForm" th:action="@{/tables/delete-dummy}" method="post" style="display: none;"></form>
 
         <div class="waiter-content">
             <!-- Tables Panel -->
@@ -3216,6 +3217,10 @@
                             <div class="quick-action-card" onclick="openTable()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Abrir Mesa</span>
+                            </div>
+                            <div class="quick-action-card" style="color: var(--foreground);" onclick="openDeleteTableModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                <span>Excluir Mesa</span>
                             </div>
                             <div class="quick-action-card" onclick="openReservationsModal()" th:if="${false}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -3600,6 +3605,25 @@
         console.log('Abrindo mesa:', selectedTable);
         const form = document.getElementById('openTableForm');
         form.action = `/tables/${selectedTable}/open`;
+        form.submit();
+    }
+
+    function openDeleteTableModal() {
+        if (!selectedTable) return;
+        const label = `Mesa ${String(selectedTableCod).padStart(2, '0')}`;
+        document.getElementById('deleteTableNumber').textContent = label;
+        document.getElementById('deleteTableNumberBody').textContent = label;
+        document.getElementById('deleteTableModal').classList.add('active');
+    }
+
+    function closeDeleteTableModal() {
+        document.getElementById('deleteTableModal').classList.remove('active');
+    }
+
+    function confirmDeleteTable() {
+        if (!selectedTable) return;
+        const form = document.getElementById('deleteTableForm');
+        form.action = `/tables/${selectedTable}/delete`;
         form.submit();
     }
 
@@ -4318,6 +4342,30 @@
         <div class="modal-footer">
             <button class="modal-btn" onclick="closeCloseTableModal()">Cancelar</button>
             <button class="modal-btn success" onclick="confirmCloseTable()">Confirmar Pagamento</button>
+        </div>
+    </div>
+</div>
+
+<!-- Excluir Mesa Modal -->
+<div class="modal-overlay" id="deleteTableModal">
+    <div class="modal" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Excluir <span id="deleteTableNumber">Mesa</span>
+            </h3>
+            <button class="modal-close" onclick="closeDeleteTableModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="color: var(--muted); text-align: center; padding: 0.5rem 0;">
+                Tem a certeza que deseja excluir <strong id="deleteTableNumberBody">esta mesa</strong>?<br>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" onclick="closeDeleteTableModal()">Cancelar</button>
+            <button class="modal-btn" style="background: var(--destructive); color: white; border-color: var(--destructive);" onclick="confirmDeleteTable()">Sim, Excluir</button>
         </div>
     </div>
 </div>

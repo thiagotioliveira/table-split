@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.menu.ApplyType;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
@@ -27,7 +26,8 @@ public class GetItem {
     return execute(restaurantId, languages, false);
   }
 
-  public List<Item> execute(UUID restaurantId, List<Language> languages, boolean includePromotions) {
+  public List<Item> execute(
+      UUID restaurantId, List<Language> languages, boolean includePromotions) {
     var items = itemRepository.findAll(restaurantId, languages);
     if (includePromotions) {
       var activePromos = activePromotions(restaurantId);
@@ -69,24 +69,30 @@ public class GetItem {
         .filter(Promotion::isActive)
         .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
         .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
-        .filter(p -> p.getDaysOfWeek() == null
-            || p.getDaysOfWeek().isEmpty()
-            || p.getDaysOfWeek().contains(today))
-        .filter(p -> {
-          if (p.getStartTime() == null || p.getEndTime() == null) return true;
-          return !currentTime.isBefore(p.getStartTime()) && !currentTime.isAfter(p.getEndTime());
-        })
+        .filter(
+            p ->
+                p.getDaysOfWeek() == null
+                    || p.getDaysOfWeek().isEmpty()
+                    || p.getDaysOfWeek().contains(today))
+        .filter(
+            p -> {
+              if (p.getStartTime() == null || p.getEndTime() == null) return true;
+              return !currentTime.isBefore(p.getStartTime())
+                  && !currentTime.isAfter(p.getEndTime());
+            })
         .toList();
   }
 
   private void applyBestPromotion(Item item, List<Promotion> activePromos) {
     findBestPromotion(item, activePromos)
-        .ifPresent(p -> item.setPromotion(
-            new Item.PromotionInfo(
-                p.getId(),
-                calculatePromotionalPrice(item.getPrice(), p),
-                p.getDiscountType(),
-                p.getDiscountValue())));
+        .ifPresent(
+            p ->
+                item.setPromotion(
+                    new Item.PromotionInfo(
+                        p.getId(),
+                        calculatePromotionalPrice(item.getPrice(), p),
+                        p.getDiscountType(),
+                        p.getDiscountValue())));
   }
 
   private Optional<Promotion> findBestPromotion(Item item, List<Promotion> activePromos) {
@@ -98,20 +104,22 @@ public class GetItem {
   private boolean isApplicable(Item item, Promotion p) {
     return switch (p.getApplyType()) {
       case ALL_MENU -> true;
-      case CATEGORY -> item.getCategory() != null
-          && p.getApplicableIds() != null
-          && p.getApplicableIds().contains(item.getCategory().getId().toString());
-      case ITEM -> p.getApplicableIds() != null
-          && p.getApplicableIds().contains(item.getId().toString());
+      case CATEGORY ->
+          item.getCategory() != null
+              && p.getApplicableIds() != null
+              && p.getApplicableIds().contains(item.getCategory().getId().toString());
+      case ITEM ->
+          p.getApplicableIds() != null && p.getApplicableIds().contains(item.getId().toString());
     };
   }
 
   private BigDecimal calculatePromotionalPrice(BigDecimal originalPrice, Promotion p) {
     if (originalPrice == null) return BigDecimal.ZERO;
     if (p.getDiscountType() == DiscountType.PERCENTAGE) {
-      var discount = originalPrice
-          .multiply(p.getDiscountValue())
-          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+      var discount =
+          originalPrice
+              .multiply(p.getDiscountValue())
+              .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
       return originalPrice.subtract(discount);
     }
     return originalPrice.subtract(p.getDiscountValue()).max(BigDecimal.ZERO);

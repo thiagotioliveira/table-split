@@ -58,7 +58,8 @@ logging:
               BasicBinder: INFO
       springframework:
         transaction: OFF
-    dev.thiagooliveira: INFO
+        web.servlet: ERROR
+    dev.thiagooliveira: DEBUG
     liquibase: OFF
 
 management:

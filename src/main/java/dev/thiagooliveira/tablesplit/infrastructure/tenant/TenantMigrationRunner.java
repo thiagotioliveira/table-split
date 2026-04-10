@@ -29,10 +29,10 @@ public class TenantMigrationRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    logger.info("[TenantMigrationRunner] Starting migration for all existing tenants...");
+    logger.debug("[TenantMigrationRunner] Starting migration for all existing tenants...");
 
     List<RestaurantEntity> restaurants = restaurantRepository.findAll();
-    logger.info("[TenantMigrationRunner] Found {} restaurants to migrate.", restaurants.size());
+    logger.debug("[TenantMigrationRunner] Found {} restaurants to migrate.", restaurants.size());
 
     for (RestaurantEntity restaurant : restaurants) {
       try {
@@ -48,6 +48,6 @@ public class TenantMigrationRunner implements ApplicationRunner {
       }
     }
 
-    logger.info("[TenantMigrationRunner] Finished migration for all tenants.");
+    logger.debug("[TenantMigrationRunner] Finished migration for all tenants.");
   }
 }

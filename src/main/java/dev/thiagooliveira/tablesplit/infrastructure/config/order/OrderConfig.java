@@ -35,4 +35,9 @@ public class OrderConfig {
   public UpdateCustomerName updateCustomerName(OrderRepository orderRepository) {
     return new UpdateCustomerName(orderRepository);
   }
+
+  @Bean
+  public DeleteTable deleteTable(TableRepository tableRepository) {
+    return new DeleteTable(tableRepository);
+  }
 }

@@ -2,6 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.jpa;
 
 import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class LiquibaseConfig {
 
+  private static final Logger logger = LoggerFactory.getLogger(LiquibaseConfig.class);
+
   private final DataSource dataSource;
 
   public LiquibaseConfig(DataSource dataSource) {
@@ -20,7 +24,7 @@ public class LiquibaseConfig {
 
   @Bean
   public SpringLiquibase liquibase() {
-    System.out.println("[LiquibaseConfig] RESTORED: Manual Liquibase initialization starting...");
+    logger.debug("RESTORED: Manual Liquibase initialization starting...");
     SpringLiquibase liquibase = new SpringLiquibase();
     liquibase.setDataSource(dataSource);
     liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");

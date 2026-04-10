@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.CloseTable;
 import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
+import dev.thiagooliveira.tablesplit.application.order.DeleteTable;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
@@ -66,6 +67,7 @@ public class TableController {
   private final GetOrder getOrder;
   private final ProcessPayment processPayment;
   private final DeletePayment deletePayment;
+  private final DeleteTable deleteTable;
   private final UpdateTicketItemStatus updateTicketItemStatus;
 
   public TableController(
@@ -80,6 +82,7 @@ public class TableController {
       GetOrder getOrder,
       ProcessPayment processPayment,
       DeletePayment deletePayment,
+      DeleteTable deleteTable,
       UpdateTicketItemStatus updateTicketItemStatus) {
     this.transactionalContext = transactionalContext;
     this.openTable = openTable;
@@ -92,6 +95,7 @@ public class TableController {
     this.getOrder = getOrder;
     this.processPayment = processPayment;
     this.deletePayment = deletePayment;
+    this.deleteTable = deleteTable;
     this.updateTicketItemStatus = updateTicketItemStatus;
   }
 
@@ -405,6 +409,13 @@ public class TableController {
         () -> createTable.execute(context.getRestaurant().getId(), form.getCod()));
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.created"));
+    return "redirect:/tables";
+  }
+
+  @PostMapping("/{tableId}/delete")
+  public String deleteTable(@PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
+    transactionalContext.execute(() -> deleteTable.execute(tableId));
+    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.deleted"));
     return "redirect:/tables";
   }
 

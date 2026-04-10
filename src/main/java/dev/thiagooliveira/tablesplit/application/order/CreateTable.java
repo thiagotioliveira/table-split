@@ -17,13 +17,25 @@ public class CreateTable {
   }
 
   public void execute(UUID restaurantId, String cod) {
+    // Check if a non-deleted table already has this cod
     tableRepository
         .findByRestaurantIdAndCod(restaurantId, cod)
         .ifPresent(
-            table -> {
+            t -> {
               throw new TableAlreadyExists("Table already exists with cod: " + cod);
             });
 
+    // Resurrect a previously soft-deleted table if one exists
+    var existing = tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, cod);
+    if (existing.isPresent()) {
+      var table = existing.get();
+      table.restore();
+      tableRepository.save(table);
+      eventPublisher.publishEvent(new TableCreatedEvent(table));
+      return;
+    }
+
+    // Brand-new table
     Table table = new Table(UUID.randomUUID(), restaurantId, cod);
     tableRepository.save(table);
     eventPublisher.publishEvent(new TableCreatedEvent(table));

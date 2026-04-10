@@ -12,9 +12,12 @@ import org.springframework.stereotype.Component;
 public class TableRepositoryAdapter implements TableRepository {
 
   private final TableJpaRepository tableJpaRepository;
+  private final OrderJpaRepository orderJpaRepository;
 
-  public TableRepositoryAdapter(TableJpaRepository tableJpaRepository) {
+  public TableRepositoryAdapter(
+      TableJpaRepository tableJpaRepository, OrderJpaRepository orderJpaRepository) {
     this.tableJpaRepository = tableJpaRepository;
+    this.orderJpaRepository = orderJpaRepository;
   }
 
   @Override
@@ -25,19 +28,38 @@ public class TableRepositoryAdapter implements TableRepository {
   @Override
   public Optional<Table> findByRestaurantIdAndCod(UUID restaurantId, String cod) {
     return tableJpaRepository
+        .findByRestaurantIdAndCodAndDeletedAtIsNull(restaurantId, cod)
+        .map(TableEntity::toDomain);
+  }
+
+  @Override
+  public Optional<Table> findByRestaurantIdAndCodIncludingDeleted(UUID restaurantId, String cod) {
+    return tableJpaRepository
         .findByRestaurantIdAndCod(restaurantId, cod)
         .map(TableEntity::toDomain);
   }
 
   @Override
   public List<Table> findAllByRestaurantId(UUID restaurantId) {
-    return tableJpaRepository.findAllByRestaurantIdOrderByCod(restaurantId).stream()
+    return tableJpaRepository
+        .findAllByRestaurantIdAndDeletedAtIsNullOrderByCod(restaurantId)
+        .stream()
         .map(TableEntity::toDomain)
         .collect(Collectors.toList());
   }
 
   @Override
+  public boolean hasOrders(UUID tableId) {
+    return orderJpaRepository.existsByTableId(tableId);
+  }
+
+  @Override
   public void save(Table table) {
     tableJpaRepository.save(TableEntity.fromDomain(table));
+  }
+
+  @Override
+  public void delete(UUID tableId) {
+    tableJpaRepository.deleteById(tableId);
   }
 }

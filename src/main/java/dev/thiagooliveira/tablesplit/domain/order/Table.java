@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public class Table {
@@ -7,6 +8,7 @@ public class Table {
   private UUID restaurantId;
   private String cod;
   private TableStatus status;
+  private OffsetDateTime deletedAt;
 
   public Table() {}
 
@@ -47,6 +49,28 @@ public class Table {
 
   public void setStatus(TableStatus status) {
     this.status = status;
+  }
+
+  public OffsetDateTime getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(OffsetDateTime deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
+  public boolean isDeleted() {
+    return this.deletedAt != null;
+  }
+
+  public void softDelete() {
+    this.deletedAt = OffsetDateTime.now();
+    this.status = TableStatus.AVAILABLE;
+  }
+
+  public void restore() {
+    this.deletedAt = null;
+    this.status = TableStatus.AVAILABLE;
   }
 
   public void occupy() {

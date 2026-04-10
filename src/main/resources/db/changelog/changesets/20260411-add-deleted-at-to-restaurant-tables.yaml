@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-deleted-at-to-restaurant-tables
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: restaurant_tables
+            columns:
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: true
