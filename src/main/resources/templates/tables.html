@@ -1741,12 +1741,12 @@
 
         .table-status.occupied {
             background: #fef2f2;
-            color: var(--destructive);
+            color: #f59e0b;
         }
 
         .table-status.waiting {
             background: #fffbeb;
-            color: #f59e0b;
+            color: var(--destructive);
         }
 
         .table-status-dot {
@@ -1760,8 +1760,8 @@
         .status-occupied .table-status-dot { background-color: var(--destructive); }
         .status-waiting .table-status-dot { background-color: #f59e0b; }
 
-        .table-card.occupied { border-left: 4px solid var(--destructive); }
-        .table-card.waiting { border-left: 4px solid #f59e0b; }
+        .table-card.occupied { border-left: 4px solid #f59e0b; }
+        .table-card.waiting { border-left: 4px solid var(--destructive); }
         .table-card.available { border-left: 4px solid var(--green); }
 
         .order-total-row {
@@ -4870,15 +4870,23 @@
     }
 
     function addNewClientTab() {
-        const name = prompt('Nome do novo cliente:');
-        if (!name || !name.trim()) return;
-        
+        const rawName = prompt('Nome do novo cliente:');
+        if (!rawName || !rawName.trim()) return;
+
+        const trimmed = rawName.trim();
+        if (trimmed.length < 3) {
+            alert('O nome do cliente deve ter pelo menos 3 caracteres.');
+            return;
+        }
+
+        const name = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+
         if (activeClientTab && orderClients[activeClientTab]) {
             orderClients[activeClientTab].items = { ...selectedMenuItems };
         }
         
         const clientId = generateUUID();
-        orderClients[clientId] = { name: name.trim(), items: {} };
+        orderClients[clientId] = { name: name, items: {} };
         activeClientTab = clientId;
         selectedMenuItems = {};
         
@@ -4887,7 +4895,7 @@
         updateMultiClientSummary();
         
         document.querySelectorAll('.menu-item-card').forEach(card => card.classList.remove('selected'));
-        document.getElementById('currentClientName').textContent = name.trim();
+        document.getElementById('currentClientName').textContent = name;
     }
 
     function filterMenuItems(category) {

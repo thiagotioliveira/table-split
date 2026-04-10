@@ -1921,6 +1921,7 @@
         <div class="user-edit-field">
             <label>Este nome será usado para identificar seus pedidos</label>
             <input type="text" id="userNameInput" placeholder="Seu nome" maxlength="30">
+            <span id="userNameError" style="display:none; font-size:0.75rem; color:var(--destructive); margin-top:0.35rem; display:none;">O nome deve ter pelo menos 3 caracteres.</span>
         </div>
         <div class="user-edit-actions">
             <button class="user-edit-btn secondary" onclick="closeUserEditModal()">Cancelar</button>
@@ -2236,7 +2237,7 @@
 
         document.getElementById('cartFloat').style.display = totalItems > 0 ? 'block' : 'none';
         document.getElementById('cartCount').textContent = totalItems + ' ' + (totalItems === 1 ? 'item' : 'itens');
-        document.getElementById('cartTotal').textContent = formatPrice(total);
+        document.getElementById('cartTotal').textContent = formatPrice(subtotal);
 
         if (totalItems > 0) {
             document.getElementById('cartEmpty').style.display = 'none';
@@ -2489,8 +2490,18 @@
 
     // User Edit Functions
     function openUserEditModal() {
-        document.getElementById('userNameInput').value = myCustomerName;
+        const input = document.getElementById('userNameInput');
+        input.value = myCustomerName;
+        document.getElementById('userNameError').style.display = 'none';
         document.getElementById('userEditModal').classList.add('active');
+
+        // Capitalize first char in real time + clear error
+        input.oninput = function() {
+            if (this.value.length > 0) {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            }
+            document.getElementById('userNameError').style.display = 'none';
+        };
     }
 
     function closeUserEditModal() {
@@ -2498,7 +2509,17 @@
     }
 
     async function saveUserName() {
-        const newName = document.getElementById('userNameInput').value.trim();
+        const rawInput = document.getElementById('userNameInput').value.trim();
+        const newName = rawInput.charAt(0).toUpperCase() + rawInput.slice(1);
+        const errorEl = document.getElementById('userNameError');
+
+        if (newName.length < 3) {
+            errorEl.style.display = 'block';
+            document.getElementById('userNameInput').value = newName;
+            return;
+        }
+        errorEl.style.display = 'none';
+
         if (newName && newName !== myCustomerName) {
             const oldName = myCustomerName;
             
