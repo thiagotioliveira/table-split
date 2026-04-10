@@ -972,7 +972,7 @@
                                     <span class="order-time" th:classappend="${ticket.urgent ? 'urgent' : ''}" th:text="${ticket.timeAgo + (ticket.urgent ? ' ⚠️' : '')}">há 8 min</span>
                                 </div>
                             </div>
-                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0042</span>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}" th:if="${false}">#0042</span>
                         </div>
                         <div class="order-body">
                             <div class="order-items">
@@ -983,7 +983,7 @@
                                     <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
-                            <div class="order-total">
+                            <div class="order-total" th:if="${false}">
                                 <span class="order-total-label">Total</span>
                                 <span class="order-total-value" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">${currencySymbol} 0,00</span>
                             </div>
@@ -1022,7 +1022,7 @@
                                     <span class="order-time" th:text="${ticket.timeAgo}">há 8 min</span>
                                 </div>
                             </div>
-                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0042</span>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}" th:if="${false}">#0042</span>
                         </div>
                         <div class="order-body">
                             <div class="order-items">
@@ -1068,7 +1068,7 @@
                                     <span class="order-time" th:text="${ticket.timeAgo}">há 20 min</span>
                                 </div>
                             </div>
-                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0038</span>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}" th:if="${false}">#0038</span>
                         </div>
                         <div class="order-body">
                             <div class="order-items">
@@ -1114,7 +1114,7 @@
                                     <span class="order-time" th:text="${ticket.timeAgo}">há 45 min</span>
                                 </div>
                             </div>
-                            <span class="order-id" th:text="'#' + ${ticket.shortId}">#0035</span>
+                            <span class="order-id" th:text="'#' + ${ticket.shortId}" th:if="${false}">#0035</span>
                         </div>
                         <div class="order-footer">
                             <button class="btn btn-ghost btn-sm" th:attr="onclick=|viewOrder('${ticket.id}')|">
@@ -1659,8 +1659,8 @@
                             <span class="order-customer">${ticket.customerName}</span>
                             <span class="order-time ${ticket.urgent ? 'urgent' : ''}">${ticket.timeAgo}${ticket.urgent ? ' ⚠️' : ''}</span>
                         </div>
-                    </div>
-                    <span class="order-id">#${ticket.shortId}</span>
+                    </div>`/*
+                    <span class="order-id">#${ticket.shortId}</span>*/`
                 </div>
                 <div class="order-body">
                     <div class="order-items">

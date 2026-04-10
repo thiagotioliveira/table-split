@@ -4183,11 +4183,11 @@
                      class="menu-item-card" 
                      th:data-id="${item.id}"
                      th:data-category="${item.categoryId}"
-                     th:data-price="${item.promotion != null ? #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'POINT', 2, 'NONE') : #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'NONE')}"
-                     th:data-original-price="${#numbers.formatDecimal(item.price, 1, 'POINT', 2, 'NONE')}"
+                     th:data-price="${item.promotion != null ? #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'NONE', 2, 'POINT') : #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'POINT')}"
+                     th:data-original-price="${#numbers.formatDecimal(item.price, 1, 'NONE', 2, 'POINT')}"
                      th:data-promotion-id="${item.promotion != null ? item.promotion.promotionId : ''}"
                      th:data-discount-type="${item.promotion != null ? item.promotion.discountType : ''}"
-                     th:data-discount-value="${item.promotion != null ? #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'NONE') : ''}"
+                     th:data-discount-value="${item.promotion != null ? #numbers.formatDecimal(item.promotion.discountValue, 1, 'NONE', 2, 'POINT') : ''}"
                      th:attr="onclick=|toggleMenuItem(this)|">
                     <div th:if="${item.promotion != null}" class="promo-badge" 
                          th:text="${item.promotion.discountType == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue, 0, 0) + '% OFF') : (item.promotion.discountType == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'COMMA') : 'PROMO')}">
@@ -4958,11 +4958,21 @@
         }
 
         container.style.display = 'block';
-        list.innerHTML = items.map(([id, item]) => `
+        list.innerHTML = items.map(([id, item]) => {
+            const effectivePrice = item.price; // already promotional price if promo exists
+            const subtotal = effectivePrice * item.qty;
+            const priceHtml = item.originalPrice && item.promotionId
+                ? `<div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                       <span style="text-decoration: line-through; color: var(--muted); font-size: 0.8rem;">${currencySymbol} ${(item.originalPrice * item.qty).toFixed(2).replace('.', ',')}</span>
+                       <span style="color: var(--green); font-weight: 700;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
+                   </div>`
+                : `<div style="color: var(--primary); font-weight: 600;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</div>`;
+
+            return `
             <div class="selected-item-row">
                 <div style="flex: 1;">
                     <strong>${item.name}</strong>
-                    <div style="color: var(--primary); font-weight: 600;">${currencySymbol} ${(item.price * item.qty).toFixed(2).replace('.', ',')}</div>
+                    ${priceHtml}
                     <input type="text" class="form-input" placeholder="Observação (ex: sem cebola)"
                         value="${item.note}" onchange="updateItemNote('${id}', this.value)">
                 </div>
@@ -4972,7 +4982,8 @@
                     <button class="qty-btn" onclick="updateItemQty('${id}', 1)">+</button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function updateItemQty(id, delta) {
@@ -5023,12 +5034,17 @@
             let clientTotal = 0;
             
             const itemsHtml = items.map(([_, item]) => {
-                const subtotal = item.price * item.qty;
+                const effectivePrice = item.price; // already promotional price if promo exists
+                const subtotal = effectivePrice * item.qty;
                 clientTotal += subtotal;
+                const priceHtml = item.originalPrice && item.promotionId
+                    ? `<span style="text-decoration: line-through; color: var(--muted); font-size: 0.75rem; margin-right: 0.25rem;">${currencySymbol} ${(item.originalPrice * item.qty).toFixed(2).replace('.', ',')}</span>
+                       <span style="color: var(--green); font-weight: 700;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`
+                    : `<span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`;
                 return `
                     <div class="summary-client-item">
                         <span>${item.qty}x ${item.name}</span>
-                        <span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
+                        <span style="display: flex; align-items: center; gap: 0.2rem;">${priceHtml}</span>
                     </div>
                 `;
             }).join('');
