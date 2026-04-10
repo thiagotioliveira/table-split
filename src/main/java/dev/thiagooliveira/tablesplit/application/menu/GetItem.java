@@ -24,95 +24,69 @@ public class GetItem {
   }
 
   public List<Item> execute(UUID restaurantId, List<Language> languages) {
-    return this.execute(restaurantId, languages, false);
+    return execute(restaurantId, languages, false);
   }
 
-  //  public Optional<Item> findById(UUID itemId) {
-  //    return this.itemRepository.findById(itemId);
-  //  }
+  public List<Item> execute(UUID restaurantId, List<Language> languages, boolean includePromotions) {
+    var items = itemRepository.findAll(restaurantId, languages);
+    if (includePromotions) {
+      var activePromos = activePromotions(restaurantId);
+      items.forEach(item -> applyBestPromotion(item, activePromos));
+    }
+    return items;
+  }
 
   public Optional<Item> findByIdIncludingDeleted(UUID itemId, boolean includePromotions) {
-    var itemOpt = this.itemRepository.findByIdIncludingDeleted(itemId);
-
+    var itemOpt = itemRepository.findByIdIncludingDeleted(itemId);
     if (itemOpt.isPresent() && includePromotions) {
       var item = itemOpt.get();
-      var now = LocalDateTime.now();
-      var today = now.getDayOfWeek();
-      var currentTime = now.toLocalTime();
-
-      var activePromos =
-          promotionRepository.findByRestaurantId(item.getRestaurantId()).stream()
-              .filter(Promotion::isActive)
-              .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
-              .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
-              .filter(
-                  p ->
-                      p.getDaysOfWeek() == null
-                          || p.getDaysOfWeek().isEmpty()
-                          || p.getDaysOfWeek().contains(today))
-              .filter(
-                  p -> {
-                    if (p.getStartTime() == null || p.getEndTime() == null) return true;
-                    return !currentTime.isBefore(p.getStartTime())
-                        && !currentTime.isAfter(p.getEndTime());
-                  })
-              .toList();
-
-      findBestPromotion(item, activePromos)
-          .ifPresent(
-              p -> {
-                item.setPromotion(
-                    new Item.PromotionInfo(
-                        p.getId(),
-                        calculatePromotionalPrice(item.getPrice(), p),
-                        p.getDiscountType(),
-                        p.getDiscountValue()));
-              });
+      var activePromos = activePromotions(item.getRestaurantId());
+      applyBestPromotion(item, activePromos);
     }
-
     return itemOpt;
   }
 
-  public List<Item> execute(
-      UUID restaurantId, List<Language> languages, boolean includePromotions) {
-    var items = this.itemRepository.findAll(restaurantId, languages);
-    if (includePromotions) {
-      var now = LocalDateTime.now();
-      var today = now.getDayOfWeek();
-      var currentTime = now.toLocalTime();
+  public long count(UUID restaurantId) {
+    return itemRepository.count(restaurantId);
+  }
 
-      var activePromos =
-          promotionRepository.findByRestaurantId(restaurantId).stream()
-              .filter(Promotion::isActive)
-              .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
-              .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
-              .filter(
-                  p ->
-                      p.getDaysOfWeek() == null
-                          || p.getDaysOfWeek().isEmpty()
-                          || p.getDaysOfWeek().contains(today))
-              .filter(
-                  p -> {
-                    if (p.getStartTime() == null || p.getEndTime() == null) return true;
-                    return !currentTime.isBefore(p.getStartTime())
-                        && !currentTime.isAfter(p.getEndTime());
-                  })
-              .toList();
+  public long countActive(UUID restaurantId) {
+    return itemRepository.countActive(restaurantId);
+  }
 
-      for (var item : items) {
-        findBestPromotion(item, activePromos)
-            .ifPresent(
-                p -> {
-                  item.setPromotion(
-                      new Item.PromotionInfo(
-                          p.getId(),
-                          calculatePromotionalPrice(item.getPrice(), p),
-                          p.getDiscountType(),
-                          p.getDiscountValue()));
-                });
-      }
-    }
-    return items;
+  public long countInactive(UUID restaurantId) {
+    return itemRepository.countInactive(restaurantId);
+  }
+
+  // ── Private helpers ──────────────────────────────────────────────────────────
+
+  private List<Promotion> activePromotions(UUID restaurantId) {
+    var now = LocalDateTime.now();
+    var today = now.getDayOfWeek();
+    var currentTime = now.toLocalTime();
+
+    return promotionRepository.findByRestaurantId(restaurantId).stream()
+        .filter(Promotion::isActive)
+        .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
+        .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
+        .filter(p -> p.getDaysOfWeek() == null
+            || p.getDaysOfWeek().isEmpty()
+            || p.getDaysOfWeek().contains(today))
+        .filter(p -> {
+          if (p.getStartTime() == null || p.getEndTime() == null) return true;
+          return !currentTime.isBefore(p.getStartTime()) && !currentTime.isAfter(p.getEndTime());
+        })
+        .toList();
+  }
+
+  private void applyBestPromotion(Item item, List<Promotion> activePromos) {
+    findBestPromotion(item, activePromos)
+        .ifPresent(p -> item.setPromotion(
+            new Item.PromotionInfo(
+                p.getId(),
+                calculatePromotionalPrice(item.getPrice(), p),
+                p.getDiscountType(),
+                p.getDiscountValue())));
   }
 
   private Optional<Promotion> findBestPromotion(Item item, List<Promotion> activePromos) {
@@ -122,40 +96,24 @@ public class GetItem {
   }
 
   private boolean isApplicable(Item item, Promotion p) {
-    if (p.getApplyType() == ApplyType.ALL_MENU) return true;
-    if (p.getApplyType() == ApplyType.CATEGORY) {
-      return item.getCategory() != null
+    return switch (p.getApplyType()) {
+      case ALL_MENU -> true;
+      case CATEGORY -> item.getCategory() != null
           && p.getApplicableIds() != null
           && p.getApplicableIds().contains(item.getCategory().getId().toString());
-    }
-    if (p.getApplyType() == ApplyType.ITEM) {
-      return p.getApplicableIds() != null && p.getApplicableIds().contains(item.getId().toString());
-    }
-    return false;
+      case ITEM -> p.getApplicableIds() != null
+          && p.getApplicableIds().contains(item.getId().toString());
+    };
   }
 
   private BigDecimal calculatePromotionalPrice(BigDecimal originalPrice, Promotion p) {
     if (originalPrice == null) return BigDecimal.ZERO;
     if (p.getDiscountType() == DiscountType.PERCENTAGE) {
-      var discount =
-          originalPrice
-              .multiply(p.getDiscountValue())
-              .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+      var discount = originalPrice
+          .multiply(p.getDiscountValue())
+          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
       return originalPrice.subtract(discount);
-    } else {
-      return originalPrice.subtract(p.getDiscountValue()).max(BigDecimal.ZERO);
     }
-  }
-
-  public long count(UUID restaurantId) {
-    return this.itemRepository.count(restaurantId);
-  }
-
-  public long countActive(UUID restaurantId) {
-    return this.itemRepository.countActive(restaurantId);
-  }
-
-  public long countInactive(UUID restaurantId) {
-    return this.itemRepository.countInactive(restaurantId);
+    return originalPrice.subtract(p.getDiscountValue()).max(BigDecimal.ZERO);
   }
 }
