@@ -45,5 +45,8 @@ public class ItemModel {
   }
 
   public record PromotionModel(
-      BigDecimal promotionalPrice, String discountType, BigDecimal discountValue) {}
+      UUID promotionId,
+      BigDecimal promotionalPrice,
+      String discountType,
+      BigDecimal discountValue) {}
 }

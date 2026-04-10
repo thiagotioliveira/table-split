@@ -26,7 +26,7 @@ public class TicketItemEntity {
   @Column(nullable = false)
   private int quantity;
 
-  @Column(nullable = false)
+  @Column(nullable = false, precision = 19, scale = 2)
   private BigDecimal unitPrice;
 
   @Column private String note;
@@ -34,6 +34,17 @@ public class TicketItemEntity {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private TicketStatus status;
+
+  // Promotion fields - snapshot of promotion at time of order
+  @Column private UUID promotionId;
+
+  @Column(precision = 19, scale = 2)
+  private BigDecimal originalPrice;
+
+  @Column private String discountType;
+
+  @Column(precision = 19, scale = 2)
+  private BigDecimal discountValue;
 
   public TicketItemEntity() {}
 
@@ -47,6 +58,14 @@ public class TicketItemEntity {
     domain.setUnitPrice(this.unitPrice);
     domain.setNote(this.note);
     domain.setStatus(this.status);
+
+    // Restore promotion snapshot if exists
+    if (this.promotionId != null) {
+      domain.setPromotionSnapshot(
+          new TicketItem.PromotionSnapshot(
+              this.promotionId, this.originalPrice, this.discountType, this.discountValue));
+    }
+
     return domain;
   }
 
@@ -60,6 +79,16 @@ public class TicketItemEntity {
     entity.setUnitPrice(domain.getUnitPrice());
     entity.setNote(domain.getNote());
     entity.setStatus(domain.getStatus());
+
+    // Save promotion snapshot if exists
+    if (domain.getPromotionSnapshot() != null) {
+      var snapshot = domain.getPromotionSnapshot();
+      entity.setPromotionId(snapshot.promotionId());
+      entity.setOriginalPrice(snapshot.originalPrice());
+      entity.setDiscountType(snapshot.discountType());
+      entity.setDiscountValue(snapshot.discountValue());
+    }
+
     return entity;
   }
 
@@ -125,5 +154,37 @@ public class TicketItemEntity {
 
   public void setStatus(TicketStatus status) {
     this.status = status;
+  }
+
+  public UUID getPromotionId() {
+    return promotionId;
+  }
+
+  public void setPromotionId(UUID promotionId) {
+    this.promotionId = promotionId;
+  }
+
+  public BigDecimal getOriginalPrice() {
+    return originalPrice;
+  }
+
+  public void setOriginalPrice(BigDecimal originalPrice) {
+    this.originalPrice = originalPrice;
+  }
+
+  public String getDiscountType() {
+    return discountType;
+  }
+
+  public void setDiscountType(String discountType) {
+    this.discountType = discountType;
+  }
+
+  public BigDecimal getDiscountValue() {
+    return discountValue;
+  }
+
+  public void setDiscountValue(BigDecimal discountValue) {
+    this.discountValue = discountValue;
   }
 }

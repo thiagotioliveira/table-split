@@ -16,6 +16,7 @@ public class RestaurantModel {
   private final List<RestaurantImageModel> images;
   private final List<Language> customerLanguages;
   private final Language defaultLanguage;
+  private final double serviceFee;
 
   public RestaurantModel(Restaurant restaurant) {
     this.name = restaurant.getName();
@@ -36,6 +37,7 @@ public class RestaurantModel {
     this.customerLanguages =
         restaurant.getCustomerLanguages().stream().map(Language::fromDomain).toList();
     this.defaultLanguage = Language.fromDomain(restaurant.getDefaultLanguage());
+    this.serviceFee = restaurant.getServiceFee() / 100d;
   }
 
   public String getSlug() {
@@ -64,6 +66,10 @@ public class RestaurantModel {
 
   public List<RestaurantImageModel> getCoverImages() {
     return images.stream().filter(RestaurantImageModel::isCover).toList();
+  }
+
+  public double getServiceFee() {
+    return serviceFee;
   }
 
   public Currency getCurrency() {

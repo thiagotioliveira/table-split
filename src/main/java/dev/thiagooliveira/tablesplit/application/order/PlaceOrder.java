@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
@@ -86,6 +87,33 @@ public class PlaceOrder {
 
           TicketItem ticketItem =
               new TicketItem(item, itemRequest.getQuantity(), customerId, itemRequest.getNote());
+
+          if (itemRequest.getPromotionId() != null) {
+            ticketItem.setPromotionSnapshot(
+                new TicketItem.PromotionSnapshot(
+                    itemRequest.getPromotionId(),
+                    item.getPrice(),
+                    itemRequest.getDiscountType(),
+                    itemRequest.getDiscountValue()));
+
+            java.math.BigDecimal originalPrice = item.getPrice();
+            if (originalPrice != null) {
+              if (DiscountType.PERCENTAGE.name().equals(itemRequest.getDiscountType())) {
+                java.math.BigDecimal discount =
+                    originalPrice
+                        .multiply(itemRequest.getDiscountValue())
+                        .divide(
+                            java.math.BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                ticketItem.setUnitPrice(originalPrice.subtract(discount));
+              } else if (DiscountType.FIXED_VALUE.name().equals(itemRequest.getDiscountType())) {
+                ticketItem.setUnitPrice(
+                    originalPrice
+                        .subtract(itemRequest.getDiscountValue())
+                        .max(java.math.BigDecimal.ZERO));
+              }
+            }
+          }
+
           ticket.getItems().add(ticketItem);
         }
         order.addTicket(ticket);

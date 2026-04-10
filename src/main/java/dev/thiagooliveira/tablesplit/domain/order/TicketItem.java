@@ -15,6 +15,7 @@ public class TicketItem {
   private BigDecimal unitPrice;
   private String note;
   private TicketStatus status = TicketStatus.PENDING;
+  private PromotionSnapshot promotionSnapshot;
 
   public TicketItem() {}
 
@@ -24,8 +25,18 @@ public class TicketItem {
     this.name = item.getName();
     this.customerId = customerId;
     this.quantity = quantity;
-    this.unitPrice = item.getPrice();
+    this.unitPrice = item.getEffectivePrice();
     this.note = note;
+
+    // Capture promotion snapshot if item has promotion
+    if (item.getPromotion() != null) {
+      this.promotionSnapshot =
+          new PromotionSnapshot(
+              item.getPromotion().promotionId(),
+              item.getPrice(), // original price
+              item.getPromotion().discountType().name(),
+              item.getPromotion().discountValue());
+    }
   }
 
   public UUID getId() {
@@ -95,4 +106,15 @@ public class TicketItem {
   public void setStatus(TicketStatus status) {
     this.status = status;
   }
+
+  public PromotionSnapshot getPromotionSnapshot() {
+    return promotionSnapshot;
+  }
+
+  public void setPromotionSnapshot(PromotionSnapshot promotionSnapshot) {
+    this.promotionSnapshot = promotionSnapshot;
+  }
+
+  public record PromotionSnapshot(
+      UUID promotionId, BigDecimal originalPrice, String discountType, BigDecimal discountValue) {}
 }

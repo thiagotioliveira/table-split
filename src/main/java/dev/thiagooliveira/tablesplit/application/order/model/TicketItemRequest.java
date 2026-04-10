@@ -7,6 +7,10 @@ public class TicketItemRequest {
   private UUID customerId;
   private int quantity;
   private String note;
+  private UUID promotionId;
+  private java.math.BigDecimal originalPrice;
+  private String discountType;
+  private java.math.BigDecimal discountValue;
 
   public TicketItemRequest() {}
 
@@ -51,5 +55,37 @@ public class TicketItemRequest {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public UUID getPromotionId() {
+    return promotionId;
+  }
+
+  public void setPromotionId(UUID promotionId) {
+    this.promotionId = promotionId;
+  }
+
+  public java.math.BigDecimal getOriginalPrice() {
+    return originalPrice;
+  }
+
+  public void setOriginalPrice(java.math.BigDecimal originalPrice) {
+    this.originalPrice = originalPrice;
+  }
+
+  public String getDiscountType() {
+    return discountType;
+  }
+
+  public void setDiscountType(String discountType) {
+    this.discountType = discountType;
+  }
+
+  public java.math.BigDecimal getDiscountValue() {
+    return discountValue;
+  }
+
+  public void setDiscountValue(java.math.BigDecimal discountValue) {
+    this.discountValue = discountValue;
   }
 }

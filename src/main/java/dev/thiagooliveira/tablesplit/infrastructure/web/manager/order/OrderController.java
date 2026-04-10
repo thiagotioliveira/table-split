@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
+import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -190,7 +191,7 @@ public class OrderController {
                 item -> {
                   String itemName =
                       getItem
-                          .findByIdIncludingDeleted(item.getItemId())
+                          .findByIdIncludingDeleted(item.getItemId(), false)
                           .map(
                               foundItem ->
                                   foundItem
@@ -213,7 +214,8 @@ public class OrderController {
                       item.getNote(),
                       item.getStatus().name(),
                       item.getStatus().getCssClass(),
-                      ticket.getCreatedAt());
+                      ticket.getCreatedAt(),
+                      getItemPromotionInfo(item));
                 })
             .toList();
 
@@ -234,5 +236,17 @@ public class OrderController {
         itemModels,
         ticket.calculateTotal(),
         urgent);
+  }
+
+  private TicketItemModel.PromotionInfo getItemPromotionInfo(TicketItem ticketItem) {
+    if (ticketItem.getPromotionSnapshot() != null) {
+      var snapshot = ticketItem.getPromotionSnapshot();
+      return new TicketItemModel.PromotionInfo(
+          snapshot.originalPrice(),
+          ticketItem.getUnitPrice(), // promotional price that was actually charged
+          snapshot.discountType(),
+          snapshot.discountValue());
+    }
+    return null;
   }
 }

@@ -923,3 +923,7 @@ databaseChangeLog:
       file: db/changelog/changesets/20260409-add-deleted-at-to-items.yaml
   - include:
       file: db/changelog/changesets/20260410-remove-name-from-ticket-items.yaml
+  - include:
+      file: db/changelog/changesets/20260411-add-promotion-fields-to-ticket-items.yaml
+  - include:
+      file: db/changelog/changesets/20260411-fix-ticket-items-unit-price-scale.yaml

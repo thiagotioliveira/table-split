@@ -6,7 +6,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model.Image
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemModel {
@@ -32,7 +31,7 @@ public class ItemModel {
     if (item.getPromotion() != null) {
       this.promotion =
           new PromotionInfo(
-              item.getPromotion().promotionId(),
+              item.getPromotion().promotionId().toString(),
               item.getPromotion().promotionalPrice(),
               item.getPromotion().discountType().name(),
               item.getPromotion().discountValue());
@@ -93,13 +92,13 @@ public class ItemModel {
   }
 
   public static class PromotionInfo {
-    private final UUID promotionId;
+    private final String promotionId;
     private final BigDecimal promotionalPrice;
     private final String discountType;
     private final BigDecimal discountValue;
 
     public PromotionInfo(
-        UUID promotionId,
+        String promotionId,
         BigDecimal promotionalPrice,
         String discountType,
         BigDecimal discountValue) {
@@ -109,7 +108,7 @@ public class ItemModel {
       this.discountValue = discountValue;
     }
 
-    public UUID getPromotionId() {
+    public String getPromotionId() {
       return promotionId;
     }
 

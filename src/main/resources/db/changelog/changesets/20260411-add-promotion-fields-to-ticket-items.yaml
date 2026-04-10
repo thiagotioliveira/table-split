@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-promotion-fields-to-ticket-items
+      author: system
+      changes:
+        - addColumn:
+            tableName: ticket_items
+            columns:
+              - column:
+                  name: promotion_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: original_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: discount_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: discount_value
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: ticket_items
+            baseColumnNames: promotion_id
+            referencedTableName: promotions
+            referencedColumnNames: id
+            constraintName: fk_ticket_items_promotion
+            onDelete: SET NULL

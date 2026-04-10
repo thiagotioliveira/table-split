@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ public class TicketItemModel {
   private final String id;
   private final String customerId;
   private final String customerName;
-  private final String name;
+  private final java.util.Map<String, String> name;
   private final int quantity;
   private final BigDecimal unitPrice;
   private final BigDecimal totalPrice;
@@ -22,12 +23,17 @@ public class TicketItemModel {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private final ZonedDateTime createdAt;
 
+  private final PromotionSnapshotModel promotionSnapshot;
+
   public TicketItemModel(TicketItem item, String customerName, ZonedDateTime createdAt) {
     this.id = item.getId().toString();
     this.customerId = item.getCustomerId().toString();
     this.customerName = customerName;
-    this.name =
-        item.getName().get(Language.PT); // Default to PT or should use a preferred language?
+    this.name = convertMap(item.getName());
+    if (this.name.isEmpty()) {
+      this.name.put("pt", "Item");
+      this.name.put("en", "Item");
+    }
     this.quantity = item.getQuantity();
     this.unitPrice = item.getUnitPrice();
     this.totalPrice = item.getTotalPrice();
@@ -36,6 +42,10 @@ public class TicketItemModel {
     this.statusLabel = item.getStatus().getLabel();
     this.statusClass = item.getStatus().getCssClass();
     this.createdAt = createdAt;
+    this.promotionSnapshot =
+        item.getPromotionSnapshot() != null
+            ? new PromotionSnapshotModel(item.getPromotionSnapshot())
+            : null;
   }
 
   public String getId() {
@@ -50,8 +60,16 @@ public class TicketItemModel {
     return customerName;
   }
 
-  public String getName() {
+  public java.util.Map<String, String> getName() {
     return name;
+  }
+
+  private static java.util.Map<String, String> convertMap(java.util.Map<Language, String> map) {
+    if (map == null) return java.util.Map.of();
+    return map.entrySet().stream()
+        .collect(
+            java.util.stream.Collectors.toMap(
+                entry -> entry.getKey().name().toLowerCase(), java.util.Map.Entry::getValue));
   }
 
   public int getQuantity() {
@@ -84,5 +102,43 @@ public class TicketItemModel {
 
   public ZonedDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public PromotionSnapshotModel getPromotionSnapshot() {
+    return promotionSnapshot;
+  }
+
+  public static class PromotionSnapshotModel {
+    private final String promotionId;
+    private final BigDecimal originalPrice;
+    private final String discountType;
+    private final BigDecimal discountValue;
+
+    public PromotionSnapshotModel(TicketItem.PromotionSnapshot snapshot) {
+      this.promotionId = snapshot.promotionId() != null ? snapshot.promotionId().toString() : null;
+      this.originalPrice = snapshot.originalPrice();
+      this.discountType = snapshot.discountType();
+      this.discountValue = snapshot.discountValue();
+    }
+
+    @JsonProperty("promotionId")
+    public String getPromotionId() {
+      return promotionId;
+    }
+
+    @JsonProperty("originalPrice")
+    public BigDecimal getOriginalPrice() {
+      return originalPrice;
+    }
+
+    @JsonProperty("discountType")
+    public String getDiscountType() {
+      return discountType;
+    }
+
+    @JsonProperty("discountValue")
+    public BigDecimal getDiscountValue() {
+      return discountValue;
+    }
   }
 }

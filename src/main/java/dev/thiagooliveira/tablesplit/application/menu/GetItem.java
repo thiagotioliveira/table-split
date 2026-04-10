@@ -27,12 +27,50 @@ public class GetItem {
     return this.execute(restaurantId, languages, false);
   }
 
-  public Optional<Item> findById(UUID itemId) {
-    return this.itemRepository.findById(itemId);
-  }
+  //  public Optional<Item> findById(UUID itemId) {
+  //    return this.itemRepository.findById(itemId);
+  //  }
 
-  public Optional<Item> findByIdIncludingDeleted(UUID itemId) {
-    return this.itemRepository.findByIdIncludingDeleted(itemId);
+  public Optional<Item> findByIdIncludingDeleted(UUID itemId, boolean includePromotions) {
+    var itemOpt = this.itemRepository.findByIdIncludingDeleted(itemId);
+
+    if (itemOpt.isPresent() && includePromotions) {
+      var item = itemOpt.get();
+      var now = LocalDateTime.now();
+      var today = now.getDayOfWeek();
+      var currentTime = now.toLocalTime();
+
+      var activePromos =
+          promotionRepository.findByRestaurantId(item.getRestaurantId()).stream()
+              .filter(Promotion::isActive)
+              .filter(p -> p.getStartDate() == null || p.getStartDate().isBefore(now))
+              .filter(p -> p.getEndDate() == null || p.getEndDate().isAfter(now))
+              .filter(
+                  p ->
+                      p.getDaysOfWeek() == null
+                          || p.getDaysOfWeek().isEmpty()
+                          || p.getDaysOfWeek().contains(today))
+              .filter(
+                  p -> {
+                    if (p.getStartTime() == null || p.getEndTime() == null) return true;
+                    return !currentTime.isBefore(p.getStartTime())
+                        && !currentTime.isAfter(p.getEndTime());
+                  })
+              .toList();
+
+      findBestPromotion(item, activePromos)
+          .ifPresent(
+              p -> {
+                item.setPromotion(
+                    new Item.PromotionInfo(
+                        p.getId(),
+                        calculatePromotionalPrice(item.getPrice(), p),
+                        p.getDiscountType(),
+                        p.getDiscountValue()));
+              });
+    }
+
+    return itemOpt;
   }
 
   public List<Item> execute(

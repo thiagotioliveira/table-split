@@ -1938,7 +1938,7 @@
     };
     // Current language
     let currentLang = /*[[${#locale.language}]]*/'pt';
-
+    const SERVICE_FEE = /*[[${customerMenu.restaurant.serviceFee}]]*/0.10;
     const allTableItems = /*[[${customerMenu.ticketItems}]]*/[];
     const hasTable = /*[[${customerMenu.hasTable()}]]*/false;
     // Customers already at the table — comes from activeOrder.customers (backend)
@@ -1965,7 +1965,6 @@
     let modalQty = 1;
     let currentSlide = 0;
     let slideInterval;
-    const SERVICE_FEE = 0.10;
 
     // Customer identity from localStorage
     const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
@@ -2070,8 +2069,9 @@
 
     // Helper to get item text in current language
     function getItemText(item, field) {
+        if (!item || !item[field]) return '';
         if (typeof item[field] === 'string') return item[field];
-        return item[field][currentLang] || item[field]['pt'];
+        return (item[field][currentLang] || item[field]['pt'] || '');
     }
 
     // Language selector functions
@@ -2222,7 +2222,7 @@
     }
 
     function formatPrice(value) {
-        if (value === undefined || value === null) return currencySymbol + ' 0,00';
+        if (value === undefined || value === null || isNaN(parseFloat(value))) return currencySymbol + ' 0,00';
         return currencySymbol + ' ' + parseFloat(value).toFixed(2).replace('.', ',');
     }
 
@@ -2307,7 +2307,10 @@
                     itemId: item.id,
                     quantity: item.qty,
                     customerId: item.clientId || myCustomerId,
-                    note: ''
+                    note: '',
+                    promotionId: item.promotion ? item.promotion.promotionId : null,
+                    discountType: item.promotion ? item.promotion.discountType : null,
+                    discountValue: item.promotion ? item.promotion.discountValue : null
                 }))
             }]
         };
@@ -2331,14 +2334,20 @@
                         ...item, 
                         customerId: cid, 
                         customerName: cname,
-                        name: getItemText(item, 'name'),
+                        name: item.name, // item.name is already a map in ItemModel
                         quantity: item.qty,
-                        unitPrice: item.price, 
-                        totalPrice: item.price * item.qty,
+                        unitPrice: item.promotion ? item.promotion.promotionalPrice : item.price, 
+                        totalPrice: (item.promotion ? item.promotion.promotionalPrice : item.price) * item.qty,
                         status: 'sent', 
                         statusLabel: 'Pendente', 
                         statusClass: 'sent', 
-                        time: new Date() 
+                        time: new Date(),
+                        promotionSnapshot: item.promotion ? {
+                            promotionId: item.promotion.promotionId,
+                            originalPrice: item.price,
+                            discountType: item.promotion.discountType,
+                            discountValue: item.promotion.discountValue
+                        } : null
                     };
                     
                     if (cid && myCustomerId && String(cid).toLowerCase() === String(myCustomerId).toLowerCase()) {
@@ -2404,7 +2413,23 @@
           </div>
           <div class="order-item-details">
             <span class="order-item-qty">${order.quantity}x</span>
-            <span class="order-item-price">${formatPrice(order.totalPrice)}</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="text-align: right;">
+                    ${order.promotionSnapshot ? `
+                        <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
+                            ${formatPrice(order.promotionSnapshot.originalPrice * order.quantity)}
+                        </div>
+                    ` : ''}
+                    <span class="order-item-price" style="${order.promotionSnapshot ? 'color: var(--green); font-weight: 700;' : ''}">
+                        ${formatPrice(order.totalPrice)}
+                    </span>
+                </div>
+                ${order.promotionSnapshot ? `
+                    <div class="promo-badge" style="position: relative !important; width: fit-content; margin-top: 0.2rem; top: 0 !important; right: 0 !important; font-size: 0.65rem; background: var(--destructive); color: white; padding: 0.1rem 0.4rem; border-radius: 6px; font-weight: 700;">
+                        ${order.promotionSnapshot.discountType && order.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(order.promotionSnapshot.discountValue || 0) + '% OFF') : ('-' + formatPrice(order.promotionSnapshot.discountValue || 0))}
+                    </div>
+                ` : ''}
+            </div>
           </div>
         </div>
       `).join('');

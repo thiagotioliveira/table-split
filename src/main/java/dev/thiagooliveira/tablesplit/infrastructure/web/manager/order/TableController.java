@@ -142,6 +142,7 @@ public class TableController {
                         i.getCategory().getId(),
                         i.getPromotion() != null
                             ? new ItemModel.PromotionModel(
+                                i.getPromotion().promotionId(),
                                 i.getPromotion().promotionalPrice(),
                                 i.getPromotion().discountType().name(),
                                 i.getPromotion().discountValue())
@@ -192,7 +193,8 @@ public class TableController {
                                     item.getNote(),
                                     item.getStatus().getLabel(),
                                     item.getStatus().getCssClass(),
-                                    t.getCreatedAt())))
+                                    t.getCreatedAt(),
+                                    getItemPromotionInfo(item))))
             .forEach(
                 item -> {
                   CustomerModel customer =
@@ -369,7 +371,8 @@ public class TableController {
                                     item.getNote(),
                                     item.getStatus().getLabel(),
                                     item.getStatus().getCssClass(),
-                                    t.getCreatedAt())))
+                                    t.getCreatedAt(),
+                                    getItemPromotionInfo(item))))
             .toList(),
         hist.getPayments().stream()
             .map(
@@ -541,7 +544,7 @@ public class TableController {
 
   private String getItemName(UUID itemId) {
     return getItem
-        .findByIdIncludingDeleted(itemId)
+        .findByIdIncludingDeleted(itemId, false)
         .map(
             item ->
                 item.getName()
@@ -551,5 +554,17 @@ public class TableController {
                             ? "Item"
                             : item.getName().values().iterator().next()))
         .orElse("Item não encontrado");
+  }
+
+  private TicketItemModel.PromotionInfo getItemPromotionInfo(TicketItem ticketItem) {
+    if (ticketItem.getPromotionSnapshot() != null) {
+      var snapshot = ticketItem.getPromotionSnapshot();
+      return new TicketItemModel.PromotionInfo(
+          snapshot.originalPrice(),
+          ticketItem.getUnitPrice(), // promotional price that was actually charged
+          snapshot.discountType(),
+          snapshot.discountValue());
+    }
+    return null;
   }
 }

@@ -36,12 +36,19 @@ public class CustomerMenuModel {
               t ->
                   t.getItems()
                       .forEach(
-                          item ->
-                              this.ticketItems.add(
-                                  new TicketItemModel(
-                                      item,
-                                      activeOrder.getCustomerName(item.getCustomerId()),
-                                      t.getCreatedAt()))));
+                          item -> {
+                            if (item.getName() == null || item.getName().isEmpty()) {
+                              items.stream()
+                                  .filter(i -> i.getId().equals(item.getItemId()))
+                                  .findFirst()
+                                  .ifPresent(i -> item.setName(i.getName()));
+                            }
+                            this.ticketItems.add(
+                                new TicketItemModel(
+                                    item,
+                                    activeOrder.getCustomerName(item.getCustomerId()),
+                                    t.getCreatedAt()));
+                          }));
       activeOrder.getCustomers().stream().map(OrderCustomerModel::new).forEach(this.customers::add);
       activeOrder.getPayments().stream().map(PaymentModel::new).forEach(this.payments::add);
     }

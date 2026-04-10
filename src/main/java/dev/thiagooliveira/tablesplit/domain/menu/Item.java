@@ -81,6 +81,10 @@ public class Item {
     this.promotion = promotion;
   }
 
+  public BigDecimal getEffectivePrice() {
+    return promotion != null ? promotion.promotionalPrice() : price;
+  }
+
   public List<ItemTag> getTags() {
     return tags;
   }

@@ -31,7 +31,7 @@
             margin-bottom: 1.5rem;
             max-height: 300px;
             overflow-y: auto;
-            padding: 0.5rem;
+            padding: 1rem;
         }
 
         .menu-item-card {
@@ -3249,22 +3249,38 @@
                                                 <span class="order-item-note" th:if="${item.note != null && !item.note.empty}" th:text="${item.note}">Nota</span>
                                             </div>
                                         </div>
-                                        <div style="display: flex; align-items: center;">
-                                            <span class="order-item-price" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
-                                             <span class="order-item-status" th:classappend="${item.statusClass}" th:text="${item.status}">Pendente</span>
-                                            <div class="order-item-actions">
-                                                <button th:if="${item.status != 'Entregue'}" class="order-item-action deliver" title="Marcar como Entregue" 
-                                                        th:attr="onclick=|deliverOrderItem('${item.id}', '${item.name}')|">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                                </button>
-                                                <button th:if="${item.status == 'Entregue'}" class="order-item-action reset" title="Voltar para Pendente" 
-                                                        th:attr="onclick=|resetToPending('${item.id}', '${item.name}')|">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                                                </button>
-                                                <button th:if="${item.status != 'Cancelado'}" class="order-item-action cancel" title="Cancelar" 
-                                                        th:attr="onclick=|openCancelItemModal('${item.id}', '${item.name}', ${item.quantity}, ${item.unitPrice})|">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                                </button>
+                                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                                            <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
+                                                <div th:if="${item.promotion != null}" class="promo-badge"
+                                                     th:text="${item.promotion.discountType() == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue(), 0, 0) + '% OFF') : (item.promotion.discountType() == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue(), 1, 'POINT', 2, 'COMMA') : 'PROMO')}"
+                                                     style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
+                                                    PROMO
+                                                </div>
+                                                <div style="text-align: right;">
+                                                    <div th:if="${item.promotion != null}" style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;" 
+                                                         th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotion.originalPrice() * item.quantity, 1, 'POINT', 2, 'COMMA')}">Original</div>
+                                                    <span class="order-item-price" 
+                                                          th:class="${item.promotion != null ? 'order-item-price' : 'order-item-price'}"
+                                                          th:style="${item.promotion != null ? 'color: var(--green) !important; font-weight: 800;' : ''}"
+                                                          th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span class="order-item-status" th:classappend="${item.statusClass}" th:text="${item.status}">Pendente</span>
+                                                <div class="order-item-actions">
+                                                    <button th:if="${item.status != 'Entregue'}" class="order-item-action deliver" title="Marcar como Entregue" 
+                                                            th:attr="onclick=|deliverOrderItem('${item.id}', '${item.name}')|">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                    </button>
+                                                    <button th:if="${item.status == 'Entregue'}" class="order-item-action reset" title="Voltar para Pendente" 
+                                                            th:attr="onclick=|resetToPending('${item.id}', '${item.name}')|">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                                    </button>
+                                                    <button th:if="${item.status != 'Cancelado'}" class="order-item-action cancel" title="Cancelar" 
+                                                            th:attr="onclick=|openCancelItemModal('${item.id}', '${item.name}', ${item.quantity}, ${item.unitPrice})|">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -3802,7 +3818,7 @@
                 <td>${formatDate(order.closedAt)}</td>
                 <td>${order.serviceFee}%</td>
                 <td><span class="order-status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
-                <td style="font-weight: 600;">${currencySymbol || 'R$'} ${total.toFixed(2)}</td>
+                <td style="font-weight: 600;">${currencySymbol || 'R$'} ${total.toFixed(2).replace('.', ',')}</td>
             `;
             tr.style.cursor = 'pointer';
             tr.onclick = () => openOrderDetail(order.id);
@@ -3929,8 +3945,24 @@
                                 ${item.note ? `<span class="order-item-note">${item.note}</span>` : ''}
                             </div>
                         </div>
-                        <div>
-                            <span class="order-item-price">${currencySymbol} ${(item.totalPrice || 0).toFixed(2).replace('.', ',')}</span>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                            <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="text-align: right;">
+                                    ${item.promotionSnapshot ? `
+                                        <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
+                                            ${currencySymbol} ${(item.promotionSnapshot.originalPrice * item.quantity).toFixed(2).replace('.', ',')}
+                                        </div>
+                                    ` : ''}
+                                    <span class="order-item-price" style="${item.promotionSnapshot ? 'color: var(--green) !important; font-weight: 800;' : ''}">
+                                        ${currencySymbol} ${(item.totalPrice || 0).toFixed(2).replace('.', ',')}
+                                    </span>
+                                </div>
+                                ${item.promotionSnapshot ? `
+                                    <div class="promo-badge" style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
+                                        ${item.promotionSnapshot.discountType && item.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(item.promotionSnapshot.discountValue) + '% OFF') : ('-' + currencySymbol + (item.promotionSnapshot.discountValue ? item.promotionSnapshot.discountValue.toFixed(2).replace('.', ',') : '0,00'))}
+                                    </div>
+                                ` : ''}
+                            </div>
                             <span class="order-item-status ${item.statusClass || ''}">${item.status || ''}</span>
                         </div>
                     </div>
@@ -4151,7 +4183,11 @@
                      class="menu-item-card" 
                      th:data-id="${item.id}"
                      th:data-category="${item.categoryId}"
-                     th:data-price="${item.promotion != null ? item.promotion.promotionalPrice : item.price}"
+                     th:data-price="${item.promotion != null ? #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'POINT', 2, 'NONE') : #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'NONE')}"
+                     th:data-original-price="${#numbers.formatDecimal(item.price, 1, 'POINT', 2, 'NONE')}"
+                     th:data-promotion-id="${item.promotion != null ? item.promotion.promotionId : ''}"
+                     th:data-discount-type="${item.promotion != null ? item.promotion.discountType : ''}"
+                     th:data-discount-value="${item.promotion != null ? #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'NONE') : ''}"
                      th:attr="onclick=|toggleMenuItem(this)|">
                     <div th:if="${item.promotion != null}" class="promo-badge" 
                          th:text="${item.promotion.discountType == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue, 0, 0) + '% OFF') : (item.promotion.discountType == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'COMMA') : 'PROMO')}">
@@ -4881,12 +4917,16 @@
         const id = card.dataset.id;
         const name = card.querySelector('h4').textContent;
         const price = parseFloat(card.dataset.price);
+        const originalPrice = card.dataset.originalPrice ? parseFloat(card.dataset.originalPrice) : null;
+        const promotionId = card.dataset.promotionId || null;
+        const discountType = card.dataset.discountType || null;
+        const discountValue = card.dataset.discountValue ? parseFloat(card.dataset.discountValue) : null;
 
         if (selectedMenuItems[id]) {
             delete selectedMenuItems[id];
             card.classList.remove('selected');
         } else {
-            selectedMenuItems[id] = { name, price, qty: 1, note: '' };
+            selectedMenuItems[id] = { name, price, qty: 1, note: '', originalPrice, promotionId, discountType, discountValue };
             card.classList.add('selected');
         }
         
@@ -5056,6 +5096,39 @@
                 itemNoteInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].note`;
                 itemNoteInput.value = item.note || '';
                 form.appendChild(itemNoteInput);
+
+                // Optionals for promotion
+                if (item.promotionId) {
+                    const promotionIdInput = document.createElement('input');
+                    promotionIdInput.type = 'hidden';
+                    promotionIdInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].promotionId`;
+                    promotionIdInput.value = item.promotionId;
+                    form.appendChild(promotionIdInput);
+
+                    if (item.originalPrice) {
+                        const originalPriceInput = document.createElement('input');
+                        originalPriceInput.type = 'hidden';
+                        originalPriceInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].originalPrice`;
+                        originalPriceInput.value = item.originalPrice;
+                        form.appendChild(originalPriceInput);
+                    }
+
+                    if (item.discountType) {
+                        const discountTypeInput = document.createElement('input');
+                        discountTypeInput.type = 'hidden';
+                        discountTypeInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].discountType`;
+                        discountTypeInput.value = item.discountType;
+                        form.appendChild(discountTypeInput);
+                    }
+
+                    if (item.discountValue !== undefined && item.discountValue !== null) {
+                        const discountValueInput = document.createElement('input');
+                        discountValueInput.type = 'hidden';
+                        discountValueInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].discountValue`;
+                        discountValueInput.value = item.discountValue;
+                        form.appendChild(discountValueInput);
+                    }
+                }
 
                 // Individual Customer ID (Item Level)
                 const itemCustomerInput = document.createElement('input');
