@@ -1577,7 +1577,7 @@
                     <div class="form-group">
                         <label class="form-label" th:text="#{page.promotions.form.min.order.value}">Pedido Mínimo</label>
                         <input type="number" name="minOrderValue" class="form-input" th:placeholder="${currencySymbol + ' 0,00'}" step="0.01">
-                        <p class="form-hint" th:text="#{page.gallery.empty.subtitle.optional}">Opcional</p>
+                        <p class="form-hint" th:text="#{page.promotions.form.min.order.value.optional}">Opcional</p>
                     </div>
                 </div>
 
@@ -1591,7 +1591,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label"><th:block th:text="#{page.promotions.form.start.date}">Data Início</th:block> <span class="required">*</span></label>
-                        <input type="date" name="startDate" class="form-input" required>
+                        <input type="date" name="startDate" class="form-input" required th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                     </div>
                     <div class="form-group">
                         <label class="form-label" th:text="#{page.promotions.form.end.date}">Data Fim</label>
@@ -1757,7 +1757,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Data Início</label>
-                        <input type="date" name="startDate" class="form-input">
+                        <input type="date" name="startDate" class="form-input" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Data Fim</label>
