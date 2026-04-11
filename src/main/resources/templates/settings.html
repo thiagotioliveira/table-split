@@ -743,7 +743,7 @@
               <div class="form-group">
                 <label class="form-label" for="restaurantSlug"><span th:text="#{page.settings.form.restaurant.slug}">Id</span> <span class="required">*</span></label>
                 <div class="slug-input-group">
-                  <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.com/</span>
+                  <span class="slug-prefix" th:text="#{app.domain}+'/@'">tablesplit.app/</span>
                   <input type="text" id="restaurantSlug" class="form-input" th:field="*{slug}"
                          th:placeholder="#{page.settings.form.restaurant.slug.placeholder}" oninput="validateSlug(this)">
                 </div>
@@ -1131,7 +1131,7 @@
       slugHint: /*[[#{page.settings.form.restaurant.slug.hint}]]*/ 'Use only lowercase letters, numbers, and underscores (_) or periods (.).',
       slugInvalid: /*[[#{page.settings.form.restaurant.slug.validation.error.invalid}]]*/ 'Invalid characters detected',
       slugLength: /*[[#{page.settings.form.restaurant.slug.validation.error.length}]]*/ 'The slug must have at least 3 characters',
-      domain: /*[[#{app.domain}]]*/ 'tablesplit.com'
+      domain: /*[[#{app.domain}]]*/ 'tablesplit.app'
     };
   </script>
 

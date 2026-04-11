@@ -44,7 +44,7 @@ app:
   push:
     public-key:
     private-key:
-    subject: mailto:info@tablesplit.com
+    subject: mailto:info@tablesplit.app
 
 logging:
   level:
