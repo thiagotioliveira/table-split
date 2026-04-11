@@ -3,6 +3,7 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
+COPY .mvn .mvn
 COPY mvnw .
 COPY pom.xml .
 
@@ -10,7 +11,7 @@ RUN chmod +x mvnw
 
 COPY src src
 
-RUN ./mvnw clean package
+RUN ./mvnw clean verify
 
 # ---------- STAGE 2: runtime ----------
 FROM eclipse-temurin:21-jre-alpine
