@@ -57,12 +57,12 @@ public class CancelTicketItem {
                           cancelledItem.setUnitPrice(item.getUnitPrice());
                           cancelledItem.setStatus(TicketStatus.CANCELLED);
 
-                          String cancelNote = "(Cancelado " + quantityToCancel + "x";
+                          /*String cancelNote = "(Cancelado " + quantityToCancel + "x";
                           if (reason != null && !reason.isBlank()) {
                             cancelNote += ": " + reason;
                           }
                           cancelNote += ")";
-                          cancelledItem.setNote(cancelNote);
+                          cancelledItem.setNote(cancelNote);*/
 
                           ticket.getItems().add(cancelledItem);
                           eventPublisher.publishEvent(

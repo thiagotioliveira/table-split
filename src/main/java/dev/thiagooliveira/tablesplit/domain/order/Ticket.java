@@ -59,7 +59,12 @@ public class Ticket {
   public void setStatus(TicketStatus status) {
     this.status = status;
     if (this.items != null) {
-      this.items.forEach(item -> item.setStatus(status));
+      this.items.stream()
+          .filter(
+              item ->
+                  item.getStatus() != TicketStatus.CANCELLED
+                      && item.getStatus() != TicketStatus.DELIVERED)
+          .forEach(item -> item.setStatus(status));
     }
   }
 
