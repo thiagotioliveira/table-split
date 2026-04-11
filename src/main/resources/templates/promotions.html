@@ -1343,7 +1343,7 @@
                     <div class="promo-card-body">
                         <h3 class="promo-name" th:text="${promotion.name}">Happy Hour</h3>
                         <p class="promo-description" th:text="${promotion.description}">Desconto em todas as bebidas durante o happy hour</p>
-                        <p class="promo-value" th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? promotion.discountValue + '% OFF' : currencySymbol + ' ' + promotion.discountValue + ' OFF'}">20% OFF</p>
+                        <p class="promo-value" th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 0, 'COMMA') + '% OFF' : currencySymbol + ' ' + #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 2, 'COMMA') + ' OFF'}">20% OFF</p>
                         <div class="promo-details">
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1362,7 +1362,7 @@
                             </div>
                             <div class="promo-detail" th:if="${promotion.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                                <span th:text="#{page.promotions.label.min.order(${currencySymbol + ' ' + #numbers.formatDecimal(promotion.minOrderValue, 1, 2)})}">Pedido mínimo: R$ 50,00</span>
+                                <span th:text="#{page.promotions.label.min.order(${currencySymbol + ' ' + #numbers.formatDecimal(promotion.minOrderValue, 1, 'POINT', 2, 'COMMA')})}">Pedido mínimo: R$ 50,00</span>
                             </div>
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
@@ -1487,8 +1487,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" th:data-code="${coupon.code}" onclick="copyCoupon(this.getAttribute('data-code'))"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                         </div>
                         <p class="promo-value">
-                            <th:block th:if="${coupon.discountType.name() == 'PERCENTAGE'}" th:text="|${#numbers.formatDecimal(coupon.discountValue, 1, 0)}% #{page.promotions.coupon.type.off}|">15% OFF</th:block>
-                            <th:block th:if="${coupon.discountType.name() == 'FIXED_VALUE'}" th:text="|${currencySymbol} ${#numbers.formatDecimal(coupon.discountValue, 1, 2)} #{page.promotions.coupon.type.off}|">10,00 OFF</th:block>
+                            <th:block th:if="${coupon.discountType.name() == 'PERCENTAGE'}" th:text="|${#numbers.formatDecimal(coupon.discountValue, 1, 'POINT', 0, 'COMMA')}% #{page.promotions.coupon.type.off}|">15% OFF</th:block>
+                            <th:block th:if="${coupon.discountType.name() == 'FIXED_VALUE'}" th:text="|${currencySymbol} ${#numbers.formatDecimal(coupon.discountValue, 1, 'POINT', 2, 'COMMA')} #{page.promotions.coupon.type.off}|">10,00 OFF</th:block>
                             <th:block th:if="${coupon.discountType.name() == 'FREE_ITEM'}" th:text="#{page.promotions.coupon.type.freeitem}">Item Grátis</th:block>
                         </p>
                         <div class="coupon-rules" th:if="${not #lists.isEmpty(coupon.rules)}">
@@ -1504,7 +1504,7 @@
                             </div>
                             <div class="promo-detail" th:if="${coupon.minOrderValue != null}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                <th:block th:text="#{page.promotions.label.min.order(${currencySymbol + ' ' + #numbers.formatDecimal(coupon.minOrderValue, 1, 2)})}">Pedido Mín: 50,00</th:block>
+                                <th:block th:text="#{page.promotions.label.min.order(${currencySymbol + ' ' + #numbers.formatDecimal(coupon.minOrderValue, 1, 'POINT', 2, 'COMMA')})}">Pedido Mín: 50,00</th:block>
                             </div>
                         </div>
                         <p class="coupon-usage" th:if="${coupon.usageLimit != null}">
