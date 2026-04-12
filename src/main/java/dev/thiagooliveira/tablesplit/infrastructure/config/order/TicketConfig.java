@@ -47,7 +47,10 @@ public class TicketConfig {
   }
 
   @Bean
-  public CallWaiter callWaiter(TableRepository tableRepository, EventPublisher eventPublisher) {
-    return new CallWaiter(tableRepository, eventPublisher);
+  public CallWaiter callWaiter(
+      TableRepository tableRepository,
+      OrderRepository orderRepository,
+      EventPublisher eventPublisher) {
+    return new CallWaiter(tableRepository, orderRepository, eventPublisher);
   }
 }

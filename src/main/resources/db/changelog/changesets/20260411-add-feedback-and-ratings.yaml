@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260411-add-feedback-and-ratings
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: ticket_items
+            columns:
+              - column:
+                  name: rating
+                  type: integer
+        - createTable:
+            tableName: order_feedbacks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: order_feedbacks
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_order_feedbacks_order

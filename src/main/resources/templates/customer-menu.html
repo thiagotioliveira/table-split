@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         :root {
             /* Core brand */
@@ -149,6 +151,8 @@
             transition: all 0.2s;
         }
         .user-badge:hover { background: rgba(255, 255, 255, 0.25); }
+        .user-badge.readonly { cursor: default; background: rgba(255, 255, 255, 0.1); }
+        .user-badge.readonly:hover { background: rgba(255, 255, 255, 0.1); }
         .user-badge svg { width: 1rem; height: 1rem; opacity: 0.8; }
         .user-badge-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -788,6 +792,60 @@
 
         /* Orders Tab Content */
         .orders-content { padding: 1rem; }
+        
+        .orders-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .orders-section-header h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--foreground);
+        }
+        
+        .refresh-action-btn {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            background: var(--background);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .refresh-action-btn:hover {
+            background: var(--card);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .refresh-action-btn:active { transform: scale(0.9); }
+        .refresh-action-btn svg { width: 1.125rem; height: 1.125rem; }
+        .refresh-action-btn.refreshing svg { animation: spin 0.8s linear infinite; }
+        .refresh-action-btn:disabled {
+            width: auto;
+            min-width: 2.5rem;
+            padding: 0 0.5rem;
+            border-radius: 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--background);
+            color: var(--muted);
+            cursor: not-allowed;
+            border-color: var(--border);
+        }
+
         .orders-empty {
             text-align: center;
             padding: 3rem 1rem;
@@ -796,11 +854,6 @@
         .orders-empty-icon {
             width: 4rem;
             height: 4rem;
-            border-radius: 50%;
-            background: var(--background);
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin: 0 auto 1rem;
         }
         .orders-empty-icon svg { width: 2rem; height: 2rem; }
@@ -836,6 +889,8 @@
         .order-status.preparing { background: var(--warning-light); color: var(--warning); }
         .order-status.ready { background: var(--accent-light); color: var(--accent); }
         .order-status.delivered { background: var(--border); color: var(--muted); }
+        .item-rating .star.active { color: #fbbf24; fill: #fbbf24; }
+        .item-rating .star.readonly { cursor: default; }
         .order-item-details {
             display: flex;
             justify-content: space-between;
@@ -1537,6 +1592,63 @@
         .payment-time { font-size: 0.75rem; color: var(--muted); }
         .payment-amount { font-size: 0.875rem; font-weight: 600; color: var(--accent); }
 
+        /* Feedback Styles */
+        .item-rating { display: flex; gap: 4px; margin-top: 8px; }
+        .star { width: 18px; height: 18px; color: #e2e8f0; cursor: pointer; transition: all 0.2s; }
+        .star.active { color: #fbbf24; fill: #fbbf24; }
+        
+        .experience-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        .experience-card::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .experience-card h3 { font-family: var(--font-display); font-size: 1.125rem; margin-bottom: 0.5rem; }
+        .experience-card p { font-size: 0.8125rem; opacity: 0.9; margin-bottom: 1rem; }
+        .exp-stars { display: flex; gap: 8px; margin-bottom: 1rem; }
+        .exp-star { width: 24px; height: 24px; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.2s; }
+        .exp-star.active { color: white; fill: white; }
+        .exp-form { display: none; margin-top: 1rem; }
+        .exp-form.active { display: block; }
+        .exp-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            color: white;
+            font: inherit;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+        .exp-textarea::placeholder { color: rgba(255,255,255,0.6); }
+        .exp-submit {
+            background: white;
+            color: var(--primary-dark);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .exp-submit:hover { transform: scale(1.05); }
+
         /* Responsive */
         @media (min-width: 640px) {
             .hero { height: 60vh; max-height: 550px; }
@@ -1545,6 +1657,34 @@
             .item-modal-overlay.active .item-modal { transform: translateX(-50%) translateY(0); }
             .cart-drawer { max-width: 420px; left: auto; }
             .item-modal-footer { max-width: 480px; margin: 0 auto; }
+        }
+
+        /* Review Mode Styles */
+        body.review-mode .quick-info,
+        body.review-mode .main-tabs,
+        body.review-mode .floating-cart,
+        body.review-mode .category-nav {
+            display: none !important;
+        }
+        .review-header {
+            display: none;
+            background: var(--accent);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 2rem;
+        }
+        body.review-mode .review-header {
+            display: block;
+        }
+        .review-footer {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+        }
+        body.review-mode .review-footer {
+            display: block;
         }
     </style>
 </head>
@@ -1575,7 +1715,7 @@
 
     <!-- Hero Navigation -->
     <div class="hero-nav">
-        <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug}">
+        <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug}" th:unless="${customerMenu.hasTable()}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </a>
         <div>
@@ -1586,7 +1726,9 @@
         </div>
         <div class="hero-actions">
             <!-- User Identity Badge -->
-            <button class="user-badge" onclick="openUserEditModal()" th:if="${customerMenu.hasTable()}" id="userBadgeBtn">
+            <button class="user-badge" th:classappend="${customerMenu.reviewMode ? 'readonly' : ''}" 
+                    onclick="openUserEditModal()" 
+                    th:if="${customerMenu.hasTable()}" id="userBadgeBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span class="user-badge-name" id="userBadgeName">Cliente</span>
             </button>
@@ -1610,9 +1752,7 @@
                     </th:block>
                 </div>
             </div>
-            <button class="hero-action-btn" onclick="refreshTableData()" id="refreshTableBtn" th:if="${customerMenu.hasTable()}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            </button>
+
         </div>
     </div>
 
@@ -1646,7 +1786,6 @@
         </button>
     </div>
 
-    <!-- Carousel Dots -->
     <div class="hero-dots" id="heroDots" th:unless="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
         <button class="hero-dot"
                 th:each="slide, stat : ${customerMenu.restaurant.coverImages}"
@@ -1655,9 +1794,15 @@
         </button>
     </div>
 </section>
+
+<!-- Review Mode Header -->
+<div class="review-header">
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;" data-i18n="thanksVisit">Obrigado pela visita!</h1>
+    <p style="opacity: 0.8; font-size: 0.875rem;" data-i18n="feedbackInvite">Sua ajuda é fundamental para melhorarmos nosso serviço.</p>
+</div>
 <!-- Quick Info Bar -->
 <div class="quick-info" th:if="${customerMenu.hasTable()}">
-    <div class="quick-info-item" onclick="openWaiterModal()">
+    <div class="quick-info-item" onclick="openWaiterModal()" th:unless="${customerMenu.reviewMode}">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         </div>
@@ -1747,6 +1892,12 @@
 <!-- Orders Tab Content -->
 <div id="ordersTab" class="tab-content">
     <div class="orders-content" id="ordersContent">
+        <div class="orders-section-header" th:if="${customerMenu.hasTable() and not customerMenu.reviewMode}">
+            <h2 data-i18n="tableSummaryTitle"></h2>
+            <button class="refresh-action-btn" onclick="refreshTableData()" id="refreshTableBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.25L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+        </div>
         <div class="orders-empty" id="ordersEmpty">
             <div class="orders-empty-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -1764,11 +1915,15 @@
             <div class="summary-row"><span>Taxa de serviço (10%)</span><span id="myServiceFee">R$ 0,00</span></div>
             <div class="summary-row total"><span>Seu Total</span><span class="value" id="myTotal">R$ 0,00</span></div>
         </div>
+        <!-- Finalize Review Button (Only in Review Mode) -->
+        <div class="review-footer" style="display: none;">
+            <button class="exp-submit" style="width: 100%; padding: 1rem; font-size: 1rem;" onclick="finalizeReview()" data-i18n="finishFeedback">Finalizar e Sair</button>
+        </div>
     </div>
 </div>
 
 <!-- Cart Floating Button -->
-<div class="cart-float" id="cartFloat" style="display: none;" th:if="${customerMenu.hasTable()}">
+<div class="cart-float" id="cartFloat" style="display: none;" th:if="${customerMenu.hasTable() && !customerMenu.reviewMode}">
     <button class="cart-btn" onclick="openCart()">
         <div class="cart-btn-left">
             <div class="cart-icon">
@@ -1890,7 +2045,7 @@
                 </div>
                 <div class="client-selector-options" id="clientOptions"></div>
             </div>
-            <div class="item-modal-footer-actions" th:if="${customerMenu.hasTable()}">
+            <div class="item-modal-footer-actions" th:if="${customerMenu.hasTable() && !customerMenu.reviewMode}">
                 <div class="modal-qty-selector">
                     <button onclick="decreaseModalQty()">−</button>
                     <span id="modalQty">1</span>
@@ -1975,7 +2130,12 @@
     const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
     const tableCode = /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'';
     const activePayments = /*[[${customerMenu.payments}]]*/[];
-    const tableCustomersNames = /*[[${customerMenu.customers}]]*/[]; // Reuse customers to get names
+    const tableCustomersNames = /*[[${customerMenu.customers}]]*/[];
+    const isReviewMode = /*[[${customerMenu.reviewMode}]]*/false;
+    const activeOrderId = /*[[${customerMenu.orderId?.toString()}]]*/'';
+    const hasSentFeedback = /*[[${customerMenu.hasSentFeedback}]]*/false;
+
+
     const paymentMethods = {
         /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
         "[(${method.name()})]": {
@@ -1991,6 +2151,8 @@
     let modalQty = 1;
     let currentSlide = 0;
     let slideInterval;
+    let selectedExpRating = 0;
+
 
     // Customer identity from localStorage
     const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
@@ -2050,6 +2212,12 @@
     };
 
     // Hero Carousel
+    function initHeroCarousel() {
+        if(hasImage) {
+            startCarousel();
+        }
+    }
+
     function startCarousel() {
         if(hasImage) {
             slideInterval = setInterval(() => nextRestaurantImageSlide(), 5000);
@@ -2153,6 +2321,7 @@
     }
 
     async function callWaiter() {
+        if (isReviewMode) return;
         const now = Date.now();
         const lastCall = localStorage.getItem('lastWaiterCallTime');
         const COOLDOWN = 60000; // 1 minute
@@ -2172,6 +2341,8 @@
                     updateWaiterCallButton();
                     closeWaiterModal();
                     document.getElementById('waiterCalledModal').classList.add('active');
+                } else if (response.status === 409) {
+                    refreshTableData();
                 } else {
                     alert('Erro ao chamar o garçom. Tente novamente.');
                 }
@@ -2397,6 +2568,8 @@
                 updateTableTotal();
                 closeCart();
                 document.getElementById('orderSentModal').classList.add('active');
+            } else if (response.status === 409) {
+                refreshTableData();
             } else {
                 alert('Erro ao enviar pedido. Tente novamente.');
             }
@@ -2413,65 +2586,185 @@
         const badge = document.getElementById('ordersTabBadge');
         const empty = document.getElementById('ordersEmpty');
         const list = document.getElementById('ordersList');
-        //const summary = document.getElementById('ordersSummary');
 
-        const filteredOrders = myOrders; // Already filtered in initialization or updates
+        const filteredOrders = myOrders;
+        const feedbackAlreadySent = hasSentFeedback;
 
         if (filteredOrders.length === 0) {
             badge.style.display = 'none';
             empty.style.display = 'block';
             list.innerHTML = '';
-            //summary.style.display = 'none';
             return;
         }
 
         badge.style.display = 'inline';
         badge.textContent = filteredOrders.length;
         empty.style.display = 'none';
-        //summary.style.display = 'block';
 
-        // statusIcons moved to global scope
+        let html = '';
 
-        list.innerHTML = filteredOrders.map(order => `
-        <div class="order-item">
-          <div class="order-item-header">
-            <div class="order-item-info">
-              <h4>${getItemText(order, 'name')}</h4>
-              <p>
-                <span class="order-time" style="font-weight: 500; color: var(--foreground);">${order.time ? formatHour(order.time) : ''}</span>
-                <span style="margin: 0 4px; opacity: 0.5;">•</span>
-                ${order.time ? formatTimeAgo(order.time) : ''}
-              </p>
-            </div>
-            <span class="order-status ${order.status}">${statusIcons[order.status] || ''}${order.statusLabel || ''}</span>
-          </div>
-          <div class="order-item-details">
-            <span class="order-item-qty">${order.quantity}x</span>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <div style="text-align: right;">
-                    ${order.promotionSnapshot ? `
-                        <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
-                            ${formatPrice(order.promotionSnapshot.originalPrice * order.quantity)}
+        // Add Experience Card if in review mode and not already sent
+        if (isReviewMode && !feedbackAlreadySent) {
+            html += `
+                <div class="experience-card" id="experienceCard">
+                    <h3>Como está a ser a sua experiência?</h3>
+                    <p>Avalie o nosso atendimento e ambiente.</p>
+                    <div class="exp-stars">
+                        ${[1, 2, 3, 4, 5].map(n => `
+                            <svg class="exp-star" data-val="${n}" onclick="selectExpRating(${n})" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        `).join('')}
+                    </div>
+                    <div class="exp-form" id="expForm">
+                        <textarea class="exp-textarea" id="expComment" maxlength="500" placeholder="Algum comentário (opcional)..."></textarea>
+                        <button class="exp-submit" onclick="confirmGeneralFeedback()">Enviar Avaliação</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += filteredOrders.map(order => {
+            const isDelivered = order.status === 'delivered' || order.status === 'DELIVERED';
+            const hasRating = order.rating > 0;
+            const isReadonly = feedbackAlreadySent;
+            
+            return `
+            <div class="order-item">
+              <div class="order-item-header">
+                <div class="order-item-info">
+                  <h4>${getItemText(order, 'name')}</h4>
+                  <p>
+                    <span class="order-time" style="font-weight: 500; color: var(--foreground);">${order.time ? formatHour(order.time) : ''}</span>
+                    <span style="margin: 0 4px; opacity: 0.5;">•</span>
+                    ${order.time ? formatTimeAgo(order.time) : ''}
+                  </p>
+                </div>
+                <span class="order-status ${order.status}">${statusIcons[order.status] || ''}${order.statusLabel || ''}</span>
+              </div>
+              <div class="order-item-details">
+                <span class="order-item-qty">${order.quantity}x</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="text-align: right;">
+                            ${order.promotionSnapshot ? `
+                                <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
+                                    ${formatPrice(order.promotionSnapshot.originalPrice * order.quantity)}
+                                </div>
+                                <div style="font-weight: 700; color: var(--accent);">
+                                    ${formatPrice(order.promotionSnapshot.promotionalPrice * order.quantity)}
+                                </div>
+                            ` : `
+                                <div style="font-weight: 700;">
+                                    ${formatPrice(order.totalPrice)}
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                    
+                    ${isDelivered ? `
+                        <div class="item-rating" data-item-id="${order.id}">
+                            ${[1,2,3,4,5].map(n => `
+                                <svg class="star ${hasRating && order.rating >= n ? 'active' : ''} ${isReadonly ? 'readonly' : ''}" 
+                                     onclick="${isReadonly ? '' : `submitItemRating('${order.id}', ${n})`}"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            `).join('')}
                         </div>
                     ` : ''}
-                    <span class="order-item-price" style="${order.promotionSnapshot ? 'color: var(--green); font-weight: 700;' : ''}">
-                        ${formatPrice(order.totalPrice)}
-                    </span>
                 </div>
-                ${order.promotionSnapshot ? `
-                    <div class="promo-badge" style="position: relative !important; width: fit-content; margin-top: 0.2rem; top: 0 !important; right: 0 !important; font-size: 0.65rem; background: var(--destructive); color: white; padding: 0.1rem 0.4rem; border-radius: 6px; font-weight: 700;">
-                        ${order.promotionSnapshot.discountType && order.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(order.promotionSnapshot.discountValue || 0) + '% OFF') : ('-' + formatPrice(order.promotionSnapshot.discountValue || 0))}
-                    </div>
-                ` : ''}
+              </div>
             </div>
-          </div>
-        </div>
-      `).join('');
+          `;
+        }).join('');
 
-        //const subtotal = filteredOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
-        //document.getElementById('mySubtotal').textContent = formatPrice(subtotal);
-        //document.getElementById('myServiceFee').textContent = formatPrice(subtotal * SERVICE_FEE);
-        //document.getElementById('myTotal').textContent = formatPrice(subtotal + (subtotal * SERVICE_FEE));
+        list.innerHTML = html;
+    }
+
+
+    function selectExpRating(val) {
+        selectedExpRating = val;
+        document.querySelectorAll('.exp-star').forEach((s, i) => {
+            s.classList.toggle('active', i < val);
+        });
+        document.getElementById('expForm').classList.add('active');
+    }
+
+    async function submitItemRating(itemId, rating) {
+        // Optimistic UI update
+        const item = myOrders.find(o => o.id === itemId);
+        if (item) item.rating = rating;
+        updateOrdersUI();
+
+        try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+            
+            const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/item`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                },
+                body: JSON.stringify({ itemId, rating })
+            });
+            
+            if (!response.ok) {
+                console.error('Falha ao enviar rating do item', response.status);
+            }
+        } catch (e) {
+            console.error('Erro na chamada de rating do item', e);
+        }
+    }
+
+    async function confirmGeneralFeedback() {
+        if (selectedExpRating === 0) return;
+        
+        const experienceCard = document.getElementById('experienceCard');
+        const commentInput = document.getElementById('expComment');
+        const comment = commentInput ? commentInput.value : '';
+        
+        if (!experienceCard) return;
+        
+        // Hide UI
+        experienceCard.innerHTML = '<div style="text-align: center; padding: 1rem;"><h3>Obrigado pelo seu feedback!</h3></div>';
+
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+            
+            const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/general`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                },
+                body: JSON.stringify({ 
+                    orderId: activeOrderId, 
+                    customerId: myCustomerId, 
+                    rating: selectedExpRating, 
+                    comment: comment 
+                })
+            });
+
+            if (response.ok) {
+                // Reload to refresh the feedback status from server
+                window.location.reload();
+            } else {
+                const errorText = await response.text();
+                alert('Erro ao enviar feedback: ' + response.status + ' - ' + errorText);
+                experienceCard.innerHTML = originalContent; // Restore UI if you want, but simple reload might be easier
+            }
+        } catch (e) {
+            console.error('Falha ao enviar feedback geral', e);
+            alert('Erro de conexão ao enviar feedback.');
+        }
+    }
+
+    function finalizeReview() {
+        // Clear the cookie by setting expiration to past
+        document.cookie = "ts_last_order_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        window.location.href = `/@${restaurantSlug}/table/${tableCode}`;
     }
 
     function parseDate(val) {
@@ -2515,6 +2808,8 @@
 
     // User Edit Functions
     function openUserEditModal() {
+        if (isReviewMode) return;
+
         const input = document.getElementById('userNameInput');
         input.value = myCustomerName;
         document.getElementById('userNameError').style.display = 'none';
@@ -2860,20 +3155,104 @@
         closeItemModal();
     }
 
+    let refreshInterval;
+    function updateRefreshButton() {
+        const btn = document.getElementById('refreshTableBtn');
+        if (!btn) return;
+
+        const now = Date.now();
+        const lastRefresh = localStorage.getItem('lastTableRefreshTime');
+        const COOLDOWN = 10000; // 10 seconds
+
+        if (lastRefresh && (now - lastRefresh < COOLDOWN)) {
+            btn.disabled = true;
+            if (refreshInterval) clearInterval(refreshInterval);
+
+            refreshInterval = setInterval(() => {
+                const innerNow = Date.now();
+                const remaining = Math.ceil((COOLDOWN - (innerNow - lastRefresh)) / 1000);
+
+                if (remaining <= 0) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.25L21 8"/><path d="M21 3v5h-5"/></svg>';
+                    clearInterval(refreshInterval);
+                    localStorage.removeItem('lastTableRefreshTime');
+                } else {
+                    btn.textContent = remaining + 's';
+                }
+            }, 1000);
+        } else {
+            btn.disabled = false;
+        }
+    }
+
     async function refreshTableData() {
         const btn = document.getElementById('refreshTableBtn');
-        if (btn.classList.contains('refreshing')) return;
+        if (!btn || btn.classList.contains('refreshing') || btn.disabled) return;
         
         btn.classList.add('refreshing');
         
         try {
-            // In a real scenario, we could call an API to fetch new data
-            // For now, we simulate a delay and then reload the page to get the latest state from the server
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            window.location.reload();
+            const response = await fetch(`${window.location.pathname}/data`);
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+
+            // Set cooldown
+            localStorage.setItem('lastTableRefreshTime', Date.now());
+            updateRefreshButton();
+
+            // Store active order ID if changed
+            if (data.orderId) {
+                // Ensure it's a string for comparison
+                const newOrderId = String(data.orderId).toLowerCase();
+            }
+
+            // Check for Review Mode transition
+            if (data.reviewMode && !isReviewMode) {
+                window.location.reload(); // Transition to feedback view
+                return;
+            }
+
+            // Re-map orders
+            const newAllItems = data.ticketItems || [];
+            
+            myOrders = newAllItems
+                .filter(o => 
+                    o.customerId && myCustomerId && 
+                    String(o.customerId).toLowerCase() === String(myCustomerId).toLowerCase()
+                )
+                .map(o => ({ ...o, time: parseDate(o.createdAt) }));
+
+            tableOrders = newAllItems
+                .filter(o => 
+                    !o.customerId || !myCustomerId || 
+                    String(o.customerId).toLowerCase() !== String(myCustomerId).toLowerCase()
+                )
+                .reduce((acc, item) => {
+                    const cname = item.customerName || 'Outros';
+                    if (!acc[cname]) acc[cname] = [];
+                    acc[cname].push({ ...item, time: parseDate(item.createdAt) });
+                    return acc;
+                }, {});
+
+            // Update Payments
+            if (typeof activePayments !== 'undefined') {
+                activePayments.length = 0;
+                if (data.payments) {
+                    data.payments.forEach(p => activePayments.push(p));
+                }
+            }
+
+            // Re-render UI
+            updateOrdersUI();
+            updateTableTotal();
+
         } catch (error) {
             console.error('Error refreshing table data:', error);
-            btn.classList.remove('refreshing');
+            // If API fails with 404/403, might be session lost
+            if (error.message.includes('404')) window.location.reload();
+        } finally {
+            if (btn) btn.classList.remove('refreshing');
         }
     }
 
@@ -2944,17 +3323,25 @@
     }
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        updateWaiterCallButton();
-        startCarousel();
+    document.addEventListener('DOMContentLoaded', () => {
+        if (isReviewMode) {
+            document.body.classList.add('review-mode');
+            const ordersTab = document.querySelector('.main-tab[onclick*="orders"]');
+            switchTab('orders', ordersTab);
+        } else {
+            updateCartUI();
+        }
+        updateOrdersUI();
+        initHeroCarousel();
         if(hasTable) {
-            updateOrdersUI();
             updateTableTotal();
             renderClientOptions();
             // Show current user name in the hero badge
             const badge = document.getElementById('userBadgeName');
             if (badge) badge.textContent = myCustomerName;
         }
+        updateWaiterCallButton();
+        updateRefreshButton();
     });
 /*
     // Simulate order status updates

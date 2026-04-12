@@ -15,7 +15,7 @@ public class PaymentModel {
 
   public PaymentModel(dev.thiagooliveira.tablesplit.domain.order.Payment payment) {
     this.id = payment.getId().toString();
-    this.customerId = payment.getCustomerId().toString();
+    this.customerId = payment.getCustomerId() != null ? payment.getCustomerId().toString() : null;
     this.amount = payment.getAmount();
     this.method = payment.getMethod().name();
     this.paidAt = payment.getPaidAt();

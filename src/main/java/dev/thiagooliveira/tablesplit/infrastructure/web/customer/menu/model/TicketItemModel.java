@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
@@ -19,8 +18,7 @@ public class TicketItemModel {
   private final String status;
   private final String statusLabel;
   private final String statusClass;
-
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private final Integer rating;
   private final ZonedDateTime createdAt;
 
   private final PromotionSnapshotModel promotionSnapshot;
@@ -30,10 +28,6 @@ public class TicketItemModel {
     this.customerId = item.getCustomerId().toString();
     this.customerName = customerName;
     this.name = convertMap(item.getName());
-    if (this.name.isEmpty()) {
-      this.name.put("pt", "Item");
-      this.name.put("en", "Item");
-    }
     this.quantity = item.getQuantity();
     this.unitPrice = item.getUnitPrice();
     this.totalPrice = item.getTotalPrice();
@@ -41,6 +35,7 @@ public class TicketItemModel {
     this.status = item.getStatus().name().toLowerCase();
     this.statusLabel = item.getStatus().getLabel();
     this.statusClass = item.getStatus().getCssClass();
+    this.rating = item.getRating();
     this.createdAt = createdAt;
     this.promotionSnapshot =
         item.getPromotionSnapshot() != null
@@ -102,6 +97,10 @@ public class TicketItemModel {
 
   public ZonedDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public Integer getRating() {
+    return rating;
   }
 
   public PromotionSnapshotModel getPromotionSnapshot() {

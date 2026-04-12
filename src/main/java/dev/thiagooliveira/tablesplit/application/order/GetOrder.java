@@ -17,6 +17,10 @@ public class GetOrder {
     return orderRepository.findActiveOrderByTableId(tableId);
   }
 
+  public Optional<Order> findById(UUID id) {
+    return orderRepository.findById(id);
+  }
+
   public List<Order> findAllByTableId(UUID tableId) {
     return orderRepository.findAllByTableIdOrderByOpenedAtDesc(tableId);
   }

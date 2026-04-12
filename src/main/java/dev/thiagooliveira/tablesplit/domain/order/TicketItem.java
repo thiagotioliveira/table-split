@@ -14,6 +14,7 @@ public class TicketItem {
   private int quantity;
   private BigDecimal unitPrice;
   private String note;
+  private Integer rating;
   private TicketStatus status = TicketStatus.PENDING;
   private PromotionSnapshot promotionSnapshot;
 
@@ -97,6 +98,14 @@ public class TicketItem {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  public Integer getRating() {
+    return rating;
+  }
+
+  public void setRating(Integer rating) {
+    this.rating = rating;
   }
 
   public TicketStatus getStatus() {

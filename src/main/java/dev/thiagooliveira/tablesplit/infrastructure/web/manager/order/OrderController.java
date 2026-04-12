@@ -214,6 +214,7 @@ public class OrderController {
                       item.getNote(),
                       item.getStatus().name(),
                       item.getStatus().getCssClass(),
+                      item.getRating(),
                       ticket.getCreatedAt(),
                       getItemPromotionInfo(item));
                 })

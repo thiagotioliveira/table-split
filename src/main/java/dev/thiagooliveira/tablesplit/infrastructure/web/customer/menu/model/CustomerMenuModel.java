@@ -16,6 +16,9 @@ public class CustomerMenuModel {
   private final List<OrderCustomerModel> customers = new ArrayList<>();
   private final List<PaymentModel> payments = new ArrayList<>();
   private TableModel tableModel;
+  private final java.util.UUID orderId;
+  private final boolean reviewMode;
+  private boolean hasSentFeedback;
 
   public CustomerMenuModel(
       Restaurant restaurant,
@@ -27,6 +30,11 @@ public class CustomerMenuModel {
     this.profileLink = String.format("/@%s", restaurant.getSlug());
     this.restaurant = new RestaurantModel(restaurant);
     this.tableModel = table != null ? new TableModel(table) : null;
+    this.orderId = activeOrder != null ? activeOrder.getId() : null;
+    this.reviewMode =
+        activeOrder != null
+            && activeOrder.getStatus()
+                != dev.thiagooliveira.tablesplit.domain.order.OrderStatus.OPEN;
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));
     items.forEach(i -> this.items.add(new ItemModel(i, symbol)));
     if (activeOrder != null) {
@@ -97,5 +105,21 @@ public class CustomerMenuModel {
 
   public List<PaymentModel> getPayments() {
     return payments;
+  }
+
+  public boolean isReviewMode() {
+    return reviewMode;
+  }
+
+  public java.util.UUID getOrderId() {
+    return orderId;
+  }
+
+  public boolean isHasSentFeedback() {
+    return hasSentFeedback;
+  }
+
+  public void setHasSentFeedback(boolean hasSentFeedback) {
+    this.hasSentFeedback = hasSentFeedback;
   }
 }

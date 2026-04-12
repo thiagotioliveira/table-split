@@ -16,6 +16,7 @@ public class TicketItemModel {
   private final String note;
   private final String status;
   private final String statusClass;
+  private final Integer rating;
   private final PromotionInfo promotionSnapshot;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -44,6 +45,7 @@ public class TicketItemModel {
         note,
         status,
         statusClass,
+        null,
         createdAt,
         null);
   }
@@ -59,6 +61,7 @@ public class TicketItemModel {
       String note,
       String status,
       String statusClass,
+      Integer rating,
       ZonedDateTime createdAt,
       PromotionInfo promotionSnapshot) {
     this.id = id;
@@ -71,6 +74,7 @@ public class TicketItemModel {
     this.note = note;
     this.status = status;
     this.statusClass = statusClass;
+    this.rating = rating;
     this.createdAt = createdAt;
     this.promotionSnapshot = promotionSnapshot;
   }
@@ -117,6 +121,10 @@ public class TicketItemModel {
 
   public ZonedDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public Integer getRating() {
+    return rating;
   }
 
   public PromotionInfo getPromotionSnapshot() {

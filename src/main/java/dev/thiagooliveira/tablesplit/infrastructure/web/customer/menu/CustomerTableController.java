@@ -13,7 +13,10 @@ import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalC
 import dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.PaymentModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +37,8 @@ public class CustomerTableController {
   private final GetOrder getOrder;
   private final UpdateCustomerName updateCustomerName;
   private final CallWaiter callWaiter;
+  private final RateItem rateItem;
+  private final SubmitGeneralFeedback submitGeneralFeedback;
   private final TransactionalContext transactionalContext;
 
   public CustomerTableController(
@@ -46,6 +51,8 @@ public class CustomerTableController {
       GetOrder getOrder,
       UpdateCustomerName updateCustomerName,
       CallWaiter callWaiter,
+      RateItem rateItem,
+      SubmitGeneralFeedback submitGeneralFeedback,
       TransactionalContext transactionalContext) {
     this.getRestaurant = getRestaurant;
     this.getTables = getTables;
@@ -56,6 +63,8 @@ public class CustomerTableController {
     this.getOrder = getOrder;
     this.updateCustomerName = updateCustomerName;
     this.callWaiter = callWaiter;
+    this.rateItem = rateItem;
+    this.submitGeneralFeedback = submitGeneralFeedback;
     this.transactionalContext = transactionalContext;
   }
 
@@ -133,34 +142,215 @@ public class CustomerTableController {
 
   @GetMapping("/@{slug}/table/{tableCode}/menu")
   public String menu(
-      @PathVariable String slug, @PathVariable String tableCode, Model model, Locale locale) {
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @CookieValue(value = "ts_last_order_id", required = false) String lastOrderId,
+      @CookieValue(value = "ts_customer_id", required = false) String customerId,
+      jakarta.servlet.http.HttpServletResponse response,
+      Model model,
+      Locale locale) {
     var restaurant =
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
-    if (table.isAvailable()) {
-      return String.format("redirect:/@%s/table/%s", slug, tableCode);
+    var activeOrder = getOrder.execute(table.getId()).orElse(null);
+
+    // If no active order on table, try to find the last one from cookie
+    if (activeOrder == null && lastOrderId != null && !lastOrderId.isEmpty()) {
+      try {
+        activeOrder = getOrder.findById(UUID.fromString(lastOrderId)).orElse(null);
+        // Security check: ensure this order belongs to this table and restaurant
+        if (activeOrder != null
+            && (!activeOrder.getTableId().equals(table.getId())
+                || !activeOrder.getRestaurantId().equals(restaurant.getId()))) {
+          activeOrder = null;
+        }
+      } catch (Exception e) {
+        activeOrder = null;
+      }
     }
+
+    if (activeOrder == null) {
+      if (table.isAvailable()) {
+        return String.format("redirect:/@%s/table/%s", slug, tableCode);
+      }
+      return String.format("redirect:/@%s/table/%s", slug, tableCode); // Fallback to entry
+    }
+
+    // Set or refresh cookie for current order
+    var orderCookie =
+        new jakarta.servlet.http.Cookie("ts_last_order_id", activeOrder.getId().toString());
+    orderCookie.setPath("/");
+    orderCookie.setMaxAge(60 * 60 * 24); // 24 hours
+    response.addCookie(orderCookie);
+
     var requestLanguages = java.util.List.of(Language.fromLocale(locale));
     var categories = getCategory.execute(restaurant.getId(), requestLanguages);
     var items = getItem.execute(restaurant.getId(), requestLanguages, true);
-    var activeOrder = getOrder.execute(table.getId()).orElse(null);
 
     CustomerMenuModel menuModel =
         new CustomerMenuModel(restaurant, categories, items, table, activeOrder);
+
+    // Server-side feedback check
+    if (customerId != null && !customerId.isEmpty()) {
+      try {
+        boolean hasSent = rateItem.hasFeedback(activeOrder.getId(), UUID.fromString(customerId));
+        menuModel.setHasSentFeedback(hasSent);
+      } catch (Exception e) {
+        // Ignore check errors
+      }
+    }
+
     model.addAttribute("customerMenu", menuModel);
     model.addAttribute("itemTags", ItemTag.values());
 
     return "customer-menu";
   }
 
+  @GetMapping("/@{slug}/table/{tableCode}/menu/data")
+  @ResponseBody
+  public ResponseEntity<TableDataResponse> getData(
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @CookieValue(value = "ts_last_order_id", required = false) String lastOrderId,
+      @CookieValue(value = "ts_customer_id", required = false) String customerId,
+      Locale locale) {
+    try {
+      var restaurant =
+          getRestaurant
+              .execute(slug)
+              .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+      var table = getTable(restaurant, tableCode);
+      var activeOrder = getOrder.execute(table.getId()).orElse(null);
+
+      if (activeOrder == null && lastOrderId != null && !lastOrderId.isEmpty()) {
+        try {
+          activeOrder = getOrder.findById(UUID.fromString(lastOrderId)).orElse(null);
+          if (activeOrder != null
+              && (!activeOrder.getTableId().equals(table.getId())
+                  || !activeOrder.getRestaurantId().equals(restaurant.getId()))) {
+            activeOrder = null;
+          }
+        } catch (Exception e) {
+          activeOrder = null;
+        }
+      }
+
+      boolean hasSentFeedback = false;
+      final var finalOrder = activeOrder;
+      if (customerId != null && !customerId.isEmpty() && finalOrder != null) {
+        try {
+          hasSentFeedback = rateItem.hasFeedback(finalOrder.getId(), UUID.fromString(customerId));
+        } catch (Exception e) {
+        }
+      }
+
+      var customers =
+          finalOrder != null
+              ? finalOrder.getCustomers().stream().map(OrderCustomerModel::new).toList()
+              : List.<OrderCustomerModel>of();
+      var payments =
+          finalOrder != null
+              ? finalOrder.getPayments().stream().map(PaymentModel::new).toList()
+              : List.<PaymentModel>of();
+      var ticketItems = new ArrayList<SimpleTicketItem>();
+
+      var requestLanguages =
+          java.util.List.of(
+              dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(locale));
+      var menuItems = getItem.execute(restaurant.getId(), requestLanguages, true);
+
+      if (finalOrder != null) {
+        finalOrder
+            .getTickets()
+            .forEach(
+                t ->
+                    t.getItems()
+                        .forEach(
+                            item -> {
+                              if (item.getName() == null || item.getName().isEmpty()) {
+                                menuItems.stream()
+                                    .filter(i -> i.getId().equals(item.getItemId()))
+                                    .findFirst()
+                                    .ifPresent(i -> item.setName(i.getName()));
+                              }
+
+                              var nameMap = item.getName();
+                              String localizedName = "Item";
+                              if (nameMap != null && !nameMap.isEmpty()) {
+                                var lang =
+                                    dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(
+                                        locale);
+                                localizedName = nameMap.get(lang);
+                                if (localizedName == null)
+                                  localizedName =
+                                      nameMap.get(
+                                          dev.thiagooliveira.tablesplit.domain.common.Language.PT);
+                                if (localizedName == null)
+                                  localizedName = nameMap.values().iterator().next();
+                              }
+
+                              ticketItems.add(
+                                  new SimpleTicketItem(
+                                      item.getId().toString(),
+                                      localizedName,
+                                      item.getQuantity(),
+                                      item.getTotalPrice(),
+                                      item.getStatus().name(),
+                                      item.getStatus().getLabel(),
+                                      item.getCustomerId().toString(),
+                                      finalOrder.getCustomerName(item.getCustomerId()),
+                                      t.getCreatedAt(),
+                                      item.getRating()));
+                            }));
+      }
+
+      var responseData =
+          new TableDataResponse(
+              ticketItems,
+              customers,
+              payments,
+              finalOrder != null ? finalOrder.getId() : null,
+              finalOrder != null
+                  && finalOrder.getStatus()
+                      != dev.thiagooliveira.tablesplit.domain.order.OrderStatus.OPEN,
+              hasSentFeedback);
+
+      return ResponseEntity.ok(responseData);
+    } catch (Exception e) {
+      return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
+          .build();
+    }
+  }
+
+  public record TableDataResponse(
+      List<SimpleTicketItem> ticketItems,
+      List<OrderCustomerModel> customers,
+      List<PaymentModel> payments,
+      java.util.UUID orderId,
+      boolean reviewMode,
+      boolean hasSentFeedback) {}
+
+  public record SimpleTicketItem(
+      String id,
+      String name,
+      int quantity,
+      java.math.BigDecimal totalPrice,
+      String status,
+      String statusLabel,
+      String customerId,
+      String customerName,
+      java.time.ZonedDateTime createdAt,
+      Integer rating) {}
+
   @PostMapping("/@{slug}/table/{tableCode}/open")
   @ResponseBody
   public ResponseEntity<Void> openTable(
       @PathVariable String slug,
       @PathVariable String tableCode,
-      @RequestBody OpenTableRequest request) {
+      @RequestBody OpenTableRequest request,
+      jakarta.servlet.http.HttpServletResponse response) {
     var restaurant =
         getRestaurant
             .execute(slug)
@@ -177,6 +367,12 @@ public class CustomerTableController {
                 restaurant.getServiceFee(),
                 request.customerId(),
                 request.customerName()));
+
+    // Persist customerId in cookie for future feedback checks
+    var cookie = new jakarta.servlet.http.Cookie("ts_customer_id", request.customerId().toString());
+    cookie.setPath("/");
+    cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+    response.addCookie(cookie);
 
     return ResponseEntity.ok().build();
   }
@@ -203,16 +399,65 @@ public class CustomerTableController {
   @PostMapping("/@{slug}/table/{tableCode}/waiter/call")
   @ResponseBody
   public ResponseEntity<Void> callWaiter(
-      @PathVariable String slug, @PathVariable String tableCode) {
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @CookieValue(value = "ts_customer_id", required = false) String customerIdStr) {
     var restaurant =
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
 
-    transactionalContext.execute(() -> callWaiter.execute(restaurant.getId(), tableCode));
+    java.util.UUID customerId = null;
+    if (customerIdStr != null && !customerIdStr.isBlank()) {
+      try {
+        customerId = java.util.UUID.fromString(customerIdStr);
+      } catch (IllegalArgumentException e) {
+        // Ignore invalid UUID
+      }
+    }
+
+    final java.util.UUID finalCustomerId = customerId;
+    transactionalContext.execute(
+        () -> callWaiter.execute(restaurant.getId(), tableCode, finalCustomerId));
 
     return ResponseEntity.ok().build();
   }
 
+  @PostMapping("/@{slug}/table/{tableCode}/feedback/item")
+  @ResponseBody
+  public ResponseEntity<Void> rateItem(
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @RequestBody RateItemRequest request) {
+    transactionalContext.execute(() -> rateItem.execute(request.itemId(), request.rating()));
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/@{slug}/table/{tableCode}/feedback/general")
+  @ResponseBody
+  public ResponseEntity<Void> submitGeneralFeedback(
+      @PathVariable String slug,
+      @PathVariable String tableCode,
+      @RequestBody GeneralFeedbackRequest request) {
+    transactionalContext.execute(
+        () ->
+            submitGeneralFeedback.execute(
+                request.orderId(), request.customerId(), request.rating(), request.comment()));
+    return ResponseEntity.ok().build();
+  }
+
+  public record RateItemRequest(java.util.UUID itemId, Integer rating) {}
+
+  public record GeneralFeedbackRequest(
+      java.util.UUID orderId, java.util.UUID customerId, Integer rating, String comment) {}
+
   public record OpenTableRequest(java.util.UUID customerId, String customerName) {}
+
+  @ExceptionHandler(
+      dev.thiagooliveira.tablesplit.application.order.TableSessionClosedException.class)
+  public ResponseEntity<String> handleSessionClosed(
+      dev.thiagooliveira.tablesplit.application.order.TableSessionClosedException ex) {
+    return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+        .body(ex.getMessage());
+  }
 }

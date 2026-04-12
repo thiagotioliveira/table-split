@@ -48,12 +48,46 @@ public class PlaceOrder {
         orderRepository
             .findActiveOrderByTableId(table.getId())
             .orElseGet(
-                () ->
-                    openTable.execute(
-                        table.getId(),
-                        request.getServiceFee() != null ? request.getServiceFee() : 0,
-                        null,
-                        null));
+                () -> {
+                  // Business Rule: Check if the customer was in the last closed session
+                  orderRepository.findAllByTableIdOrderByOpenedAtDesc(table.getId()).stream()
+                      .findFirst()
+                      .ifPresent(
+                          lastOrder -> {
+                            if (lastOrder.getStatus()
+                                == dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
+                              // We check if the customer in the request was in the last order
+                              // This assumes the first customer mentioned in the request (or any)
+                              // For simplicity and to match the user's issue, we'll check against
+                              // all ticket customers
+                              boolean wasParticipant = false;
+                              if (request.getTickets() != null) {
+                                for (var ticket : request.getTickets()) {
+                                  for (var item : ticket.getItems()) {
+                                    if (item.getCustomerId() != null
+                                        && lastOrder.getCustomers().stream()
+                                            .anyMatch(
+                                                c -> c.getId().equals(item.getCustomerId()))) {
+                                      wasParticipant = true;
+                                      break;
+                                    }
+                                  }
+                                }
+                              }
+
+                              if (wasParticipant) {
+                                throw new TableSessionClosedException(
+                                    "Table is closed. Please complete your feedback before starting a new session.");
+                              }
+                            }
+                          });
+
+                  return openTable.execute(
+                      table.getId(),
+                      request.getServiceFee() != null ? request.getServiceFee() : 0,
+                      null,
+                      null);
+                });
 
     // Register all participants first
     if (request.getCustomers() != null) {

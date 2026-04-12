@@ -197,6 +197,7 @@ public class TableController {
                                     item.getNote(),
                                     item.getStatus().getLabel(),
                                     item.getStatus().getCssClass(),
+                                    item.getRating(),
                                     t.getCreatedAt(),
                                     getItemPromotionInfo(item))))
             .forEach(
@@ -375,6 +376,7 @@ public class TableController {
                                     item.getNote(),
                                     item.getStatus().getLabel(),
                                     item.getStatus().getCssClass(),
+                                    item.getRating(),
                                     t.getCreatedAt(),
                                     getItemPromotionInfo(item))))
             .toList(),

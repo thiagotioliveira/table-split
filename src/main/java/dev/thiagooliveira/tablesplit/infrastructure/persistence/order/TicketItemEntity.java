@@ -46,6 +46,8 @@ public class TicketItemEntity {
   @Column(precision = 19, scale = 2)
   private BigDecimal discountValue;
 
+  @Column private Integer rating;
+
   public TicketItemEntity() {}
 
   public TicketItem toDomain() {
@@ -57,6 +59,7 @@ public class TicketItemEntity {
     domain.setQuantity(this.quantity);
     domain.setUnitPrice(this.unitPrice);
     domain.setNote(this.note);
+    domain.setRating(this.rating);
     domain.setStatus(this.status);
 
     // Restore promotion snapshot if exists
@@ -78,6 +81,7 @@ public class TicketItemEntity {
     entity.setQuantity(domain.getQuantity());
     entity.setUnitPrice(domain.getUnitPrice());
     entity.setNote(domain.getNote());
+    entity.setRating(domain.getRating());
     entity.setStatus(domain.getStatus());
 
     // Save promotion snapshot if exists
@@ -186,5 +190,13 @@ public class TicketItemEntity {
 
   public void setDiscountValue(BigDecimal discountValue) {
     this.discountValue = discountValue;
+  }
+
+  public Integer getRating() {
+    return rating;
+  }
+
+  public void setRating(Integer rating) {
+    this.rating = rating;
   }
 }

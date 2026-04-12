@@ -117,6 +117,7 @@ public class TicketEventListener {
                       item.getNote(),
                       item.getStatus().getLabel(),
                       item.getStatus().getCssClass(),
+                      item.getRating(),
                       ticket.getCreatedAt(),
                       getItemPromotionInfo(item));
                 })
