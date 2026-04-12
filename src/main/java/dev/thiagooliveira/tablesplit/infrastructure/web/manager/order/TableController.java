@@ -299,6 +299,7 @@ public class TableController {
 
         clientBalances.putAll(tempBalances);
         model.addAttribute("clientBalances", clientBalances);
+        model.addAttribute("clientSubtotals", clientSubtotals);
       }
       model.addAttribute("orderHistory", java.util.Collections.emptyList());
     }

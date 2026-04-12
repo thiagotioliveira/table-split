@@ -167,6 +167,14 @@
             gap: 0.75rem;
         }
 
+        .order-item.cancelled {
+            opacity: 0.6;
+        }
+        .order-item.cancelled .order-item-name,
+        .order-item.cancelled .order-item-price {
+            text-decoration: line-through;
+        }
+
         .qty-btn {
             width: 24px;
             height: 24px;
@@ -3244,10 +3252,10 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                         <span th:text="${client.key.name}">Cliente</span>
                                     </span>
-                                    <span class="client-subtotal" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(!client.value.empty ? #aggregates.sum(client.value.![totalPrice]) : 0, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                    <span class="client-subtotal" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientSubtotals.getOrDefault(client.key.id, T(java.math.BigDecimal).ZERO), 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                                 </div>
                                 <div class="client-orders">
-                                    <div class="order-item" th:each="item : ${client.value}">
+                                    <div class="order-item" th:each="item : ${client.value}" th:classappend="${item.statusClass == 'cancelled' ? 'cancelled' : ''}">
                                         <div class="order-item-info">
                                             <span class="order-qty" th:text="${item.quantity}">1</span>
                                             <div>
@@ -3948,7 +3956,9 @@
         `;
         Object.keys(clients).forEach(clientName => {
             const clientItems = clients[clientName];
-            const subtotal = clientItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            const subtotal = clientItems
+                .filter(item => item.statusClass !== 'cancelled')
+                .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
             clientsHtml += `
             <div class="client-card">
@@ -3961,7 +3971,7 @@
                 </div>
                 <div class="client-orders">
                     ${clientItems.map(item => `
-                    <div class="order-item">
+                    <div class="order-item ${item.statusClass === 'cancelled' ? 'cancelled' : ''}">
                         <div class="order-item-info">
                             <span class="order-qty">${item.quantity}</span>
                             <div>
@@ -4854,6 +4864,31 @@
     let selectedMenuItems = {};
     let currentTableId = null;
     let currentTableCod = null;
+
+    function startReviewTimer() {
+        let timeLeft = 10;
+        const redirectTextEl = document.getElementById('redirectText');
+        const circleEl = document.querySelector('.progress-ring__circle');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (redirectTextEl) redirectTextEl.textContent = `Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...`;
+            
+            if (circleEl) {
+                const offset = 100 - ( (10 - timeLeft) * 10 );
+                circleEl.style.strokeDashoffset = offset;
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                finalizeReview();
+            }
+        }, 1000);
+    }
+
+    function finalizeReview() {
+        window.location.href = `/@${restaurantSlug}/table/${tableCode}`;
+    }
 
     function openOrderModal(tableId, tableCod, preselectedClientName = null) {
         currentTableId = tableId;

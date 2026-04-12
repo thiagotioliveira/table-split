@@ -95,7 +95,9 @@ public class Order {
   public BigDecimal feeApplied() {
     BigDecimal subtotal = calculateSubtotal();
 
-    return subtotal.multiply(BigDecimal.valueOf(serviceFee)).divide(BigDecimal.valueOf(100));
+    return subtotal
+        .multiply(BigDecimal.valueOf(serviceFee))
+        .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
   }
 
   public void close() {
@@ -133,6 +135,26 @@ public class Order {
         .map(OrderCustomer::getName)
         .findFirst()
         .orElse("Desconhecido");
+  }
+
+  public BigDecimal calculateSubtotalByCustomer(UUID customerId) {
+    if (customerId == null) {
+      // Items not assigned to any specific customer (table level)
+      return tickets.stream()
+          .flatMap(t -> t.getItems().stream())
+          .filter(
+              item -> item.getCustomerId() == null && item.getStatus() != TicketStatus.CANCELLED)
+          .map(TicketItem::getTotalPrice)
+          .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    return tickets.stream()
+        .flatMap(t -> t.getItems().stream())
+        .filter(
+            item ->
+                customerId.equals(item.getCustomerId())
+                    && item.getStatus() != TicketStatus.CANCELLED)
+        .map(TicketItem::getTotalPrice)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public Set<OrderCustomer> getCustomers() {

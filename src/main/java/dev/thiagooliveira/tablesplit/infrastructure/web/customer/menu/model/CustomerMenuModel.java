@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CustomerMenuModel {
   private final String profileLink;
@@ -19,6 +20,7 @@ public class CustomerMenuModel {
   private final java.util.UUID orderId;
   private final boolean reviewMode;
   private boolean hasSentFeedback;
+  private TableSummaryModel tableSummary;
 
   public CustomerMenuModel(
       Restaurant restaurant,
@@ -35,6 +37,7 @@ public class CustomerMenuModel {
         activeOrder != null
             && activeOrder.getStatus()
                 != dev.thiagooliveira.tablesplit.domain.order.OrderStatus.OPEN;
+    this.tableSummary = new TableSummaryModel(activeOrder);
     categories.forEach(c -> this.categories.add(new CategoryModel(c, items, symbol)));
     items.forEach(i -> this.items.add(new ItemModel(i, symbol)));
     if (activeOrder != null) {
@@ -52,7 +55,10 @@ public class CustomerMenuModel {
                                     t.getCreatedAt());
                             this.ticketItems.add(ticketItem);
                           }));
-      activeOrder.getCustomers().stream().map(OrderCustomerModel::new).forEach(this.customers::add);
+      activeOrder.getCustomers().stream()
+          .map(c -> new OrderCustomerModel(c, activeOrder.calculateSubtotalByCustomer(c.getId())))
+          .collect(Collectors.toList())
+          .forEach(this.customers::add);
       activeOrder.getPayments().stream().map(PaymentModel::new).forEach(this.payments::add);
     }
   }
@@ -116,5 +122,9 @@ public class CustomerMenuModel {
 
   public void setHasSentFeedback(boolean hasSentFeedback) {
     this.hasSentFeedback = hasSentFeedback;
+  }
+
+  public TableSummaryModel getTableSummary() {
+    return tableSummary;
   }
 }

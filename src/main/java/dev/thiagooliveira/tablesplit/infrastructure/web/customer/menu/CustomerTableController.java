@@ -7,18 +7,19 @@ import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
-import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.PaymentModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.TableSummaryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -80,31 +81,19 @@ public class CustomerTableController {
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
 
-    transactionalContext.execute(
-        () -> updateCustomerName.execute(table.getId(), request.customerId(), request.name()));
-
-    return ResponseEntity.ok().build();
+    try {
+      transactionalContext.execute(
+          () -> updateCustomerName.execute(table.getId(), request.customerId(), request.name()));
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(409).build();
+    }
   }
 
   private Table getTable(Restaurant restaurant, String tableCode) {
     return getTables
         .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
         .orElseThrow(() -> new NotFoundException("error.table.not.found"));
-  }
-
-  private Table getAndOpenTable(
-      Restaurant restaurant, String tableCode, UUID customerId, String customerName) {
-    var table =
-        getTables
-            .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
-            .orElseThrow(() -> new NotFoundException("error.table.not.found"));
-    if (table.getStatus() == TableStatus.AVAILABLE) {
-      final java.util.UUID tableId = table.getId();
-      transactionalContext.execute(
-          () -> openTable.execute(tableId, restaurant.getServiceFee(), customerId, customerName));
-      table = getTables.findById(tableId).orElse(table);
-    }
-    return table;
   }
 
   @GetMapping("/@{slug}/table/{tableCode}")
@@ -132,10 +121,16 @@ public class CustomerTableController {
       getOrder
           .execute(table.getId())
           .ifPresent(
-              order ->
-                  model.addAttribute(
-                      "tableCustomers",
-                      order.getCustomers().stream().map(OrderCustomerModel::new).toList()));
+              order -> {
+                List<OrderCustomerModel> customers =
+                    order.getCustomers().stream()
+                        .map(
+                            c ->
+                                new OrderCustomerModel(
+                                    c, order.calculateSubtotalByCustomer(c.getId())))
+                        .collect(Collectors.toList());
+                model.addAttribute("tableCustomers", customers);
+              });
     }
     return "table-entry";
   }
@@ -196,7 +191,9 @@ public class CustomerTableController {
     if (customerId != null && !customerId.isEmpty()) {
       try {
         boolean hasSent = rateItem.hasFeedback(activeOrder.getId(), UUID.fromString(customerId));
-        menuModel.setHasSentFeedback(hasSent);
+        if (hasSent) {
+          return String.format("redirect:/@%s/table/%s", slug, tableCode);
+        }
       } catch (Exception e) {
         // Ignore check errors
       }
@@ -246,13 +243,16 @@ public class CustomerTableController {
         }
       }
 
+      final var order = finalOrder;
       var customers =
-          finalOrder != null
-              ? finalOrder.getCustomers().stream().map(OrderCustomerModel::new).toList()
+          order != null
+              ? order.getCustomers().stream()
+                  .map(c -> new OrderCustomerModel(c, order.calculateSubtotalByCustomer(c.getId())))
+                  .collect(Collectors.toList())
               : List.<OrderCustomerModel>of();
       var payments =
-          finalOrder != null
-              ? finalOrder.getPayments().stream().map(PaymentModel::new).toList()
+          order != null
+              ? order.getPayments().stream().map(PaymentModel::new).toList()
               : List.<PaymentModel>of();
       var ticketItems = new ArrayList<SimpleTicketItem>();
 
@@ -282,11 +282,12 @@ public class CustomerTableController {
               ticketItems,
               customers,
               payments,
-              finalOrder != null ? finalOrder.getId() : null,
-              finalOrder != null
-                  && finalOrder.getStatus()
+              order != null ? order.getId() : null,
+              order != null
+                  && order.getStatus()
                       != dev.thiagooliveira.tablesplit.domain.order.OrderStatus.OPEN,
-              hasSentFeedback);
+              hasSentFeedback,
+              order != null ? new TableSummaryModel(order) : null);
 
       return ResponseEntity.ok(responseData);
     } catch (Exception e) {
@@ -301,7 +302,8 @@ public class CustomerTableController {
       List<PaymentModel> payments,
       java.util.UUID orderId,
       boolean reviewMode,
-      boolean hasSentFeedback) {}
+      boolean hasSentFeedback,
+      TableSummaryModel tableSummary) {}
 
   public record SimpleTicketItem(
       String id,

@@ -867,6 +867,15 @@
             padding: 1rem;
             margin-bottom: 0.75rem;
         }
+        .order-item.cancelled {
+            border-style: dashed;
+            background: var(--background);
+        }
+        .order-item.cancelled .order-item-info h4,
+        .order-item.cancelled .order-item-price-val {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
         .order-item-header {
             display: flex;
             justify-content: space-between;
@@ -889,6 +898,7 @@
         .order-status.preparing { background: var(--warning-light); color: var(--warning); }
         .order-status.ready { background: var(--accent-light); color: var(--accent); }
         .order-status.delivered { background: var(--border); color: var(--muted); }
+        .order-status.cancelled { background: var(--destructive-light); color: var(--destructive); }
         .item-rating .star.active { color: #fbbf24; fill: #fbbf24; }
         .item-rating .star.readonly { cursor: default; }
         .order-item-details {
@@ -1549,6 +1559,13 @@
             text-align: right;
             font-weight: 600;
         }
+        .person-item.cancelled {
+            opacity: 0.6;
+        }
+        .person-item.cancelled .person-item-name,
+        .person-item.cancelled .person-item-total {
+            text-decoration: line-through;
+        }
         .table-modal-footer {
             padding: 1.25rem;
             border-top: 1px solid var(--border);
@@ -1727,7 +1744,7 @@
         <div class="hero-actions">
             <!-- User Identity Badge -->
             <button class="user-badge" th:classappend="${customerMenu.reviewMode ? 'readonly' : ''}" 
-                    onclick="openUserEditModal()" 
+                    onclick="if(!isReviewMode) openUserEditModal()" 
                     th:if="${customerMenu.hasTable()}" id="userBadgeBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span class="user-badge-name" id="userBadgeName">Cliente</span>
@@ -2037,7 +2054,7 @@
             <p class="item-modal-desc" id="itemModalDesc">Descrição</p>
             <div class="item-modal-tags" id="itemModalTags"></div>
         </div>
-        <div class="item-modal-footer">
+        <div class="item-modal-footer" th:if="${customerMenu.hasTable()}">
             <div class="client-selector" th:if="${customerMenu.hasTable()}" id="modalClientSelector">
                 <div class="client-selector-label">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -2130,9 +2147,10 @@
     const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
     const tableCode = /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'';
     const activePayments = /*[[${customerMenu.payments}]]*/[];
-    const tableCustomersNames = /*[[${customerMenu.customers}]]*/[];
-    const isReviewMode = /*[[${customerMenu.reviewMode}]]*/false;
-    const activeOrderId = /*[[${customerMenu.orderId?.toString()}]]*/'';
+    const tableCustomersNames = /*[[${customerMenu.customers}]]*/ [];
+    const isReviewMode = /*[[${customerMenu.reviewMode}]]*/ false;
+    const activeOrderId = /*[[${customerMenu.orderId?.toString()}]]*/ '';
+    let tableSummary = /*[[${customerMenu.tableSummary}]]*/ null;
     const hasSentFeedback = /*[[${customerMenu.hasSentFeedback}]]*/false;
 
 
@@ -2165,21 +2183,22 @@
         window.location.replace(entryPath);
     }
 
+    const safeMyCustomerId = String(myCustomerId || '').toLowerCase();
     let myOrders = allTableItems
-        .filter(o => 
-            o.customerId && myCustomerId && 
-            String(o.customerId).toLowerCase() === String(myCustomerId).toLowerCase()
-        )
+        .filter(o => {
+            if (!o.customerId || !safeMyCustomerId) return false;
+            return String(o.customerId).toLowerCase() === safeMyCustomerId;
+        })
         .map(o => ({
             ...o,
             time: parseDate(o.createdAt)
         }));
 
     let tableOrders = allTableItems
-        .filter(o => 
-            !o.customerId || !myCustomerId || 
-            String(o.customerId).toLowerCase() !== String(myCustomerId).toLowerCase()
-        )
+        .filter(o => {
+            if (!o.customerId || !safeMyCustomerId) return true;
+            return String(o.customerId).toLowerCase() !== safeMyCustomerId;
+        })
         .reduce((acc, item) => {
             const cname = item.customerName || 'Outros';
             if (!acc[cname]) acc[cname] = [];
@@ -2327,7 +2346,6 @@
         const COOLDOWN = 60000; // 1 minute
 
         if (lastCall && (now - lastCall < COOLDOWN)) {
-            // Should be handled by button state, but as safety:
             return;
         }
 
@@ -2339,7 +2357,8 @@
                 if (response.ok) {
                     localStorage.setItem('lastWaiterCallTime', now);
                     updateWaiterCallButton();
-                    closeWaiterModal();
+                    // Just show the called modal, the confirm one was closed by the button click if it was used
+                    document.getElementById('confirmWaiterModal')?.classList.remove('active');
                     document.getElementById('waiterCalledModal').classList.add('active');
                 } else if (response.status === 409) {
                     refreshTableData();
@@ -2348,11 +2367,8 @@
                 }
             } catch (error) {
                 console.error('Error calling waiter:', error);
-                alert('Erro ao chamar o garçom. Verifique sua conexão.');
+                alert('Erro de conexão ao chamar o garçom.');
             }
-        } else {
-            closeWaiterModal();
-            document.getElementById('waiterCalledModal').classList.add('active');
         }
     }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
@@ -2424,6 +2440,9 @@
     }
 
     function updateCartUI() {
+        const cartFloat = document.getElementById('cartFloat');
+        if (!cartFloat) return;
+
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const subtotal = cart.reduce((sum, item) => {
             const effectivePrice = item.promotion ? item.promotion.promotionalPrice : item.price;
@@ -2431,15 +2450,21 @@
         }, 0);
         const total = subtotal + (subtotal * SERVICE_FEE);
 
-        document.getElementById('cartFloat').style.display = totalItems > 0 ? 'block' : 'none';
-        document.getElementById('cartCount').textContent = totalItems + ' ' + (totalItems === 1 ? 'item' : 'itens');
-        document.getElementById('cartTotal').textContent = formatPrice(subtotal);
+        cartFloat.style.display = totalItems > 0 ? 'block' : 'none';
+        const cartCount = document.getElementById('cartCount');
+        if (cartCount) cartCount.textContent = totalItems + ' ' + (totalItems === 1 ? 'item' : 'itens');
+        const cartTotal = document.getElementById('cartTotal');
+        if (cartTotal) cartTotal.textContent = formatPrice(subtotal);
 
         if (totalItems > 0) {
-            document.getElementById('cartEmpty').style.display = 'none';
-            document.getElementById('cartNote').style.display = 'block';
-            document.getElementById('cartFooter').style.display = 'block';
-            document.getElementById('cartItems').style.display = 'block';
+            const empty = document.getElementById('cartEmpty');
+            if (empty) empty.style.display = 'none';
+            const note = document.getElementById('cartNote');
+            if (note) note.style.display = 'block';
+            const footer = document.getElementById('cartFooter');
+            if (footer) footer.style.display = 'block';
+            const items = document.getElementById('cartItems');
+            if (items) items.style.display = 'block';
 
             // Group cart by client name
             const grouped = {};
@@ -2530,42 +2555,9 @@
             });
 
             if (response.ok) {
-                // For now, we'll just simulate the local update of the state
-                // In a real app, we'd probably re-fetch or receive a WebSocket update
-                cart.forEach(item => {
-                    const cid = item.clientId || myCustomerId;
-                    const cname = item.clientName || myCustomerName;
-                    const orderItem = { 
-                        ...item, 
-                        customerId: cid, 
-                        customerName: cname,
-                        name: item.name, // item.name is already a map in ItemModel
-                        quantity: item.qty,
-                        unitPrice: item.promotion ? item.promotion.promotionalPrice : item.price, 
-                        totalPrice: (item.promotion ? item.promotion.promotionalPrice : item.price) * item.qty,
-                        status: 'sent', 
-                        statusLabel: 'Pendente', 
-                        statusClass: 'sent', 
-                        time: new Date(),
-                        promotionSnapshot: item.promotion ? {
-                            promotionId: item.promotion.promotionId,
-                            originalPrice: item.price,
-                            discountType: item.promotion.discountType,
-                            discountValue: item.promotion.discountValue
-                        } : null
-                    };
-                    
-                    if (cid && myCustomerId && String(cid).toLowerCase() === String(myCustomerId).toLowerCase()) {
-                        myOrders.push(orderItem);
-                    } else {
-                        if (!tableOrders[cname]) tableOrders[cname] = [];
-                        tableOrders[cname].push(orderItem);
-                    }
-                });
                 cart = [];
                 updateCartUI();
-                updateOrdersUI();
-                updateTableTotal();
+                await refreshTableData(true);
                 closeCart();
                 document.getElementById('orderSentModal').classList.add('active');
             } else if (response.status === 409) {
@@ -2587,48 +2579,36 @@
         const empty = document.getElementById('ordersEmpty');
         const list = document.getElementById('ordersList');
 
+        if (!list || !empty) return; // Basic elements for orders must exist
+
         const filteredOrders = myOrders;
         const feedbackAlreadySent = hasSentFeedback;
 
         if (filteredOrders.length === 0) {
-            badge.style.display = 'none';
+            if (badge) badge.style.display = 'none';
             empty.style.display = 'block';
             list.innerHTML = '';
             return;
         }
 
-        badge.style.display = 'inline';
-        badge.textContent = filteredOrders.length;
+        if (badge) {
+            badge.style.display = 'inline';
+            badge.textContent = filteredOrders.length;
+        }
         empty.style.display = 'none';
 
-        let html = '';
+        // Preserve input state before re-render
+        const commentInput = document.getElementById('expComment');
+        const currentComment = commentInput ? commentInput.value : '';
+        const isFormActive = document.getElementById('expForm')?.classList.contains('active');
 
-        // Add Experience Card if in review mode and not already sent
-        if (isReviewMode && !feedbackAlreadySent) {
-            html += `
-                <div class="experience-card" id="experienceCard">
-                    <h3>Como está a ser a sua experiência?</h3>
-                    <p>Avalie o nosso atendimento e ambiente.</p>
-                    <div class="exp-stars">
-                        ${[1, 2, 3, 4, 5].map(n => `
-                            <svg class="exp-star" data-val="${n}" onclick="selectExpRating(${n})" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        `).join('')}
-                    </div>
-                    <div class="exp-form" id="expForm">
-                        <textarea class="exp-textarea" id="expComment" maxlength="500" placeholder="Algum comentário (opcional)..."></textarea>
-                        <button class="exp-submit" onclick="confirmGeneralFeedback()">Enviar Avaliação</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        html += filteredOrders.map(order => {
+        let html = filteredOrders.map(order => {
             const isDelivered = order.status === 'delivered' || order.status === 'DELIVERED';
             const hasRating = order.rating > 0;
             const isReadonly = feedbackAlreadySent;
             
             return `
-            <div class="order-item">
+            <div class="order-item ${String(order.status).toLowerCase() === 'cancelled' ? 'cancelled' : ''}">
               <div class="order-item-header">
                 <div class="order-item-info">
                   <h4>${getItemText(order, 'name')}</h4>
@@ -2638,7 +2618,7 @@
                     ${order.time ? formatTimeAgo(order.time) : ''}
                   </p>
                 </div>
-                <span class="order-status ${order.status}">${statusIcons[order.status] || ''}${order.statusLabel || ''}</span>
+                <span class="order-status ${String(order.status).toLowerCase()}">${statusIcons[String(order.status).toLowerCase()] || ''}${order.statusLabel || ''}</span>
               </div>
               <div class="order-item-details">
                 <span class="order-item-qty">${order.quantity}x</span>
@@ -2653,7 +2633,7 @@
                                     ${formatPrice(order.promotionSnapshot.promotionalPrice * order.quantity)}
                                 </div>
                             ` : `
-                                <div style="font-weight: 700;">
+                                <div style="font-weight: 700;" class="order-item-price-val">
                                     ${formatPrice(order.totalPrice)}
                                 </div>
                             `}
@@ -2676,6 +2656,24 @@
             </div>
           `;
         }).join('');
+
+        if (isReviewMode && !feedbackAlreadySent) {
+            html += `
+                <div class="experience-card" id="experienceCard">
+                    <h3>Como foi a sua experiência?</h3>
+                    <p>Avalie o nosso atendimento e ambiente.</p>
+                    <div class="exp-stars">
+                        ${[1, 2, 3, 4, 5].map(n => `
+                            <svg class="exp-star ${selectedExpRating >= n ? 'active' : ''}" data-val="${n}" onclick="selectExpRating(${n})" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        `).join('')}
+                    </div>
+                    <div class="exp-form ${isFormActive ? 'active' : ''}" id="expForm">
+                        <textarea class="exp-textarea" id="expComment" maxlength="500" placeholder="Algum comentário (opcional)...">${currentComment}</textarea>
+                        <button class="exp-submit" onclick="confirmGeneralFeedback()">Enviar Avaliação</button>
+                    </div>
+                </div>
+            `;
+        }
 
         list.innerHTML = html;
     }
@@ -2748,17 +2746,74 @@
             });
 
             if (response.ok) {
-                // Reload to refresh the feedback status from server
-                window.location.reload();
+                showFeedbackSuccessAndRedirect();
             } else {
                 const errorText = await response.text();
                 alert('Erro ao enviar feedback: ' + response.status + ' - ' + errorText);
-                experienceCard.innerHTML = originalContent; // Restore UI if you want, but simple reload might be easier
             }
         } catch (e) {
             console.error('Falha ao enviar feedback geral', e);
             alert('Erro de conexão ao enviar feedback.');
         }
+    }
+
+    function showFeedbackSuccessAndRedirect() {
+        // Create success overlay
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: var(--card);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        `;
+
+        let timeLeft = 10;
+        overlay.innerHTML = `
+            <div style="width: 80px; height: 80px; background: #16a34a; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 1rem; color: var(--foreground);" data-i18n="feedbackSuccessTitle">Obrigado pela sua visita!</h2>
+            <p id="feedbackRedirectText" style="color: var(--muted); margin-bottom: 2rem; max-width: 300px;" data-i18n="feedbackSuccessText">Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...</p>
+            <div style="position: relative; width: 60px; height: 60px;">
+                <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e8e4de" stroke-width="3" />
+                    <path id="countdownCircle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--primary)" stroke-width="3" stroke-dasharray="100, 100" style="transition: stroke-dashoffset 1s linear;" />
+                </svg>
+                <div id="countdownText" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: var(--primary);">${timeLeft}</div>
+            </div>
+            <button onclick="finalizeReview()" style="margin-top: 2rem; background: none; border: 1px solid var(--border); padding: 0.75rem 1.5rem; border-radius: var(--radius); color: var(--muted); font-weight: 500; cursor: pointer;" data-i18n="redirectNow">Ir agora</button>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const circleEl = document.getElementById('countdownCircle');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            const textEl = document.getElementById('countdownText');
+            const redirectTextEl = document.getElementById('feedbackRedirectText');
+            
+            if (textEl) textEl.textContent = timeLeft;
+            if (redirectTextEl) redirectTextEl.textContent = `Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...`;
+            
+            if (circleEl) {
+                const offset = 100 - (timeLeft / 10) * 100;
+                circleEl.style.strokeDashoffset = offset;
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                finalizeReview();
+            }
+        }, 1000);
     }
 
     function finalizeReview() {
@@ -2797,12 +2852,10 @@
 
     // Waiter
     /*
-    function confirmCallWaiter() { document.getElementById('confirmWaiterModal').classList.add('active'); }
-    function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
-    function callWaiter() {
-        closeConfirmWaiterModal();
-        document.getElementById('waiterCalledModal').classList.add('active');
+    function confirmCallWaiter() { 
+        if (!isReviewMode) document.getElementById('confirmWaiterModal').classList.add('active'); 
     }
+    function closeConfirmWaiterModal() { document.getElementById('confirmWaiterModal').classList.remove('active'); }
     function closeWaiterCalledModal() { document.getElementById('waiterCalledModal').classList.remove('active'); }
     */
 
@@ -2851,41 +2904,58 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ customerId: myCustomerId, name: newName })
                     });
+                    if (response.status === 409) {
+                        refreshTableData();
+                        closeUserEditModal();
+                        return;
+                    }
                     if (!response.ok) throw new Error('Failed to sync name with server');
+
+                    myCustomerName = newName;
+                    
+                    // Update localStorage
+                    const userData = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+                    userData.name = newName;
+                    localStorage.setItem('restaurantCustomer', JSON.stringify(userData));
+                    
+                    // Update tableClients list
+                    const me = tableClients.find(c => String(c.id).toLowerCase() === String(myCustomerId).toLowerCase());
+                    if (me) me.name = newName;
+                    
+                    // Update cart items that belong to me
+                    cart.forEach(item => {
+                        if (String(item.clientId).toLowerCase() === String(myCustomerId).toLowerCase()) {
+                            item.clientName = newName;
+                        }
+                    });
+                    
+                    // Update orders that belong to me
+                    myOrders.forEach(order => {
+                        order.customerName = newName;
+                    });
+
+                    // Refresh UI
+                    document.getElementById('userBadgeName').textContent = newName;
+                    updateCartUI();
+                    updateOrdersUI();
+                    renderClientOptions();
                 } catch (error) {
                     console.error('Error syncing name:', error);
-                    // Optionally show a toast error here
                 }
+            } else {
+                myCustomerName = newName;
+                
+                // Update localStorage
+                const userData = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+                userData.name = newName;
+                localStorage.setItem('restaurantCustomer', JSON.stringify(userData));
+                
+                // Update UI
+                document.getElementById('userBadgeName').textContent = newName;
+                updateCartUI();
+                updateOrdersUI();
+                renderClientOptions();
             }
-
-            myCustomerName = newName;
-            
-            // Update localStorage
-            const userData = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
-            userData.name = newName;
-            localStorage.setItem('restaurantCustomer', JSON.stringify(userData));
-            
-            // Update tableClients list
-            const me = tableClients.find(c => String(c.id).toLowerCase() === String(myCustomerId).toLowerCase());
-            if (me) me.name = newName;
-            
-            // Update cart items that belong to me
-            cart.forEach(item => {
-                if (String(item.clientId).toLowerCase() === String(myCustomerId).toLowerCase()) {
-                    item.clientName = newName;
-                }
-            });
-            
-            // Update orders that belong to me
-            myOrders.forEach(order => {
-                order.customerName = newName;
-            });
-
-            // Refresh UI
-            document.getElementById('userBadgeName').textContent = newName;
-            updateCartUI();
-            updateOrdersUI();
-            renderClientOptions();
         }
         closeUserEditModal();
     }
@@ -2908,24 +2978,26 @@
 
         // Add current user orders
         if (myOrders.length > 0) {
-            const myTotal = myOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
-            grandSubtotal += myTotal;
+            const mySubtotal = myOrders
+                .filter(o => String(o.status).toLowerCase() !== 'cancelled')
+                .reduce((sum, o) => sum + parseFloat(o.totalPrice || 0), 0);
+            
             html += `
           <div class="person-section">
             <div class="person-header">
               <div class="person-avatar">EU</div>
               <span class="person-name">Você</span>
-              <span class="person-total">${formatPrice(myTotal)}</span>
+              <span class="person-total">${formatPrice(mySubtotal)}</span>
             </div>
             ${myOrders.map(o => `
-                <div class="person-item">
+                <div class="person-item ${String(o.status).toLowerCase() === 'cancelled' ? 'cancelled' : ''}">
                     <span class="person-item-name">
                         <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
                     </span>
-                    <span class="order-status ${o.status}">
-                        ${statusIcons[o.status] || ''}${o.statusLabel || ''}
+                    <span class="order-status ${String(o.status).toLowerCase()}">
+                        ${statusIcons[String(o.status).toLowerCase()] || ''}${o.statusLabel || ''}
                     </span>
-                    <span class="person-item-total">${formatPrice(o.totalPrice)}</span>
+                    <span class="person-item-total ${String(o.status).toLowerCase() === 'cancelled' ? 'strike' : ''}">${formatPrice(o.totalPrice)}</span>
                 </div>`).join('')}
           </div>
         `;
@@ -2933,25 +3005,27 @@
 
         // Add other people
         for (const [name, orders] of Object.entries(tableOrders)) {
-            const personTotal = orders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
-            grandSubtotal += personTotal;
-            const initials = name.split(' ').map(n => n[0]).join('');
+            const customerData = tableCustomersFromBackend.find(c => c.name === name);
+            const personSubtotal = customerData ? (customerData.subtotalValue !== undefined ? customerData.subtotalValue : customerData.subtotal) : orders
+                .filter(o => String(o.status).toLowerCase() !== 'cancelled')
+                .reduce((sum, o) => sum + parseFloat(o.totalPrice || 0), 0);
+            
             html += `
           <div class="person-section">
             <div class="person-header">
-              <div class="person-avatar">${initials}</div>
+              <div class="person-avatar">${name.charAt(0).toUpperCase()}</div>
               <span class="person-name">${name}</span>
-              <span class="person-total">${formatPrice(personTotal)}</span>
+              <span class="person-total">${formatPrice(personSubtotal)}</span>
             </div>
             ${orders.map(o => `
-                <div class="person-item">
+                <div class="person-item ${String(o.status).toLowerCase() === 'cancelled' ? 'cancelled' : ''}">
                     <span class="person-item-name">
                         <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
                     </span>
-                    <span class="order-status ${o.status}">
-                        ${statusIcons[o.status] || ''}${o.statusLabel || ''}
+                    <span class="order-status ${String(o.status).toLowerCase()}">
+                        ${statusIcons[String(o.status).toLowerCase()] || ''}${o.statusLabel || ''}
                     </span>
-                    <span class="person-item-total">${formatPrice(o.totalPrice)}</span>
+                    <span class="person-item-total ${String(o.status).toLowerCase() === 'cancelled' ? 'strike' : ''}">${formatPrice(o.totalPrice)}</span>
                 </div>`).join('')}
           </div>
         `;
@@ -2960,77 +3034,115 @@
         if (!html) html = `<p style="text-align: center; color: var(--muted); padding: 2rem;">A mesa ainda não tem pedidos.</p>`;
         body.innerHTML = html;
 
-        document.getElementById('tableSubtotal').textContent = formatPrice(grandSubtotal);
-        document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
-        const totalAmount = grandSubtotal + (grandSubtotal * SERVICE_FEE);
-        document.getElementById('tableGrandTotal').textContent = formatPrice(totalAmount);
-
-        // Payments History
-        const paymentsContainer = document.getElementById('paymentsHistoryContainer');
-        const paidRow = document.getElementById('tablePaidRow');
-        const remainingRow = document.getElementById('tableRemainingRow');
-        const grandTotalRow = document.querySelector('.table-total-row.grand');
-
-        if (activePayments && activePayments.length > 0) {
-            let totalPaid = activePayments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-            let paymentsHtml = `
-                <div class="payments-history">
-                    <h3>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-                        Pagamentos Realizados
-                    </h3>
-                    ${activePayments.map(p => {
-                        const customer = tableCustomersFromBackend.find(c => String(c.id) === String(p.customerId)) || { name: 'Cliente' };
-                        const paidTime = parseDate(p.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const methodInfo = paymentMethods[p.method] || { label: p.method, icon: '' };
-                        return `
-                        <div class="payment-history-item">
-                            <div class="payment-info">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span class="payment-customer">${customer.name}</span>
-                                    <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                        ${methodInfo.icon}
-                                        <span style="line-height: 1;">${methodInfo.label}</span>
-                                    </span>
-                                </div>
-                                <span class="payment-time">${paidTime}</span>
-                            </div>
-                            <span class="payment-amount">-${formatPrice(p.amount)}</span>
-                        </div>`;
-                    }).join('')}
-                </div>
-            `;
-            paymentsContainer.innerHTML = paymentsHtml;
-            document.getElementById('tablePaidAmount').textContent = formatPrice(totalPaid);
-            document.getElementById('tableRemainingAmount').textContent = formatPrice(totalAmount - totalPaid);
+        // Use backend-calculated summary if available
+        if (tableSummary) {
+            const elSubtotal = document.getElementById('tableSubtotal');
+            const elServiceFee = document.getElementById('tableServiceFee');
+            const elGrandTotal = document.getElementById('tableGrandTotal');
             
-            paidRow.style.display = 'flex';
-            remainingRow.style.display = 'flex';
-            grandTotalRow.style.borderTop = 'none';
-            grandTotalRow.style.marginTop = '0';
-            grandTotalRow.style.paddingTop = '0';
+            // Try to use the .xxxValue fields from our new class but fallback to the raw ones
+            const subtotalVal = tableSummary.subtotalValue !== undefined ? tableSummary.subtotalValue : tableSummary.subtotal;
+            const serviceFeeVal = tableSummary.serviceFeeValue !== undefined ? tableSummary.serviceFeeValue : tableSummary.serviceFee;
+            const totalVal = tableSummary.totalValue !== undefined ? tableSummary.totalValue : tableSummary.total;
+            const paidVal = tableSummary.paidValue !== undefined ? tableSummary.paidValue : tableSummary.paid;
+            const remainingVal = tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining;
+
+            if (elSubtotal) elSubtotal.textContent = formatPrice(subtotalVal);
+            if (elServiceFee) elServiceFee.textContent = formatPrice(serviceFeeVal);
+            if (elGrandTotal) elGrandTotal.textContent = formatPrice(totalVal);
+
+            // Payments History
+            const paymentsContainer = document.getElementById('paymentsHistoryContainer');
+            const paidRow = document.getElementById('tablePaidRow');
+            const remainingRow = document.getElementById('tableRemainingRow');
+            const grandTotalRow = document.querySelector('.table-total-row.grand');
+
+            if (activePayments && activePayments.length > 0) {
+                let paymentsHtml = `
+                    <div class="payments-history">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                            Pagamentos Realizados
+                        </h3>
+                        ${activePayments.map(p => {
+                            const customer = tableCustomersFromBackend.find(c => String(c.id) === String(p.customerId)) || { name: 'Cliente' };
+                            const paidTime = parseDate(p.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            const methodInfo = paymentMethods[String(p.method).toUpperCase()] || { label: p.method, icon: '' };
+                            return `
+                            <div class="payment-history-item">
+                                <div class="payment-info">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span class="payment-customer">${customer.name}</span>
+                                        <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                            ${methodInfo.icon}
+                                            <span style="line-height: 1;">${methodInfo.label}</span>
+                                        </span>
+                                    </div>
+                                    <span class="payment-time">${paidTime}</span>
+                                </div>
+                                <span class="payment-amount">-${formatPrice(p.amount)}</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                `;
+                if (paymentsContainer) paymentsContainer.innerHTML = paymentsHtml;
+            } else {
+                if (paymentsContainer) paymentsContainer.innerHTML = '';
+            }
+
+            if (document.getElementById('tablePaidAmount')) document.getElementById('tablePaidAmount').textContent = formatPrice(paidVal);
+            if (document.getElementById('tableRemainingAmount')) document.getElementById('tableRemainingAmount').textContent = formatPrice(remainingVal);
+            
+            if (paidRow) paidRow.style.display = paidVal > 0.01 ? 'flex' : 'none';
+            if (remainingRow) remainingRow.style.display = remainingVal > 0.01 ? 'flex' : 'none';
+            
+            if (activePayments && activePayments.length > 0) {
+                if (grandTotalRow) {
+                    grandTotalRow.style.borderTop = 'none';
+                    grandTotalRow.style.marginTop = '0';
+                    grandTotalRow.style.paddingTop = '0';
+                }
+            } else {
+                if (grandTotalRow) {
+                    grandTotalRow.style.borderTop = '';
+                    grandTotalRow.style.marginTop = '';
+                    grandTotalRow.style.paddingTop = '';
+                }
+            }
         } else {
-            paymentsContainer.innerHTML = '';
-            paidRow.style.display = 'none';
-            remainingRow.style.display = 'none';
-            grandTotalRow.style.borderTop = '1px dashed var(--border)';
-            grandTotalRow.style.marginTop = '0.5rem';
-            grandTotalRow.style.paddingTop = '0.75rem';
+            // Fallback to local calculation if no summary provided
+            document.getElementById('tableSubtotal').textContent = formatPrice(grandSubtotal);
+            document.getElementById('tableServiceFee').textContent = formatPrice(grandSubtotal * SERVICE_FEE);
+            const totalAmount = grandSubtotal + (grandSubtotal * SERVICE_FEE);
+            document.getElementById('tableGrandTotal').textContent = formatPrice(totalAmount);
+            document.getElementById('tablePaidRow').style.display = 'none';
+            document.getElementById('tableRemainingRow').style.display = 'none';
         }
     }
 
     function updateTableTotal() {
-        const myTotal = myOrders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
-        const othersTotal = Object.values(tableOrders).flat().reduce((sum, o) => sum + parseFloat(o.totalPrice), 0);
-        const grandTotal = myTotal + othersTotal;
-        const totalWithFee = grandTotal + (grandTotal * SERVICE_FEE);
-        
-        let totalPaid = 0;
-        if (typeof activePayments !== 'undefined' && activePayments) {
-            totalPaid = activePayments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+        const elQuickTotal = document.getElementById('quickTableTotal');
+        if (!elQuickTotal) return;
+
+        if (tableSummary) {
+            const remainingVal = tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining;
+            elQuickTotal.textContent = formatPrice(remainingVal);
+        } else {
+            // Local fallback
+            const myOrdersCount = (typeof myOrders !== 'undefined') ? myOrders : [];
+            const tableOrdersCount = (typeof tableOrders !== 'undefined') ? Object.values(tableOrders).flat() : [];
+            const myTotal = myOrdersCount.reduce((sum, o) => sum + parseFloat(o.totalPrice || 0), 0);
+            const othersTotal = tableOrdersCount.reduce((sum, o) => sum + parseFloat(o.totalPrice || 0), 0);
+            const grandTotal = myTotal + othersTotal;
+            const totalWithFee = grandTotal + (grandTotal * SERVICE_FEE);
+            
+            let totalPaid = 0;
+            if (typeof activePayments !== 'undefined' && activePayments) {
+                totalPaid = activePayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+            }
+            
+            elQuickTotal.textContent = formatPrice(totalWithFee - totalPaid);
         }
-        
-        document.getElementById('quickTableTotal').textContent = formatPrice(totalWithFee - totalPaid);
     }
 
     // Tab switching
@@ -3186,9 +3298,10 @@
         }
     }
 
-    async function refreshTableData() {
+    async function refreshTableData(force = false) {
         const btn = document.getElementById('refreshTableBtn');
-        if (!btn || btn.classList.contains('refreshing') || btn.disabled) return;
+        if (!btn) return;
+        if (!force && (btn.classList.contains('refreshing') || btn.disabled)) return;
         
         btn.classList.add('refreshing');
         
@@ -3215,19 +3328,20 @@
 
             // Re-map orders
             const newAllItems = data.ticketItems || [];
+            const safeMyCustomerId = String(myCustomerId || '').toLowerCase();
             
             myOrders = newAllItems
-                .filter(o => 
-                    o.customerId && myCustomerId && 
-                    String(o.customerId).toLowerCase() === String(myCustomerId).toLowerCase()
-                )
+                .filter(o => {
+                    if (!o.customerId || !safeMyCustomerId) return false;
+                    return String(o.customerId).toLowerCase() === safeMyCustomerId;
+                })
                 .map(o => ({ ...o, time: parseDate(o.createdAt) }));
 
             tableOrders = newAllItems
-                .filter(o => 
-                    !o.customerId || !myCustomerId || 
-                    String(o.customerId).toLowerCase() !== String(myCustomerId).toLowerCase()
-                )
+                .filter(o => {
+                    if (!o.customerId || !safeMyCustomerId) return true;
+                    return String(o.customerId).toLowerCase() !== safeMyCustomerId;
+                })
                 .reduce((acc, item) => {
                     const cname = item.customerName || 'Outros';
                     if (!acc[cname]) acc[cname] = [];
@@ -3243,9 +3357,18 @@
                 }
             }
 
+            tableSummary = data.tableSummary || null;
+            if (data.customers) {
+                tableCustomersFromBackend.length = 0;
+                data.customers.forEach(c => tableCustomersFromBackend.push(c));
+            }
+
             // Re-render UI
             updateOrdersUI();
             updateTableTotal();
+            if (typeof renderTableModal === 'function') {
+                renderTableModal();
+            }
 
         } catch (error) {
             console.error('Error refreshing table data:', error);
