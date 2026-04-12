@@ -256,11 +256,6 @@ public class CustomerTableController {
               : List.<PaymentModel>of();
       var ticketItems = new ArrayList<SimpleTicketItem>();
 
-      var requestLanguages =
-          java.util.List.of(
-              dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(locale));
-      var menuItems = getItem.execute(restaurant.getId(), requestLanguages, true);
-
       if (finalOrder != null) {
         finalOrder
             .getTickets()
@@ -269,27 +264,10 @@ public class CustomerTableController {
                     t.getItems()
                         .forEach(
                             item -> {
-                              if (item.getName() == null || item.getName().isEmpty()) {
-                                menuItems.stream()
-                                    .filter(i -> i.getId().equals(item.getItemId()))
-                                    .findFirst()
-                                    .ifPresent(i -> item.setName(i.getName()));
-                              }
-
-                              var nameMap = item.getName();
-                              String localizedName = "Item";
-                              if (nameMap != null && !nameMap.isEmpty()) {
-                                var lang =
-                                    dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(
-                                        locale);
-                                localizedName = nameMap.get(lang);
-                                if (localizedName == null)
-                                  localizedName =
-                                      nameMap.get(
-                                          dev.thiagooliveira.tablesplit.domain.common.Language.PT);
-                                if (localizedName == null)
-                                  localizedName = nameMap.values().iterator().next();
-                              }
+                              var lang =
+                                  dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(
+                                      locale);
+                              String localizedName = item.getName().get(lang);
 
                               ticketItems.add(
                                   new SimpleTicketItem(

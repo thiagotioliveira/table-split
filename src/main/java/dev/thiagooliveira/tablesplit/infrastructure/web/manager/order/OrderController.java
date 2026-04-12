@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 
-import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.CancelTicketItem;
 import dev.thiagooliveira.tablesplit.application.order.GetHistoryTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTicket;
@@ -52,7 +51,6 @@ public class OrderController {
   private final UpdateTicketItemStatus updateTicketItemStatus;
   private final CancelTicketItem cancelTicketItem;
   private final TransactionalContext transactionalContext;
-  private final GetItem getItem;
 
   public OrderController(
       GetTickets getTickets,
@@ -61,8 +59,7 @@ public class OrderController {
       MoveTicket moveTicket,
       UpdateTicketItemStatus updateTicketItemStatus,
       CancelTicketItem cancelTicketItem,
-      TransactionalContext transactionalContext,
-      GetItem getItem) {
+      TransactionalContext transactionalContext) {
     this.getTickets = getTickets;
     this.getHistoryTickets = getHistoryTickets;
     this.getTicket = getTicket;
@@ -70,7 +67,6 @@ public class OrderController {
     this.updateTicketItemStatus = updateTicketItemStatus;
     this.cancelTicketItem = cancelTicketItem;
     this.transactionalContext = transactionalContext;
-    this.getItem = getItem;
   }
 
   @GetMapping
@@ -80,7 +76,10 @@ public class OrderController {
 
     List<TicketModel> allTickets =
         ticketsWithTables.stream()
-            .map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod()))
+            .map(
+                tw ->
+                    mapToModel(
+                        tw.ticket(), tw.order(), tw.tableCod(), context.getUser().getLanguage()))
             .toList();
 
     Map<String, List<TicketModel>> ticketsByStatus =
@@ -132,7 +131,12 @@ public class OrderController {
         getHistoryTickets.execute(context.getRestaurant().getId(), start, end);
 
     List<TicketModel> orders =
-        history.stream().map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod())).toList();
+        history.stream()
+            .map(
+                tw ->
+                    mapToModel(
+                        tw.ticket(), tw.order(), tw.tableCod(), context.getUser().getLanguage()))
+            .toList();
 
     BigDecimal totalRevenue =
         orders.stream().map(TicketModel::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -157,7 +161,19 @@ public class OrderController {
   public TicketModel getTicket(@PathVariable UUID id) {
     return getTicket
         .execute(id)
-        .map(tw -> mapToModel(tw.ticket(), tw.order(), tw.tableCod()))
+        .map(
+            tw ->
+                mapToModel(
+                    tw.ticket(),
+                    tw.order(),
+                    tw.tableCod(),
+                    ((AccountContext)
+                            org.springframework.security.core.context.SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal())
+                        .getUser()
+                        .getLanguage()))
         .orElseThrow(() -> new IllegalArgumentException("Ticket not found: " + id));
   }
 
@@ -184,24 +200,15 @@ public class OrderController {
   public record CancelItemRequest(UUID itemId, int quantity, String reason) {}
 
   private TicketModel mapToModel(
-      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {
+      Ticket ticket,
+      dev.thiagooliveira.tablesplit.domain.order.Order order,
+      String tableCod,
+      Language userLanguage) {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
                 item -> {
-                  String itemName =
-                      getItem
-                          .findByIdIncludingDeleted(item.getItemId(), false)
-                          .map(
-                              foundItem ->
-                                  foundItem
-                                      .getName()
-                                      .getOrDefault(
-                                          Language.PT,
-                                          foundItem.getName().isEmpty()
-                                              ? "Item"
-                                              : foundItem.getName().values().iterator().next()))
-                          .orElse("Item não encontrado");
+                  String itemName = item.getName().get(userLanguage);
 
                   return new TicketItemModel(
                       item.getId(),

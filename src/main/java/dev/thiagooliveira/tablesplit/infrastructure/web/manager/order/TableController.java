@@ -130,7 +130,11 @@ public class TableController {
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("orderLoaded", false);
 
-    var languages = context.getRestaurant().getCustomerLanguages();
+    var userLanguage = context.getUser().getLanguage();
+    var languages =
+        userLanguage != null
+            ? List.of(userLanguage)
+            : context.getRestaurant().getCustomerLanguages();
     var categories =
         this.getCategory.execute(context.getRestaurant().getId(), languages).stream()
             .map(c -> new CategoryModel(c.getId(), convertMap(c.getName())))
@@ -190,7 +194,7 @@ public class TableController {
                                     item.getId(),
                                     item.getCustomerId(),
                                     order.getCustomerName(item.getCustomerId()),
-                                    getItemName(item.getItemId()),
+                                    item.getName().get(userLanguage),
                                     item.getQuantity(),
                                     item.getUnitPrice(),
                                     item.getTotalPrice(),
@@ -325,7 +329,9 @@ public class TableController {
       @RequestParam(required = false)
           @org.springframework.format.annotation.DateTimeFormat(
               iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-          java.time.ZonedDateTime end) {
+          java.time.ZonedDateTime end,
+      Authentication auth) {
+    var context = (AccountContext) auth.getPrincipal();
 
     if (start != null && end != null) {
       if (java.time.Duration.between(start, end).toDays() > 31) {
@@ -334,12 +340,12 @@ public class TableController {
     }
 
     return getOrder.findAllFiltered(tableId, status, start, end).stream()
-        .map(this::mapToOrderHistoryModel)
+        .map(h -> this.mapToOrderHistoryModel(h, context.getUser().getLanguage()))
         .toList();
   }
 
   private OrderHistoryModel mapToOrderHistoryModel(
-      dev.thiagooliveira.tablesplit.domain.order.Order hist) {
+      dev.thiagooliveira.tablesplit.domain.order.Order hist, Language userLanguage) {
     Map<UUID, String> customerNames =
         hist.getCustomers().stream()
             .collect(
@@ -369,7 +375,7 @@ public class TableController {
                                     item.getId(),
                                     item.getCustomerId(),
                                     hist.getCustomerName(item.getCustomerId()),
-                                    getItemName(item.getItemId()),
+                                    item.getName().get(userLanguage),
                                     item.getQuantity(),
                                     item.getUnitPrice(),
                                     item.getTotalPrice(),
@@ -553,20 +559,6 @@ public class TableController {
     return map.entrySet().stream()
         .collect(
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
-  }
-
-  private String getItemName(UUID itemId) {
-    return getItem
-        .findByIdIncludingDeleted(itemId, false)
-        .map(
-            item ->
-                item.getName()
-                    .getOrDefault(
-                        Language.PT,
-                        item.getName().isEmpty()
-                            ? "Item"
-                            : item.getName().values().iterator().next()))
-        .orElse("Item não encontrado");
   }
 
   private TicketItemModel.PromotionInfo getItemPromotionInfo(TicketItem ticketItem) {
