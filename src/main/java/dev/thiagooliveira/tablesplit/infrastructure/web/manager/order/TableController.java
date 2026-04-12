@@ -190,20 +190,11 @@ public class TableController {
                     t.getItems().stream()
                         .map(
                             item ->
-                                new TicketItemModel(
-                                    item.getId(),
-                                    item.getCustomerId(),
+                                TicketItemModel.fromDomain(
+                                    item,
                                     order.getCustomerName(item.getCustomerId()),
-                                    item.getName().get(userLanguage),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice(),
-                                    item.getNote(),
-                                    item.getStatus().getLabel(),
-                                    item.getStatus().getCssClass(),
-                                    item.getRating(),
                                     t.getCreatedAt(),
-                                    getItemPromotionInfo(item))))
+                                    userLanguage)))
             .forEach(
                 item -> {
                   CustomerModel customer =
@@ -371,20 +362,11 @@ public class TableController {
                     t.getItems().stream()
                         .map(
                             item ->
-                                new TicketItemModel(
-                                    item.getId(),
-                                    item.getCustomerId(),
+                                TicketItemModel.fromDomain(
+                                    item,
                                     hist.getCustomerName(item.getCustomerId()),
-                                    item.getName().get(userLanguage),
-                                    item.getQuantity(),
-                                    item.getUnitPrice(),
-                                    item.getTotalPrice(),
-                                    item.getNote(),
-                                    item.getStatus().getLabel(),
-                                    item.getStatus().getCssClass(),
-                                    item.getRating(),
                                     t.getCreatedAt(),
-                                    getItemPromotionInfo(item))))
+                                    userLanguage)))
             .toList(),
         hist.getPayments().stream()
             .map(
@@ -559,17 +541,5 @@ public class TableController {
     return map.entrySet().stream()
         .collect(
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
-  }
-
-  private TicketItemModel.PromotionInfo getItemPromotionInfo(TicketItem ticketItem) {
-    if (ticketItem.getPromotionSnapshot() != null) {
-      var snapshot = ticketItem.getPromotionSnapshot();
-      return new TicketItemModel.PromotionInfo(
-          snapshot.originalPrice(),
-          ticketItem.getUnitPrice(), // promotional price that was actually charged
-          snapshot.discountType(),
-          snapshot.discountValue());
-    }
-    return null;
   }
 }

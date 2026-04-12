@@ -79,6 +79,41 @@ public class TicketItemModel {
     this.promotionSnapshot = promotionSnapshot;
   }
 
+  public static TicketItemModel fromDomain(
+      dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
+      String customerName,
+      java.time.ZonedDateTime createdAt,
+      dev.thiagooliveira.tablesplit.domain.common.Language userLanguage) {
+
+    String itemName = item.getName() != null ? item.getName().get(userLanguage) : null;
+
+    PromotionInfo promotionInfo = null;
+    if (item.getPromotionSnapshot() != null) {
+      var snapshot = item.getPromotionSnapshot();
+      promotionInfo =
+          new PromotionInfo(
+              snapshot.originalPrice(),
+              item.getUnitPrice(),
+              snapshot.discountType(),
+              snapshot.discountValue());
+    }
+
+    return new TicketItemModel(
+        item.getId(),
+        item.getCustomerId(),
+        customerName,
+        itemName,
+        item.getQuantity(),
+        item.getUnitPrice(),
+        item.getTotalPrice(),
+        item.getNote(),
+        item.getStatus().getLabel(),
+        item.getStatus().getCssClass(),
+        item.getRating(),
+        createdAt,
+        promotionInfo);
+  }
+
   public UUID getId() {
     return id;
   }

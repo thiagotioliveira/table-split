@@ -267,20 +267,13 @@ public class CustomerTableController {
                               var lang =
                                   dev.thiagooliveira.tablesplit.domain.common.Language.fromLocale(
                                       locale);
-                              String localizedName = item.getName().get(lang);
 
                               ticketItems.add(
-                                  new SimpleTicketItem(
-                                      item.getId().toString(),
-                                      localizedName,
-                                      item.getQuantity(),
-                                      item.getTotalPrice(),
-                                      item.getStatus().name(),
-                                      item.getStatus().getLabel(),
-                                      item.getCustomerId().toString(),
+                                  SimpleTicketItem.fromDomain(
+                                      item,
                                       finalOrder.getCustomerName(item.getCustomerId()),
                                       t.getCreatedAt(),
-                                      item.getRating()));
+                                      lang));
                             }));
       }
 
@@ -320,7 +313,26 @@ public class CustomerTableController {
       String customerId,
       String customerName,
       java.time.ZonedDateTime createdAt,
-      Integer rating) {}
+      Integer rating) {
+    public static SimpleTicketItem fromDomain(
+        dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
+        String customerName,
+        java.time.ZonedDateTime createdAt,
+        dev.thiagooliveira.tablesplit.domain.common.Language lang) {
+
+      return new SimpleTicketItem(
+          item.getId().toString(),
+          item.getName().get(lang),
+          item.getQuantity(),
+          item.getTotalPrice(),
+          item.getStatus().name(),
+          item.getStatus().getLabel(),
+          item.getCustomerId().toString(),
+          customerName,
+          createdAt,
+          item.getRating());
+    }
+  }
 
   @PostMapping("/@{slug}/table/{tableCode}/open")
   @ResponseBody

@@ -9,7 +9,6 @@ import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
-import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -207,24 +206,12 @@ public class OrderController {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
-                item -> {
-                  String itemName = item.getName().get(userLanguage);
-
-                  return new TicketItemModel(
-                      item.getId(),
-                      item.getCustomerId(),
-                      order.getCustomerName(item.getCustomerId()),
-                      itemName,
-                      item.getQuantity(),
-                      item.getUnitPrice(),
-                      item.getTotalPrice(),
-                      item.getNote(),
-                      item.getStatus().name(),
-                      item.getStatus().getCssClass(),
-                      item.getRating(),
-                      ticket.getCreatedAt(),
-                      getItemPromotionInfo(item));
-                })
+                item ->
+                    TicketItemModel.fromDomain(
+                        item,
+                        order.getCustomerName(item.getCustomerId()),
+                        ticket.getCreatedAt(),
+                        userLanguage))
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
@@ -244,17 +231,5 @@ public class OrderController {
         itemModels,
         ticket.calculateTotal(),
         urgent);
-  }
-
-  private TicketItemModel.PromotionInfo getItemPromotionInfo(TicketItem ticketItem) {
-    if (ticketItem.getPromotionSnapshot() != null) {
-      var snapshot = ticketItem.getPromotionSnapshot();
-      return new TicketItemModel.PromotionInfo(
-          snapshot.originalPrice(),
-          ticketItem.getUnitPrice(), // promotional price that was actually charged
-          snapshot.discountType(),
-          snapshot.discountValue());
-    }
-    return null;
   }
 }
