@@ -3,22 +3,26 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
+COPY pom.xml .
+COPY webapp/pom.xml webapp/
+COPY agent/pom.xml agent/
 COPY .mvn .mvn
 COPY mvnw .
-COPY pom.xml .
 
 RUN chmod +x mvnw
 
-COPY src src
+# Copiar apenas o código do webapp para o build
+COPY webapp/src webapp/src
 
-RUN ./mvnw clean verify
+# Build apenas do módulo webapp
+RUN ./mvnw clean package -pl webapp -am -DskipTests
 
 # ---------- STAGE 2: runtime ----------
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/webapp/target/*.jar app.jar
 
 EXPOSE 8080
 
