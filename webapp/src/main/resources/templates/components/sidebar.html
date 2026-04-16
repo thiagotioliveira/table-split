@@ -179,9 +179,9 @@
                     console.log('Orders count fetched:', count);
                     badge.textContent = count;
                     if (count > 0) {
-                        //badge.style.setProperty('display', 'flex', 'important');
+                        badge.style.display = '';
                     } else {
-                        badge.style.setProperty('display', 'none', 'important');
+                        badge.style.display = 'none';
                     }
                 })
                 .catch(err => console.error('Error updating orders badge:', err));
@@ -203,9 +203,9 @@
                     console.log('Tables count fetched:', count);
                     badge.textContent = count;
                     if (count > 0) {
-                        //badge.style.setProperty('display', 'flex', 'important');
+                        badge.style.display = '';
                     } else {
-                        badge.style.setProperty('display', 'none', 'important');
+                        badge.style.display = 'none';
                     }
                 })
                 .catch(err => console.error('Error updating tables badge:', err));
@@ -264,9 +264,9 @@
                             console.log('Updating tables badge from WS data:', data.totalCount);
                             badge.textContent = data.totalCount;
                             if (data.totalCount > 0) {
-                                //badge.style.setProperty('display', 'flex', 'important');
+                                badge.style.display = '';
                             } else {
-                                badge.style.setProperty('display', 'none', 'important');
+                                badge.style.display = 'none';
                             }
                         }
                     } else {
