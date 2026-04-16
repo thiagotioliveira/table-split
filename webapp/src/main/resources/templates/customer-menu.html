@@ -2357,8 +2357,8 @@
                 if (response.ok) {
                     localStorage.setItem('lastWaiterCallTime', now);
                     updateWaiterCallButton();
-                    // Just show the called modal, the confirm one was closed by the button click if it was used
-                    document.getElementById('confirmWaiterModal')?.classList.remove('active');
+                    // Close the request modal and show the "called" confirmation modal
+                    closeWaiterModal();
                     document.getElementById('waiterCalledModal').classList.add('active');
                 } else if (response.status === 409) {
                     refreshTableData();

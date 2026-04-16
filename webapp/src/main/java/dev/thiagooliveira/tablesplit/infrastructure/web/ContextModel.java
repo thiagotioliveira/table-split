@@ -13,8 +13,9 @@ public class ContextModel {
   private final List<Module> sidebarModules;
   private final List<Module> footerModules;
   private final long pendingOrdersCount;
+  private final long waiterCallCount;
 
-  public ContextModel(Authentication auth, long pendingOrdersCount) {
+  public ContextModel(Authentication auth, long pendingOrdersCount, long waiterCallCount) {
     var account = (AccountContext) auth.getPrincipal();
     var user = account.getUser();
     var restaurant = account.getRestaurant();
@@ -34,10 +35,15 @@ public class ContextModel {
     this.sidebarModules = account.getSidebarModules();
     this.footerModules = account.getFooterModules();
     this.pendingOrdersCount = pendingOrdersCount;
+    this.waiterCallCount = waiterCallCount;
   }
 
   public long getPendingOrdersCount() {
     return pendingOrdersCount;
+  }
+
+  public long getWaiterCallCount() {
+    return waiterCallCount;
   }
 
   public UserContextModel getUser() {

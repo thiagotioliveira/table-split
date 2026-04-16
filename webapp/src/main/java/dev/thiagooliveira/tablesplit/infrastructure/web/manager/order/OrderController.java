@@ -209,9 +209,10 @@ public class OrderController {
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
     if (customerName == null || customerName.isBlank()) customerName = "Mesa " + tableCod;
 
-    long minutesAgo = Duration.between(ticket.getCreatedAt(), ZonedDateTime.now()).toMinutes();
-    String timeAgo = minutesAgo == 0 ? "agora" : "há " + minutesAgo + " min";
-    boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
+    String timeAgo =
+        dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(ticket.getCreatedAt());
+    long minutes = Duration.between(ticket.getCreatedAt(), ZonedDateTime.now()).toMinutes();
+    boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 
     return new TicketModel(
         ticket.getId(),

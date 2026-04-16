@@ -13,7 +13,7 @@ public class RegisterWaiterCall {
     this.broadcaster = broadcaster;
   }
 
-  public void execute(UUID restaurantId, String tableCod) {
+  public WaiterCall execute(UUID restaurantId, String tableCod) {
     WaiterCall waiterCall =
         repository
             .findActiveByRestaurantIdAndTableCod(restaurantId, tableCod)
@@ -27,12 +27,19 @@ public class RegisterWaiterCall {
                     new WaiterCall(UUID.randomUUID(), restaurantId, tableCod, ZonedDateTime.now()));
 
     repository.save(waiterCall);
+    long totalActive = repository.findAllActiveByRestaurantId(restaurantId).size();
 
     String payload =
         String.format(
-            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"count\": %d, \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
-            waiterCall.getId(), tableCod, waiterCall.getCallCount(), tableCod, tableCod);
+            "{\"id\": \"%s\", \"tableCod\": \"%s\", \"count\": %d, \"totalCount\": %d, \"title\": \"Atendimento - Mesa %s\", \"body\": \"A mesa %s está chamando o garçom\", \"url\": \"/tables\"}",
+            waiterCall.getId(),
+            tableCod,
+            waiterCall.getCallCount(),
+            totalActive,
+            tableCod,
+            tableCod);
 
     broadcaster.callWaiter(restaurantId, payload);
+    return waiterCall;
   }
 }

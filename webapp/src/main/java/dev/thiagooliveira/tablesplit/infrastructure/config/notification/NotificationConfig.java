@@ -51,7 +51,9 @@ public class NotificationConfig {
   }
 
   @Bean
-  public DismissWaiterCall dismissWaiterCall(WaiterCallRepository repository) {
-    return new DismissWaiterCall(repository);
+  public DismissWaiterCall dismissWaiterCall(
+      WaiterCallRepository repository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+    return new DismissWaiterCall(repository, eventPublisher);
   }
 }

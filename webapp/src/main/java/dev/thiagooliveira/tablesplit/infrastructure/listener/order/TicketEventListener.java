@@ -25,14 +25,19 @@ public class TicketEventListener {
   private final SimpMessagingTemplate messagingTemplate;
   private final Broadcaster broadcaster;
   private final RegisterWaiterCall registerWaiterCall;
+  private final dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
+      listActiveWaiterCalls;
 
   public TicketEventListener(
       SimpMessagingTemplate messagingTemplate,
       Broadcaster broadcaster,
-      RegisterWaiterCall registerWaiterCall) {
+      RegisterWaiterCall registerWaiterCall,
+      dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
+          listActiveWaiterCalls) {
     this.messagingTemplate = messagingTemplate;
     this.broadcaster = broadcaster;
     this.registerWaiterCall = registerWaiterCall;
+    this.listActiveWaiterCalls = listActiveWaiterCalls;
   }
 
   @org.springframework.transaction.event.TransactionalEventListener(
@@ -67,16 +72,38 @@ public class TicketEventListener {
 
   @EventListener
   public void handleWaiterCalled(WaiterCalledEvent event) {
-    // Notify via WebSocket
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/waiter", event);
-
-    // Send Push Notification
+    // Register the call first
+    dev.thiagooliveira.tablesplit.domain.notification.WaiterCall call = null;
     try {
-      registerWaiterCall.execute(event.getRestaurantId(), event.getTableCod());
+      call = registerWaiterCall.execute(event.getRestaurantId(), event.getTableCod());
     } catch (Exception e) {
       // Silently fail
     }
+
+    // Now calculate count
+    long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();
+    WaiterCalledEvent eventWithData =
+        new WaiterCalledEvent(
+            event.getRestaurantId(),
+            event.getTableCod(),
+            count,
+            call != null ? call.getId() : null);
+
+    // Notify via WebSocket
+    messagingTemplate.convertAndSend(
+        "/topic/restaurant/" + event.getRestaurantId() + "/waiter", eventWithData);
+  }
+
+  @org.springframework.context.event.EventListener
+  public void handleWaiterCallDismissed(
+      dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent event) {
+    long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();
+    dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent eventWithCount =
+        new dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent(
+            event.getRestaurantId(), event.getCallId(), count);
+
+    messagingTemplate.convertAndSend(
+        "/topic/restaurant/" + event.getRestaurantId() + "/waiter", eventWithCount);
   }
 
   @org.springframework.transaction.event.TransactionalEventListener(

@@ -169,6 +169,14 @@ public class TableController {
       var activeOrder = getOrder.execute(selectedTableId);
       if (activeOrder.isPresent()) {
         var order = activeOrder.get();
+        model.addAttribute(
+            "orderTimeAgo",
+            dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
+                order.getOpenedAt()));
+        model.addAttribute(
+            "orderOpenedAtFormatted",
+            dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.format(
+                order.getOpenedAt()));
         Map<CustomerModel, List<TicketItemModel>> clients = new java.util.LinkedHashMap<>();
         Map<CustomerModel, BigDecimal> clientBalances = new java.util.LinkedHashMap<>();
 

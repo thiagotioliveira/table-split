@@ -136,6 +136,15 @@ public class PushNotificationController {
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping("/calls/count")
+  public ResponseEntity<Long> getCallsCount(Authentication auth) {
+    AccountContext context = (AccountContext) auth.getPrincipal();
+    UUID restaurantId = context.getRestaurant().getId();
+    long count = listActiveWaiterCalls.execute(restaurantId).size();
+    logger.debug("Counting active waiter calls for restaurant {}: {}", restaurantId, count);
+    return ResponseEntity.ok(count);
+  }
+
   @PostMapping("/calls/dismiss")
   public ResponseEntity<Void> dismissCall(@RequestBody UUID id) {
     dismissWaiterCall.execute(id);

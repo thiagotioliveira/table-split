@@ -38,6 +38,9 @@
                     <span th:if="${m.name() == 'ORDERS'}" id="ordersBadge" class="nav-badge" 
                           th:text="${context.pendingOrdersCount}" 
                           th:style="${context.pendingOrdersCount == 0 ? 'display: none' : ''}">0</span>
+                    <span th:if="${m.name() == 'TABLES'}" id="tablesBadge" class="nav-badge" 
+                          th:text="${context.waiterCallCount}" 
+                          th:style="${context.waiterCallCount == 0 ? 'display: none' : ''}">0</span>
                     <span class="nav-tooltip" th:text="#{${m.name}}">Dashboard</span>
                 </a>
             </li>
@@ -156,19 +159,56 @@
 
     {
         const restaurantId = /*[[${context.restaurant.id}]]*/ null;
-        const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
+        const contextData = /*[[${context}]]*/ null;
+        console.log('Sidebar Context:', contextData);
+        const alertSoundUrl = /*[[@{/sounds/alert.mp3}]]*/ '/sounds/alert.mp3';
         
         const updateOrdersBadge = () => {
             const badge = document.getElementById('ordersBadge');
-            if (!badge) return;
+            if (!badge) {
+                console.warn('Orders badge element not found');
+                return;
+            }
             
             fetch('/orders/count/pending')
-                .then(res => res.json())
-                .then(count => {
-                    badge.textContent = count;
-                badge.style.display = count > 0 ? 'block' : 'none';
+                .then(res => {
+                    if (!res.ok) throw new Error('Status ' + res.status);
+                    return res.json();
                 })
-                .catch(err => console.error('Error updating badge:', err));
+                .then(count => {
+                    console.log('Orders count fetched:', count);
+                    badge.textContent = count;
+                    if (count > 0) {
+                        badge.style.setProperty('display', 'flex', 'important');
+                    } else {
+                        badge.style.setProperty('display', 'none', 'important');
+                    }
+                })
+                .catch(err => console.error('Error updating orders badge:', err));
+        }
+
+        const updateTablesBadge = () => {
+            const badge = document.getElementById('tablesBadge');
+            if (!badge) {
+                console.warn('Tables badge element not found');
+                return;
+            }
+            
+            fetch('/api/notifications/calls/count')
+                .then(res => {
+                    if (!res.ok) throw new Error('Status ' + res.status);
+                    return res.json();
+                })
+                .then(count => {
+                    console.log('Tables count fetched:', count);
+                    badge.textContent = count;
+                    if (count > 0) {
+                        badge.style.setProperty('display', 'flex', 'important');
+                    } else {
+                        badge.style.setProperty('display', 'none', 'important');
+                    }
+                })
+                .catch(err => console.error('Error updating tables badge:', err));
         }
 
         const connectSidebarWS = () => {
@@ -180,7 +220,14 @@
             const socket = new SockJS('/ws');
             const stompClient = Stomp.over(socket);
             stompClient.debug = null;
+            console.log('Connecting sidebar WS for restaurant:', restaurantId);
             stompClient.connect({}, function (frame) {
+                console.log('Sidebar WS connected');
+                
+                // Initial update on connect
+                updateOrdersBadge();
+                updateTablesBadge();
+
                 stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tickets', function (message) {
                     const data = JSON.parse(message.body);
                     
@@ -196,6 +243,37 @@
                     // Refresh count for ANY ticket-related event (new, moved, cancelled)
                     updateOrdersBadge();
                 });
+
+                stompClient.subscribe('/topic/restaurant/' + restaurantId + '/waiter', function (message) {
+                    const data = JSON.parse(message.body);
+                    console.log('Waiter WS message received:', data);
+                    
+                    // If it's a new call (has tableCod)
+                    if (data.tableCod && !data.callId) { // Wait, data.callId is present in Dismiss event
+                        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                        if (soundEnabled) {
+                            const audio = new Audio(alertSoundUrl);
+                            audio.play().catch(e => console.log('Audio blocked', e));
+                        }
+                    }
+                    
+                    // Refresh count for waiter calls
+                    if (data.totalCount !== undefined) {
+                        const badge = document.getElementById('tablesBadge');
+                        if (badge) {
+                            console.log('Updating tables badge from WS data:', data.totalCount);
+                            badge.textContent = data.totalCount;
+                            if (data.totalCount > 0) {
+                                badge.style.setProperty('display', 'flex', 'important');
+                            } else {
+                                badge.style.setProperty('display', 'none', 'important');
+                            }
+                        }
+                    } else {
+                        console.log('totalCount missing in WS message, fetching...');
+                        updateTablesBadge();
+                    }
+                });
             });
         }
 
@@ -205,8 +283,12 @@
             if (typeof PushNotifications !== 'undefined' && typeof PushNotifications.syncWithServer === 'function') {
                 PushNotifications.syncWithServer();
             }
+            console.log('Sidebar loaded, restaurantId:', restaurantId);
             if (restaurantId) {
-                connectSidebarWS();
+                console.log('Attempting to connect sidebar WS...');
+                setTimeout(connectSidebarWS, 100);
+            } else {
+                console.warn('Sidebar: restaurantId not found, WebSocket will not connect');
             }
         });
     }

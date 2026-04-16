@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 
+import dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class ManagerControllerAdvice {
 
   private final GetTickets getTickets;
+  private final ListActiveWaiterCalls listActiveWaiterCalls;
 
-  public ManagerControllerAdvice(GetTickets getTickets) {
+  public ManagerControllerAdvice(
+      GetTickets getTickets, ListActiveWaiterCalls listActiveWaiterCalls) {
     this.getTickets = getTickets;
+    this.listActiveWaiterCalls = listActiveWaiterCalls;
   }
 
   @ModelAttribute
@@ -24,11 +28,15 @@ public class ManagerControllerAdvice {
 
     if (auth != null && auth.isAuthenticated()) {
       var account = (AccountContext) auth.getPrincipal();
-      long count = 0;
+      long ordersCount = 0;
       if (account.getSidebarModules().contains(Module.ORDERS)) {
-        count = getTickets.countPending(account.getRestaurant().getId());
+        ordersCount = getTickets.countPending(account.getRestaurant().getId());
       }
-      model.addAttribute("context", new ContextModel(auth, count));
+      long waiterCount = 0;
+      if (account.getSidebarModules().contains(Module.TABLES)) {
+        waiterCount = listActiveWaiterCalls.execute(account.getRestaurant().getId()).size();
+      }
+      model.addAttribute("context", new ContextModel(auth, ordersCount, waiterCount));
     } else throw new RuntimeException("never to be here");
 
     var module = (Module) request.getAttribute("currentModule");

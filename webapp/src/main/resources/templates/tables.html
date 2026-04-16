@@ -3172,7 +3172,13 @@
                                 <p th:if="${selectedTableObj == null}">Clique em uma mesa na lista para gerenciá-la</p>
                                 
                                 <h2 th:if="${selectedTableObj != null}" th:text="${'Mesa ' + selectedTableObj.cod}">Mesa XX</h2>
-                                <p th:if="${selectedTableObj != null}" th:text="${orderLoaded ? 'Mesa ocupada - Clientes consumindo' : 'Mesa livre - Pronta para novos clientes'}">Status</p>
+                                <p th:if="${selectedTableObj != null}">
+                                    <span th:text="${orderLoaded ? 'Mesa ocupada' : 'Mesa livre - Pronta para novos clientes'}">Status</span>
+                                    <span th:if="${orderLoaded and orderTimeAgo != null}" 
+                                          th:text="${' • Ativa ' + orderTimeAgo}"
+                                          th:title="${'Aberta em: ' + orderOpenedAtFormatted}"
+                                          style="color: var(--muted); font-size: 0.85rem; font-weight: 400; cursor: help;"> • Ativa agora</span>
+                                </p>
                             </div>
                             <div id="historyViewInfo" style="display: none;">
                                 <h2 id="historyHeaderTitle">Histórico - Mesa XX</h2>
@@ -3526,7 +3532,7 @@
     function getStatusText(status) {
         const texts = {
             free: 'Mesa livre - Pronta para novos clientes',
-            occupied: 'Mesa ocupada - Clientes consumindo',
+            occupied: 'Mesa ocupada',
             waiting: 'Pedidos prontos aguardando entrega',
             bill: 'Cliente solicitou a conta'
         };
@@ -5313,7 +5319,19 @@
             stompClient.subscribe(waiterTopic, function (message) {
                 console.log('WAITER message received:', message.body);
                 const data = JSON.parse(message.body);
-                handleWaiterCall(data);
+                
+                // If it's a dismissal event, remove from UI IF it exists
+                if (data.callId && !data.tableCod) {
+                    const list = document.getElementById('waiterAlertsList');
+                    const existing = Array.from(list.querySelectorAll('.waiter-alert-item')).find(item => 
+                        item.dataset.callId === data.callId
+                    );
+                    if (existing) {
+                        removeItem(existing);
+                    }
+                } else if (data.tableCod) {
+                    handleWaiterCall(data);
+                }
             });
         });
     }
