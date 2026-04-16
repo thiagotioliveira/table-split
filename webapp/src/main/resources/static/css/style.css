@@ -803,8 +803,7 @@ a {
   }
 
   .sidebar.collapsed .logo-text,
-  .sidebar.collapsed .nav-item > span:not(.nav-tooltip),
-  .sidebar.collapsed .nav-badge,
+  .sidebar.collapsed .nav-item > span:not(.nav-tooltip):not(.nav-badge),
   .sidebar.collapsed .sidebar-footer-info {
     display: none;
   }
@@ -826,6 +825,7 @@ a {
     justify-content: center;
     padding: 0.75rem;
     overflow: visible;
+    position: relative;
   }
 
   .sidebar.collapsed .nav-item svg {
@@ -1670,6 +1670,9 @@ a {
 .modal-header {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-header h3 {
@@ -2082,4 +2085,58 @@ a {
     transform: scale(1);
     opacity: 1;
   }
+}
+/* Navigation Badge */
+.nav-badge {
+    background: var(--destructive);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    margin-left: auto;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.sidebar.collapsed .nav-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    min-width: 0;
+    font-size: 0;
+    padding: 0;
+    border: 2px solid var(--card);
+}
+
+/* Modal Close Button */
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.modal-close:hover {
+    background: var(--destructive);
+    border-color: var(--destructive);
+    color: white;
+}
+
+.modal-close svg {
+    width: 16px;
+    height: 16px;
 }

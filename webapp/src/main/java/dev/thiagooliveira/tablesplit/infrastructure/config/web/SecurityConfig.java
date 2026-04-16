@@ -80,6 +80,7 @@ public class SecurityConfig {
                     // Recursos protegidos
                     .requestMatchers(
                         Arrays.stream(Module.values())
+                            .filter(Module::isActive)
                             .map(m -> String.format("/%s/**", m.getView()))
                             .toArray(String[]::new))
                     .authenticated()

@@ -43,10 +43,8 @@ public class SettingsController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = new ContextModel(auth);
+    ContextModel context = (ContextModel) model.getAttribute("context");
     var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
-    model.addAttribute("module", Module.SETTINGS);
-    model.addAttribute("context", context);
     model.addAttribute("form", new SettingsModel(restaurant));
     model.addAttribute("languages", Language.values());
     model.addAttribute("cuisineTypeCodes", CuisineType.values());

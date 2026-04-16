@@ -31,7 +31,7 @@ public class Ticket {
 
   public BigDecimal calculateTotal() {
     return items.stream()
-        .filter(item -> item.getStatus() != TicketStatus.CANCELLED)
+        .filter(item -> !item.isCancelled())
         .map(TicketItem::getTotalPrice)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
@@ -60,10 +60,7 @@ public class Ticket {
     this.status = status;
     if (this.items != null) {
       this.items.stream()
-          .filter(
-              item ->
-                  item.getStatus() != TicketStatus.CANCELLED
-                      && item.getStatus() != TicketStatus.DELIVERED)
+          .filter(item -> !item.isCancelled() && !item.isDelivered())
           .forEach(item -> item.setStatus(status));
     }
   }
@@ -99,25 +96,18 @@ public class Ticket {
 
     boolean anyInProduction =
         items.stream()
-            .anyMatch(
-                item ->
-                    item.getStatus() == TicketStatus.PREPARING
-                        || item.getStatus() == TicketStatus.READY);
+            .anyMatch(item -> item.getStatus().isPreparing() || item.getStatus().isReady());
 
-    if (anyInProduction && this.status == TicketStatus.PENDING) {
+    if (anyInProduction && isPending()) {
       this.status = TicketStatus.PREPARING;
     }
 
     boolean allCompleted =
         items.stream()
-            .allMatch(
-                item ->
-                    item.getStatus() == TicketStatus.DELIVERED
-                        || item.getStatus() == TicketStatus.CANCELLED);
+            .allMatch(item -> item.getStatus().isDelivered() || item.getStatus().isCancelled());
 
     if (allCompleted) {
-      boolean atLeastOneDelivered =
-          items.stream().anyMatch(item -> item.getStatus() == TicketStatus.DELIVERED);
+      boolean atLeastOneDelivered = items.stream().anyMatch(item -> item.getStatus().isDelivered());
 
       if (atLeastOneDelivered) {
         this.status = TicketStatus.DELIVERED;
@@ -125,5 +115,25 @@ public class Ticket {
         this.status = TicketStatus.CANCELLED;
       }
     }
+  }
+
+  public boolean isPending() {
+    return status != null && status.isPending();
+  }
+
+  public boolean isPreparing() {
+    return status != null && status.isPreparing();
+  }
+
+  public boolean isReady() {
+    return status != null && status.isReady();
+  }
+
+  public boolean isDelivered() {
+    return status != null && status.isDelivered();
+  }
+
+  public boolean isCancelled() {
+    return status != null && status.isCancelled();
   }
 }

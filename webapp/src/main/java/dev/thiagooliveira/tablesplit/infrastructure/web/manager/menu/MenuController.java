@@ -172,15 +172,13 @@ public class MenuController {
   }
 
   private void populateModel(Authentication auth, Model model) {
-    var context = new ContextModel(auth);
+    ContextModel context = (ContextModel) model.getAttribute("context");
     var languages =
         context.getRestaurant().getCustomerLanguages().stream().map(Language::toDomain).toList();
     var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);
     var items = this.getItem.execute(context.getRestaurant().getId(), languages, true);
     model.addAttribute(
         "menu", new MenuModel(categories, items, context.getRestaurant().getCurrency()));
-    // model.addAttribute("module", Module.MENU);
-    // model.addAttribute("context", context);
     if (!model.containsAttribute("updateCategoryModel")) {
       model.addAttribute("updateCategoryModel", new UpdateCategoryModel());
     }

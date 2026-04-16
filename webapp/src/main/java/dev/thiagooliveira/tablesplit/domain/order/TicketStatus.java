@@ -22,4 +22,24 @@ public enum TicketStatus {
   public String getCssClass() {
     return cssClass;
   }
+
+  public boolean isPending() {
+    return this == PENDING;
+  }
+
+  public boolean isPreparing() {
+    return this == PREPARING;
+  }
+
+  public boolean isReady() {
+    return this == READY;
+  }
+
+  public boolean isDelivered() {
+    return this == DELIVERED;
+  }
+
+  public boolean isCancelled() {
+    return this == CANCELLED;
+  }
 }

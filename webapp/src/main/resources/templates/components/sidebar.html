@@ -35,6 +35,9 @@
                 <a th:href="${m.getHref()}" class="nav-item" th:classappend="${module.name() == m.name()} ? ' active'">
                     <div th:utext="${m.icon}"></div>
                     <span th:text="#{${m.name}}">Dashboard</span>
+                    <span th:if="${m.name() == 'ORDERS'}" id="ordersBadge" class="nav-badge" 
+                          th:text="${context.pendingOrdersCount}" 
+                          th:style="${context.pendingOrdersCount == 0 ? 'display: none' : ''}">0</span>
                     <span class="nav-tooltip" th:text="#{${m.name}}">Dashboard</span>
                 </a>
             </li>
@@ -93,7 +96,9 @@
 </header>
 
     <script src="/js/push-notifications.js?v=20260403-2"></script>
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:inline="javascript">
     // Sidebar functions
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -149,13 +154,62 @@
         }
     }
 
-    // Run on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        initSidebarState();
-        if (typeof PushNotifications !== 'undefined' && typeof PushNotifications.syncWithServer === 'function') {
-            PushNotifications.syncWithServer();
+    {
+        const restaurantId = /*[[${context.restaurant.id}]]*/ null;
+        const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
+        
+        const updateOrdersBadge = () => {
+            const badge = document.getElementById('ordersBadge');
+            if (!badge) return;
+            
+            fetch('/orders/count/pending')
+                .then(res => res.json())
+                .then(count => {
+                    badge.textContent = count;
+                badge.style.display = count > 0 ? 'block' : 'none';
+                })
+                .catch(err => console.error('Error updating badge:', err));
         }
-    });
+
+        const connectSidebarWS = () => {
+            if (typeof SockJS === 'undefined' || typeof Stomp === 'undefined') {
+                setTimeout(connectSidebarWS, 500);
+                return;
+            }
+            
+            const socket = new SockJS('/ws');
+            const stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tickets', function (message) {
+                    const data = JSON.parse(message.body);
+                    
+                    // If it's a new ticket (no newStatus field)
+                    if (data.id && !data.newStatus) {
+                        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                        if (soundEnabled) {
+                            const audio = new Audio(alertSoundUrl);
+                            audio.play().catch(e => console.log('Audio blocked', e));
+                        }
+                    }
+                    
+                    // Refresh count for ANY ticket-related event (new, moved, cancelled)
+                    updateOrdersBadge();
+                });
+            });
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initSidebarState();
+            if (typeof PushNotifications !== 'undefined' && typeof PushNotifications.syncWithServer === 'function') {
+                PushNotifications.syncWithServer();
+            }
+            if (restaurantId) {
+                connectSidebarWS();
+            }
+        });
+    }
 
 </script>
 

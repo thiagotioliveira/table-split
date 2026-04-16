@@ -49,13 +49,11 @@ public class GalleryController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = new ContextModel(auth);
+    ContextModel context = (ContextModel) model.getAttribute("context");
     var restaurantId = context.getRestaurant().getId();
     List<RestaurantImageModel> images =
         getRestaurantImages.execute(restaurantId).stream().map(RestaurantImageModel::new).toList();
 
-    model.addAttribute("module", Module.GALLERY);
-    model.addAttribute("context", context);
     model.addAttribute("images", images);
     return "gallery";
   }

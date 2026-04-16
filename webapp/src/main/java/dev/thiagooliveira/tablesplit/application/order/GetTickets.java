@@ -33,4 +33,11 @@ public class GetTickets {
     }
     return results;
   }
+
+  public long countPending(UUID restaurantId) {
+    return orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN).stream()
+        .flatMap(o -> o.getTickets().stream())
+        .filter(Ticket::isPending)
+        .count();
+  }
 }

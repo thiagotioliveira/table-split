@@ -124,6 +124,26 @@ public class TicketItem {
     this.promotionSnapshot = promotionSnapshot;
   }
 
+  public boolean isPending() {
+    return status != null && status.isPending();
+  }
+
+  public boolean isPreparing() {
+    return status != null && status.isPreparing();
+  }
+
+  public boolean isReady() {
+    return status != null && status.isReady();
+  }
+
+  public boolean isDelivered() {
+    return status != null && status.isDelivered();
+  }
+
+  public boolean isCancelled() {
+    return status != null && status.isCancelled();
+  }
+
   public record PromotionSnapshot(
       UUID promotionId, BigDecimal originalPrice, String discountType, BigDecimal discountValue) {}
 }

@@ -12,8 +12,9 @@ public class ContextModel {
   private final RestaurantContextModel restaurant;
   private final List<Module> sidebarModules;
   private final List<Module> footerModules;
+  private final long pendingOrdersCount;
 
-  public ContextModel(Authentication auth) {
+  public ContextModel(Authentication auth, long pendingOrdersCount) {
     var account = (AccountContext) auth.getPrincipal();
     var user = account.getUser();
     var restaurant = account.getRestaurant();
@@ -32,6 +33,11 @@ public class ContextModel {
                 .toList());
     this.sidebarModules = account.getSidebarModules();
     this.footerModules = account.getFooterModules();
+    this.pendingOrdersCount = pendingOrdersCount;
+  }
+
+  public long getPendingOrdersCount() {
+    return pendingOrdersCount;
   }
 
   public UserContextModel getUser() {

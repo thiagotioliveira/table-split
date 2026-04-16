@@ -353,7 +353,7 @@
             display: grid;
             grid-template-columns: 320px 1fr;
             gap: 0;
-            height: calc(100vh - 73px);
+            height: calc(100vh - 0px);
         }
 
         /* Tables Panel */
@@ -5084,9 +5084,11 @@
             return `
             <div class="selected-item-row">
                 <div style="flex: 1;">
-                    <strong>${item.name}</strong>
-                    ${priceHtml}
-                    <input type="text" class="form-input" placeholder="Observação (ex: sem cebola)"
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
+                        <strong>${item.name}</strong>
+                        ${priceHtml}
+                    </div>
+                    <input type="text" class="form-input" style="margin-top: 0.5rem;" placeholder="Observação (ex: sem cebola)"
                         value="${item.note}" onchange="updateItemNote('${id}', this.value)">
                 </div>
                 <div class="qty-controls" style="margin-left: 1rem;">

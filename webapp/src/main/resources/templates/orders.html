@@ -11,8 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script th:inline="javascript">
-        const currencySymbol = [[${currencySymbol}]];
-        const currencyCode = [[${currencyCode}]];
+        const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
+        const currencyCode = /*[[${currencyCode}]]*/ 'BRL';
     </script>
     <style>
         /* Orders specific styles */
@@ -697,7 +697,7 @@
 
         /* Order details modal */
         .order-detail-items {
-            margin-bottom: 1.5rem;
+            /*margin-bottom: 1.5rem;*/
         }
 
         .order-detail-item {
@@ -760,55 +760,6 @@
             opacity: 0.7;
         }
 
-        .order-detail-item.cancelled .item-actions {
-            display: none;
-        }
-
-        .item-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .item-status-select {
-            font-size: 0.75rem;
-            padding: 0.25rem;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        .item-action-btn {
-            background: none;
-            border: none;
-            padding: 0.25rem;
-            cursor: pointer;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .item-action-btn:hover {
-            background: var(--background-secondary);
-            color: var(--foreground);
-        }
-
-        .item-action-btn.advance:hover {
-            color: var(--primary);
-        }
-
-        .item-action-btn.cancel:hover {
-            color: var(--destructive);
-        }
-
-        .item-action-btn svg {
-            width: 14px;
-            height: 14px;
-        }
-        
         .item-status-badge {
             font-size: 0.7rem;
             padding: 0.1rem 0.4rem;
@@ -937,12 +888,12 @@
                 </button>
             </div>
 
-            <div class="orders-actions" th:if="${false}">
+            <div class="orders-actions">
                 <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
                     Som ativo
                 </button>
-                <button class="btn btn-outline btn-sm">
+                <button class="btn btn-outline btn-sm" th:if="${false}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                     Exportar
                 </button>
@@ -980,7 +931,7 @@
                                     <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
                                     <span class="order-item-name" th:text="${item.name}">Item Name</span>
                                     <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
-                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                    <p th:if="${false && item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
                             <div class="order-total" th:if="${false}">
@@ -1030,7 +981,7 @@
                                     <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
                                     <span class="order-item-name" th:text="${item.name}">Item Name</span>
                                     <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
-                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                    <p th:if="${false && item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
                         </div>
@@ -1076,7 +1027,7 @@
                                     <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
                                     <span class="order-item-name" th:text="${item.name}">Item Name</span>
                                     <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}">Status</span>
-                                    <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                    <p th:if="${false && item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
                                 </div>
                             </div>
                         </div>
@@ -1144,7 +1095,7 @@
     <div class="modal" style="max-width: 36rem;">
         <div class="modal-header">
             <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: -4px;"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
                 Histórico de Pedidos
             </h3>
             <button class="modal-close" onclick="closeHistoryModal()">
@@ -1186,15 +1137,20 @@
 <!-- Order Detail Modal -->
 <div id="orderModal" class="modal-overlay">
     <div class="modal" style="max-width: 28rem;">
-        <div class="modal-header" style="display: flex;">
-            <h3 id="modalOrderId">Pedido #0042</h3>
-            <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-          <span id="modalTypeText">Mesa</span>
-        </span>
+        <div class="modal-header">
+            <div style="display: flex; align-items: center;">
+                <h3 id="modalOrderId">Pedido #0042</h3>
+                <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                    <span id="modalTypeText">Mesa</span>
+                </span>
+            </div>
+            <button class="modal-close" onclick="closeOrderModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
         </div>
         <div class="modal-body">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border);">
                 <div>
                     <p id="modalTableOrDelivery" style="font-weight: 600;">Mesa 2</p>
                     <p id="modalCustomerName" style="font-size: 0.875rem; color: var(--muted);">Maria Silva</p>
@@ -1224,7 +1180,7 @@
                 <!-- Items will be loaded dynamically -->
             </div>
 
-            <div class="order-detail-summary">
+            <div class="order-detail-summary" style="display: none;">
                 <div class="order-detail-row">
                     <span>Subtotal</span>
                     <span id="modalSubtotal">${currencySymbol} 0,00</span>
@@ -1250,43 +1206,7 @@
 </div>
 
 <!-- Cancel Item Modal -->
-<div id="cancelItemModal" class="modal-overlay">
-    <div class="modal" style="max-width: 22rem;">
-        <div class="modal-header">
-            <h3>Cancelar Item</h3>
-        </div>
-        <div class="modal-body">
-            <div class="cancel-item-modal-content">
-                <div class="cancel-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </div>
-                <p class="cancel-item-name" id="cancelItemName">Filé Mignon ao Molho</p>
-                <p style="font-size: 0.875rem; color: var(--muted);">Quantos itens deseja cancelar?</p>
-                <div class="cancel-qty-selector">
-                    <button class="cancel-qty-btn" onclick="adjustCancelQty(-1)">−</button>
-                    <span class="cancel-qty-value" id="cancelQtyValue">1</span>
-                    <button class="cancel-qty-btn" onclick="adjustCancelQty(1)">+</button>
-                </div>
-                <p style="font-size: 0.75rem; color: var(--muted);">de <span id="cancelQtyMax">2</span> disponíveis</p>
-                <select class="cancel-reason-select" id="cancelReasonSelect">
-                    <option value="">Selecione o motivo (opcional)</option>
-                    <option value="customer_request">Solicitação do cliente</option>
-                    <option value="out_of_stock">Item indisponível</option>
-                    <option value="wrong_order">Pedido errado</option>
-                    <option value="quality_issue">Problema de qualidade</option>
-                    <option value="other">Outro</option>
-                </select>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-outline" onclick="closeCancelItemModal()">Voltar</button>
-            <button class="btn" style="background: var(--destructive); color: white;" onclick="confirmCancelItem()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                Cancelar Item
-            </button>
-        </div>
-    </div>
-</div>
+
 
 <script th:inline="javascript">
     // Sidebar functions
@@ -1411,28 +1331,12 @@
                         <span class="order-detail-item-qty">${item.quantity}x</span>
                         <span class="order-detail-item-name">${item.name}</span>
                     </div>
-                    ${!readOnly && item.status !== 'CANCELLED' ? `
-                    <div class="item-actions">
-                        <select class="item-status-select" onchange="changeItemStatus('${item.id}', this.value)">
-                            <option value="PENDING" ${item.status === 'PENDING' ? 'selected' : ''}>Pendente</option>
-                            <option value="PREPARING" ${item.status === 'PREPARING' ? 'selected' : ''}>Preparando</option>
-                            <option value="READY" ${item.status === 'READY' ? 'selected' : ''}>Pronto</option>
-                            <option value="DELIVERED" ${item.status === 'DELIVERED' ? 'selected' : ''}>Entregue</option>
-                        </select>
-                        <button class="item-action-btn advance" title="Avançar status" onclick="advanceItemStatus('${item.id}', '${item.status}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
-                        <button class="item-action-btn cancel" title="Cancelar item" onclick="openCancelItemModal('${item.id}', '${item.name}', ${item.quantity})">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                        </button>
-                    </div>
-                    ` : ''}
                     ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
                 </div>
                 <div class="order-detail-item-right" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
-                    <span class="order-detail-item-price">${formatCurrency(item.totalPrice)}</span>
-                    <span class="item-status-badge ${item.statusClass}">${item.status}</span>
-                </div>
+                    <span class="order-detail-item-price">${formatCurrency(item.totalPrice)}</span>`+
+                    //<span class="item-status-badge ${item.statusClass}">${item.status}</span>
+                `</div>
             </div>
         `).join('');
     }
@@ -1441,78 +1345,7 @@
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: currencyCode }).format(value);
     }
 
-    function changeItemStatus(itemId, status) {
-        fetch('/orders/item/status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId, status })
-        }).then(res => {
-            if (res.ok) {
-                // Refresh modal data
-                const ticketId = document.getElementById('orderModal').dataset.ticketId;
-                viewOrder(ticketId);
-            } else {
-                alert('Erro ao atualizar status do item');
-            }
-        });
-    }
 
-    function advanceItemStatus(itemId, currentStatus) {
-        const statuses = ['PENDING', 'PREPARING', 'READY', 'DELIVERED'];
-        const currentIndex = statuses.indexOf(currentStatus);
-        if (currentIndex < statuses.length - 1) {
-            changeItemStatus(itemId, statuses[currentIndex + 1]);
-        }
-    }
-
-    let cancelItemData = null;
-
-    function openCancelItemModal(id, name, qty) {
-        cancelItemData = { id, name, qty, cancelQty: 1 };
-        document.getElementById('cancelItemName').textContent = name;
-        document.getElementById('cancelQtyValue').textContent = '1';
-        document.getElementById('cancelQtyMax').textContent = qty;
-        document.getElementById('cancelReasonSelect').value = '';
-        document.getElementById('cancelItemModal').classList.add('active');
-    }
-
-    function closeCancelItemModal() {
-        document.getElementById('cancelItemModal').classList.remove('active');
-        cancelItemData = null;
-    }
-
-    function adjustCancelQty(delta) {
-        if (!cancelItemData) return;
-        const newVal = cancelItemData.cancelQty + delta;
-        if (newVal >= 1 && newVal <= cancelItemData.qty) {
-            cancelItemData.cancelQty = newVal;
-            document.getElementById('cancelQtyValue').textContent = newVal;
-        }
-    }
-
-    function confirmCancelItem() {
-        if (!cancelItemData) return;
-        const reason = document.getElementById('cancelReasonSelect').value;
-        
-        fetch('/orders/item/cancel', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                itemId: cancelItemData.id,
-                quantity: cancelItemData.cancelQty,
-                reason: reason
-            })
-        }).then(res => {
-            if (res.ok) {
-                closeCancelItemModal();
-                // Refresh modal data
-                const ticketId = document.getElementById('orderModal').dataset.ticketId;
-                viewOrder(ticketId);
-            } else {
-                alert('Erro ao cancelar item');
-            }
-        });
-    }
 
     function closeOrderModal() {
         document.getElementById('orderModal').classList.remove('active');
@@ -1524,13 +1357,12 @@
         window.print();
     }
 
-    // Toggle sound
-    let soundEnabled = true;
-    const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
+    // Toggle sound and sync with sidebar via localStorage
+    let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
     
-    function toggleSound() {
-        soundEnabled = !soundEnabled;
+    function updateSoundToggleButton() {
         const btn = document.getElementById('soundToggle');
+        if (!btn) return;
 
         if (soundEnabled) {
             btn.classList.remove('muted');
@@ -1546,6 +1378,23 @@
         `;
         }
     }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem('soundEnabled', soundEnabled ? 'true' : 'false');
+        updateSoundToggleButton();
+        
+        if (soundEnabled) {
+            // "Unlock" audio context for the browser by playing a silent sound or quick beep
+            // Using the path directly.
+            const audio = new Audio('/media/alert.wav');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Audio unlock info', e));
+        }
+    }
+
+    // Call once to init button state
+    document.addEventListener('DOMContentLoaded', updateSoundToggleButton);
 
 
     // Close modal on outside click
@@ -1603,13 +1452,6 @@
             return;
         }
 
-        if (soundEnabled) {
-            const audio = new Audio(alertSoundUrl);
-            audio.play().catch(err => {
-                console.warn('Click on the page to enable audio notification:', err);
-            });
-        }
-
         const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
             const h3 = c.querySelector('h3');
             return h3 && h3.textContent.trim().includes('Novos');
@@ -1659,8 +1501,7 @@
                             <span class="order-customer">${ticket.customerName}</span>
                             <span class="order-time ${ticket.urgent ? 'urgent' : ''}">${ticket.timeAgo}${ticket.urgent ? ' ⚠️' : ''}</span>
                         </div>
-                    </div>`/*
-                    <span class="order-id">#${ticket.shortId}</span>*/`
+                    </div>
                 </div>
                 <div class="order-body">
                     <div class="order-items">

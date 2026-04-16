@@ -6,7 +6,6 @@ import dev.thiagooliveira.tablesplit.application.order.GetTicket;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
-import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
@@ -47,7 +46,6 @@ public class OrderController {
   private final GetHistoryTickets getHistoryTickets;
   private final GetTicket getTicket;
   private final MoveTicket moveTicket;
-  private final UpdateTicketItemStatus updateTicketItemStatus;
   private final CancelTicketItem cancelTicketItem;
   private final TransactionalContext transactionalContext;
 
@@ -56,14 +54,12 @@ public class OrderController {
       GetHistoryTickets getHistoryTickets,
       GetTicket getTicket,
       MoveTicket moveTicket,
-      UpdateTicketItemStatus updateTicketItemStatus,
       CancelTicketItem cancelTicketItem,
       TransactionalContext transactionalContext) {
     this.getTickets = getTickets;
     this.getHistoryTickets = getHistoryTickets;
     this.getTicket = getTicket;
     this.moveTicket = moveTicket;
-    this.updateTicketItemStatus = updateTicketItemStatus;
     this.cancelTicketItem = cancelTicketItem;
     this.transactionalContext = transactionalContext;
   }
@@ -176,13 +172,11 @@ public class OrderController {
         .orElseThrow(() -> new IllegalArgumentException("Ticket not found: " + id));
   }
 
-  @PostMapping("/item/status")
+  @GetMapping("/count/pending")
   @ResponseBody
-  public void updateItemStatus(@RequestBody UpdateItemStatusRequest request) {
-    transactionalContext.execute(
-        () ->
-            updateTicketItemStatus.execute(
-                request.itemId(), TicketStatus.valueOf(request.status())));
+  public long getPendingCount(Authentication auth) {
+    var context = (AccountContext) auth.getPrincipal();
+    return getTickets.countPending(context.getRestaurant().getId());
   }
 
   @PostMapping("/item/cancel")
@@ -193,8 +187,6 @@ public class OrderController {
   }
 
   public record MoveTicketRequest(UUID ticketId, String status) {}
-
-  public record UpdateItemStatusRequest(UUID itemId, String status) {}
 
   public record CancelItemRequest(UUID itemId, int quantity, String reason) {}
 
