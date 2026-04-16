@@ -17,6 +17,9 @@ public class ManagerControllerAdvice {
   private final GetTickets getTickets;
   private final ListActiveWaiterCalls listActiveWaiterCalls;
 
+  @org.springframework.beans.factory.annotation.Value("${app.version}")
+  private String appVersion;
+
   public ManagerControllerAdvice(
       GetTickets getTickets, ListActiveWaiterCalls listActiveWaiterCalls) {
     this.getTickets = getTickets;
@@ -43,5 +46,6 @@ public class ManagerControllerAdvice {
     if (module != null) {
       model.addAttribute("module", module);
     }
+    model.addAttribute("appVersion", appVersion);
   }
 }

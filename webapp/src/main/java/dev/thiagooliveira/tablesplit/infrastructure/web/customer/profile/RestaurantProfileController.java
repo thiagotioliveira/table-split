@@ -32,7 +32,12 @@ public class RestaurantProfileController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
-    model.addAttribute("profile", new ProfileModel(restaurant, time.getZoneId(), messageSource));
+    model.addAttribute(
+        "profile",
+        new ProfileModel(
+            restaurant,
+            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
+            messageSource));
     return "restaurant-profile";
   }
 }

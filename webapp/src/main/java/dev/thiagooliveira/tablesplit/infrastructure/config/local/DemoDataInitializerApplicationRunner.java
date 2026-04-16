@@ -216,7 +216,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                                   Tag.DELIVERY,
                                   Tag.PET_FRIENDLY,
                                   Tag.RESERVATIONS)),
-                          time.getZoneId())));
+                          Time.getZoneId())));
       logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());
     } catch (UserAlreadyRegisteredException e) {
       logger.info(

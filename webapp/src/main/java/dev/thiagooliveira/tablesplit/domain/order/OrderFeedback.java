@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class OrderFeedback {
     this.customerId = customerId;
     this.rating = rating;
     this.comment = comment;
-    this.createdAt = ZonedDateTime.now();
+    this.createdAt = Time.now();
   }
 
   public UUID getId() {

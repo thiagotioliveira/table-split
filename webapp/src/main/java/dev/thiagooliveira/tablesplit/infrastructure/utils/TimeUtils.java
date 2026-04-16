@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.utils;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +18,7 @@ public class TimeUtils {
   public static String timeAgo(ZonedDateTime dateTime) {
     if (dateTime == null) return "";
 
-    Duration duration = Duration.between(dateTime, ZonedDateTime.now());
+    Duration duration = Duration.between(dateTime, Time.now());
     long minutes = duration.toMinutes();
     long hours = duration.toHours();
     long days = duration.toDays();

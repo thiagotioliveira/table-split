@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class Order {
     this.restaurantId = restaurantId;
     this.tableId = tableId;
     this.status = OrderStatus.OPEN;
-    this.openedAt = ZonedDateTime.now();
+    this.openedAt = Time.now();
     this.serviceFee = serviceFee;
   }
 
@@ -105,7 +106,7 @@ public class Order {
       return;
     }
     this.status = OrderStatus.CLOSED;
-    this.closedAt = ZonedDateTime.now();
+    this.closedAt = Time.now();
 
     if (this.tickets != null) {
       this.tickets.forEach(

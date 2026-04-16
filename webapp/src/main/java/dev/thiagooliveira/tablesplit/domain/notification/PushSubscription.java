@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class PushSubscription {
     sub.endpoint = endpoint;
     sub.p256dh = p256dh;
     sub.auth = auth;
-    sub.createdAt = ZonedDateTime.now();
+    sub.createdAt = Time.now();
     return sub;
   }
 
@@ -40,7 +41,7 @@ public class PushSubscription {
     sub.endpoint = endpoint;
     sub.p256dh = p256dh;
     sub.auth = auth;
-    sub.createdAt = ZonedDateTime.now();
+    sub.createdAt = Time.now();
     return sub;
   }
 
@@ -61,7 +62,7 @@ public class PushSubscription {
     this.auth = auth;
     this.notifyNewOrders = notifyNewOrders;
     this.notifyCallWaiter = notifyCallWaiter;
-    this.createdAt = ZonedDateTime.now();
+    this.createdAt = Time.now();
   }
 
   public UUID getId() {

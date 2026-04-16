@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,7 +70,7 @@ public class PushSubscriptionEntity {
     entity.auth = domain.getAuth();
     entity.notifyNewOrders = domain.isNotifyNewOrders();
     entity.notifyCallWaiter = domain.isNotifyCallWaiter();
-    entity.createdAt = domain.getCreatedAt() != null ? domain.getCreatedAt() : ZonedDateTime.now();
+    entity.createdAt = domain.getCreatedAt() != null ? domain.getCreatedAt() : Time.now();
     return entity;
   }
 

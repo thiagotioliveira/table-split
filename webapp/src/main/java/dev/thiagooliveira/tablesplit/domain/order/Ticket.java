@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class Ticket {
   public Ticket() {
     this.id = UUID.randomUUID();
     this.status = TicketStatus.PENDING;
-    this.createdAt = ZonedDateTime.now();
+    this.createdAt = Time.now();
   }
 
   public Ticket(

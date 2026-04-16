@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class WaiterCall {
   }
 
   public void dismiss() {
-    this.dismissedAt = ZonedDateTime.now();
+    this.dismissedAt = Time.now();
   }
 
   public UUID getId() {

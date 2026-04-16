@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.notification.WaiterCall;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class RegisterWaiterCall {
@@ -22,9 +22,7 @@ public class RegisterWaiterCall {
                   existing.incrementCount();
                   return existing;
                 })
-            .orElseGet(
-                () ->
-                    new WaiterCall(UUID.randomUUID(), restaurantId, tableCod, ZonedDateTime.now()));
+            .orElseGet(() -> new WaiterCall(UUID.randomUUID(), restaurantId, tableCod, Time.now()));
 
     repository.save(waiterCall);
     long totalActive = repository.findAllActiveByRestaurantId(restaurantId).size();

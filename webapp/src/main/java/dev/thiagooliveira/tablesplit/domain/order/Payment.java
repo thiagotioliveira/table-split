@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class Payment {
     this.amount = amount;
     this.method = method;
     this.note = note;
-    this.paidAt = ZonedDateTime.now();
+    this.paidAt = Time.now();
   }
 
   public UUID getId() {

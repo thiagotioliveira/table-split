@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class Time {
 
-  private final ZoneId zoneId;
+  private static ZoneId zoneId;
 
   public Time(@Value("${app.time.zone-id}") String zoneId) {
-    this.zoneId = ZoneId.of(zoneId);
+    dev.thiagooliveira.tablesplit.infrastructure.utils.Time.zoneId = ZoneId.of(zoneId);
+    dev.thiagooliveira.tablesplit.domain.common.Time.setZoneId(
+        dev.thiagooliveira.tablesplit.infrastructure.utils.Time.zoneId);
   }
 
-  public ZoneId getZoneId() {
+  public static ZoneId getZoneId() {
     return zoneId;
   }
 }

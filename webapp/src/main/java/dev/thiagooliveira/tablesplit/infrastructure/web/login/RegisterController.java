@@ -92,7 +92,11 @@ public class RegisterController {
     }
     var user =
         this.transactionalContext.execute(
-            () -> this.createAccount.execute(form.toCommand(passwordEncoder, time.getZoneId())));
+            () ->
+                this.createAccount.execute(
+                    form.toCommand(
+                        passwordEncoder,
+                        dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId())));
     var token =
         new UsernamePasswordAuthenticationToken(user.getEmail(), form.getUser().getPassword());
 

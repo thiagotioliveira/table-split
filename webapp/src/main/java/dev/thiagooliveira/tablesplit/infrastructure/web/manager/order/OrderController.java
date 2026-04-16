@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
@@ -211,7 +212,7 @@ public class OrderController {
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(ticket.getCreatedAt());
-    long minutes = Duration.between(ticket.getCreatedAt(), ZonedDateTime.now()).toMinutes();
+    long minutes = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
     boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 
     return new TicketModel(

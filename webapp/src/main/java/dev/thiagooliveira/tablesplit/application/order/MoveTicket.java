@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
@@ -37,7 +38,7 @@ public class MoveTicket {
     ticket.setStatus(newStatus);
 
     if (newStatus == TicketStatus.READY) {
-      ticket.setReadyAt(java.time.ZonedDateTime.now());
+      ticket.setReadyAt(Time.now());
     }
 
     orderRepository.save(order);

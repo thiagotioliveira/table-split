@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 import dev.thiagooliveira.tablesplit.application.notification.Broadcaster;
 import dev.thiagooliveira.tablesplit.application.notification.RegisterWaiterCall;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent;
@@ -13,7 +14,6 @@ import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.List;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -153,7 +153,7 @@ public class TicketEventListener {
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
     if (customerName == null || customerName.isBlank()) customerName = "Mesa " + tableCod;
 
-    long minutesAgo = Duration.between(ticket.getCreatedAt(), ZonedDateTime.now()).toMinutes();
+    long minutesAgo = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
     String timeAgo = minutesAgo == 0 ? "agora" : "há " + minutesAgo + " min";
     boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
 
