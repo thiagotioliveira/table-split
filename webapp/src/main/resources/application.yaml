@@ -1,3 +1,10 @@
+server:
+  servlet:
+    session:
+      timeout: 12h
+      cookie:
+        name: TABLESPLIT_SESSION
+
 spring:
   application:
     name: table-split

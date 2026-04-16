@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -108,8 +109,22 @@ public class SecurityConfig {
         .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll())
         .addFilterAfter(
             tenantFilter,
-            org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
+            org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class)
+        .sessionManagement(
+            session ->
+                session
+                    .sessionFixation()
+                    .migrateSession() // Protege contra fixation, migrando a sessão no login
+                    .maximumSessions(1) // Permite apenas 1 sessão ativa
+                    .expiredUrl(
+                        "/login?expired") // URL para onde o usuário é mandado se a sessão cair
+            );
 
     return http.build();
+  }
+
+  @Bean
+  public HttpSessionEventPublisher httpSessionEventPublisher() {
+    return new HttpSessionEventPublisher();
   }
 }
