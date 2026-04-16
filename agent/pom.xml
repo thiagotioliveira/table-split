@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>table-split-agent</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>table-split-agent</name>
+	<name>agent</name>
 	<description>POS Integration Agent</description>
 
 	<properties/>

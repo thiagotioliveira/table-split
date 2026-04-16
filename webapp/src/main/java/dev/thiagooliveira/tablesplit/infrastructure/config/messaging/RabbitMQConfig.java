@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+    name = "app.integration.rabbit.enabled",
+    havingValue = "true")
 public class RabbitMQConfig {
 
   public static final String EXCHANGE_NAME = "order.integration.exchange";

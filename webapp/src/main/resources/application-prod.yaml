@@ -3,7 +3,7 @@ cloudinary:
 
 logging:
   level:
-    ROOT: OFF
+    ROOT: WARN
     org:
       hibernate:
         SQL: OFF
