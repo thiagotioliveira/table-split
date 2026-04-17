@@ -7,7 +7,7 @@ Welcome to the **TableSplit** repository. This project is a comprehensive soluti
 The project is organized as a multi-module Maven monorepo:
 
 *   **[`webapp/`](./webapp)**: The main application (SaaS) where customers place orders via QR Code and the restaurant manages its tables.
-*   **[`agent/`](./agent)**: The "Agent" application that runs locally on the restaurant's computer to integrate cloud orders directly into the POS (Point of Sale) software (e.g., WinRest/Zonesoft).
+*   **[`agent/`](./agent)**: The "Agent" application that runs locally at the restaurant to receive orders via messaging and automatically print them on a configured printer.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ graph LR
     User(Customer / Mobile) -- HTTP --> WebApp(TableSplit WebApp)
     WebApp -- Event --> Broker(RabbitMQ)
     Broker -- Queue --> Agent(TableSplit Agent)
-    Agent -- SQL Insert --> POS(Local POS Software)
+    Agent -- Print Job --> Printer(Local Printer)
 ```
 
 ## How to Run (General)

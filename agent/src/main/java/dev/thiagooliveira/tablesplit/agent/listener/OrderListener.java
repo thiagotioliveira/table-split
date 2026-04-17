@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.agent.listener;
 
-import dev.thiagooliveira.tablesplit.agent.service.POSService;
-import java.util.Map;
+import dev.thiagooliveira.tablesplit.agent.model.IntegrationOrderDTO;
+import dev.thiagooliveira.tablesplit.agent.service.PrinterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class OrderListener {
 
   private static final Logger log = LoggerFactory.getLogger(OrderListener.class);
-  private final POSService posService;
+  private final PrinterService printerService;
 
-  public OrderListener(POSService posService) {
-    this.posService = posService;
+  public OrderListener(PrinterService printerService) {
+    this.printerService = printerService;
   }
 
   /**
@@ -30,7 +30,8 @@ public class OrderListener {
               value = @Queue(value = "pos.integration.generic.queue", durable = "true"),
               exchange = @Exchange(value = "order.integration.exchange", type = "topic"),
               key = "restaurant.*.orders"))
-  public void receiveOrder(Map<String, Object> orderData) {
-    log.info("Order for Table {} received successfully.", orderData.get("tableCod"));
+  public void receiveOrder(IntegrationOrderDTO order) {
+    log.info("Order for Table {} received successfully. Sending to printer...", order.tableCod());
+    printerService.printOrder(order);
   }
 }

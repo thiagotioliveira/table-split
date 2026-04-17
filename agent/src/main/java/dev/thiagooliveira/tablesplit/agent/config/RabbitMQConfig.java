@@ -9,19 +9,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
   @Bean
-  public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
-    Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
-    // Isso é importante: como o DTO original não existe aqui,
-    // o Jackson vai converter para um Map ou LinkedHashMap automaticamente.
+  public Jackson2JsonMessageConverter producerJackson2MessageConverter(
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+    Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter(objectMapper);
+    // This tells Jackson to ignore the __TypeId__ header from the webapp
+    // and use the method parameter type (IntegrationOrderDTO) instead.
+    converter.setTypePrecedence(
+        org.springframework.amqp.support.converter.Jackson2JavaTypeMapper.TypePrecedence.INFERRED);
     return converter;
   }
 
   @Bean
   public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-      ConnectionFactory connectionFactory) {
+      ConnectionFactory connectionFactory,
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
     SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
     factory.setConnectionFactory(connectionFactory);
-    factory.setMessageConverter(producerJackson2MessageConverter());
+    factory.setMessageConverter(producerJackson2MessageConverter(objectMapper));
     return factory;
   }
 }

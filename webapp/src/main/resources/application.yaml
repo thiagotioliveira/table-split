@@ -70,7 +70,7 @@ logging:
       springframework:
         transaction: OFF
         web.servlet: ERROR
-    dev.thiagooliveira: DEBUG
+    dev.thiagooliveira: INFO
     liquibase: OFF
 
 management:

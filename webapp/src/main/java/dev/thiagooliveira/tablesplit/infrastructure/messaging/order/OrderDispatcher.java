@@ -18,6 +18,7 @@ public class OrderDispatcher {
 
   public OrderDispatcher(RabbitTemplate rabbitTemplate) {
     this.rabbitTemplate = rabbitTemplate;
+    log.info("OrderDispatcher: Service initialized and ready to dispatch orders.");
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

@@ -1,15 +1,20 @@
 # TableSplit - Local Agent Integration
 
-This component is responsible for listening to **TableSplit** integration queues and automatically injecting orders into the restaurant's local POS (Point of Sale) software database.
+This component is responsible for listening to **TableSplit** integration queues and automatically printing orders received from the Web application.
 
 ## Objective
-Eliminate the need for manual order re-entry, reducing errors and operational time.
+Provide real-time order printing at the restaurant's kitchen or bar, ensuring that orders are processed immediately after being placed by the customer.
+
+## Features
+- **RabbitMQ Integration**: Receives `TicketCreatedEvent` via a topic exchange.
+- **Automated Printing**: Sends the formatted order directly to the default system printer using Java's Printing API.
+- **Robustness**: Handles different class packages via Jackson's `INFERRED` type mapping.
 
 ## Configuration
 
-The agent is configured via an `application.yml` file. The main parameters are:
+The agent is configured via an `application.yml` file.
 
-### RabbitMQ (Cloud or Local)
+### RabbitMQ
 Configures the message broker address the Agent should listen to.
 ```yaml
 spring:
@@ -38,6 +43,9 @@ logging:
    ```
 
 ## Roadmap
-- [ ] Implement JDBC integration for Firebird (WinRest).
-- [ ] Implement JDBC integration for MySQL/SQL Server (Zonesoft/Others).
-- [ ] Configure automatic injection of service charges and discounts.
+- [x] RabbitMQ Listener Integration.
+- [x] Java Printing API implementation.
+- [ ] Support for selecting specific printers via configuration.
+- [ ] Network printer support (via IP/Port).
+- [ ] Custom receipt templates.
+

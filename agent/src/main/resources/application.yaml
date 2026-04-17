@@ -17,4 +17,4 @@ app:
 
 logging:
   level:
-    dev.thiagooliveira: DEBUG
+    dev.thiagooliveira: INFO

@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
     havingValue = "true")
 public class RabbitMQConfig {
 
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(RabbitMQConfig.class);
+
   public static final String EXCHANGE_NAME = "order.integration.exchange";
 
   @Bean
@@ -26,11 +29,23 @@ public class RabbitMQConfig {
     return new Jackson2JsonMessageConverter(objectMapper);
   }
 
+  @jakarta.annotation.PostConstruct
+  public void init() {
+    log.info("RabbitMQConfig: Integration is ENABLED and configuration is being loaded.");
+  }
+
   @Bean
   public RabbitTemplate rabbitTemplate(
       ConnectionFactory connectionFactory, Jackson2JsonMessageConverter jsonMessageConverter) {
     RabbitTemplate template = new RabbitTemplate(connectionFactory);
     template.setMessageConverter(jsonMessageConverter);
     return template;
+  }
+
+  @Bean
+  public dev.thiagooliveira.tablesplit.infrastructure.messaging.order.OrderDispatcher
+      orderDispatcher(RabbitTemplate rabbitTemplate) {
+    return new dev.thiagooliveira.tablesplit.infrastructure.messaging.order.OrderDispatcher(
+        rabbitTemplate);
   }
 }
