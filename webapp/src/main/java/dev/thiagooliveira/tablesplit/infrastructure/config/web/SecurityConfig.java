@@ -16,7 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
+import org.springframework.http.HttpStatus;
 
 @Configuration
 @EnableWebSecurity
@@ -114,11 +118,19 @@ public class SecurityConfig {
             session ->
                 session
                     .sessionFixation()
-                    .migrateSession() // Protege contra fixation, migrando a sessão no login
-                    .maximumSessions(1) // Permite apenas 1 sessão ativa
-                    .expiredUrl(
-                        "/login?expired") // URL para onde o usuário é mandado se a sessão cair
-            );
+                    .migrateSession()
+                    .maximumSessions(1)
+                    .expiredUrl("/login?expired")
+        )
+        .exceptionHandling(
+            exceptions ->
+                exceptions
+                    .defaultAuthenticationEntryPointFor(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                        new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest")
+                    )
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+        );
 
     return http.build();
   }

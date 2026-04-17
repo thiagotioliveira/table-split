@@ -3813,7 +3813,9 @@
             url += '?' + params.toString();
         }
 
-        fetch(url)
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
             .then(res => {
                 if (!res.ok) throw new Error('Erro ao buscar histórico');
                 return res.json();
@@ -4785,6 +4787,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
                 },
                 body: JSON.stringify({
@@ -5398,7 +5401,9 @@
     }
 
     function loadActiveWaiterCalls() {
-        fetch('/api/notifications/active-calls')
+        fetch('/api/notifications/active-calls', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
             .then(res => res.json())
             .then(calls => {
                 if (calls && calls.length > 0) {
@@ -5445,7 +5450,10 @@
         if (callId) {
             fetch('/api/notifications/calls/dismiss', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: JSON.stringify(callId)
             }).then(res => {
                 if (res.ok) {

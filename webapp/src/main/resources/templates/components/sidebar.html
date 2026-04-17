@@ -170,7 +170,9 @@
                 return;
             }
             
-            fetch('/orders/count/pending')
+            fetch('/orders/count/pending', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
                 .then(res => {
                     if (!res.ok) throw new Error('Status ' + res.status);
                     return res.json();
@@ -194,7 +196,9 @@
                 return;
             }
             
-            fetch('/api/notifications/calls/count')
+            fetch('/api/notifications/calls/count', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
                 .then(res => {
                     if (!res.ok) throw new Error('Status ' + res.status);
                     return res.json();

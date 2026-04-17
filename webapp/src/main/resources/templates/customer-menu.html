@@ -2352,7 +2352,8 @@
         if (hasTable && restaurantSlug && tableCode) {
             try {
                 const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/waiter/call`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 if (response.ok) {
                     localStorage.setItem('lastWaiterCallTime', now);
@@ -2549,7 +2550,8 @@
             const response = await fetch(window.location.pathname + '/order', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify(orderRequest)
             });
@@ -2701,6 +2703,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
                 },
                 body: JSON.stringify({ itemId, rating })
@@ -2735,6 +2738,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
                 },
                 body: JSON.stringify({ 
@@ -3306,7 +3310,9 @@
         btn.classList.add('refreshing');
         
         try {
-            const response = await fetch(`${window.location.pathname}/data`);
+            const response = await fetch(`${window.location.pathname}/data`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
             if (!response.ok) throw new Error('API Error');
             const data = await response.json();
 
