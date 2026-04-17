@@ -7,7 +7,7 @@ import java.security.GeneralSecurityException;
 import java.security.Security;
 import nl.martijndwars.webpush.Notification;
 import nl.martijndwars.webpush.PushService;
-import nl.martijndwars.webpush.Subscription;
+import nl.martijndwars.webpush.Urgency;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,15 +63,17 @@ public class PushNotificationService
     }
 
     try {
-      String p256dh = sub.getP256dh().replace('+', '-').replace('/', '_');
-      String auth = sub.getAuth().replace('+', '-').replace('/', '_');
-
       logger.debug("Preparing notification for endpoint: {}", sub.getEndpoint());
 
-      Subscription subscription =
-          new Subscription(sub.getEndpoint(), new Subscription.Keys(p256dh, auth));
-
-      Notification notification = new Notification(subscription, payload);
+      Notification notification =
+          Notification.builder()
+              .endpoint(sub.getEndpoint())
+              .userPublicKey(sub.getP256dh())
+              .userAuth(sub.getAuth())
+              .payload(payload)
+              .urgency(Urgency.HIGH)
+              .ttl(3600)
+              .build();
       var response = pushService.send(notification, nl.martijndwars.webpush.Encoding.AES128GCM);
       int statusCode = response.getStatusLine().getStatusCode();
 
