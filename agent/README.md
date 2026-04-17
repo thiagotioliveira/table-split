@@ -27,7 +27,7 @@ To monitor incoming orders in real-time:
 ```yaml
 logging:
   level:
-    dev.thiagooliveira: DEBUG
+    dev.thiagooliveira: INFO
 ```
 
 ## How to Run

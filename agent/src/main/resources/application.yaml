@@ -7,7 +7,10 @@ spring:
       retry:
         enabled: true
         initial-interval: 5s
-        max-attempts: 5
+        max-retries: 5
+    listener:
+      simple:
+        prefetch: 1
 
 server:
   port: 8081

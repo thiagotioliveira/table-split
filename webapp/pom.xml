@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>dev.thiagooliveira</groupId>
 		<artifactId>table-split-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>table-split-webapp</artifactId>
-	<version>0.10.0-SNAPSHOT</version>
+	<version>0.10.1-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>
@@ -119,7 +119,6 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>${org.testcontainers.postgresql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
