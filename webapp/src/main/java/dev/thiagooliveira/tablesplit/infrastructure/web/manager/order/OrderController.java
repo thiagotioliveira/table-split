@@ -224,6 +224,7 @@ public class OrderController {
         timeAgo,
         itemModels,
         ticket.calculateTotal(),
-        urgent);
+        urgent,
+        ticket.getNote());
   }
 }

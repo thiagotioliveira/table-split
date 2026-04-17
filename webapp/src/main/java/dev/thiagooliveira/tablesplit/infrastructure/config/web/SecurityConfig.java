@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,7 +21,6 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
-import org.springframework.http.HttpStatus;
 
 @Configuration
 @EnableWebSecurity
@@ -120,17 +120,14 @@ public class SecurityConfig {
                     .sessionFixation()
                     .migrateSession()
                     .maximumSessions(1)
-                    .expiredUrl("/login?expired")
-        )
+                    .expiredUrl("/login?expired"))
         .exceptionHandling(
             exceptions ->
                 exceptions
                     .defaultAuthenticationEntryPointFor(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                        new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest")
-                    )
-                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-        );
+                        new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
     return http.build();
   }

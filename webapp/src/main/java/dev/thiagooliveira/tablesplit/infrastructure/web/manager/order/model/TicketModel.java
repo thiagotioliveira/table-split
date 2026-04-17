@@ -19,6 +19,7 @@ public class TicketModel {
   private final List<TicketItemModel> items;
   private final BigDecimal total;
   private final boolean urgent;
+  private final String note;
 
   public TicketModel(
       UUID id,
@@ -29,7 +30,8 @@ public class TicketModel {
       String timeAgo,
       List<TicketItemModel> items,
       BigDecimal total,
-      boolean urgent) {
+      boolean urgent,
+      String note) {
     this.id = id;
     this.shortId = id.toString().substring(0, 4).toUpperCase();
     this.tableCod = tableCod;
@@ -42,6 +44,7 @@ public class TicketModel {
     this.items = items;
     this.total = total;
     this.urgent = urgent;
+    this.note = note;
   }
 
   public UUID getId() {
@@ -90,5 +93,9 @@ public class TicketModel {
 
   public boolean isUrgent() {
     return urgent;
+  }
+
+  public String getNote() {
+    return note;
   }
 }

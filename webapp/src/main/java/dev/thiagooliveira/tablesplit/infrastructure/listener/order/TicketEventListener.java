@@ -166,7 +166,8 @@ public class TicketEventListener {
         timeAgo,
         itemModels,
         ticket.calculateTotal(),
-        urgent);
+        urgent,
+        ticket.getNote());
   }
 
   private TicketItemModel.PromotionInfo getItemPromotionInfo(
