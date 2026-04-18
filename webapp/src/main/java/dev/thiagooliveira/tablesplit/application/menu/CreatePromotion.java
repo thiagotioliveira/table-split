@@ -1,5 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreatePromotionCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import java.util.UUID;
@@ -7,12 +9,18 @@ import java.util.UUID;
 public class CreatePromotion {
 
   private final PromotionRepository promotionRepository;
+  private final PlanLimitValidator planLimitValidator;
 
-  public CreatePromotion(PromotionRepository promotionRepository) {
+  public CreatePromotion(
+      PromotionRepository promotionRepository, PlanLimitValidator planLimitValidator) {
     this.promotionRepository = promotionRepository;
+    this.planLimitValidator = planLimitValidator;
   }
 
   public Promotion execute(UUID restaurantId, CreatePromotionCommand command) {
+    this.planLimitValidator.validateByRestaurantId(
+        restaurantId, PlanLimitType.PROMOTIONS, this.promotionRepository.count(restaurantId));
+
     var promotion = new Promotion();
     promotion.setId(UUID.randomUUID());
     promotion.setRestaurantId(restaurantId);

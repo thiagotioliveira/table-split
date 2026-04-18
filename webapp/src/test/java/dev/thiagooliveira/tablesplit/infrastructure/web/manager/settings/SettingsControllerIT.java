@@ -14,12 +14,12 @@ import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AuthenticatedIT;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -122,9 +122,8 @@ class SettingsControllerIT extends AuthenticatedIT {
     // 1. Create a second account
     Account account = new Account();
     account.setId(UUID.randomUUID());
-    account.setPlan(Plan.PRO);
-    account.setActive(true);
-    account.setCreatedAt(OffsetDateTime.now());
+    account.setPlan(Plan.PROFESSIONAL);
+    account.setCreatedAt(Time.nowOffset());
     accountRepository.save(account);
 
     // 2. Create another restaurant associated with that account

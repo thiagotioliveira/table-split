@@ -16,4 +16,6 @@ public interface TableJpaRepository extends JpaRepository<TableEntity, UUID> {
   Optional<TableEntity> findByRestaurantIdAndCod(UUID restaurantId, String cod);
 
   List<TableEntity> findAllByRestaurantIdAndDeletedAtIsNullOrderByCod(UUID restaurantId);
+
+  long countByRestaurantIdAndDeletedAtIsNull(UUID restaurantId);
 }

@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -73,7 +72,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
     if (this.itemJpaRepository.existsInTicketItems(itemId)) {
       // Exclusão lógica
-      itemEntity.setDeletedAt(OffsetDateTime.now());
+      itemEntity.setDeletedAt(dev.thiagooliveira.tablesplit.domain.common.Time.nowOffset());
       itemEntity.setActive(false);
       this.itemJpaRepository.save(itemEntity);
     } else {

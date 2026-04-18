@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
@@ -16,20 +18,25 @@ public class CreateItem {
   private final EventPublisher eventPublisher;
   private final ImageStorage imageStorage;
   private final ItemRepository itemRepository;
+  private final PlanLimitValidator planLimitValidator;
   private final long maxImageSize;
 
   public CreateItem(
       EventPublisher eventPublisher,
       ImageStorage imageStorage,
       ItemRepository itemRepository,
+      PlanLimitValidator planLimitValidator,
       long maxImageSize) {
     this.eventPublisher = eventPublisher;
     this.imageStorage = imageStorage;
     this.itemRepository = itemRepository;
+    this.planLimitValidator = planLimitValidator;
     this.maxImageSize = maxImageSize;
   }
 
   public Item execute(UUID accountId, UUID restaurantId, CreateItemCommand command) {
+    this.planLimitValidator.validate(
+        accountId, PlanLimitType.MENU_ITEMS, this.itemRepository.count(restaurantId));
 
     var item = new Item();
     item.setId(UUID.randomUUID());

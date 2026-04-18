@@ -13,4 +13,6 @@ public interface PromotionRepository {
   List<Promotion> findByRestaurantId(UUID restaurantId);
 
   void deleteById(UUID id);
+
+  long count(UUID restaurantId);
 }

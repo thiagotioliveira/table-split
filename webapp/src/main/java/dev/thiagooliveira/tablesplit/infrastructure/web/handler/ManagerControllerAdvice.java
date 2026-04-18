@@ -1,15 +1,19 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 
+import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice(basePackages = {"dev.thiagooliveira.tablesplit.infrastructure.web.manager"})
 public class ManagerControllerAdvice {
@@ -47,5 +51,18 @@ public class ManagerControllerAdvice {
       model.addAttribute("module", module);
     }
     model.addAttribute("appVersion", appVersion);
+  }
+
+  @ExceptionHandler(PlanLimitExceededException.class)
+  public String handlePlanLimitExceededException(
+      PlanLimitExceededException ex,
+      HttpServletRequest request,
+      RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("alert", AlertModel.error(ex.getMessage()));
+    String referer = request.getHeader("Referer");
+    if (referer != null && !referer.isEmpty()) {
+      return "redirect:" + referer;
+    }
+    return "redirect:/dashboard";
   }
 }

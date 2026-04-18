@@ -38,4 +38,9 @@ public class PromotionRepositoryAdapter implements PromotionRepository {
   public void deleteById(UUID id) {
     repository.deleteById(id);
   }
+
+  @Override
+  public long count(UUID restaurantId) {
+    return repository.countByRestaurantId(restaurantId);
+  }
 }

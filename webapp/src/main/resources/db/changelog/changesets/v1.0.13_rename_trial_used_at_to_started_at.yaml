@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.13
+      author: thiago.oliveira
+      changes:
+        - renameColumn:
+            tableName: accounts
+            oldColumnName: trial_used_at
+            newColumnName: trial_started_at
+            columnDataType: TIMESTAMP WITH TIME ZONE

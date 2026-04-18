@@ -35,9 +35,8 @@ public class CreateAccount {
 
     var account = new Account();
     account.setId(UUID.randomUUID());
-    account.setPlan(Plan.PRO);
+    account.setPlan(Plan.PROFESSIONAL);
     account.setCreatedAt(OffsetDateTime.now(command.zone()));
-    account.setActive(true);
     this.accountRepository.save(account);
 
     var user = new User();

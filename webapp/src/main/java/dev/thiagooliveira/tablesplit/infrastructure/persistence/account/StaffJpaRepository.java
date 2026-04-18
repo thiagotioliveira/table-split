@@ -9,4 +9,6 @@ public interface StaffJpaRepository extends JpaRepository<StaffEntity, UUID> {
   Optional<StaffEntity> findByEmail(String email);
 
   List<StaffEntity> findByRestaurantId(UUID restaurantId);
+
+  long countByRestaurantId(UUID restaurantId);
 }

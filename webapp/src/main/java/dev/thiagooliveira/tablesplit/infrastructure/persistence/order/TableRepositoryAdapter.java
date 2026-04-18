@@ -62,4 +62,9 @@ public class TableRepositoryAdapter implements TableRepository {
   public void delete(UUID tableId) {
     tableJpaRepository.deleteById(tableId);
   }
+
+  @Override
+  public long count(UUID restaurantId) {
+    return tableJpaRepository.countByRestaurantIdAndDeletedAtIsNull(restaurantId);
+  }
 }

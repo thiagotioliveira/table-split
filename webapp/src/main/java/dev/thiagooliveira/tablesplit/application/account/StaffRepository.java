@@ -15,4 +15,6 @@ public interface StaffRepository {
   List<Staff> findByRestaurantId(UUID restaurantId);
 
   void deleteById(UUID id);
+
+  long count(UUID restaurantId);
 }

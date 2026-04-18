@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
+import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.util.Optional;
@@ -20,12 +22,13 @@ class CreateTableTest {
 
   @Mock private TableRepository tableRepository;
   @Mock private EventPublisher eventPublisher;
+  @Mock private PlanLimitValidator planLimitValidator;
 
   private CreateTable createTable;
 
   @BeforeEach
   void setUp() {
-    createTable = new CreateTable(tableRepository, eventPublisher);
+    createTable = new CreateTable(tableRepository, eventPublisher, planLimitValidator);
   }
 
   @Test
@@ -33,12 +36,16 @@ class CreateTableTest {
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
 
+    when(tableRepository.count(restaurantId)).thenReturn(5L);
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, cod)).thenReturn(Optional.empty());
+    when(tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, cod))
+        .thenReturn(Optional.empty());
 
     createTable.execute(restaurantId, cod);
 
     ArgumentCaptor<Table> tableCaptor = ArgumentCaptor.forClass(Table.class);
     verify(tableRepository).save(tableCaptor.capture());
+    verify(planLimitValidator).validateByRestaurantId(eq(restaurantId), any(), eq(5L));
 
     Table savedTable = tableCaptor.getValue();
     assertEquals(cod, savedTable.getCod());
@@ -50,12 +57,61 @@ class CreateTableTest {
   void shouldThrowExceptionWhenTableAlreadyExists() {
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
+
     Table existingTable = new Table(UUID.randomUUID(), restaurantId, cod);
 
+    when(tableRepository.count(restaurantId)).thenReturn(5L);
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, cod))
         .thenReturn(Optional.of(existingTable));
 
     assertThrows(TableAlreadyExists.class, () -> createTable.execute(restaurantId, cod));
     verify(tableRepository, never()).save(any());
+  }
+
+  @Test
+  void shouldThrowExceptionWhenLimitReached() {
+    UUID restaurantId = UUID.randomUUID();
+    String cod = "01";
+
+    when(tableRepository.count(restaurantId)).thenReturn(20L);
+    doThrow(new PlanLimitExceededException("error.plan.limit.tables"))
+        .when(planLimitValidator)
+        .validateByRestaurantId(eq(restaurantId), any(), eq(20L));
+
+    assertThrows(PlanLimitExceededException.class, () -> createTable.execute(restaurantId, cod));
+    verify(tableRepository, never()).save(any());
+  }
+
+  @Test
+  void shouldResurrectTableWhenUnderLimit() {
+    UUID restaurantId = UUID.randomUUID();
+    String cod = "01";
+    Table deletedTable = new Table(UUID.randomUUID(), restaurantId, cod);
+    deletedTable.softDelete();
+
+    when(tableRepository.count(restaurantId)).thenReturn(5L);
+    when(tableRepository.findByRestaurantIdAndCod(restaurantId, cod)).thenReturn(Optional.empty());
+    when(tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, cod))
+        .thenReturn(Optional.of(deletedTable));
+
+    createTable.execute(restaurantId, cod);
+
+    assertFalse(deletedTable.isDeleted());
+    verify(tableRepository).save(deletedTable);
+    verify(planLimitValidator).validateByRestaurantId(eq(restaurantId), any(), eq(5L));
+  }
+
+  @Test
+  void shouldNotResurrectTableWhenLimitReached() {
+    UUID restaurantId = UUID.randomUUID();
+    String cod = "01";
+
+    when(tableRepository.count(restaurantId)).thenReturn(20L);
+    doThrow(new PlanLimitExceededException("error.plan.limit.tables"))
+        .when(planLimitValidator)
+        .validateByRestaurantId(eq(restaurantId), any(), eq(20L));
+
+    assertThrows(PlanLimitExceededException.class, () -> createTable.execute(restaurantId, cod));
+    verify(tableRepository, never()).findByRestaurantIdAndCodIncludingDeleted(any(), any());
   }
 }

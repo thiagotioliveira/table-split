@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +18,10 @@ public class MenuConfig {
 
   @Bean
   public CreateCategory createCategory(
-      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
-    return new CreateCategory(eventPublisher, categoryRepository);
+      EventPublisher eventPublisher,
+      CategoryRepository categoryRepository,
+      PlanLimitValidator planLimitValidator) {
+    return new CreateCategory(eventPublisher, categoryRepository, planLimitValidator);
   }
 
   @Bean
@@ -52,8 +55,10 @@ public class MenuConfig {
       EventPublisher eventPublisher,
       ImageStorage imageStorage,
       ItemRepository itemRepository,
+      PlanLimitValidator planLimitValidator,
       @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
-    return new CreateItem(eventPublisher, imageStorage, itemRepository, maxImageSize);
+    return new CreateItem(
+        eventPublisher, imageStorage, itemRepository, planLimitValidator, maxImageSize);
   }
 
   @Bean

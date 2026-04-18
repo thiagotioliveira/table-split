@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PromotionJpaRepository extends JpaRepository<PromotionEntity, UUID> {
   List<PromotionEntity> findByRestaurantId(UUID restaurantId);
+
+  long countByRestaurantId(UUID restaurantId);
 }

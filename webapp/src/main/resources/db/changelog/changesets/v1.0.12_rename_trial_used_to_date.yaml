@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.12
+      author: thiago.oliveira
+      changes:
+        - dropColumn:
+            tableName: accounts
+            columnName: trial_used
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: trial_used_at
+                  type: TIMESTAMP WITH TIME ZONE

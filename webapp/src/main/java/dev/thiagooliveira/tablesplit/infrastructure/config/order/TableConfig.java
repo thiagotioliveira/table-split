@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,11 @@ public class TableConfig {
   }
 
   @Bean
-  public CreateTable createTable(TableRepository tableRepository, EventPublisher eventPublisher) {
-    return new CreateTable(tableRepository, eventPublisher);
+  public CreateTable createTable(
+      TableRepository tableRepository,
+      EventPublisher eventPublisher,
+      PlanLimitValidator planLimitValidator) {
+    return new CreateTable(tableRepository, eventPublisher, planLimitValidator);
   }
 
   @Bean

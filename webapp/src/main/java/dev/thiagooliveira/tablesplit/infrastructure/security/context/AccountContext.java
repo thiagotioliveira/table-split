@@ -22,22 +22,24 @@ public class AccountContext implements UserDetails {
   private final List<Module> footerModules;
 
   public AccountContext(Account account, User user, Restaurant restaurant) {
+    var effectivePlan = account.getEffectivePlan();
     this.id = account.getId();
     this.active = account.isActive();
-    this.plan = account.getPlan();
+    this.plan = effectivePlan;
     this.user = new UserContext(user);
     this.restaurant = new RestaurantContext(restaurant);
-    this.sidebarModules = Module.sidebarModules(account.getPlan());
-    this.footerModules = Module.footerModules(account.getPlan());
+    this.sidebarModules = Module.sidebarModules(effectivePlan);
+    this.footerModules = Module.footerModules(effectivePlan);
   }
 
   public AccountContext(Account account, Staff staff, Restaurant restaurant) {
+    var effectivePlan = account.getEffectivePlan();
     var sidebarModules = new HashSet<>(staff.getModules());
     sidebarModules.add(dev.thiagooliveira.tablesplit.domain.account.Module.DASHBOARD);
     var footerModules = Set.of(dev.thiagooliveira.tablesplit.domain.account.Module.USER_PROFILE);
     this.id = account.getId();
     this.active = account.isActive() && staff.isEnabled();
-    this.plan = account.getPlan();
+    this.plan = effectivePlan;
     this.user = new UserContext(staff);
     this.restaurant = new RestaurantContext(restaurant);
     this.sidebarModules = Module.filterModules(sidebarModules, true);

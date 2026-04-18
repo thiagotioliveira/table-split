@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.14
+      author: thiago.oliveira
+      changes:
+        - dropColumn:
+            tableName: accounts
+            columnName: active

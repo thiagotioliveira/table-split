@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 public class PromotionConfig {
 
   @Bean
-  public CreatePromotion createPromotion(PromotionRepository promotionRepository) {
-    return new CreatePromotion(promotionRepository);
+  public CreatePromotion createPromotion(
+      PromotionRepository promotionRepository, PlanLimitValidator planLimitValidator) {
+    return new CreatePromotion(promotionRepository, planLimitValidator);
   }
 
   @Bean

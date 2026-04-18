@@ -22,4 +22,6 @@ public interface TableRepository {
   void save(Table table);
 
   void delete(UUID tableId);
+
+  long count(UUID restaurantId);
 }

@@ -42,4 +42,9 @@ public class StaffRepositoryAdapter implements StaffRepository {
   public void deleteById(UUID id) {
     this.staffJpaRepository.deleteById(id);
   }
+
+  @Override
+  public long count(UUID restaurantId) {
+    return this.staffJpaRepository.countByRestaurantId(restaurantId);
+  }
 }

@@ -9,6 +9,14 @@ import org.springframework.context.annotation.Configuration;
 public class AccountConfig {
 
   @Bean
+  public PlanLimitValidator planLimitValidator(
+      AccountRepository accountRepository,
+      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
+          restaurantRepository) {
+    return new PlanLimitValidator(accountRepository, restaurantRepository);
+  }
+
+  @Bean
   public CreateAccount createAccount(
       EventPublisher eventPublisher,
       AccountRepository accountRepository,
@@ -21,8 +29,10 @@ public class AccountConfig {
       StaffRepository staffRepository,
       UserRepository userRepository,
       dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
-          restaurantRepository) {
-    return new CreateStaff(staffRepository, userRepository, restaurantRepository);
+          restaurantRepository,
+      PlanLimitValidator planLimitValidator) {
+    return new CreateStaff(
+        staffRepository, userRepository, restaurantRepository, planLimitValidator);
   }
 
   @Bean

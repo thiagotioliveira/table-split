@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class Table {
   }
 
   public void softDelete() {
-    this.deletedAt = OffsetDateTime.now();
+    this.deletedAt = Time.nowOffset();
     this.status = TableStatus.AVAILABLE;
   }
 
