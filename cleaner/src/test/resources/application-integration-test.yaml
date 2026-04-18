@@ -1,0 +1,20 @@
+spring:
+  # Disable automatic liquibase to run it manually in the test for multi-tenancy
+  liquibase:
+    enabled: false
+
+cleaner:
+  retention-days: 90
+  enabled: true
+  runner:
+    enabled: false
+
+app:
+  time:
+    zone-id: Europe/Lisbon
+
+logging:
+  level:
+    dev.thiagooliveira.tablesplit.cleaner: DEBUG
+    org.testcontainers: INFO
+    org.liquibase: INFO
