@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TableSplit — Apresentação de Vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf8f5;--surface:#ffffff;--card:#ffffff;
+  --gold:#c9a050;--gold2:#a88535;--teal:#2d5a47;
+  --red:#c0392b;--text:#1a1714;--muted:#6b635a;--border:#e8e4de;
+  --muted-bg:#f3efe9;--primary-light:rgba(201,160,80,0.13);--success-light:rgba(45,90,71,0.11);
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
+.deck{width:100%;height:100%;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 80px;opacity:0;pointer-events:none;transform:translateY(40px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1)}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0)}
+.slide.exit{opacity:0;transform:translateY(-40px)}
+
+/* NAV */
+.nav{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:50px;padding:10px 20px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s}
+.dot.active{background:var(--gold);width:24px;border-radius:4px}
+.nav-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px;transition:color .2s}
+.nav-btn:hover{color:var(--gold)}
+.slide-counter{font-size:12px;color:var(--muted);min-width:40px;text-align:center}
+
+/* PROGRESS */
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .4s ease;z-index:200}
+
+/* BG DECORATIONS */
+.glow{position:absolute;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.06}
+.glow-gold{background:var(--gold)}
+.glow-teal{background:var(--teal)}
+
+/* TYPOGRAPHY */
+.tag{display:inline-flex;align-items:center;gap:8px;background:var(--primary-light);border:1px solid rgba(201,160,80,.35);color:var(--gold2);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:24px}
+h1{font-size:clamp(40px,6vw,72px);font-weight:800;line-height:1.1;text-align:center}
+h2{font-size:clamp(28px,4vw,48px);font-weight:700;line-height:1.2}
+.gradient{background:linear-gradient(135deg,var(--gold2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:clamp(15px,2vw,20px);color:var(--muted);line-height:1.7;max-width:680px;text-align:center;margin-top:20px}
+.lead{font-size:18px;color:var(--muted);line-height:1.7}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 32px}
+.card-grid{display:grid;gap:20px;width:100%;max-width:1100px}
+.card-grid-2{grid-template-columns:1fr 1fr}
+.card-grid-3{grid-template-columns:1fr 1fr 1fr}
+.icon{font-size:32px;margin-bottom:12px;display:block}
+.card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.card p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* PROBLEM NUMBERS */
+.stat{text-align:center}
+.stat .num{font-size:clamp(36px,5vw,64px);font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .label{font-size:14px;color:var(--muted);margin-top:6px}
+
+/* PLAN CARDS */
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px;position:relative;transition:transform .3s,border-color .3s}
+.plan-card:hover{transform:translateY(-4px)}
+.plan-card.featured{border-color:var(--gold);background:linear-gradient(180deg,rgba(201,160,80,.07) 0%,var(--muted-bg) 100%)}
+.plan-card.featured::before{content:'MAIS POPULAR';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-size:11px;font-weight:800;padding:5px 16px;border-radius:50px;letter-spacing:1px}
+.plan-name{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.plan-price{font-size:clamp(28px,3.5vw,44px);font-weight:800;line-height:1}
+.plan-price span{font-size:15px;font-weight:400;color:var(--muted)}
+.plan-desc{font-size:13px;color:var(--muted);margin:10px 0 20px;line-height:1.5}
+.plan-feature{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.plan-feature .check{color:var(--teal);flex-shrink:0;margin-top:1px}
+.plan-feature .x{color:#b0a99f;flex-shrink:0}
+.plan-cta{display:block;width:100%;margin-top:24px;padding:12px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;border:none;cursor:pointer;transition:opacity .2s}
+.plan-cta.main{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000}
+.plan-cta.outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.plan-cta:hover{opacity:.85}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;max-width:900px}
+.comp-table th,.comp-table td{padding:14px 20px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+.comp-table th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.comp-table td:first-child{color:var(--text);font-weight:500}
+.comp-table tr:last-child td{border:none}
+.comp-table .yes{color:var(--teal)}
+.comp-table .no{color:#b0a99f}
+.comp-table .val{font-weight:600;color:var(--gold)}
+.comp-table tr:hover td{background:var(--muted-bg)}
+.comp-table thead tr th:not(:first-child){text-align:center}
+.comp-table td:not(:first-child){text-align:center}
+
+/* HERO LOGO */
+.logo-mark{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.logo-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.logo-text{font-size:24px;font-weight:800;letter-spacing:-1px}
+
+/* LIST */
+.check-list{list-style:none;display:flex;flex-direction:column;gap:14px;max-width:560px}
+.check-list li{display:flex;align-items:flex-start;gap:12px;font-size:16px;color:var(--muted);line-height:1.5}
+.check-list li::before{content:'✦';color:var(--gold);flex-shrink:0;margin-top:2px}
+
+/* PAIN ITEMS */
+.pain-item{display:flex;align-items:flex-start;gap:16px;background:#fff7f6;border:1px solid rgba(192,57,43,.15);border-radius:16px;padding:20px 24px}
+.pain-item .icon{font-size:24px;margin:0;flex-shrink:0}
+.pain-item strong{display:block;font-size:15px;font-weight:600;margin-bottom:4px}
+.pain-item p{font-size:13px;color:var(--muted);margin:0}
+
+/* PROCESS */
+.step{display:flex;align-items:flex-start;gap:20px}
+.step-num{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#000;flex-shrink:0}
+.step-body strong{display:block;font-size:16px;font-weight:700;margin-bottom:4px}
+.step-body p{font-size:14px;color:var(--muted);line-height:1.5}
+
+/* CTA FINAL */
+.cta-box{background:linear-gradient(180deg,var(--primary-light),rgba(45,90,71,.05));border:1px solid rgba(201,160,80,.3);border-radius:28px;padding:56px;text-align:center;max-width:720px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.06)}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-size:16px;font-weight:800;padding:16px 36px;border-radius:14px;border:none;cursor:pointer;margin-top:28px;transition:opacity .2s,transform .2s}
+.cta-btn:hover{opacity:.9;transform:scale(1.02)}
+.contact-row{display:flex;gap:32px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.contact-item{font-size:14px;color:var(--muted)}
+.contact-item strong{color:var(--text);display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+
+/* SECTION LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1100px;width:100%}
+.section-tag{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.section-title{font-size:clamp(24px,3.5vw,40px);font-weight:800;line-height:1.2;margin-bottom:16px}
+.section-body{font-size:15px;color:var(--muted);line-height:1.7}
+.divider{width:48px;height:4px;background:linear-gradient(90deg,var(--gold),var(--teal));border-radius:2px;margin-bottom:24px}
+
+/* TRIAL BADGE */
+.trial-badge{display:inline-flex;align-items:center;gap:8px;background:var(--success-light);border:1px solid rgba(45,90,71,.25);color:var(--teal);padding:8px 20px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:20px}
+
+/* METRIC CARD */
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;width:100%;max-width:900px}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center}
+.metric-card .metric-val{font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.metric-card .metric-label{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* WATERMARK */
+.watermark{position:fixed;bottom:80px;right:32px;font-size:11px;color:rgba(26,23,20,.12);font-weight:600;letter-spacing:2px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="watermark">TableSplit</div>
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: HERO -->
+<div class="slide active" id="s0">
+  <div class="glow glow-gold" style="width:600px;height:600px;top:-200px;right:-150px"></div>
+  <div class="glow glow-teal" style="width:400px;height:400px;bottom:-100px;left:-100px"></div>
+  <div class="logo-mark">
+    <div class="logo-icon">🍽️</div>
+    <div class="logo-text">TableSplit</div>
+  </div>
+  <div class="tag">✦ Plataforma de Gestão para Restaurantes</div>
+  <h1>O seu restaurante<br/><span class="gradient">digitalizado,</span><br/>sem complicações.</h1>
+  <p class="sub">Menu digital, gestão de mesas e pedidos em tempo real — num só lugar, acessível a qualquer restaurante em Portugal.</p>
+</div>
+
+<!-- SLIDE 2: O PROBLEMA -->
+<div class="slide" id="s1">
+  <div class="glow glow-gold" style="width:500px;height:500px;top:-100px;left:-100px;opacity:.06"></div>
+  <div class="two-col">
+    <div>
+      <div class="section-tag">O Problema</div>
+      <div class="divider"></div>
+      <h2 class="section-title">A experiência de hoje <span class="gradient">ainda tem muito atrito</span></h2>
+      <p class="section-body">Desde o momento em que o cliente senta até pagar a conta, cada passo manual representa uma oportunidade de erro, demora ou frustração.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="pain-item">
+        <span class="icon">📷</span>
+        <div><strong>Menú sem imagens, sem identidade</strong><p>O cliente não sabe o que vai comer. Cardápios físicos não têm fotos, são rígidos e caros de atualizar.</p></div>
+      </div>
+      <div class="pain-item">
+        <span class="icon">✋</span>
+        <div><strong>Chamar o garçom é uma lotaria</strong><p>O cliente fica com a mão levantada à espera. O empregado está ocupado. Tempo perdido, cliente frustrado.</p></div>
+      </div>
+      <div class="pain-item">
+        <span class="icon">🧮</span>
+        <div><strong>Quem deve o quê? O pesadelo da conta</strong><p>No final, cada um tentando calcular o que consumiu. Erros, discussões, demora — um fim de refeição desagradável.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: IMPACTO DO PROBLEMA -->
+<div class="slide" id="s2">
+  <div class="glow glow-teal" style="width:500px;height:500px;bottom:-100px;right:-100px;opacity:.12"></div>
+  <div class="tag">📊 O Impacto</div>
+  <h2 style="text-align:center;margin-bottom:12px">Estes erros têm um custo real</h2>
+  <p class="sub" style="margin-bottom:48px">Cada falha operacional afeta diretamente o faturamento e a satisfação do cliente.</p>
+  <div class="metric-row">
+    <div class="metric-card">
+      <div class="metric-val">30%</div>
+      <div class="metric-label">dos erros em restaurantes devem-se a falhas de comunicação entre sala e cozinha</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:12px;opacity:.7">¹ Toast Restaurant Technology Report, 2023</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">2×</div>
+      <div class="metric-label">mais rápido o tempo de serviço com sistemas de pedido digital na mesa</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:12px;opacity:.7">² Cornell Hospitality Report — School of Hotel Administration</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">€200+</div>
+      <div class="metric-label">gastos por ano em impressão e atualização de cardápios físicos, por restaurante</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:12px;opacity:.7">³ Estimativa AHRESP & NRA, dados 2022–2024</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: A SOLUÇÃO -->
+<div class="slide" id="s3">
+  <div class="glow glow-gold" style="width:600px;height:600px;top:-200px;right:-200px;opacity:.12"></div>
+  <div class="two-col">
+    <div>
+      <div class="section-tag">A Solução</div>
+      <div class="divider"></div>
+      <h2 class="section-title">Uma plataforma completa, <span class="gradient">pensada para Portugal</span></h2>
+      <p class="section-body" style="margin-bottom:24px">O TableSplit digitaliza o seu restaurante sem exigir hardware adicional, formação técnica ou contratos longos. Funciona em qualquer smartphone ou tablet.</p>
+      <ul class="check-list">
+        <li>Menu digital por QR Code com imagens — atualização em tempo real</li>
+        <li>Gestão de mesas visual e intuitiva</li>
+        <li>Pedidos diretos da mesa para a cozinha</li>
+        <li>Promoções e combos — crie ofertas e atraia mais clîntes</li>
+        <li>Feedback dos pratos — saiba o que os clientes adoram</li>
+        <li>Dashboard com análise de vendas</li>
+        <li>Acesso de qualquer lugar — basta ter internet</li>
+        <li>Sem fidelização — cancela quando quiser</li>
+      </ul>
+      <div style="margin-top:16px;display:inline-flex;align-items:center;gap:10px;background:var(--primary-light);border:1px solid rgba(201,160,80,.3);border-radius:12px;padding:12px 18px;font-size:14px">
+        🌐 <span><strong>100% na cloud</strong> — gere o cardápio do escritório, de casa ou em viagem.</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card" style="border-color:rgba(201,160,80,.3)"><span class="icon">📱</span><h3>Menu Digital QR</h3><p>Clientes acedem ao menu com fotos pelo telemóvel. Sem app, sem download.</p></div>
+      <div class="card" style="border-color:rgba(45,90,71,.2)"><span class="icon">🪑</span><h3>Gestão de Mesas</h3><p>Mapa visual do salão com estado em tempo real de cada mesa.</p></div>
+      <div class="card" style="border-color:rgba(201,160,80,.2)"><span class="icon">🎁</span><h3>Promoções e Combos</h3><p>Crie ofertas, menus do dia e combos para atrair e fidelizar clientes.</p></div>
+      <div class="card" style="border-color:rgba(45,90,71,.15)"><span class="icon">⭐</span><h3>Feedback dos Pratos</h3><p>Os clientes avaliam o que consumiram. Saiba o que funciona e o que melhorar.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: DIFERENCIAIS -->
+<div class="slide" id="s4">
+  <div class="glow glow-teal" style="width:400px;height:400px;bottom:0;left:0;opacity:.06"></div>
+  <div class="tag">⚡ O que nos diferencia</div>
+  <h2 style="text-align:center;margin-bottom:8px">Simples de usar, <span class="gradient">poderoso no dia-a-dia</span></h2>
+  <p class="sub" style="margin-bottom:32px;font-size:15px">Desenhado para funcionar no ritmo real de um restaurante — sem curva de aprendizagem.</p>
+  <div class="card-grid card-grid-3" style="max-width:1050px">
+    <div class="card"><span class="icon">🌐</span><h3>Acesso em qualquer lugar</h3><p>Gere o cardápio, veja pedidos e analise vendas de qualquer dispositivo com internet.</p></div>
+    <div class="card"><span class="icon">⚡</span><h3>Operacional em 1 hora</h3><p>Sem instalações, sem técnicos. Cria a conta, configura o cardápio e já está pronto.</p></div>
+    <div class="card"><span class="icon">🔄</span><h3>Atualização em tempo real</h3><p>Muda um preço ou retira um prato esgotado — os clientes veem a alteração no instante.</p></div>
+    <div class="card"><span class="icon">🤝</span><h3>Complementa o que já existe</h3><p>O TableSplit não substitui o vosso sistema atual — adiciona a camada digital que faltava.</p></div>
+    <div class="card"><span class="icon">💰</span><h3>Sem compromisso</h3><p>Sem contrato, sem hardware obrigatório. Cancela quando quiser, sem penalizações.</p></div>
+    <div class="card"><span class="icon">📊</span><h3>Dados que ajudam a decidir</h3><p>Veja o que se vende mais e nos momentos certos. Informação para melhores decisões.</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: COMO COMEÇAR -->
+<div class="slide" id="s5">
+  <div class="glow glow-gold" style="width:600px;height:400px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06"></div>
+  <div class="tag">🚀 Como Começar</div>
+  <h2 style="text-align:center;margin-bottom:8px">Ativo em <span class="gradient">menos de 1 hora</span></h2>
+  <p class="sub" style="margin-bottom:48px">Sem instalações, sem técnicos, sem hardware. Só precisas de um browser.</p>
+  <div class="card-grid card-grid-3" style="max-width:900px">
+    <div class="card" style="text-align:center;border-color:rgba(201,160,80,.3)">
+      <span class="icon" style="font-size:40px">📝</span>
+      <div style="font-size:11px;color:var(--gold2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Passo 1</div>
+      <h3>Criar Conta</h3>
+      <p>Registo em 2 minutos. Sem cartão de crédito para começar.</p>
+    </div>
+    <div class="card" style="text-align:center;border-color:rgba(45,90,71,.2)">
+      <span class="icon" style="font-size:40px">🍕</span>
+      <div style="font-size:11px;color:var(--teal);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Passo 2</div>
+      <h3>Configurar o Cardápio</h3>
+      <p>Adicione categorias, pratos e fotos. O assistente guia passo a passo.</p>
+    </div>
+    <div class="card" style="text-align:center;border-color:rgba(201,160,80,.2)">
+      <span class="icon" style="font-size:40px">✅</span>
+      <div style="font-size:11px;color:var(--gold2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Passo 3</div>
+      <h3>Abrir ao Público</h3>
+      <p>Imprima o QR Code, coloque nas mesas e começa a operar digitalmente.</p>
+    </div>
+  </div>
+  <div style="margin-top:36px;display:flex;gap:32px;flex-wrap:wrap;justify-content:center">
+    <div style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--gold)">14 dias</div>
+      <div style="font-size:13px;color:var(--muted)">Trial gratuito</div>
+    </div>
+    <div style="width:1px;background:var(--border)"></div>
+    <div style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--gold)">0€</div>
+      <div style="font-size:13px;color:var(--muted)">Para começar</div>
+    </div>
+    <div style="width:1px;background:var(--border)"></div>
+    <div style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--gold)">Sem</div>
+      <div style="font-size:13px;color:var(--muted)">Contratos ou fidelização</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: DETALHE SHOWCASE -->
+<div class="slide" id="s8">
+  <div class="glow glow-gold" style="width:500px;height:500px;top:-100px;right:-100px;opacity:.06"></div>
+  <div class="two-col">
+    <div>
+      <div class="trial-badge">🟢 Plano Starter</div>
+      <div class="section-title" style="font-size:36px">A porta de entrada para a <span class="gradient">digitalização</span></div>
+      <p class="section-body" style="margin-bottom:28px">Perfeito para food trucks, cafés, tascas e restaurantes que querem ter presença digital profissional sem investimento elevado.</p>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Categorias</div><div style="font-size:22px;font-weight:800;color:var(--gold)">6</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Itens no menu</div><div style="font-size:22px;font-weight:800;color:var(--gold)">40</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Imagens</div><div style="font-size:22px;font-weight:800;color:var(--gold)">10</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Promoções</div><div style="font-size:22px;font-weight:800;color:var(--gold)">5</div></div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--muted)">💡 <strong style="color:var(--text)">Poupar vs. cardápio físico:</strong> um restaurante médio gasta €200+/ano em impressão. Com o Starter a €180/ano tem cardápio digital, promoções e galeria de fotos.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Registo e configuração</strong><p>Criar conta, adicionar o cardápio completo com fotos. Fica pronto em menos de 1 hora.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Gerar QR Code</strong><p>O sistema gera automaticamente um QR Code personalizável para imprimir ou exibir no balcão.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Clientes acedem pelo telemóvel</strong><p>Sem app, sem registo. O cliente escaneia e vê o menu instantaneamente.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Atualizar em tempo real</strong><p>Preço alterado ou prato esgotado? Atualiza no dashboard e fica imediatamente visível.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: DETALHE OPERATOR -->
+<div class="slide" id="s9">
+  <div class="glow glow-teal" style="width:500px;height:500px;bottom:-100px;left:-100px;opacity:.06"></div>
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="border-color:rgba(201,160,80,.3)">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px">Limites incluídos</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Categorias</div><div style="font-size:20px;font-weight:800;color:var(--gold)">15</div></div>
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Itens menu</div><div style="font-size:20px;font-weight:800;color:var(--gold)">100</div></div>
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Mesas</div><div style="font-size:20px;font-weight:800;color:var(--gold)">15</div></div>
+          <div><div style="font-size:11px;color:var(--muted);margin-bottom:2px">Equipa</div><div style="font-size:20px;font-weight:800;color:var(--gold)">5</div></div>
+        </div>
+      </div>
+      <div class="card"><span class="icon">⏱️</span><h3>Trial gratuito de 14 dias</h3><p>Sem cartão de crédito na ativação. Experimente todas as funcionalidades durante 2 semanas, sem compromisso.</p></div>
+      <div class="card"><span class="icon">📂</span><h3>Histórico de 90 dias</h3><p>Analise pedidos, identifique o que mais vende, veja tendências trimestrais — tudo no dashboard.</p></div>
+    </div>
+    <div>
+      <div class="trial-badge">🔵 Plano Professional</div>
+      <div class="section-title" style="font-size:36px">Gestão completa do <span class="gradient">salão e cozinha</span></div>
+      <p class="section-body" style="margin-bottom:24px">Para restaurantes com mesas, equipa e fluxo de pedidos que precisam de controlo em tempo real.</p>
+      <ul class="check-list">
+        <li>Mapa visual de mesas com estado em tempo real</li>
+        <li>Pedidos digitais diretos para a cozinha</li>
+        <li>Gestão de conta por mesa — separar, juntar, fechar</li>
+        <li>Dashboard com análise de desempenho da equipa</li>
+        <li>Promoções, galeria e cardápio completo</li>
+        <li>Notificações em tempo real (WebSocket)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE: CTA FINAL -->
+<div class="slide" id="s10">
+  <div class="glow glow-gold" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06"></div>
+  <div class="cta-box">
+    <div class="logo-mark" style="justify-content:center">
+      <div class="logo-icon">🍽️</div>
+      <div class="logo-text">TableSplit</div>
+    </div>
+    <h2 style="font-size:clamp(28px,4vw,44px)">Pronto para ver<br/>a plataforma em ação?</h2>
+    <p style="color:var(--muted);margin-top:16px;font-size:16px;line-height:1.6">Vamos explorar juntos como o TableSplit funciona<br/>no contexto real do seu restaurante.</p>
+    <div style="display:flex;gap:16px;justify-content:center;margin-top:28px;flex-wrap:wrap">
+      <button class="cta-btn">🎥 Ver a Demo ao Vivo</button>
+    </div>
+    <div class="contact-row">
+      <div class="contact-item"><strong>Email</strong>hello@tablesplit.app</div>
+      <div class="contact-item"><strong>Website</strong>tablesplit.app</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn">←</button>
+  <div id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="nextBtn">→</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let cur=0,animating=false;
+const dotsEl=document.getElementById('dots');
+const counter=document.getElementById('counter');
+const progress=document.getElementById('progress');
+
+// build dots
+for(let i=0;i<total;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.addEventListener('click',()=>goTo(i));
+  dotsEl.appendChild(d);
+}
+
+function updateUI(){
+  document.querySelectorAll('.dot').forEach((d,i)=>{d.className='dot'+(i===cur?' active':'')});
+  counter.textContent=(cur+1)+' / '+total;
+  progress.style.width=(((cur+1)/total)*100)+'%';
+}
+
+function goTo(n){
+  if(animating||n===cur||n<0||n>=total)return;
+  animating=true;
+  slides[cur].classList.add('exit');
+  slides[cur].classList.remove('active');
+  setTimeout(()=>{slides[cur].classList.remove('exit');cur=n;slides[cur].classList.add('active');updateUI();setTimeout(()=>{animating=false},550)},200);
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>goTo(cur-1));
+document.getElementById('nextBtn').addEventListener('click',()=>goTo(cur+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')goTo(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);
+});
+
+// touch
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50){dx<0?goTo(cur+1):goTo(cur-1)}
+},{passive:true});
+
+updateUI();
+</script>
+</body>
+</html>
