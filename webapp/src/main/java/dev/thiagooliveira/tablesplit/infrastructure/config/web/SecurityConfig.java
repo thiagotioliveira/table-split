@@ -93,6 +93,7 @@ public class SecurityConfig {
                     // Qualquer outra requisição exige autenticação
                     .anyRequest()
                     .authenticated())
+        .httpBasic(httpBasic -> httpBasic.realmName("TableSplit System"))
         .formLogin(
             form ->
                 form.loginPage("/login")
