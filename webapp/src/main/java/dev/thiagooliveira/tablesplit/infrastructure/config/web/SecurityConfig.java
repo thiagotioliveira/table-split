@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,7 +47,31 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, TenantFilter tenantFilter)
+  @Order(1)
+  public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+    http.securityMatcher("/api/system/**")
+        .csrf(csrf -> csrf.disable())
+        .formLogin(form -> form.disable())
+        .logout(logout -> logout.disable())
+        .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+        .httpBasic(
+            httpBasic ->
+                httpBasic
+                    .realmName("TableSplit API")
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .exceptionHandling(
+            exceptions ->
+                exceptions.authenticationEntryPoint(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain webSecurityFilterChain(HttpSecurity http, TenantFilter tenantFilter)
       throws Exception {
 
     http.csrf(csrf -> csrf.disable()) // desabilita CSRF se for necessário (por ex. APIs)
@@ -93,7 +119,6 @@ public class SecurityConfig {
                     // Qualquer outra requisição exige autenticação
                     .anyRequest()
                     .authenticated())
-        .httpBasic(httpBasic -> httpBasic.realmName("TableSplit System"))
         .formLogin(
             form ->
                 form.loginPage("/login")

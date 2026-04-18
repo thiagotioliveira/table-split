@@ -6,7 +6,10 @@ import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,10 +19,19 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(CustomUserDetailsService.class);
+
   private final AccountRepository accountRepository;
   private final UserRepository userRepository;
   private final RestaurantRepository restaurantRepository;
   private final GetStaff getStaff;
+
+  @Value("${app.cleaner.username}")
+  private String systemUsername;
+
+  @Value("${app.cleaner.password}")
+  private String systemPassword;
 
   public CustomUserDetailsService(
       AccountRepository accountRepository,
@@ -33,7 +45,13 @@ public class CustomUserDetailsService implements UserDetailsService {
   }
 
   @Override
-  public AccountContext loadUserByUsername(String email) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    log.debug("DEBUG: CustomUserDetailsService.loadUserByUsername called for email: {}", email);
+    if (systemUsername != null && !systemUsername.isBlank() && systemUsername.equals(email)) {
+      log.debug("DEBUG: System user detected, returning user details...");
+      return User.withUsername(systemUsername).password(systemPassword).roles("SYSTEM").build();
+    }
+
     ServletRequestAttributes attributes =
         (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     String slug = (attributes != null) ? attributes.getRequest().getParameter("slug") : null;

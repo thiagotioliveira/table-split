@@ -19,6 +19,6 @@ public abstract class H2IT extends BaseRegisteredIT {
   @BeforeEach
   protected void setUp() throws Exception {
     super.setUp();
-    accountContext = userDetailsService.loadUserByUsername(REGISTERED_EMAIL);
+    accountContext = (AccountContext) userDetailsService.loadUserByUsername(REGISTERED_EMAIL);
   }
 }

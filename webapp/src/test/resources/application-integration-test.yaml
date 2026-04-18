@@ -1,7 +1,7 @@
 app:
   cleaner:
     username: system
-    password: supersecret
+    password: $2a$12$8XBNi9.HJ/oWxKC5qbkQM.mgDbq4rPfSt4uJIaB/P4RqUUgXUaYEy
 
 logging:
   level:
