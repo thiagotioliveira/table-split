@@ -3,9 +3,9 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
@@ -32,19 +32,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/register")
 public class RegisterController {
 
-  private final Time time;
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder passwordEncoder;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
 
   public RegisterController(
-      Time time,
       AuthenticationManager authenticationManager,
       PasswordEncoder passwordEncoder,
       TransactionalContext transactionalContext,
       CreateAccount createAccount) {
-    this.time = time;
     this.authenticationManager = authenticationManager;
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
@@ -64,6 +61,16 @@ public class RegisterController {
   @ModelAttribute("restaurantTags")
   public RestaurantTag[] restaurantTags() {
     return RestaurantTag.values();
+  }
+
+  @ModelAttribute("plans")
+  public Plan[] plans() {
+    return new Plan[] {Plan.STARTER, Plan.PROFESSIONAL};
+  }
+
+  @ModelAttribute("maxProfessionalTables")
+  public int maxProfessionalTables() {
+    return Plan.PROFESSIONAL.getLimits().tables();
   }
 
   @ModelAttribute("averagePriceCodes")

@@ -35,7 +35,7 @@ public class CreateAccount {
 
     var account = new Account();
     account.setId(UUID.randomUUID());
-    account.setPlan(Plan.PROFESSIONAL);
+    account.setPlan(command.plan());
     account.setCreatedAt(OffsetDateTime.now(command.zone()));
     this.accountRepository.save(account);
 
@@ -67,7 +67,7 @@ public class CreateAccount {
                 userCommand.language(),
                 command.restaurant().currency(),
                 command.restaurant().serviceFee(),
-                command.restaurant().numberOfTables(),
+                command.plan() == Plan.STARTER ? 0 : command.restaurant().numberOfTables(),
                 command.restaurant().cuisineType(),
                 command.restaurant().averagePrice(),
                 command.restaurant().tags())));

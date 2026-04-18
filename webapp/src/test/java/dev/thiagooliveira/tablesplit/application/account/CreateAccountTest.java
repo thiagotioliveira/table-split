@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.application.account.command.CreateRestauran
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
@@ -65,7 +66,8 @@ class CreateAccountTest {
             AveragePrice.PRICE_20_50,
             List.of());
     CreateAccountCommand command =
-        new CreateAccountCommand(userCommand, restaurantCommand, ZoneId.of("UTC"));
+        new CreateAccountCommand(
+            userCommand, restaurantCommand, ZoneId.of("UTC"), Plan.PROFESSIONAL);
 
     when(userRepository.findByEmail(userCommand.email())).thenReturn(Optional.empty());
 
@@ -89,7 +91,8 @@ class CreateAccountTest {
     CreateUserCommand userCommand =
         new CreateUserCommand(
             "Thiago", "Oliveira", "thiago@example.com", "123456789", "password", Language.PT);
-    CreateAccountCommand command = new CreateAccountCommand(userCommand, null, ZoneId.of("UTC"));
+    CreateAccountCommand command =
+        new CreateAccountCommand(userCommand, null, ZoneId.of("UTC"), Plan.PROFESSIONAL);
 
     when(userRepository.findByEmail(userCommand.email())).thenReturn(Optional.of(new User()));
 

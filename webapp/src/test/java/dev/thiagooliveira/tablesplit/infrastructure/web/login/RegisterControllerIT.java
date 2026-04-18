@@ -52,7 +52,8 @@ class RegisterControllerIT extends BaseIT {
                 .param("restaurant.serviceFee", "10")
                 .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
                 .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
-                .param("restaurant.numberOfTables", "10"))
+                .param("restaurant.numberOfTables", "10")
+                .param("plan", "PROFESSIONAL"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/dashboard"));
 
@@ -85,7 +86,8 @@ class RegisterControllerIT extends BaseIT {
                 .param("restaurant.serviceFee", "10")
                 .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
                 .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
-                .param("restaurant.numberOfTables", "1"))
+                .param("restaurant.numberOfTables", "1")
+                .param("plan", "PROFESSIONAL"))
         .andExpect(status().is3xxRedirection());
 
     // Second registration with same email

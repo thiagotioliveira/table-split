@@ -1035,6 +1035,13 @@
               </div>
 
               <div class="form-group">
+                <label for="plan" class="form-label"><span th:text="#{page.register.step.restaurant.initial.setup.plan}">Plan</span> <span class="required">*</span></label>
+                <select id="plan" class="form-input" th:field="*{plan}" onchange="togglePlanSetup()">
+                  <option th:each="p : ${plans}" th:value="${p}" th:text="${p}">Starter</option>
+                </select>
+              </div>
+
+              <div class="form-group">
                 <label for="defaultLanguage" class="form-label"><span th:text="#{page.register.step.account.language}">Languages</span> <span class="required">*</span></label>
                 <select id="defaultLanguage" class="form-input" th:field="*{user.language}">
                   <option th:each="lang : ${languages}" th:value="${lang.name()}" th:text="#{${lang.name}}">English</option>
@@ -1283,8 +1290,8 @@
                   <span th:text="#{page.register.step.restaurant.initial.setup}">Initial setup</span>
                 </h3>
 
-                <div class="form-group">
-                  <label>Quantas mesas você tem?</label>
+                <div class="form-group" id="tableSetupGroup">
+                  <label th:text="#{page.register.step.restaurant.initial.setup.tables}">Quantas mesas você tem?</label>
                   <div class="table-setup">
                     <div class="table-counter">
                       <button type="button" class="counter-btn" onclick="updateTables(-1)">−</button>
@@ -1293,8 +1300,8 @@
                       <button type="button" class="counter-btn" onclick="updateTables(1)">+</button>
                     </div>
                     <div class="table-info">
-                      <strong>mesas</strong>
-                      <p>Você poderá alterar depois</p>
+                      <strong th:text="#{page.register.step.restaurant.initial.setup.tables.unit}">mesas</strong>
+                      <p th:text="#{page.register.step.restaurant.initial.setup.tables.info}">Você poderá alterar depois</p>
                     </div>
                   </div>
                 </div>
@@ -1668,15 +1675,42 @@
     });
 
     // Table counter
+    let maxProfessionalTables = /*[[${maxProfessionalTables}]]*/ 15;
+    
     function updateTables(delta) {
-      tableCount = Math.max(1, Math.min(100, tableCount + delta));
+      const plan = document.getElementById('plan').value;
+      const maxTables = plan === 'PROFESSIONAL' ? maxProfessionalTables : 0;
+      
+      if (maxTables === 0) {
+        tableCount = 0;
+      } else {
+        tableCount = Math.max(1, Math.min(maxTables, tableCount + delta));
+      }
+      
+      document.getElementById('tableCount').textContent = tableCount;
+      document.getElementById('numberOfTablesInput').value = tableCount;
+    }
+
+    function togglePlanSetup() {
+      const plan = document.getElementById('plan').value;
+      const tableGroup = document.getElementById('tableSetupGroup');
+      
+      if (plan === 'STARTER') {
+        tableGroup.style.display = 'none';
+        tableCount = 0;
+      } else {
+        tableGroup.style.display = 'block';
+        if (tableCount === 0) tableCount = 10;
+        if (tableCount > maxProfessionalTables) tableCount = maxProfessionalTables;
+      }
+      
       document.getElementById('tableCount').textContent = tableCount;
       document.getElementById('numberOfTablesInput').value = tableCount;
     }
     
     // Set initial value
     document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('numberOfTablesInput').value = tableCount;
+        togglePlanSetup();
     });
     /*
         // Logo upload

@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.application.menu.command.*;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Module;
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
@@ -216,7 +217,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                                   Tag.DELIVERY,
                                   Tag.PET_FRIENDLY,
                                   Tag.RESERVATIONS)),
-                          Time.getZoneId())));
+                          Time.getZoneId(),
+                          Plan.PROFESSIONAL)));
       logger.info("[DemoInitializer] Seeding demo data for: {}", user.getFirstName());
     } catch (UserAlreadyRegisteredException e) {
       logger.info(
