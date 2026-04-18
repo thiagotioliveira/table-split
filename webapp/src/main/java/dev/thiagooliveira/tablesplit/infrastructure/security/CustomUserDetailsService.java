@@ -19,9 +19,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private static final org.slf4j.Logger log =
-      org.slf4j.LoggerFactory.getLogger(CustomUserDetailsService.class);
-
   private final AccountRepository accountRepository;
   private final UserRepository userRepository;
   private final RestaurantRepository restaurantRepository;
@@ -46,9 +43,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    log.debug("DEBUG: CustomUserDetailsService.loadUserByUsername called for email: {}", email);
     if (systemUsername != null && !systemUsername.isBlank() && systemUsername.equals(email)) {
-      log.debug("DEBUG: System user detected, returning user details...");
       return User.withUsername(systemUsername).password(systemPassword).roles("SYSTEM").build();
     }
 
