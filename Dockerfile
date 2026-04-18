@@ -6,7 +6,6 @@ WORKDIR /app
 COPY pom.xml .
 COPY webapp/pom.xml webapp/
 COPY agent/pom.xml agent/
-COPY cleaner/pom.xml cleaner/
 COPY .mvn .mvn
 COPY mvnw .
 

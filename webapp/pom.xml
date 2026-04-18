@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>dev.thiagooliveira</groupId>
 		<artifactId>table-split-parent</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>table-split-webapp</artifactId>
-	<version>0.13.4-SNAPSHOT</version>
+	<version>0.13.5-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>

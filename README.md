@@ -8,7 +8,6 @@ The project is organized as a multi-module Maven monorepo:
 
 *   **[`webapp/`](./webapp)**: The main application (SaaS) where customers place orders via QR Code and the restaurant manages its tables.
 *   **[`agent/`](./agent)**: The "Agent" application that runs locally at the restaurant to receive orders via messaging and automatically print them on a configured printer.
-*   **[`cleaner/`](./cleaner)**: An independent service executed periodically as a cron job to purge old orders from the database, respecting the multi-tenant architecture.
 
 ## Architecture
 
