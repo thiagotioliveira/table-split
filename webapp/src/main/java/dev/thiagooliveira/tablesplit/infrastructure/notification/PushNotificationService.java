@@ -72,7 +72,7 @@ public class PushNotificationService
               .userAuth(sub.getAuth())
               .payload(payload)
               .urgency(Urgency.HIGH)
-              .ttl(300)
+              .ttl(60)
               .build();
       var response = pushService.send(notification, nl.martijndwars.webpush.Encoding.AES128GCM);
       int statusCode = response.getStatusLine().getStatusCode();
