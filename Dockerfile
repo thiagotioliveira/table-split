@@ -16,7 +16,7 @@ RUN chmod +x mvnw
 COPY webapp/src webapp/src
 
 # Build apenas do módulo webapp
-RUN ./mvnw clean verify -pl webapp -am -DskipTests
+RUN ./mvnw clean verify -pl webapp -am
 
 # ---------- STAGE 2: runtime ----------
 FROM eclipse-temurin:21-jre-alpine

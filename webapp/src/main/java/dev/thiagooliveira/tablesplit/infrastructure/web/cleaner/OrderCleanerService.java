@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,9 +84,19 @@ public class OrderCleanerService {
             logger.info("Processing tenant schema: {} with threshold: {}", schema, threshold);
 
             // Manual fallback to ensure search_path is correct for this specific connection
-            entityManager
-                .createNativeQuery(String.format("SET search_path TO %s, public", schema))
-                .executeUpdate();
+            // We detect the DB and use the correct syntax for H2 or PostgreSQL
+            Session session = entityManager.unwrap(Session.class);
+            session.doWork(
+                connection -> {
+                  String dbName = connection.getMetaData().getDatabaseProductName();
+                  String sql;
+                  if ("H2".equalsIgnoreCase(dbName)) {
+                    sql = String.format("SET SCHEMA_SEARCH_PATH %s, public", schema);
+                  } else {
+                    sql = String.format("SET search_path TO %s, public", schema);
+                  }
+                  connection.createStatement().execute(sql);
+                });
 
             List<OrderEntity> ordersToRemove =
                 orderJpaRepository.findAllByStatusAndClosedAtBefore(OrderStatus.CLOSED, threshold);
