@@ -6,7 +6,6 @@ import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,9 +34,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public AccountContext loadUserByUsername(String email) throws UsernameNotFoundException {
-    HttpServletRequest request =
-        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    String slug = request.getParameter("slug");
+    ServletRequestAttributes attributes =
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    String slug = (attributes != null) ? attributes.getRequest().getParameter("slug") : null;
 
     if (slug == null || slug.isBlank()) {
       var user =

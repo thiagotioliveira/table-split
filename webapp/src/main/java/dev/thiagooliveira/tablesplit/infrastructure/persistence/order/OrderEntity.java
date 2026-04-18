@@ -40,6 +40,9 @@ public class OrderEntity {
       fetch = FetchType.LAZY)
   private List<PaymentEntity> payments = new ArrayList<>();
 
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderFeedbackEntity> feedbacks = new ArrayList<>();
+
   @ElementCollection
   @CollectionTable(name = "order_customers", joinColumns = @JoinColumn(name = "order_id"))
   private Set<OrderCustomerEntity> customers = new HashSet<>();
@@ -185,5 +188,13 @@ public class OrderEntity {
 
   public void setCustomers(Set<OrderCustomerEntity> customers) {
     this.customers = customers;
+  }
+
+  public List<OrderFeedbackEntity> getFeedbacks() {
+    return feedbacks;
+  }
+
+  public void setFeedbacks(List<OrderFeedbackEntity> feedbacks) {
+    this.feedbacks = feedbacks;
   }
 }

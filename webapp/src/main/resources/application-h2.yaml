@@ -13,3 +13,6 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+app:
+  cleaner:
+    retention-days: 1

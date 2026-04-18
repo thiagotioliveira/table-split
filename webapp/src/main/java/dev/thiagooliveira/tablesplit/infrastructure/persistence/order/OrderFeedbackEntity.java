@@ -11,8 +11,9 @@ public class OrderFeedbackEntity {
 
   @Id private UUID id;
 
-  @Column(nullable = false)
-  private UUID orderId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id", nullable = false)
+  private OrderEntity order;
 
   @Column(nullable = false)
   private UUID customerId;
@@ -31,7 +32,7 @@ public class OrderFeedbackEntity {
   public OrderFeedback toDomain() {
     OrderFeedback domain = new OrderFeedback();
     domain.setId(this.id);
-    domain.setOrderId(this.orderId);
+    domain.setOrderId(this.order != null ? this.order.getId() : null);
     domain.setCustomerId(this.customerId);
     domain.setRating(this.rating);
     domain.setComment(this.comment);
@@ -42,7 +43,8 @@ public class OrderFeedbackEntity {
   public static OrderFeedbackEntity fromDomain(OrderFeedback domain) {
     OrderFeedbackEntity entity = new OrderFeedbackEntity();
     entity.setId(domain.getId());
-    entity.setOrderId(domain.getOrderId());
+    entity.setOrder(new OrderEntity());
+    entity.getOrder().setId(domain.getOrderId());
     entity.setCustomerId(domain.getCustomerId());
     entity.setRating(domain.getRating());
     entity.setComment(domain.getComment());
@@ -58,12 +60,16 @@ public class OrderFeedbackEntity {
     this.id = id;
   }
 
-  public UUID getOrderId() {
-    return orderId;
+  public OrderEntity getOrder() {
+    return order;
   }
 
-  public void setOrderId(UUID orderId) {
-    this.orderId = orderId;
+  public void setOrder(OrderEntity order) {
+    this.order = order;
+  }
+
+  public UUID getOrderId() {
+    return order != null ? order.getId() : null;
   }
 
   public UUID getCustomerId() {

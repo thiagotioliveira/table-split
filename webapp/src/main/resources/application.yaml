@@ -45,6 +45,10 @@ app:
       enabled: false
   time:
     zone-id: Europe/Lisbon
+  cleaner:
+    username:
+    password:
+    retention-days: 90
   menu:
     item:
       image:

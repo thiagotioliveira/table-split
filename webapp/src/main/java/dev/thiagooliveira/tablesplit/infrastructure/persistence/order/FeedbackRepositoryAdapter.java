@@ -30,6 +30,6 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
 
   @Override
   public boolean hasFeedback(UUID orderId, UUID customerId) {
-    return orderFeedbackJpaRepository.existsByOrderIdAndCustomerId(orderId, customerId);
+    return orderFeedbackJpaRepository.existsByOrder_IdAndCustomerId(orderId, customerId);
   }
 }

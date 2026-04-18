@@ -3,35 +3,31 @@ package dev.thiagooliveira.tablesplit.infrastructure.web;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
-import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-public abstract class AuthenticatedIT extends BaseIT {
+public abstract class BaseRegisteredIT extends BaseIT {
 
-  @Autowired protected CustomUserDetailsService userDetailsService;
-
-  protected AccountContext accountContext;
+  protected static final String REGISTERED_EMAIL = "authenticated.it@example.com";
 
   @Override
   @BeforeEach
   protected void setUp() throws Exception {
     super.setUp();
-
     // Register a user first to have a valid context
     mockMvc
         .perform(
             post("/register")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("plan", Plan.PROFESSIONAL.name())
                 .param("user.firstName", "Thiago")
                 .param("user.lastName", "Oliveira")
-                .param("user.email", "authenticated.it@example.com")
+                .param("user.email", REGISTERED_EMAIL)
                 .param("user.phone", "123456789")
                 .param("user.password", "password123")
                 .param("user.language", Language.PT.name())
@@ -49,7 +45,5 @@ public abstract class AuthenticatedIT extends BaseIT {
                 .param("restaurant.tags", RestaurantTag.WIFI.name(), RestaurantTag.PARKING.name())
                 .param("restaurant.numberOfTables", "10"))
         .andExpect(status().is3xxRedirection());
-
-    accountContext = userDetailsService.loadUserByUsername("authenticated.it@example.com");
   }
 }

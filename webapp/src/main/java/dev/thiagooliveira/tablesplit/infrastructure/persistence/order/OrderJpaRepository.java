@@ -12,6 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
   Optional<OrderEntity> findByTableIdAndStatus(UUID tableId, OrderStatus status);
 
+  List<OrderEntity> findAllByStatusAndClosedAtBefore(
+      OrderStatus status, java.time.ZonedDateTime threshold);
+
   boolean existsByTableId(UUID tableId);
 
   List<OrderEntity> findAllByTableIdOrderByOpenedAtDesc(UUID tableId);

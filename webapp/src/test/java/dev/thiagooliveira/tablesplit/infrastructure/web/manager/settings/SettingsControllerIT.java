@@ -19,7 +19,7 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
-import dev.thiagooliveira.tablesplit.infrastructure.web.AuthenticatedIT;
+import dev.thiagooliveira.tablesplit.infrastructure.web.H2IT;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-class SettingsControllerIT extends AuthenticatedIT {
+class SettingsControllerIT extends H2IT {
 
   @Autowired private RestaurantRepository restaurantRepository;
   @Autowired private AccountRepository accountRepository;

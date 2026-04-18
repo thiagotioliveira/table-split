@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderFeedbackJpaRepository extends JpaRepository<OrderFeedbackEntity, UUID> {
-  boolean existsByOrderIdAndCustomerId(UUID orderId, UUID customerId);
+  boolean existsByOrder_IdAndCustomerId(UUID orderId, UUID customerId);
 }

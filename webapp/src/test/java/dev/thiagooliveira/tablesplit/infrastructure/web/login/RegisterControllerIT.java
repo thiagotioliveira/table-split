@@ -9,7 +9,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
-import dev.thiagooliveira.tablesplit.infrastructure.web.BaseIT;
+import dev.thiagooliveira.tablesplit.infrastructure.web.H2IT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class RegisterControllerIT extends BaseIT {
+class RegisterControllerIT extends H2IT {
   @Autowired private UserRepository userRepository;
 
   @Test
