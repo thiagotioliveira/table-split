@@ -2629,7 +2629,7 @@
 </div>
 
 <!-- ── Top entry banner (visible when modal is closed) ── -->
-<button class="enter-table-fab hidden" id="enterTableFab"
+<button class="enter-table-fab" id="enterTableFab"
         th:if="${showEntryModal}"
         onclick="openEntryModal()">
     <span class="fab-pulse"></span>
@@ -2637,16 +2637,6 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 </button>
 
-    </div>
-</div>
-
-<!-- ── Floating "Entrar na Mesa" FAB (entry mode, visible when modal is closed) ── -->
-<button class="enter-table-fab hidden" id="enterTableFab"
-        th:if="${showEntryModal}"
-        onclick="openEntryModal()">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    <span th:text="'Entrar na Mesa ' + ${customerMenu.tableModel.cod}">Entrar na Mesa 07</span>
-</button>
 
 <script th:inline="javascript">
     const menuItems = /*[[${customerMenu.items}]]*/[];
@@ -3977,12 +3967,6 @@
             }
         }
         updateWaiterCallButton();
-
-
-        // Entry mode: auto-open the modal on page load
-        if (showEntryModal) {
-            openEntryModal();
-        }
     });
 /*
     // Simulate order status updates
