@@ -27,10 +27,12 @@ public class CustomerMenuModel {
       List<Category> categories,
       List<Item> items,
       Table table,
-      dev.thiagooliveira.tablesplit.domain.order.Order activeOrder) {
+      dev.thiagooliveira.tablesplit.domain.order.Order activeOrder,
+      java.time.ZoneId zoneId,
+      org.springframework.context.MessageSource messageSource) {
     var symbol = restaurant.getCurrency().getSymbol();
     this.profileLink = String.format("/@%s", restaurant.getSlug());
-    this.restaurant = new RestaurantModel(restaurant);
+    this.restaurant = new RestaurantModel(restaurant, zoneId, messageSource);
     this.tableModel = table != null ? new TableModel(table) : null;
     this.orderId = activeOrder != null ? activeOrder.getId() : null;
     this.reviewMode =
@@ -64,12 +66,22 @@ public class CustomerMenuModel {
   }
 
   public CustomerMenuModel(
-      Restaurant restaurant, List<Category> categories, List<Item> items, Table table) {
-    this(restaurant, categories, items, table, null);
+      Restaurant restaurant,
+      List<Category> categories,
+      List<Item> items,
+      Table table,
+      java.time.ZoneId zoneId,
+      org.springframework.context.MessageSource messageSource) {
+    this(restaurant, categories, items, table, null, zoneId, messageSource);
   }
 
-  public CustomerMenuModel(Restaurant restaurant, List<Category> categories, List<Item> items) {
-    this(restaurant, categories, items, null, null);
+  public CustomerMenuModel(
+      Restaurant restaurant,
+      List<Category> categories,
+      List<Item> items,
+      java.time.ZoneId zoneId,
+      org.springframework.context.MessageSource messageSource) {
+    this(restaurant, categories, items, null, null, zoneId, messageSource);
   }
 
   public TableModel getTableModel() {

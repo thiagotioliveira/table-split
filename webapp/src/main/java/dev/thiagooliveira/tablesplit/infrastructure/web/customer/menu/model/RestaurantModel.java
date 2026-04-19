@@ -8,18 +8,26 @@ import java.util.List;
 
 public class RestaurantModel {
   private final String name;
+  private final String description;
   private final String address;
   private final String slug;
   private final Currency currency;
   private final String cuisineType;
-  private final String time;
+  private final String averagePrice;
   private final List<RestaurantImageModel> images;
   private final List<Language> customerLanguages;
   private final Language defaultLanguage;
   private final double serviceFee;
+  private final boolean open;
+  private final java.util.Optional<java.time.ZonedDateTime> nextOpeningOrClosingHours;
+  private final org.springframework.context.MessageSource messageSource;
 
-  public RestaurantModel(Restaurant restaurant) {
+  public RestaurantModel(
+      Restaurant restaurant,
+      java.time.ZoneId zoneId,
+      org.springframework.context.MessageSource messageSource) {
     this.name = restaurant.getName();
+    this.description = restaurant.getDescription();
     this.address = restaurant.getAddress();
     this.slug = restaurant.getSlug();
     this.currency = restaurant.getCurrency();
@@ -29,7 +37,11 @@ public class RestaurantModel {
                 .valueOf(restaurant.getCuisineType().name())
                 .getLabel()
             : null;
-    this.time = "18:00 - 00:00";
+    String label =
+        restaurant.getAveragePrice() != null ? restaurant.getAveragePrice().getLabel() : "0-0";
+    String[] values = label.split("-");
+    var symbol = restaurant.getCurrency().getSymbol();
+    this.averagePrice = String.format("%s %s - %s %s", symbol, values[0], symbol, values[1]);
     this.images =
         restaurant.getImages() == null
             ? List.of()
@@ -38,6 +50,11 @@ public class RestaurantModel {
         restaurant.getCustomerLanguages().stream().map(Language::fromDomain).toList();
     this.defaultLanguage = Language.fromDomain(restaurant.getDefaultLanguage());
     this.serviceFee = restaurant.getServiceFee() / 100d;
+
+    var now = java.time.ZonedDateTime.now(zoneId);
+    this.open = restaurant.isOpen(now);
+    this.nextOpeningOrClosingHours = restaurant.getNextOpeningOrClosing(now);
+    this.messageSource = messageSource;
   }
 
   public String getSlug() {
@@ -52,12 +69,16 @@ public class RestaurantModel {
     return name;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
   public String getAddress() {
     return address;
   }
 
-  public String getTime() {
-    return time;
+  public String getAveragePrice() {
+    return averagePrice;
   }
 
   public List<RestaurantImageModel> getImages() {
@@ -82,5 +103,30 @@ public class RestaurantModel {
 
   public dev.thiagooliveira.tablesplit.infrastructure.web.Language getDefaultLanguage() {
     return defaultLanguage;
+  }
+
+  public boolean isOpen() {
+    return open;
+  }
+
+  public String getNextOpeningOrClosingHoursDisplay(java.util.Locale locale) {
+    if (nextOpeningOrClosingHours.isEmpty()) {
+      return messageSource.getMessage("page.profile.status.empty", null, locale);
+    }
+
+    java.time.format.DateTimeFormatter formatter =
+        java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+    if (open) {
+      return messageSource.getMessage(
+          "page.profile.status.hours.close",
+          new Object[] {nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    } else {
+      String day = nextOpeningOrClosingHours.get().getDayOfWeek().name().toLowerCase();
+      return messageSource.getMessage(
+          "page.profile.status.hours.open",
+          new Object[] {day, nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    }
   }
 }

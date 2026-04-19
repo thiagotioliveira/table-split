@@ -420,6 +420,44 @@
 
         .nav-btn svg { width: 1.25rem; height: 1.25rem; }
 
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(45, 90, 71, 0.9);
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge.closed {
+            background: rgba(196, 92, 92, 0.9);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6ee7a0;
+            animation: pulse 2s infinite;
+        }
+
+        .status-badge.closed .status-dot {
+            background: #fca5a5;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .restaurant-category {
             font-family: var(--font-body);
             font-size: 0.75rem;
@@ -437,6 +475,14 @@
             line-height: 1.1;
             margin-bottom: 0.75rem;
             text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .restaurant-tagline {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 400px;
+            line-height: 1.5;
+            margin-bottom: 1rem;
         }
 
         .restaurant-meta {
@@ -1703,11 +1749,412 @@
         body.review-mode .review-footer {
             display: block;
         }
+
+        /* ── Entry Modal (table join form) ───────────────────────────────── */
+        /* ── Entry Modal — premium centered card ─────────────────────────── */
+        .entry-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 10, 9, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .entry-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .entry-modal {
+            background: var(--card);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            transform: scale(0.88) translateY(24px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.3, 0.64, 1), opacity 0.3s ease;
+            opacity: 0;
+            box-shadow:
+                0 32px 64px rgba(12, 10, 9, 0.45),
+                0 0 0 1px rgba(255,255,255,0.06);
+        }
+        .entry-modal-overlay.active .entry-modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Hero area inside modal */
+        .entry-modal-hero {
+            position: relative;
+            background: #0d0b0a;
+            padding: 2.25rem 1.75rem 3rem;
+            overflow: hidden;
+            text-align: center;
+        }
+        .entry-modal-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 80% 30%, rgba(201, 160, 80, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 20% 80%, rgba(140, 100, 40, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(201, 160, 80, 0.15) 0%, transparent 60%);
+            animation: heroGlowOrbit 15s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .entry-modal-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.12;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes heroGlowOrbit {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .entry-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .entry-modal-close:hover { background: rgba(255,255,255,0.22); color: white; }
+        .entry-modal-close svg { width: 1rem; height: 1rem; }
+
+        /* Animated table icon */
+        .entry-hero-icon-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            z-index: 1;
+        }
+        .entry-hero-icon-ring {
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(201,160,80,0.35);
+            animation: entryRingPulse 2.4s ease-in-out infinite;
+        }
+        .entry-hero-icon-ring2 {
+            position: absolute;
+            inset: -22px;
+            border-radius: 50%;
+            border: 1px solid rgba(201,160,80,0.15);
+            animation: entryRingPulse 2.4s 0.6s ease-in-out infinite;
+        }
+        @keyframes entryRingPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%       { transform: scale(1.08); opacity: 0.5; }
+        }
+        .entry-hero-icon {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(201,160,80,0.45), 0 0 0 6px rgba(201,160,80,0.12);
+        }
+        .entry-hero-icon svg { width: 2rem; height: 2rem; color: white; }
+
+        .entry-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: rgba(201,160,80,0.18);
+            border: 1px solid rgba(201,160,80,0.35);
+            border-radius: 9999px;
+            padding: 0.3125rem 0.875rem;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.625rem;
+            position: relative;
+            z-index: 1;
+        }
+        .entry-hero-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: entryDotPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes entryDotPulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: 0.4; transform: scale(0.7); }
+        }
+        .entry-hero-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 0.375rem;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+        .entry-hero-sub {
+            font-size: 0.875rem;
+            color: rgba(255,255,255,0.55);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modal body */
+        .entry-modal-body { padding: 1.5rem 1.5rem 1.75rem; }
+
+        /* Existing clients chips */
+        .entry-clients-section {
+            margin-bottom: 1.25rem;
+        }
+        .entry-clients-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+        .entry-clients-label svg { width: 0.875rem; height: 0.875rem; color: var(--primary); }
+        .entry-clients-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.875rem; }
+        .entry-client-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: 9999px;
+            border: 1.5px solid var(--border);
+            background: var(--background);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .entry-client-chip:hover {
+            border-color: var(--primary);
+            background: rgba(201,160,80,0.07);
+            transform: translateY(-1px);
+        }
+        .entry-client-chip.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(201,160,80,0.35);
+            transform: translateY(-1px);
+        }
+        .entry-client-chip svg { width: 0.875rem; height: 0.875rem; }
+        .entry-clients-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.6875rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+        }
+        .entry-clients-divider::before,
+        .entry-clients-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Name input */
+        .entry-form-group { margin-bottom: 1rem; }
+        .entry-form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+        .entry-input-wrapper { position: relative; }
+        .entry-input-wrapper svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.125rem;
+            height: 1.125rem;
+            color: var(--muted);
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .entry-form-input {
+            width: 100%;
+            padding: 0.9375rem 1rem 0.9375rem 2.875rem;
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--background);
+            color: var(--foreground);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .entry-form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(201, 160, 80, 0.12);
+            background: var(--card);
+        }
+        .entry-form-input:focus + svg,
+        .entry-input-wrapper:focus-within svg { color: var(--primary); }
+        .entry-form-input::placeholder { color: rgba(107,99,90,0.5); }
+        .entry-form-group.has-error .entry-form-input { border-color: var(--destructive); box-shadow: 0 0 0 4px rgba(196,92,92,0.12); }
+        .entry-form-error {
+            display: none;
+            font-size: 0.75rem;
+            color: var(--destructive);
+            margin-top: 0.375rem;
+            padding-left: 0.25rem;
+        }
+        .entry-form-group.has-error .entry-form-error { display: block; }
+
+        /* Submit */
+        .entry-submit-btn {
+            width: 100%;
+            padding: 1.0625rem;
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            box-shadow: 0 6px 20px rgba(201, 160, 80, 0.45);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .entry-submit-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .entry-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(201, 160, 80, 0.55); }
+        .entry-submit-btn:active { transform: translateY(0) scale(0.98); }
+        .entry-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .entry-submit-btn svg { width: 1.125rem; height: 1.125rem; transition: transform 0.2s; }
+        .entry-submit-btn:hover svg { transform: translateX(3px); }
+        .entry-submit-btn .entry-spinner {
+            display: none;
+            width: 1.125rem;
+            height: 1.125rem;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .entry-submit-btn.loading .entry-btn-text,
+        .entry-submit-btn.loading svg { display: none; }
+        .entry-submit-btn.loading .entry-spinner { display: block; }
+
+        /* ── Top entry banner (replaces bottom FAB) ──────────────────────── */
+        .enter-table-fab {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-dark) 100%);
+            background-size: 200% 100%;
+            color: white;
+            font: inherit;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(201,160,80,0.4);
+            white-space: nowrap;
+            animation: bannerSlideDown 0.4s 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both,
+                       bannerShimmer 3s 1s linear infinite;
+        }
+        @keyframes bannerSlideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+        @keyframes bannerShimmer {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+        .enter-table-fab:hover { filter: brightness(1.1); }
+        .enter-table-fab:active { filter: brightness(0.95); }
+        .enter-table-fab svg { width: 1rem; height: 1rem; animation: bannerArrow 1.4s ease-in-out infinite; }
+        @keyframes bannerArrow {
+            0%,100% { transform: translateX(0); }
+            50%      { transform: translateX(4px); }
+        }
+        .enter-table-fab .fab-pulse {
+            width: 8px; height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: entryDotPulse 1.4s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .enter-table-fab.hidden { display: none; }
+
+        /* Push hero-nav down if the top banner is present so they don't overlap */
+        .hero.has-entry-banner .hero-nav {
+            top: 4.5rem;
+            transition: top 0.4s ease-out 0.2s;
+        }
     </style>
 </head>
 <body>
 <!-- Hero Section with Carousel -->
-<section class="hero">
+<section class="hero" th:classappend="${showEntryModal} ? 'has-entry-banner'">
     <!-- Placeholder (when no images) -->
     <div class="hero-placeholder" th:if="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
         <div class="hero-placeholder-pattern"></div>
@@ -1736,7 +2183,13 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </a>
         <div>
-            <button class="hero-badge" onclick="openTableModal()" th:if="${customerMenu.hasTable()}">
+            <!-- Active table session badge -->
+            <button class="hero-badge" onclick="openTableModal()" th:if="${customerMenu.hasTable() and !showEntryModal}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
+                <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
+            </button>
+            <!-- Entry mode badge (before joining) -->
+            <button class="hero-badge" onclick="openEntryModal()" th:if="${showEntryModal}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
                 <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
             </button>
@@ -1775,8 +2228,15 @@
 
     <!-- Hero Content -->
     <div class="hero-content">
+        <div class="status-badge" th:classappend="${!customerMenu.restaurant.open} ? 'closed'">
+            <div class="status-dot"></div>
+            <span data-i18n="openNow" th:if="${customerMenu.restaurant.open}" th:text="#{page.profile.status.open}">Open now</span>
+            <span data-i18n="openNow" th:if="${!customerMenu.restaurant.open}" th:text="#{page.profile.status.closed}">Closed now</span>
+            <span>• <span data-i18n="closesAt" th:text="${customerMenu.restaurant.getNextOpeningOrClosingHoursDisplay(#locale)}"></span></span>
+        </div>
         <p class="restaurant-category" th:text="#{${customerMenu.restaurant.cuisineType}}" th:if="${customerMenu.restaurant.cuisineType != null}">Culinária Italiana</p>
         <h1 class="restaurant-name" th:text="${customerMenu.restaurant.name}">Cantina Bella Italia</h1>
+        <p class="restaurant-tagline" th:text="${customerMenu.restaurant.description}">Autêntica cozinha italiana com toques contemporâneos. Uma experiência gastronômica inesquecível.</p>
         <div class="restaurant-meta">
         <span class="restaurant-meta-item" th:if="${false}">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1784,7 +2244,7 @@
         </span>
             <span class="restaurant-meta-item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span th:text="${customerMenu.restaurant.time}">18:00 - 00:00</span>
+                <span th:text="${customerMenu.restaurant.averagePrice}">18:00 - 00:00</span>
         </span>
             <span class="restaurant-meta-item">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -2054,15 +2514,15 @@
             <p class="item-modal-desc" id="itemModalDesc">Descrição</p>
             <div class="item-modal-tags" id="itemModalTags"></div>
         </div>
-        <div class="item-modal-footer" th:if="${customerMenu.hasTable()}">
-            <div class="client-selector" th:if="${customerMenu.hasTable()}" id="modalClientSelector">
+        <div class="item-modal-footer" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}">
+            <div class="client-selector" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}" id="modalClientSelector">
                 <div class="client-selector-label">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     Pedido para:
                 </div>
                 <div class="client-selector-options" id="clientOptions"></div>
             </div>
-            <div class="item-modal-footer-actions" th:if="${customerMenu.hasTable() && !customerMenu.reviewMode}">
+            <div class="item-modal-footer-actions" th:if="${customerMenu.hasTable() and !customerMenu.reviewMode and (showEntryModal == null or !showEntryModal)}">
                 <div class="modal-qty-selector">
                     <button onclick="decreaseModalQty()">−</button>
                     <span id="modalQty">1</span>
@@ -2127,6 +2587,96 @@
     </div>
 </div>
 
+<!-- ── Entry Modal (join table form — bottom sheet) ──────────────────── -->
+<div class="entry-modal-overlay" id="entryModalOverlay" th:if="${showEntryModal}">
+    <div class="entry-modal" id="entryModal">
+
+        <!-- Hero area -->
+        <div class="entry-modal-hero">
+            <button class="entry-modal-close" onclick="closeEntryModal()" aria-label="Fechar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+
+            <!-- Animated icon -->
+            <div class="entry-hero-icon-wrap">
+                <div class="entry-hero-icon-ring2"></div>
+                <div class="entry-hero-icon-ring"></div>
+                <div class="entry-hero-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
+                </div>
+            </div>
+
+            <!-- Badge + title -->
+            <div class="entry-hero-badge">QR escaneado</div>
+            <h2 class="entry-hero-title" th:text="'Mesa ' + ${customerMenu.tableModel.cod}">Mesa 07</h2>
+            <p class="entry-hero-sub" th:text="${customerMenu.restaurant.name}">Cantina Bella Italia</p>
+        </div>
+
+        <!-- Body -->
+        <div class="entry-modal-body">
+
+            <!-- Existing clients at the table -->
+            <div class="entry-clients-section" id="entryClientsSection"
+                 th:if="${tableCustomers != null and !#sets.isEmpty(tableCustomers)}">
+                <div class="entry-clients-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Já na mesa — selecione:
+                </div>
+                <div class="entry-clients-list" id="entryClientsList">
+                    <button type="button"
+                            class="entry-client-chip"
+                            th:each="client : ${tableCustomers}"
+                            th:attr="onclick=|selectEntryClient('${client.id}', '${client.name}')|" 
+                            th:data-client-id="${client.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span th:text="${client.name}">João</span>
+                    </button>
+                </div>
+                <div class="entry-clients-divider">ou entre com novo nome</div>
+            </div>
+
+            <!-- Name input -->
+            <form class="entry-form-group" id="entryNameGroup" onsubmit="handleEntrySubmit(event)">
+                <label class="entry-form-label" for="entryCustomerName">Seu nome</label>
+                <div class="entry-input-wrapper">
+                    <input type="text" id="entryCustomerName" class="entry-form-input"
+                           placeholder="Ex: Maria, João..."
+                           autocomplete="off" minlength="3" required>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="entry-form-error" id="entryNameError">Nome deve ter pelo menos 3 caracteres</div>
+            </form>
+
+            <!-- Submit -->
+            <button class="entry-submit-btn" id="entrySubmitBtn" onclick="handleEntrySubmit(event)">
+                <span class="entry-btn-text">Entrar na mesa</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <div class="entry-spinner"></div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Top entry banner (visible when modal is closed) ── -->
+<button class="enter-table-fab hidden" id="enterTableFab"
+        th:if="${showEntryModal}"
+        onclick="openEntryModal()">
+    <span class="fab-pulse"></span>
+    <span th:text="'Entrar na Mesa ' + ${customerMenu.tableModel.cod}">Entrar na Mesa 07</span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+</button>
+
+    </div>
+</div>
+
+<!-- ── Floating "Entrar na Mesa" FAB (entry mode, visible when modal is closed) ── -->
+<button class="enter-table-fab hidden" id="enterTableFab"
+        th:if="${showEntryModal}"
+        onclick="openEntryModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    <span th:text="'Entrar na Mesa ' + ${customerMenu.tableModel.cod}">Entrar na Mesa 07</span>
+</button>
+
 <script th:inline="javascript">
     const menuItems = /*[[${customerMenu.items}]]*/[];
     const tagLabels = {
@@ -2152,6 +2702,8 @@
     const activeOrderId = /*[[${customerMenu.orderId?.toString()}]]*/ '';
     let tableSummary = /*[[${customerMenu.tableSummary}]]*/ null;
     const hasSentFeedback = /*[[${customerMenu.hasSentFeedback}]]*/false;
+    const showEntryModal = /*[[${showEntryModal != null and showEntryModal}]]*/false;
+    const entryTablePath = /*[[${showEntryModal ? ('/@' + customerMenu.restaurant.slug + '/table/' + customerMenu.tableModel.cod + '/open') : ''}]]*/'';
 
 
     const paymentMethods = {
@@ -2177,8 +2729,9 @@
     const myCustomerId = _restaurantCustomer.id || null;
     let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
 
-    // Guard: if at a table but no customer id, redirect back to the table entry page
-    if (hasTable && !myCustomerId) {
+    // Guard: if at a table session (menu view) but no customer id, redirect back to table entry page
+    // In entry mode (showEntryModal=true), this is expected — don't redirect
+    if (hasTable && !myCustomerId && !showEntryModal) {
         const entryPath = window.location.pathname.replace(/\/menu$/, '');
         window.location.replace(entryPath);
     }
@@ -3243,11 +3796,14 @@
     function increaseModalQty() { modalQty++; updateModalQty(); }
     function decreaseModalQty() { if (modalQty > 1) { modalQty--; updateModalQty(); } }
     function updateModalQty() {
-        document.getElementById('modalQty').textContent = modalQty;
+        const qtyEl = document.getElementById('modalQty');
+        if (qtyEl) qtyEl.textContent = modalQty;
         if (currentModalItem) {
             const totalPriceEl = document.getElementById('modalTotalPrice');
-            const effectivePrice = currentModalItem.promotion ? currentModalItem.promotion.promotionalPrice : currentModalItem.price;
-            totalPriceEl.textContent = formatPrice(effectivePrice * modalQty);
+            if (totalPriceEl) {
+                const effectivePrice = currentModalItem.promotion ? currentModalItem.promotion.promotionalPrice : currentModalItem.price;
+                totalPriceEl.textContent = formatPrice(effectivePrice * modalQty);
+            }
         }
     }
 
@@ -3464,13 +4020,20 @@
         initHeroCarousel();
         if(hasTable) {
             updateTableTotal();
-            renderClientOptions();
-            // Show current user name in the hero badge
-            const badge = document.getElementById('userBadgeName');
-            if (badge) badge.textContent = myCustomerName;
+            if (!showEntryModal) {
+                renderClientOptions();
+                // Show current user name in the hero badge
+                const badge = document.getElementById('userBadgeName');
+                if (badge) badge.textContent = myCustomerName;
+            }
         }
         updateWaiterCallButton();
         updateRefreshButton();
+
+        // Entry mode: auto-open the modal on page load
+        if (showEntryModal) {
+            openEntryModal();
+        }
     });
 /*
     // Simulate order status updates
@@ -3487,6 +4050,141 @@
         }
     }, 10000);
  */
+
+    // ── Entry Modal Functions ──────────────────────────────────────────────────
+
+    let entrySelectedClientId = null;
+
+    function openEntryModal() {
+        const overlay = document.getElementById('entryModalOverlay');
+        if (!overlay) return;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // Hide FAB while modal is open
+        const fab = document.getElementById('enterTableFab');
+        if (fab) fab.classList.add('hidden');
+        // Focus input after animation
+        setTimeout(() => {
+            const input = document.getElementById('entryCustomerName');
+            if (input) input.focus();
+        }, 420);
+    }
+
+    function closeEntryModal() {
+        const overlay = document.getElementById('entryModalOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        // Show FAB after modal closes
+        const fab = document.getElementById('enterTableFab');
+        if (fab) fab.classList.remove('hidden');
+    }
+
+    function selectEntryClient(clientId, name) {
+        entrySelectedClientId = clientId;
+        const nameInput = document.getElementById('entryCustomerName');
+        if (nameInput) {
+            nameInput.value = name;
+            nameInput.dispatchEvent(new Event('input'));
+        }
+        // Highlight selected chip
+        document.querySelectorAll('.entry-client-chip').forEach(chip => {
+            if (chip.getAttribute('data-client-id') === clientId) {
+                chip.classList.add('selected');
+            } else {
+                chip.classList.remove('selected');
+            }
+        });
+        // Reset selection on manual edit
+        if (nameInput) {
+            nameInput.addEventListener('input', function resetChip() {
+                entrySelectedClientId = null;
+                document.querySelectorAll('.entry-client-chip').forEach(c => c.classList.remove('selected'));
+                nameInput.removeEventListener('input', resetChip);
+            }, { once: true });
+        }
+    }
+
+    function handleEntrySubmit(event) {
+        if (event) event.preventDefault();
+        const nameInput = document.getElementById('entryCustomerName');
+        const group = document.getElementById('entryNameGroup');
+        const errorEl = document.getElementById('entryNameError');
+        const btn = document.getElementById('entrySubmitBtn');
+
+        const rawName = nameInput ? nameInput.value.trim() : '';
+        const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+        if (nameInput) nameInput.value = name;
+
+        if (name.length < 3) {
+            if (group) group.classList.add('has-error');
+            return;
+        }
+        if (group) group.classList.remove('has-error');
+
+        // Get or generate customer ID
+        let customer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
+        if (entrySelectedClientId) {
+            customer.id = entrySelectedClientId;
+        } else if (!customer.id) {
+            customer.id = crypto.randomUUID();
+        }
+        customer.name = name;
+
+        // Loading state
+        if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+
+        fetch(entryTablePath, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ customerId: customer.id, customerName: customer.name })
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.setItem('restaurantCustomer', JSON.stringify(customer));
+                window.location.href = window.location.pathname.endsWith('/menu') ? window.location.pathname : window.location.pathname + '/menu';
+            } else {
+                throw new Error('Falha ao entrar na mesa');
+            }
+        })
+        .catch(error => {
+            console.error('Entry error:', error);
+            if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+            if (group) group.classList.add('has-error');
+            if (errorEl) errorEl.textContent = 'Não foi possível registrar seu acesso. Tente novamente.';
+        });
+    }
+
+    // Close entry modal on backdrop click
+    (function() {
+        const overlay = document.getElementById('entryModalOverlay');
+        if (!overlay) return;
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) closeEntryModal();
+        });
+    })();
+
+    // Capitalize first letter as user types
+    (function() {
+        const input = document.getElementById('entryCustomerName');
+        if (!input) return;
+        input.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            }
+            // Clear error on input
+            const group = document.getElementById('entryNameGroup');
+            if (group) group.classList.remove('has-error');
+        });
+    })();
+
+    // Close entry modal on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            const overlay = document.getElementById('entryModalOverlay');
+            if (overlay && overlay.classList.contains('active')) closeEntryModal();
+        }
+    });
 </script>
 </body>
 </html>

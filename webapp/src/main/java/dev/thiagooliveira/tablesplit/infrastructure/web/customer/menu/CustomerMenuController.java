@@ -21,11 +21,17 @@ public class CustomerMenuController {
   private final GetCategory getCategory;
   private final GetItem getItem;
 
+  private final org.springframework.context.MessageSource messageSource;
+
   public CustomerMenuController(
-      GetRestaurant getRestaurant, GetCategory getCategory, GetItem getItem) {
+      GetRestaurant getRestaurant,
+      GetCategory getCategory,
+      GetItem getItem,
+      org.springframework.context.MessageSource messageSource) {
     this.getRestaurant = getRestaurant;
     this.getCategory = getCategory;
     this.getItem = getItem;
+    this.messageSource = messageSource;
   }
 
   @GetMapping("/@{slug}/menu")
@@ -41,7 +47,13 @@ public class CustomerMenuController {
         allItems.stream()
             .filter(dev.thiagooliveira.tablesplit.domain.menu.Item::isAvailable)
             .toList();
-    CustomerMenuModel menuModel = new CustomerMenuModel(restaurant, categories, availableItems);
+    CustomerMenuModel menuModel =
+        new CustomerMenuModel(
+            restaurant,
+            categories,
+            availableItems,
+            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
+            messageSource);
     model.addAttribute("customerMenu", menuModel);
     model.addAttribute(
         "itemTags", dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.values());

@@ -10,16 +10,15 @@ import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.OrderCustomerModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.PaymentModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.TableSummaryModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.*;
+import dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model.ProfileModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +40,7 @@ public class CustomerTableController {
   private final RateItem rateItem;
   private final SubmitGeneralFeedback submitGeneralFeedback;
   private final TransactionalContext transactionalContext;
+  private final MessageSource messageSource;
 
   public CustomerTableController(
       GetRestaurant getRestaurant,
@@ -54,7 +54,8 @@ public class CustomerTableController {
       CallWaiter callWaiter,
       RateItem rateItem,
       SubmitGeneralFeedback submitGeneralFeedback,
-      TransactionalContext transactionalContext) {
+      TransactionalContext transactionalContext,
+      MessageSource messageSource) {
     this.getRestaurant = getRestaurant;
     this.getTables = getTables;
     this.getCategory = getCategory;
@@ -67,6 +68,7 @@ public class CustomerTableController {
     this.rateItem = rateItem;
     this.submitGeneralFeedback = submitGeneralFeedback;
     this.transactionalContext = transactionalContext;
+    this.messageSource = messageSource;
   }
 
   @PostMapping("/@{slug}/table/{tableCode}/customer-name")
@@ -97,42 +99,25 @@ public class CustomerTableController {
   }
 
   @GetMapping("/@{slug}/table/{tableCode}")
-  public String index(@PathVariable String slug, @PathVariable String tableCode, Model model) {
+  public String index(
+      @PathVariable String slug, @PathVariable String tableCode, Locale locale, Model model) {
     var restaurant =
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
     var table = getTable(restaurant, tableCode);
 
-    String cuisineType = null;
-    if (restaurant.getCuisineType() != null) {
-      cuisineType =
-          dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType.valueOf(
-                  restaurant.getCuisineType().name())
-              .getLabel();
-    }
+    model.addAttribute(
+        "profile",
+        new ProfileModel(
+            restaurant,
+            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
+            messageSource));
 
-    model.addAttribute("restaurant", restaurant);
-    model.addAttribute("table", table);
-    model.addAttribute("cuisineType", cuisineType);
-    model.addAttribute("itemTags", ItemTag.values());
+    model.addAttribute("tableCode", tableCode);
+    model.addAttribute("slug", slug);
 
-    if (!table.isAvailable()) {
-      getOrder
-          .execute(table.getId())
-          .ifPresent(
-              order -> {
-                List<OrderCustomerModel> customers =
-                    order.getCustomers().stream()
-                        .map(
-                            c ->
-                                new OrderCustomerModel(
-                                    c, order.calculateSubtotalByCustomer(c.getId())))
-                        .collect(Collectors.toList());
-                model.addAttribute("tableCustomers", customers);
-              });
-    }
-    return "table-entry";
+    return "restaurant-profile";
   }
 
   @GetMapping("/@{slug}/table/{tableCode}/menu")
@@ -166,13 +151,53 @@ public class CustomerTableController {
       }
     }
 
-    if (activeOrder == null) {
-      if (table.isAvailable()) {
-        return String.format("redirect:/@%s/table/%s", slug, tableCode);
+    boolean isNewCustomer = customerId == null || customerId.isEmpty();
+
+    if (activeOrder == null || isNewCustomer) {
+      var domainLanguages = java.util.List.of(Language.fromLocale(locale));
+      var categories = getCategory.execute(restaurant.getId(), domainLanguages);
+      var items = getItem.execute(restaurant.getId(), domainLanguages, true);
+      CustomerMenuModel menuModel =
+          new CustomerMenuModel(
+              restaurant,
+              categories,
+              items,
+              table,
+              activeOrder,
+              dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
+              messageSource);
+
+      List<OrderCustomerModel> tableCustomers = null;
+      if (activeOrder != null) {
+        final var finalActiveOrder = activeOrder;
+        tableCustomers =
+            activeOrder.getCustomers().stream()
+                .map(
+                    c ->
+                        new OrderCustomerModel(
+                            c, finalActiveOrder.calculateSubtotalByCustomer(c.getId())))
+                .collect(Collectors.toList());
+      } else if (!table.isAvailable()) {
+        // Fallback if table is somehow not available but activeOrder is null in current context
+        var optOrder = getOrder.execute(table.getId());
+        if (optOrder.isPresent()) {
+          var order = optOrder.get();
+          tableCustomers =
+              order.getCustomers().stream()
+                  .map(c -> new OrderCustomerModel(c, order.calculateSubtotalByCustomer(c.getId())))
+                  .collect(Collectors.toList());
+        }
       }
-      return String.format("redirect:/@%s/table/%s", slug, tableCode); // Fallback to entry
+
+      model.addAttribute("customerMenu", menuModel);
+      model.addAttribute("itemTags", ItemTag.values());
+      model.addAttribute("showEntryModal", true);
+      model.addAttribute("tableCode", tableCode);
+      model.addAttribute("tableCustomers", tableCustomers);
+      return "customer-menu";
     }
 
+    // Existing joined customer flow
     // Set or refresh cookie for current order
     var orderCookie =
         new jakarta.servlet.http.Cookie("ts_last_order_id", activeOrder.getId().toString());
@@ -180,15 +205,22 @@ public class CustomerTableController {
     orderCookie.setMaxAge(60 * 60 * 24); // 24 hours
     response.addCookie(orderCookie);
 
-    var requestLanguages = java.util.List.of(Language.fromLocale(locale));
-    var categories = getCategory.execute(restaurant.getId(), requestLanguages);
-    var items = getItem.execute(restaurant.getId(), requestLanguages, true);
+    var domainLanguages = java.util.List.of(Language.fromLocale(locale));
+    var categories = getCategory.execute(restaurant.getId(), domainLanguages);
+    var items = getItem.execute(restaurant.getId(), domainLanguages, true);
 
     CustomerMenuModel menuModel =
-        new CustomerMenuModel(restaurant, categories, items, table, activeOrder);
+        new CustomerMenuModel(
+            restaurant,
+            categories,
+            items,
+            table,
+            activeOrder,
+            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
+            messageSource);
 
     // Server-side feedback check
-    if (customerId != null && !customerId.isEmpty()) {
+    if (!isNewCustomer) {
       try {
         boolean hasSent = rateItem.hasFeedback(activeOrder.getId(), UUID.fromString(customerId));
         if (hasSent) {
@@ -199,8 +231,20 @@ public class CustomerTableController {
       }
     }
 
+    final var finalActiveOrder = activeOrder;
+    List<OrderCustomerModel> tableCustomers =
+        activeOrder.getCustomers().stream()
+            .map(
+                c ->
+                    new OrderCustomerModel(
+                        c, finalActiveOrder.calculateSubtotalByCustomer(c.getId())))
+            .collect(Collectors.toList());
+
     model.addAttribute("customerMenu", menuModel);
     model.addAttribute("itemTags", ItemTag.values());
+    model.addAttribute("showEntryModal", false);
+    model.addAttribute("tableCode", tableCode);
+    model.addAttribute("tableCustomers", tableCustomers);
 
     return "customer-menu";
   }
