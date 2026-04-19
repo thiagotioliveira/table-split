@@ -121,6 +121,7 @@ public class TableController {
             .collect(Collectors.toList());
 
     model.addAttribute("tables", tables);
+    model.addAttribute("restaurantSlug", context.getRestaurant().getSlug());
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("count", result.count());
     model.addAttribute("countAvailable", result.countAvailable());

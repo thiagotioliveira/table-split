@@ -12,6 +12,7 @@
     <script th:inline="javascript">
         const currencySymbol = /*[[${currencySymbol}]]*/'';
         const currencyCode = /*[[${currencyCode}]]*/'';
+        const restaurantSlug = /*[[${restaurantSlug}]]*/'';
         const paymentMethods = {
             /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
             "[(${method.name()})]": {
@@ -21,6 +22,7 @@
             /*[/]*/
         };
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* New Order Modal Styles */
         .menu-items-grid {
@@ -3199,7 +3201,11 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                                 <span>Ver Conta</span>
                             </button>
-                            <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()" th:if="${orderLoaded}">
+                            <button class="action-btn" onclick="openQrModal(selectedTableCod)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
+                                <span>QR Code</span>
+                             </button>
+                             <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                                 <span>Fechar Mesa</span>
                             </button>
@@ -3230,6 +3236,10 @@
                             <div class="quick-action-card" onclick="openTable()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Abrir Mesa</span>
+                            </div>
+                            <div class="quick-action-card" onclick="openQrModal(selectedTableCod)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
+                                <span>QR Code</span>
                             </div>
                             <div class="quick-action-card" style="color: var(--foreground);" onclick="openDeleteTableModal()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -4721,6 +4731,33 @@
     </div>
 </div>
 
+<!-- QR Code Modal -->
+<div class="modal-overlay" id="qrModal">
+    <div class="modal" style="max-width: 400px; text-align: center;">
+        <div class="modal-header">
+            <h3>QR Code da Mesa</h3>
+            <button class="modal-close" onclick="closeQrModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="qrPrintArea" style="padding: 2rem; background: white; border-radius: 8px;">
+                <h2 id="qrTableTitle" style="margin-bottom: 1rem; color: #333;">Mesa XX</h2>
+                <div id="qrcode" style="display: flex; justify-content: center; margin-bottom: 1rem;"></div>
+                <p style="font-size: 0.9rem; color: #666;">Escaneie para ver o cardápio e fazer seu pedido</p>
+                <p id="qrUrl" style="font-size: 0.75rem; color: #999; margin-top: 0.5rem; word-break: break-all;"></p>
+            </div>
+            <div class="modal-footer" style="justify-content: center; gap: 1rem; margin-top: 1rem;">
+                <button class="modal-btn" onclick="closeQrModal()">Fechar</button>
+                <button class="modal-btn primary" onclick="printQrCode()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                    Imprimir QR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     // Initialize menu items grid when order modal opens
@@ -5457,6 +5494,68 @@
         if (interval < 1) return 'agora';
         if (interval === 1) return 'há 1 min';
         return `há ${interval} min`;
+    }
+
+    // QR Code functions
+    let qrGenerator = null;
+
+    function openQrModal(tableCod) {
+        if (!restaurantSlug || !tableCod) {
+            console.error('Restaurant slug or Table code missing', { restaurantSlug, tableCod });
+            return;
+        }
+
+        const url = `${window.location.protocol}//${window.location.host}/@${restaurantSlug}/table/${tableCod}`;
+        
+        document.getElementById('qrTableTitle').textContent = `Mesa ${tableCod}`;
+        document.getElementById('qrUrl').textContent = url;
+        
+        const qrcodeContainer = document.getElementById('qrcode');
+        qrcodeContainer.innerHTML = ''; // Clear previous QR
+        
+        qrGenerator = new QRCode(qrcodeContainer, {
+            text: url,
+            width: 256,
+            height: 256,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        document.getElementById('qrModal').classList.add('active');
+    }
+
+    function closeQrModal() {
+        document.getElementById('qrModal').classList.remove('active');
+    }
+
+    function printQrCode() {
+        const printContent = document.getElementById('qrPrintArea');
+        const originalContents = document.body.innerHTML;
+        
+        // We use a simpler approach: open a new window to print
+        const printWindow = window.open('', '_blank', 'width=600,height=600');
+        printWindow.document.write('<html><head><title>Imprimir QR Code</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('body { font-family: "Inter", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }');
+        printWindow.document.write('#qrPrintArea { text-align: center; padding: 40px; border: 1px solid #eee; border-radius: 20px; }');
+        printWindow.document.write('h2 { margin-top: 0; font-size: 32px; }');
+        printWindow.document.write('img { margin: 20px auto; display: block; }');
+        printWindow.document.write('p { color: #666; font-size: 18px; }');
+        printWindow.document.write('.url { font-size: 14px; color: #999; margin-top: 20px; }');
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write('<div id="qrPrintArea">');
+        printWindow.document.write(printContent.innerHTML);
+        printWindow.document.write('</div>');
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        
+        // Wait for images (QR code is an img or canvas) to load
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     }
 
     function dismissWaiterCall(btn) {
