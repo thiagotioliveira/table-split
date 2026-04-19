@@ -4134,7 +4134,7 @@
         if (!restaurantId || eventSource) return;
         
         console.log('Connecting to SSE for restaurant:', restaurantId);
-        eventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+        eventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
         
         eventSource.onopen = function() {
             console.log('SSE connection established successfully.');

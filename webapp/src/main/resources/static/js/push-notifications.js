@@ -50,7 +50,7 @@ const PushNotifications = {
             const registration = await navigator.serviceWorker.ready;
             
             // Get public key from server
-            const response = await fetch("/api/notifications/public-key");
+            const response = await fetch("/api/notifications/push/public-key");
             if (!response.ok) throw new Error("Failed to fetch VAPID public key");
             
             const vapidPublicKey = await response.text();
@@ -86,7 +86,7 @@ const PushNotifications = {
                 await subscription.unsubscribe();
                 
                 // Notify server
-                await fetch('/api/notifications/unsubscribe', {
+                await fetch('/api/notifications/push/unsubscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(subscription.endpoint)
@@ -109,7 +109,7 @@ const PushNotifications = {
             auth: this.arrayBufferToBase64Url(token)
         };
 
-        await fetch('/api/notifications/subscribe', {
+        await fetch('/api/notifications/push/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -119,7 +119,7 @@ const PushNotifications = {
     async sendTest() {
         console.log('[Push] Sending test notification...');
         try {
-            const response = await fetch('/api/notifications/test', { method: 'POST' });
+            const response = await fetch('/api/notifications/push/test', { method: 'POST' });
             if (!response.ok) {
                 const error = await response.text();
                 throw new Error('Erro ao enviar comando de teste: ' + error);
@@ -154,7 +154,7 @@ const PushNotifications = {
         if (!subscription) return null;
 
         try {
-            const response = await fetch('/api/notifications/status', {
+            const response = await fetch('/api/notifications/push/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
                 body: subscription.endpoint
@@ -179,7 +179,7 @@ const PushNotifications = {
         };
 
         try {
-            const response = await fetch('/api/notifications/preferences', {
+            const response = await fetch('/api/notifications/push/preferences', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

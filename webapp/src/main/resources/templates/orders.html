@@ -1439,7 +1439,7 @@
         if (eventSource) eventSource.close();
         
         console.log('Connecting to SSE...');
-        eventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+        eventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
         
         eventSource.addEventListener('message', function(event) {
             console.log('SSE message received:', event.data);

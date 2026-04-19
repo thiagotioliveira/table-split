@@ -5312,7 +5312,7 @@
         if (eventSource) eventSource.close();
         
         console.log('Connecting to SSE...');
-        eventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+        eventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
         
         eventSource.addEventListener('message', function(event) {
             console.log('SSE message received:', event.data);
@@ -5417,7 +5417,7 @@
     }
 
     function loadActiveWaiterCalls() {
-        fetch('/api/notifications/active-calls', {
+        fetch('/api/notifications/push/active-calls', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
             .then(res => res.json())
@@ -5464,7 +5464,7 @@
         const callId = item.dataset.callId;
 
         if (callId) {
-            fetch('/api/notifications/calls/dismiss', {
+            fetch('/api/notifications/push/calls/dismiss', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

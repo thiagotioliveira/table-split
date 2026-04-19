@@ -195,7 +195,7 @@
                 return;
             }
             
-            fetch('/api/notifications/calls/count', {
+            fetch('/api/notifications/push/calls/count', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(res => {
@@ -219,7 +219,7 @@
             if (sidebarEventSource) sidebarEventSource.close();
             
             console.log('Connecting sidebar SSE for restaurant:', restaurantId);
-            sidebarEventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+            sidebarEventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
             
             // Initial update
             updateOrdersBadge();
