@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
 import dev.thiagooliveira.tablesplit.application.notification.Broadcaster;
 import dev.thiagooliveira.tablesplit.application.notification.RegisterWaiterCall;
+import dev.thiagooliveira.tablesplit.application.notification.SseService;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
@@ -16,25 +17,26 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.Tick
 import java.time.Duration;
 import java.util.List;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TicketEventListener {
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(TicketEventListener.class);
 
-  private final SimpMessagingTemplate messagingTemplate;
+  private final SseService sseService;
   private final Broadcaster broadcaster;
   private final RegisterWaiterCall registerWaiterCall;
   private final dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
       listActiveWaiterCalls;
 
   public TicketEventListener(
-      SimpMessagingTemplate messagingTemplate,
+      SseService sseService,
       Broadcaster broadcaster,
       RegisterWaiterCall registerWaiterCall,
       dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
           listActiveWaiterCalls) {
-    this.messagingTemplate = messagingTemplate;
+    this.sseService = sseService;
     this.broadcaster = broadcaster;
     this.registerWaiterCall = registerWaiterCall;
     this.listActiveWaiterCalls = listActiveWaiterCalls;
@@ -43,8 +45,11 @@ public class TicketEventListener {
   @org.springframework.transaction.event.TransactionalEventListener(
       phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketCreated(TicketCreatedEvent event) {
-    TicketModel model = mapToModel(event.getTicket(), event.getOrder(), event.getTableCod());
-    notifyRestaurant(event.getRestaurantId(), model);
+    logger.debug("Handling TicketCreatedEvent for restaurant: {}", event.getRestaurantId());
+    TicketModel model =
+        mapToModel(
+            event.getRestaurantId(), event.getTicket(), event.getOrder(), event.getTableCod());
+    broadcast(event.getRestaurantId(), "TICKET_CREATED", model);
 
     // Send Push Notification
     try {
@@ -61,13 +66,29 @@ public class TicketEventListener {
   @org.springframework.transaction.event.TransactionalEventListener(
       phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
-    notifyRestaurant(event.getRestaurantId(), event);
+    logger.debug(
+        "Handling TicketStatusChangedEvent for restaurant: {}. New status: {}",
+        event.getRestaurantId(),
+        event.getNewStatus());
+    broadcast(
+        event.getRestaurantId(),
+        "TICKET_STATUS_CHANGED",
+        java.util.Map.of(
+            "ticketId", event.getTicketId().toString(), "status", event.getNewStatus()));
   }
 
   @org.springframework.transaction.event.TransactionalEventListener(
       phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketItemStatusChanged(TicketItemStatusChangedEvent event) {
-    notifyRestaurant(event.getRestaurantId(), event);
+    logger.debug(
+        "Handling TicketItemStatusChangedEvent for restaurant: {}. Item: {}, New status: {}",
+        event.getRestaurantId(),
+        event.getItemId(),
+        event.getNewStatus());
+    broadcast(
+        event.getRestaurantId(),
+        "TICKET_ITEM_STATUS_CHANGED",
+        java.util.Map.of("itemId", event.getItemId().toString(), "status", event.getNewStatus()));
   }
 
   @EventListener
@@ -89,9 +110,8 @@ public class TicketEventListener {
             count,
             call != null ? call.getId() : null);
 
-    // Notify via WebSocket
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/waiter", eventWithData);
+    // Notify via SSE
+    broadcast(event.getRestaurantId(), "WAITER_CALL", eventWithData);
   }
 
   @org.springframework.context.event.EventListener
@@ -102,23 +122,28 @@ public class TicketEventListener {
         new dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent(
             event.getRestaurantId(), event.getCallId(), count);
 
-    messagingTemplate.convertAndSend(
-        "/topic/restaurant/" + event.getRestaurantId() + "/waiter", eventWithCount);
+    broadcast(event.getRestaurantId(), "WAITER_CALL_DISMISSED", eventWithCount);
   }
 
   @org.springframework.transaction.event.TransactionalEventListener(
       phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTableStatusChanged(TableStatusChangedEvent event) {
-    notifyRestaurant(event.getRestaurantId(), event);
+    logger.debug("Handling TableStatusChangedEvent for restaurant: {}", event.getRestaurantId());
+    broadcast(
+        event.getRestaurantId(),
+        "TABLE_STATUS_CHANGED",
+        java.util.Map.of("tableId", event.getTableId().toString()));
   }
 
-  private void notifyRestaurant(java.util.UUID restaurantId, Object payload) {
-    messagingTemplate.convertAndSend("/topic/restaurant/" + restaurantId + "/tickets", payload);
-    messagingTemplate.convertAndSend("/topic/restaurant/" + restaurantId + "/tables", payload);
+  private void broadcast(java.util.UUID restaurantId, String type, Object data) {
+    sseService.broadcast(restaurantId, java.util.Map.of("type", type, "data", data));
   }
 
   private TicketModel mapToModel(
-      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {
+      java.util.UUID restaurantId,
+      Ticket ticket,
+      dev.thiagooliveira.tablesplit.domain.order.Order order,
+      String tableCod) {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
@@ -158,6 +183,7 @@ public class TicketEventListener {
     boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
 
     return new TicketModel(
+        restaurantId,
         ticket.getId(),
         tableCod,
         customerName,

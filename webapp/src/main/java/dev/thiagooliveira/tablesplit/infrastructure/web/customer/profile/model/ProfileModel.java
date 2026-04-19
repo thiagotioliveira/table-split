@@ -208,7 +208,7 @@ public class ProfileModel {
   }
 
   public List<RestaurantImageModel> getGalleryImages() {
-    return images.stream().filter(img -> !img.isCover()).toList();
+    return images;
   }
 
   public String getGoogleMapsEmbedUrl() {

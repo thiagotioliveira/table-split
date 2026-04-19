@@ -216,6 +216,7 @@ public class OrderController {
     boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 
     return new TicketModel(
+        order.getRestaurantId(),
         ticket.getId(),
         tableCod,
         customerName,

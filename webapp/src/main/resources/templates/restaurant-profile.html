@@ -1673,7 +1673,7 @@
 
         /* Push hero-nav down if the top banner is present so they don't overlap */
         .hero.has-entry-banner .hero-nav {
-            top: 4.5rem;
+            /*top: 4.5rem;*/
             transition: top 0.4s ease-out 0.2s;
         }
 
@@ -1707,7 +1707,8 @@
 
     <!-- Hero Navigation -->
     <nav class="hero-nav">
-      <a class="nav-btn" th:href="${profile.menuLink}">
+      <a/>
+      <a class="nav-btn" th:href="${profile.menuLink}" th:if="${false}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </a>
       <div class="nav-actions">
@@ -1920,6 +1921,23 @@
       </div>
     </section>
 
+    <!-- Gallery -->
+    <section class="section" th:if="${!#lists.isEmpty(profile.galleryImages)}">
+      <div class="section-header">
+        <h2 class="section-title">Fotos</h2>
+        <a href="#" class="section-link" th:if="${profile.galleryImages.size() > 6}">Ver todas (<span th:text="${profile.galleryImages.size()}">24</span>)</a>
+      </div>
+      <div class="gallery-grid">
+        <div th:each="image, iter : ${profile.galleryImages}" th:if="${iter.index < 6}" class="gallery-item"
+             th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''"
+             th:attr="data-src=${image.name}"
+             onclick="openLightbox(this.getAttribute('data-src'))">
+          <img th:src="${image.name}" th:alt="${profile.name}">
+          <span th:if="${iter.index == 5 and profile.galleryImages.size() > 6}" th:text="'+' + (${profile.galleryImages.size()} - 6)">+18</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Location -->
     <section class="section">
       <h2 class="section-title">Localização</h2>
@@ -1942,23 +1960,6 @@
             </svg>
             Abrir no Google Maps
           </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Gallery -->
-    <section class="section" th:if="${!#lists.isEmpty(profile.galleryImages)}">
-      <div class="section-header">
-        <h2 class="section-title">Fotos</h2>
-        <a href="#" class="section-link" th:if="${profile.galleryImages.size() > 6}">Ver todas (<span th:text="${profile.galleryImages.size()}">24</span>)</a>
-      </div>
-      <div class="gallery-grid">
-        <div th:each="image, iter : ${profile.galleryImages}" th:if="${iter.index < 6}" class="gallery-item" 
-             th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''"
-             th:attr="data-src=${image.name}"
-             onclick="openLightbox(this.getAttribute('data-src'))">
-          <img th:src="${image.name}" th:alt="${profile.name}">
-          <span th:if="${iter.index == 5 and profile.galleryImages.size() > 6}" th:text="'+' + (${profile.galleryImages.size()} - 6)">+18</span>
         </div>
       </div>
     </section>

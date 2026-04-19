@@ -99,8 +99,7 @@
 </header>
 
     <script src="/js/push-notifications.js?v=20260403-2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script th:inline="javascript">
     // Sidebar functions
     function openSidebar() {
@@ -215,69 +214,56 @@
                 .catch(err => console.error('Error updating tables badge:', err));
         }
 
-        const connectSidebarWS = () => {
-            if (typeof SockJS === 'undefined' || typeof Stomp === 'undefined') {
-                setTimeout(connectSidebarWS, 500);
-                return;
-            }
+        let sidebarEventSource = null;
+        const connectSidebarSSE = () => {
+            if (sidebarEventSource) sidebarEventSource.close();
             
-            const socket = new SockJS('/ws');
-            const stompClient = Stomp.over(socket);
-            stompClient.debug = null;
-            console.log('Connecting sidebar WS for restaurant:', restaurantId);
-            stompClient.connect({}, function (frame) {
-                console.log('Sidebar WS connected');
-                
-                // Initial update on connect
-                updateOrdersBadge();
-                updateTablesBadge();
+            console.log('Connecting sidebar SSE for restaurant:', restaurantId);
+            sidebarEventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+            
+            // Initial update
+            updateOrdersBadge();
+            updateTablesBadge();
 
-                stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tickets', function (message) {
-                    const data = JSON.parse(message.body);
+            sidebarEventSource.onmessage = function(event) {
+                console.log('Sidebar SSE message received:', event.data);
+                try {
+                    const payload = JSON.parse(event.data);
+                    const type = payload.type;
                     
-                    // If it's a new ticket (no newStatus field)
-                    if (data.id && !data.newStatus) {
+                    // New Ticket or Status alert
+                    if (type === 'TICKET_CREATED' || type === 'TICKET_STATUS_CHANGED') {
                         const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
                         if (soundEnabled) {
                             const audio = new Audio(alertSoundUrl);
                             audio.play().catch(e => console.log('Audio blocked', e));
                         }
+                        updateOrdersBadge();
                     }
                     
-                    // Refresh count for ANY ticket-related event (new, moved, cancelled)
-                    updateOrdersBadge();
-                });
-
-                stompClient.subscribe('/topic/restaurant/' + restaurantId + '/waiter', function (message) {
-                    const data = JSON.parse(message.body);
-                    console.log('Waiter WS message received:', data);
-                    
-                    // If it's a new call (has tableCod)
-                    if (data.tableCod && !data.callId) { // Wait, data.callId is present in Dismiss event
-                        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-                        if (soundEnabled) {
-                            const audio = new Audio(alertSoundUrl);
-                            audio.play().catch(e => console.log('Audio blocked', e));
-                        }
-                    }
-                    
-                    // Refresh count for waiter calls
-                    if (data.totalCount !== undefined) {
-                        const badge = document.getElementById('tablesBadge');
-                        if (badge) {
-                            console.log('Updating tables badge from WS data:', data.totalCount);
-                            badge.textContent = data.totalCount;
-                            if (data.totalCount > 0) {
-                                badge.style.display = '';
-                            } else {
-                                badge.style.display = 'none';
+                    // Waiter Call alerts
+                    if (type === 'WAITER_CALL' || type === 'WAITER_CALL_DISMISSED') {
+                        if (type === 'WAITER_CALL') {
+                            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                            if (soundEnabled) {
+                                const audio = new Audio(alertSoundUrl);
+                                audio.play().catch(e => console.log('Audio blocked', e));
                             }
                         }
-                    } else {
-                        console.log('totalCount missing in WS message, fetching...');
                         updateTablesBadge();
                     }
-                });
+
+                } catch (e) {
+                    console.error('Error parsing Sidebar SSE data:', e);
+                }
+            };
+
+            sidebarEventSource.addEventListener('error', function(e) {
+                if (e.readyState == EventSource.CLOSED) {
+                    console.log('Sidebar SSE connection closed, retrying...');
+                    sidebarEventSource = null;
+                    setTimeout(connectSidebarSSE, 5000);
+                }
             });
         }
 
@@ -290,7 +276,7 @@
             console.log('Sidebar loaded, restaurantId:', restaurantId);
             if (restaurantId) {
                 console.log('Attempting to connect sidebar WS...');
-                setTimeout(connectSidebarWS, 100);
+                setTimeout(connectSidebarSSE, 100);
             } else {
                 console.warn('Sidebar: restaurantId not found, WebSocket will not connect');
             }

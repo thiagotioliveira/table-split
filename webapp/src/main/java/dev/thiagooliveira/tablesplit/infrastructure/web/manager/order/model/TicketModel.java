@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class TicketModel {
-  private final UUID id;
+  private final String restaurantId;
+  private final String id;
   private final String shortId;
   private final String tableCod;
   private final String customerName;
@@ -22,6 +23,7 @@ public class TicketModel {
   private final String note;
 
   public TicketModel(
+      UUID restaurantId,
       UUID id,
       String tableCod,
       String customerName,
@@ -32,7 +34,8 @@ public class TicketModel {
       BigDecimal total,
       boolean urgent,
       String note) {
-    this.id = id;
+    this.restaurantId = restaurantId.toString();
+    this.id = id.toString();
     this.shortId = id.toString().substring(0, 4).toUpperCase();
     this.tableCod = tableCod;
     this.customerName = customerName;
@@ -47,7 +50,11 @@ public class TicketModel {
     this.note = note;
   }
 
-  public UUID getId() {
+  public String getRestaurantId() {
+    return restaurantId;
+  }
+
+  public String getId() {
     return id;
   }
 

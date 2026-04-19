@@ -101,6 +101,7 @@ public class SecurityConfig {
                         "/images/**",
                         "/@**",
                         "/@**/**",
+                        "/api/notifications/**",
                         "/h2-console/**")
                     .permitAll()
 

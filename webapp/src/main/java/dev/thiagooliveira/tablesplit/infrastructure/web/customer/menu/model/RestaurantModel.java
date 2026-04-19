@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.Re
 import java.util.List;
 
 public class RestaurantModel {
+  private final String id;
   private final String name;
   private final String description;
   private final String address;
@@ -26,6 +27,7 @@ public class RestaurantModel {
       Restaurant restaurant,
       java.time.ZoneId zoneId,
       org.springframework.context.MessageSource messageSource) {
+    this.id = restaurant.getId().toString();
     this.name = restaurant.getName();
     this.description = restaurant.getDescription();
     this.address = restaurant.getAddress();
@@ -59,6 +61,10 @@ public class RestaurantModel {
 
   public String getSlug() {
     return slug;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getCuisineType() {

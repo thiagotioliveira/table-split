@@ -15,7 +15,6 @@ public class ItemModel {
   private final Map<String, String> name;
   private final Map<String, String> description;
   private final BigDecimal price;
-  private final String priceFormatted;
   private PromotionInfo promotion;
   private final List<TagModel> tags;
 
@@ -27,7 +26,6 @@ public class ItemModel {
     this.name = convertMap(item.getName());
     this.description = convertMap(item.getDescription());
     this.price = item.getPrice();
-    this.priceFormatted = String.format("%s %s", symbol, this.price);
     if (item.getPromotion() != null) {
       this.promotion =
           new PromotionInfo(
@@ -73,10 +71,6 @@ public class ItemModel {
 
   public BigDecimal getPrice() {
     return price;
-  }
-
-  public String getPriceFormatted() {
-    return priceFormatted;
   }
 
   public List<ImageModel> getImages() {

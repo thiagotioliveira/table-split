@@ -8,8 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script th:inline="javascript">
         const currencySymbol = /*[[${currencySymbol}]]*/'';
         const currencyCode = /*[[${currencyCode}]]*/'';
@@ -5306,25 +5305,32 @@
 
         form.submit();
     }
-    function connect() {
-        const socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-        stompClient.debug = null;
-        stompClient.connect({}, function (frame) {
-            stompClient.subscribe('/topic/restaurant/' + restaurantId + '/tables', function (message) {
-                const event = JSON.parse(message.body);
-                updateTableStatus(event);
-            });
+    // SSE connection
+    let eventSource = null;
 
-            // Subscribe to waiter calls
-            const waiterTopic = '/topic/restaurant/' + restaurantId + '/waiter';
-            console.log('Subscribing to waiter topic:', waiterTopic);
-            stompClient.subscribe(waiterTopic, function (message) {
-                console.log('WAITER message received:', message.body);
-                const data = JSON.parse(message.body);
+    function connect() {
+        if (eventSource) eventSource.close();
+        
+        console.log('Connecting to SSE...');
+        eventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+        
+        eventSource.addEventListener('message', function(event) {
+            console.log('SSE message received:', event.data);
+            try {
+                const payload = JSON.parse(event.data);
+                const type = payload.type;
+                const data = payload.data;
                 
-                // If it's a dismissal event, remove from UI IF it exists
-                if (data.callId && !data.tableCod) {
+                // Handle Table Status Change
+                if (type === 'TABLE_STATUS_CHANGED' || type === 'TICKET_STATUS_CHANGED') {
+                     updateTableStatus(data);
+                } 
+                // Handle Waiter Call
+                else if (type === 'WAITER_CALL') {
+                     handleWaiterCall(data);
+                }
+                // Handle Waiter Call Dismissal
+                else if (type === 'WAITER_CALL_DISMISSED') {
                     const list = document.getElementById('waiterAlertsList');
                     const existing = Array.from(list.querySelectorAll('.waiter-alert-item')).find(item => 
                         item.dataset.callId === data.callId
@@ -5332,10 +5338,20 @@
                     if (existing) {
                         removeItem(existing);
                     }
-                } else if (data.tableCod) {
-                    handleWaiterCall(data);
                 }
-            });
+            } catch (e) {
+                console.error('Error parsing SSE data:', e);
+            }
+        });
+
+        eventSource.addEventListener('error', function(e) {
+            if (e.readyState == EventSource.CLOSED) {
+                console.log('SSE connection closed, retrying...');
+            }
+        });
+
+        eventSource.addEventListener('init', function(e) {
+            console.log('SSE initialized:', e.data);
         });
     }
 

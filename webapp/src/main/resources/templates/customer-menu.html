@@ -747,14 +747,14 @@
             flex-wrap: wrap;
         }
         .price-original {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             color: var(--muted);
             text-decoration: line-through;
         }
         .price-promo {
-            font-weight: 700;
-            color: #16a34a;
-            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.125rem;
         }
         .promo-badge {
             position: static;
@@ -799,7 +799,8 @@
         .menu-item-content { flex: 1; min-width: 0; }
         .menu-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem; }
         .menu-item-name { font-weight: 600; font-size: 0.9375rem; }
-        .menu-item-price { font-weight: 700; color: var(--primary); white-space: nowrap; }
+        .menu-item-price:not(.price-original) { font-weight: 700; color: var(--primary); white-space: nowrap; }
+        .menu-item-price.price-original { font-weight: 600; }
         .menu-item-desc {
             font-size: 0.8125rem;
             color: var(--muted);
@@ -856,41 +857,7 @@
             color: var(--foreground);
         }
         
-        .refresh-action-btn {
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 50%;
-            background: var(--background);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .refresh-action-btn:hover {
-            background: var(--card);
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .refresh-action-btn:active { transform: scale(0.9); }
-        .refresh-action-btn svg { width: 1.125rem; height: 1.125rem; }
-        .refresh-action-btn.refreshing svg { animation: spin 0.8s linear infinite; }
-        .refresh-action-btn:disabled {
-            width: auto;
-            min-width: 2.5rem;
-            padding: 0 0.5rem;
-            border-radius: 1.25rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: var(--background);
-            color: var(--muted);
-            cursor: not-allowed;
-            border-color: var(--border);
-        }
+
 
         .orders-empty {
             text-align: center;
@@ -2179,10 +2146,13 @@
 
     <!-- Hero Navigation -->
     <div class="hero-nav">
+        <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug+'/table/'+tableCode}" th:if="${customerMenu.hasTable()}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </a>
         <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug}" th:unless="${customerMenu.hasTable()}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </a>
-        <div>
+        <div class="hero-actions">
             <!-- Active table session badge -->
             <button class="hero-badge" onclick="openTableModal()" th:if="${customerMenu.hasTable() and !showEntryModal}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
@@ -2193,12 +2163,11 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
                 <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
             </button>
-        </div>
-        <div class="hero-actions">
+
             <!-- User Identity Badge -->
             <button class="user-badge" th:classappend="${customerMenu.reviewMode ? 'readonly' : ''}" 
                     onclick="if(!isReviewMode) openUserEditModal()" 
-                    th:if="${customerMenu.hasTable()}" id="userBadgeBtn">
+                    th:if="${customerMenu.hasTable() and !showEntryModal}" id="userBadgeBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <span class="user-badge-name" id="userBadgeName">Cliente</span>
             </button>
@@ -2222,7 +2191,6 @@
                     </th:block>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -2286,7 +2254,7 @@
         <span class="quick-info-label" data-i18n="callWaiter">Chamar</span>
         <span class="quick-info-value" data-i18n="waiter">Garçom</span>
     </div>
-    <div class="quick-info-item" onclick="openTableModal()">
+    <div class="quick-info-item" onclick="openTableModal()" th:if="${!showEntryModal}">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
         </div>
@@ -2303,12 +2271,12 @@
 </div>
 
 <!-- Main Tabs -->
-<nav class="main-tabs" th:if="${customerMenu.hasTable()}">
+<nav class="main-tabs">
     <button class="main-tab active" onclick="switchTab('menu', this)">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
         <span data-i18n="menu">Cardápio</span>
     </button>
-    <button class="main-tab" onclick="switchTab('orders', this)">
+    <button class="main-tab" onclick="switchTab('orders', this)" th:if="${customerMenu.hasTable() and !showEntryModal}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span data-i18n="myOrders">Meus Pedidos</span>
         <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
@@ -2348,9 +2316,14 @@
                         <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
                         <div class="menu-item-prices">
                             <span class="promo-badge" th:if="${item.promotion != null}" 
-                                  th:text="${item.promotion.discountType == 'PERCENTAGE' ? '-' + #numbers.formatInteger(item.promotion.discountValue, 0) + '%' : '-' + customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.discountValue, 1, 2).replace('.', ',')}">-20%</span>
-                            <span class= "menu-item-price" th:classappend="${item.promotion != null} ? ' price-original'" th:text="${item.priceFormatted}">R$ 28,00</span>
-                            <span class="price-promo" th:if="${item.promotion != null}" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 2).replace('.', ',')}">R$ 22,40</span>
+                                  th:text="${item.promotion.discountType == 'PERCENTAGE' ? '-' + #numbers.formatInteger(item.promotion.discountValue, 0) + '%' : '-' + customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.discountValue, 1, 'NONE', 2, 'COMMA')}">-20%</span>
+                            <th:block th:if="${item.promotion != null}">
+                                <span class="menu-item-price price-original" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'COMMA')}">R$ 28,00</span>
+                                <span class="price-promo" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'NONE', 2, 'COMMA')}">R$ 22,40</span>
+                            </th:block>
+                            <th:block th:unless="${item.promotion != null}">
+                                <span class="menu-item-price" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'COMMA')}">R$ 28,00</span>
+                            </th:block>
                         </div>
                     </div>
                     <p class="menu-item-desc" th:text="${item.description[#locale.language]}">Pão italiano tostado com tomate fresco, manjericão e azeite extra virgem</p>
@@ -2367,13 +2340,11 @@
 </div>
 
 <!-- Orders Tab Content -->
-<div id="ordersTab" class="tab-content">
+<div id="ordersTab" class="tab-content" th:if="${customerMenu.hasTable() and !showEntryModal}">
     <div class="orders-content" id="ordersContent">
         <div class="orders-section-header" th:if="${customerMenu.hasTable() and not customerMenu.reviewMode}">
             <h2 data-i18n="tableSummaryTitle"></h2>
-            <button class="refresh-action-btn" onclick="refreshTableData()" id="refreshTableBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.25L21 8"/><path d="M21 3v5h-5"/></svg>
-            </button>
+
         </div>
         <div class="orders-empty" id="ordersEmpty">
             <div class="orders-empty-icon">
@@ -2692,6 +2663,7 @@
     // Customers already at the table — comes from activeOrder.customers (backend)
     const tableCustomersFromBackend = /*[[${customerMenu.customers}]]*/[];
     const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
+    const currencyCode = /*[[${customerMenu.restaurant.currency.name()}]]*/'BRL';
     const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
     const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
@@ -2703,7 +2675,8 @@
     let tableSummary = /*[[${customerMenu.tableSummary}]]*/ null;
     const hasSentFeedback = /*[[${customerMenu.hasSentFeedback}]]*/false;
     const showEntryModal = /*[[${showEntryModal != null and showEntryModal}]]*/false;
-    const entryTablePath = /*[[${showEntryModal ? ('/@' + customerMenu.restaurant.slug + '/table/' + customerMenu.tableModel.cod + '/open') : ''}]]*/'';
+    const entryTablePath = /*[[${(showEntryModal != null and showEntryModal) ? ('/@' + customerMenu.restaurant.slug + '/table/' + customerMenu.tableModel.cod + '/open') : ''}]]*/'';
+    const restaurantId = /*[[${customerMenu.getRestaurant().getId()}]]*/ null;
 
 
     const paymentMethods = {
@@ -2989,8 +2962,11 @@
     }
 
     function formatPrice(value) {
-        if (value === undefined || value === null || isNaN(parseFloat(value))) return currencySymbol + ' 0,00';
-        return currencySymbol + ' ' + parseFloat(value).toFixed(2).replace('.', ',');
+        if (value === undefined || value === null || isNaN(parseFloat(value))) value = 0;
+        return new Intl.NumberFormat('pt-BR', { 
+            style: 'currency', 
+            currency: currencyCode 
+        }).format(value).replace(/\s/g, ' ');
     }
 
     function updateCartUI() {
@@ -3418,7 +3394,7 @@
 
     // User Edit Functions
     function openUserEditModal() {
-        if (isReviewMode) return;
+        if (isReviewMode || showEntryModal || !hasTable) return;
 
         const input = document.getElementById('userNameInput');
         input.value = myCustomerName;
@@ -3827,54 +3803,21 @@
         closeItemModal();
     }
 
-    let refreshInterval;
-    function updateRefreshButton() {
-        const btn = document.getElementById('refreshTableBtn');
-        if (!btn) return;
+    async function refreshTableData() {
 
-        const now = Date.now();
-        const lastRefresh = localStorage.getItem('lastTableRefreshTime');
-        const COOLDOWN = 10000; // 10 seconds
-
-        if (lastRefresh && (now - lastRefresh < COOLDOWN)) {
-            btn.disabled = true;
-            if (refreshInterval) clearInterval(refreshInterval);
-
-            refreshInterval = setInterval(() => {
-                const innerNow = Date.now();
-                const remaining = Math.ceil((COOLDOWN - (innerNow - lastRefresh)) / 1000);
-
-                if (remaining <= 0) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.25L21 8"/><path d="M21 3v5h-5"/></svg>';
-                    clearInterval(refreshInterval);
-                    localStorage.removeItem('lastTableRefreshTime');
-                } else {
-                    btn.textContent = remaining + 's';
-                }
-            }, 1000);
-        } else {
-            btn.disabled = false;
-        }
-    }
-
-    async function refreshTableData(force = false) {
-        const btn = document.getElementById('refreshTableBtn');
-        if (!btn) return;
-        if (!force && (btn.classList.contains('refreshing') || btn.disabled)) return;
-        
-        btn.classList.add('refreshing');
         
         try {
-            const response = await fetch(`${window.location.pathname}/data`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            const response = await fetch(`${window.location.pathname}/data?t=${Date.now()}`, {
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
             });
             if (!response.ok) throw new Error('API Error');
             const data = await response.json();
 
-            // Set cooldown
-            localStorage.setItem('lastTableRefreshTime', Date.now());
-            updateRefreshButton();
+
 
             // Store active order ID if changed
             if (data.orderId) {
@@ -3926,10 +3869,16 @@
             }
 
             // Re-render UI
-            updateOrdersUI();
-            updateTableTotal();
-            if (typeof renderTableModal === 'function') {
-                renderTableModal();
+            try {
+                console.log('Re-rendering UI components...');
+                updateOrdersUI();
+                updateTableTotal();
+                if (typeof renderTableModal === 'function') {
+                    renderTableModal();
+                }
+                console.log('UI update completed successfully.');
+            } catch (uiError) {
+                console.error('Error re-rendering UI:', uiError);
             }
 
         } catch (error) {
@@ -3937,7 +3886,7 @@
             // If API fails with 404/403, might be session lost
             if (error.message.includes('404')) window.location.reload();
         } finally {
-            if (btn) btn.classList.remove('refreshing');
+            // Refresh process finished
         }
     }
 
@@ -4028,7 +3977,7 @@
             }
         }
         updateWaiterCallButton();
-        updateRefreshButton();
+
 
         // Entry mode: auto-open the modal on page load
         if (showEntryModal) {
@@ -4178,13 +4127,63 @@
         });
     })();
 
-    // Close entry modal on Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            const overlay = document.getElementById('entryModalOverlay');
-            if (overlay && overlay.classList.contains('active')) closeEntryModal();
-        }
-    });
+    // SSE connection for real-time updates
+    let eventSource = null;
+
+    function connectSSE() {
+        if (!restaurantId || eventSource) return;
+        
+        console.log('Connecting to SSE for restaurant:', restaurantId);
+        eventSource = new EventSource('/api/notifications/subscribe/' + restaurantId);
+        
+        eventSource.onopen = function() {
+            console.log('SSE connection established successfully.');
+        };
+        
+        eventSource.onerror = function(e) {
+            console.error('SSE connection error:', e);
+            if (e.readyState == EventSource.CLOSED) {
+                console.log('SSE connection closed, retrying in 5s...');
+                eventSource = null;
+                setTimeout(connectSSE, 5000);
+            }
+        };
+        
+        eventSource.onmessage = function(event) {
+            try {
+                const payload = JSON.parse(event.data);
+                console.log('SSE message received:', payload.type, payload);
+                
+                // We refresh for any relevant change in the table/order
+                const typesToRefresh = [
+                    'TICKET_CREATED',
+                    'TICKET_STATUS_CHANGED', 
+                    'TICKET_ITEM_STATUS_CHANGED',
+                    'TABLE_STATUS_CHANGED',
+                    'WAITER_CALL_DISMISSED'
+                ];
+                
+                if (typesToRefresh.includes(payload.type)) {
+                    console.log('Refreshing UI due to event:', payload.type);
+                    refreshTableData();
+                }
+            } catch (e) {
+                console.error('Error processing SSE message:', e, event.data);
+                refreshTableData();
+            }
+        };
+
+        eventSource.addEventListener('error', function(e) {
+            if (e.readyState == EventSource.CLOSED) {
+                // Already handled in onerror
+            }
+        });
+    }
+
+    console.log('Page initialized. hasTable:', hasTable, 'restaurantId:', restaurantId);
+    if (hasTable) {
+        connectSSE();
+    }
 </script>
 </body>
 </html>
