@@ -4164,6 +4164,13 @@
         });
     }
 
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && hasTable && !showEntryModal) {
+            console.log('Tab became visible, refreshing data...');
+            refreshTableData();
+        }
+    });
+
     console.log('Page initialized. hasTable:', hasTable, 'restaurantId:', restaurantId);
     if (hasTable) {
         connectSSE();
