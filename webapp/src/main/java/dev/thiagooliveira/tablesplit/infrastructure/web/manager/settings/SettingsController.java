@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 
+import dev.thiagooliveira.tablesplit.application.printing.PrintAgentService;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
@@ -31,26 +32,43 @@ public class SettingsController {
   private final TransactionalContext transactionalContext;
   private final GetRestaurant getRestaurant;
   private final UpdateRestaurant updateRestaurant;
+  private final PrintAgentService printAgentService;
 
   public SettingsController(
       TransactionalContext transactionalContext,
       GetRestaurant getRestaurant,
-      UpdateRestaurant updateRestaurant) {
+      UpdateRestaurant updateRestaurant,
+      PrintAgentService printAgentService) {
     this.transactionalContext = transactionalContext;
     this.getRestaurant = getRestaurant;
     this.updateRestaurant = updateRestaurant;
+    this.printAgentService = printAgentService;
   }
 
   @GetMapping
   public String index(Authentication auth, Model model) {
     ContextModel context = (ContextModel) model.getAttribute("context");
     var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
+
+    String printToken = printAgentService.getOrCreateToken(restaurant.getId());
+
     model.addAttribute("form", new SettingsModel(restaurant));
     model.addAttribute("languages", Language.values());
     model.addAttribute("cuisineTypeCodes", CuisineType.values());
     model.addAttribute("restaurantTags", RestaurantTag.values());
     model.addAttribute("averagePriceCodes", AveragePrice.values());
+    model.addAttribute("printToken", printToken);
     return "settings";
+  }
+
+  @PostMapping("/regenerate-token")
+  public String regenerateToken(
+      Authentication auth, Model model, RedirectAttributes redirectAttributes) {
+    ContextModel context = (ContextModel) model.getAttribute("context");
+    printAgentService.regenerateToken(context.getRestaurant().getId());
+    redirectAttributes.addFlashAttribute(
+        "alert", AlertModel.success("Token regenerado com sucesso!"));
+    return "redirect:/settings";
   }
 
   @PostMapping

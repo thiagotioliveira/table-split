@@ -24,20 +24,60 @@ public class PrinterService {
         .collect(java.util.stream.Collectors.toList());
   }
 
-  public void printOrder(IntegrationOrderDTO order) {
-    log.info("Starting print job for ticket: {}", order.ticketId());
+  public void printOrder(IntegrationOrderDTO order, String printerName) {
+    log.info("Starting print job for ticket: {} on printer: {}", order.ticketId(), printerName);
 
     PrinterJob job = PrinterJob.getPrinterJob();
+
+    if (printerName != null && !printerName.isEmpty()) {
+      PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+      for (PrintService service : printServices) {
+        if (service.getName().equals(printerName)) {
+          try {
+            job.setPrintService(service);
+            break;
+          } catch (PrinterException e) {
+            log.error("Could not set printer service {}: {}", printerName, e.getMessage());
+          }
+        }
+      }
+    }
+
     job.setPrintable(new OrderPrintable(order));
 
     try {
-      // In a real scenario, we might want to check if a printer is available
-      // For now, we use the default system printer
       job.print();
-      log.info("Print job sent to default printer successfully.");
+      log.info("Print job sent successfully.");
     } catch (PrinterException e) {
       log.error("Failed to print order {}: {}", order.ticketId(), e.getMessage(), e);
     }
+  }
+
+  public void printTest(String printerName) {
+    java.util.UUID testId = java.util.UUID.randomUUID();
+    IntegrationOrderDTO testOrder =
+        new IntegrationOrderDTO(
+            testId,
+            "MESA TESTE",
+            "Admin",
+            java.util.List.of(
+                new IntegrationOrderDTO.Item(
+                    java.util.UUID.randomUUID(),
+                    "Batata Frita",
+                    1,
+                    new java.math.BigDecimal("25.00"),
+                    new java.math.BigDecimal("25.00"),
+                    "Sem sal"),
+                new IntegrationOrderDTO.Item(
+                    java.util.UUID.randomUUID(),
+                    "Cerveja Gelada",
+                    2,
+                    new java.math.BigDecimal("9.00"),
+                    new java.math.BigDecimal("18.00"),
+                    null)),
+            new java.math.BigDecimal("43.00"),
+            java.time.ZonedDateTime.now());
+    printOrder(testOrder, printerName);
   }
 
   private static class OrderPrintable implements Printable {

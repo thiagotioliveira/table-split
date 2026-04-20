@@ -19,12 +19,14 @@
         </div>
 
         <div class="setup-card">
-            <div class="setup-header">
-                <h1 th:text="#{page.setup.header}">Agent Configuration</h1>
-                <p th:text="#{page.setup.description}">Connect this device to your account to print orders in real-time.</p>
+            <div th:if="${success}" class="alert-info" style="background: #ecfdf5; color: #065f46; border-color: #10b981; margin-bottom: 20px;">
+                <span th:text="${success}">Success message</span>
+            </div>
+            <div th:if="${error}" class="alert-info" style="background: #fef2f2; color: #991b1b; border-color: #ef4444; margin-bottom: 20px;">
+                <span th:text="${error}">Error message</span>
             </div>
 
-            <form action="/configure" method="POST">
+            <form action="/configure" method="POST" id="configForm">
                 <div class="print-token-card">
                     <div class="print-token-header">
                         <span class="print-token-label" th:text="#{page.setup.token.label}">Activation Token</span>
@@ -51,11 +53,33 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                    <span th:text="#{page.setup.button.save}">Save and Connect</span>
-                </button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button type="submit" class="btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                        <span th:text="#{page.setup.button.save}">Save and Connect</span>
+                    </button>
+                    <button type="button" class="btn" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;" onclick="submitTestPrint()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        <span th:text="#{page.setup.button.test}">Print Test</span>
+                    </button>
+                </div>
             </form>
+
+            <form id="testPrintForm" action="/test-print" method="POST" style="display:none;">
+                <input type="hidden" name="printer" id="testPrinterInput">
+            </form>
+
+            <script>
+                function submitTestPrint() {
+                    const printer = document.getElementById('printer').value;
+                    if (!printer) {
+                        alert('Selecione uma impressora primeiro!');
+                        return;
+                    }
+                    document.getElementById('testPrinterInput').value = printer;
+                    document.getElementById('testPrintForm').submit();
+                }
+            </script>
 
             <div th:if="${connected}" class="print-connection-info shadow-sm">
                 <div class="print-connection-item">

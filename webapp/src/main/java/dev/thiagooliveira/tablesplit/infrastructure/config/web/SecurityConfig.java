@@ -103,6 +103,7 @@ public class SecurityConfig {
                         "/@**",
                         "/@**/**",
                         "/api/notifications/**",
+                        "/api/v1/agent/**",
                         "/h2-console/**")
                     .permitAll()
 

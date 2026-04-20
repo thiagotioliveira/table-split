@@ -221,3 +221,5 @@ databaseChangeLog:
       file: db/changelog/changesets/v1.0.13_rename_trial_used_at_to_started_at.yaml
   - include:
       file: db/changelog/changesets/v1.0.14_drop_account_active_column.yaml
+  - include:
+      file: db/changelog/changesets/20260420-add-print-agent-tokens.yaml

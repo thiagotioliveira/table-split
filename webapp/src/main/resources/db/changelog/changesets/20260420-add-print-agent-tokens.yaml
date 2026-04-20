@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260420-add-print-agent-tokens
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: print_agent_tokens
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: restaurant_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_print_agent_token_restaurant
+                    referencedTableName: restaurants
+                    referencedColumnNames: id
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: last_used_at
+                  type: TIMESTAMP WITH TIME ZONE

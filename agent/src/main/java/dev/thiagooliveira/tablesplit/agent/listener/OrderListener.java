@@ -15,23 +15,28 @@ public class OrderListener {
 
   private static final Logger log = LoggerFactory.getLogger(OrderListener.class);
   private final PrinterService printerService;
+  private final dev.thiagooliveira.tablesplit.agent.config.AgentConfig agentConfig;
 
-  public OrderListener(PrinterService printerService) {
+  public OrderListener(
+      PrinterService printerService,
+      dev.thiagooliveira.tablesplit.agent.config.AgentConfig agentConfig) {
     this.printerService = printerService;
+    this.agentConfig = agentConfig;
   }
 
-  /**
-   * This listener binds to a queue that listens to ALL restaurant orders. In a real agent, the
-   * queue name would be specific to ONE restaurant.
-   */
   @RabbitListener(
       bindings =
           @QueueBinding(
-              value = @Queue(value = "pos.integration.generic.queue", durable = "true"),
+              value =
+                  @Queue(
+                      value =
+                          "restaurant.#{agentConfig.restaurantId != null ? agentConfig.restaurantId : 'generic'}.queue",
+                      durable = "true"),
               exchange = @Exchange(value = "order.integration.exchange", type = "topic"),
-              key = "restaurant.*.orders"))
+              key =
+                  "restaurant.#{agentConfig.restaurantId != null ? agentConfig.restaurantId : '*'}.orders"))
   public void receiveOrder(IntegrationOrderDTO order) {
     log.info("Order for Table {} received successfully. Sending to printer...", order.tableCod());
-    printerService.printOrder(order);
+    printerService.printOrder(order, agentConfig.getPrinter());
   }
 }
