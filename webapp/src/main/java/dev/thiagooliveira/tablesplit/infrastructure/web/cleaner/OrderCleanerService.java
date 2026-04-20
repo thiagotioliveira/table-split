@@ -48,7 +48,7 @@ public class OrderCleanerService {
 
   public void cleanOldOrders() {
     ZonedDateTime threshold = ZonedDateTime.now(ZoneId.of(zoneId)).minusDays(retentionDays);
-    logger.info("Starting cleanup of old orders for all tenants. Threshold: {}", threshold);
+    logger.info("Starting cleanup of old orders for all tenants. Retention Days: {} Threshold: {}", retentionDays, threshold);
 
     List<RestaurantEntity> restaurants = restaurantJpaRepository.findAll();
     logger.info("Found {} restaurants/tenants to process.", restaurants.size());
@@ -58,7 +58,7 @@ public class OrderCleanerService {
 
     for (RestaurantEntity restaurant : restaurants) {
       try {
-        cleanTenant(restaurant.getId(), threshold);
+        cleanTenant(restaurant, threshold);
         successCount++;
       } catch (Exception e) {
         errorCount++;
@@ -73,15 +73,16 @@ public class OrderCleanerService {
         "Global cleanup process completed. Success: {}, Errors: {}", successCount, errorCount);
   }
 
-  public void cleanTenant(UUID restaurantId, ZonedDateTime threshold) {
-    String schema = TenantContext.generateTenantIdentifier(restaurantId);
+  public void cleanTenant(RestaurantEntity restaurant, ZonedDateTime threshold) {
+    String schema = TenantContext.generateTenantIdentifier(restaurant.getId());
     TenantContext.setCurrentTenant(schema);
 
     try {
       transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
       transactionTemplate.executeWithoutResult(
           status -> {
-            logger.info("Processing tenant schema: {} with threshold: {}", schema, threshold);
+              var slug = restaurant.getSlug();
+            logger.info("Processing tenant '{}' schema: {} with threshold: {}", slug, schema, threshold);
 
             // Manual fallback to ensure search_path is correct for this specific connection
             // We detect the DB and use the correct syntax for H2 or PostgreSQL
@@ -102,17 +103,17 @@ public class OrderCleanerService {
                 orderJpaRepository.findAllByStatusAndClosedAtBefore(OrderStatus.CLOSED, threshold);
 
             if (ordersToRemove.isEmpty()) {
-              logger.info("No old orders found in schema {}.", schema);
+              logger.info("No old orders found in '{}' schema {}.", slug, schema);
               return;
             }
 
-            logger.info("Found {} orders to remove in schema {}.", ordersToRemove.size(), schema);
+            logger.info("Found {} orders to remove in '{}' schema {}.", ordersToRemove.size(), slug, schema);
 
             // Delete orders (this will cascade to tickets, items, payments, feedbacks, etc.)
             orderJpaRepository.deleteAll(ordersToRemove);
 
             logger.info(
-                "[{}] Cleanup completed. Total orders removed: {}", schema, ordersToRemove.size());
+                "'{}' [{}] Cleanup completed. Total orders removed: {}", slug, schema, ordersToRemove.size());
           });
     } finally {
       TenantContext.clear();
