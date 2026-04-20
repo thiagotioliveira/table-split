@@ -8,6 +8,7 @@ public enum Module {
   ACCOUNT,
   TABLES,
   ORDERS,
+  FEEDBACKS,
   GALLERY,
   RESERVATION,
   REPORTS,

@@ -23,6 +23,7 @@ public enum Plan {
           Module.ACCOUNT,
           Module.TABLES,
           Module.ORDERS,
+          Module.FEEDBACKS,
           Module.GALLERY,
           Module.RESERVATION,
           Module.REPORTS,
