@@ -15,6 +15,12 @@ public class PrintAgentApiController {
   @Value("${spring.rabbitmq.addresses:localhost:5672}")
   private String rabbitAddresses;
 
+  @Value("${spring.rabbitmq.username:guest}")
+  private String rabbitUsername;
+
+  @Value("${spring.rabbitmq.password:guest}")
+  private String rabbitPassword;
+
   public PrintAgentApiController(PrintAgentService printAgentService) {
     this.printAgentService = printAgentService;
   }
@@ -29,6 +35,8 @@ public class PrintAgentApiController {
               token.getRestaurant().getId(),
               token.getRestaurant().getName(),
               rabbitAddresses,
+              rabbitUsername,
+              rabbitPassword,
               "restaurant." + token.getRestaurant().getId() + ".queue",
               "restaurant." + token.getRestaurant().getId() + ".orders");
 

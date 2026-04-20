@@ -8,6 +8,10 @@ public class AgentConfig {
   private String restaurantName;
   private String token;
   private String printer;
+  private String rabbitHost;
+  private String rabbitUsername;
+  private String rabbitPassword;
+  private String queueName;
   private boolean connected = false;
 
   public String getRestaurantId() {
@@ -48,6 +52,38 @@ public class AgentConfig {
 
   public void setConnected(boolean connected) {
     this.connected = connected;
+  }
+
+  public String getRabbitHost() {
+    return rabbitHost;
+  }
+
+  public void setRabbitHost(String rabbitHost) {
+    this.rabbitHost = rabbitHost;
+  }
+
+  public String getRabbitUsername() {
+    return rabbitUsername;
+  }
+
+  public void setRabbitUsername(String rabbitUsername) {
+    this.rabbitUsername = rabbitUsername;
+  }
+
+  public String getRabbitPassword() {
+    return rabbitPassword;
+  }
+
+  public void setRabbitPassword(String rabbitPassword) {
+    this.rabbitPassword = rabbitPassword;
+  }
+
+  public String getQueueName() {
+    return queueName;
+  }
+
+  public void setQueueName(String queueName) {
+    this.queueName = queueName;
   }
 
   public String getRoutingKey() {
