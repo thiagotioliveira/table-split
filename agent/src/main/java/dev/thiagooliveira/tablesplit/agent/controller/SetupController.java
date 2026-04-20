@@ -21,6 +21,11 @@ public class SetupController {
   public String setup(Model model) {
     List<String> printers = printerService.getAvailablePrinters();
     model.addAttribute("printers", printers);
+    model.addAttribute("connected", false); // Default for now
+    model.addAttribute("configToken", "");
+    model.addAttribute("selectedPrinter", null);
+    model.addAttribute("queueName", "Aguardando conexão...");
+    model.addAttribute("rabbitHost", "localhost");
     return "setup";
   }
 

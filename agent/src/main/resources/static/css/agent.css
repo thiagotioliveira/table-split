@@ -15,6 +15,8 @@
   --green: #2d5a47;
   --green-light: rgba(45, 90, 71, 0.12);
   --destructive: #c45c5c;
+  --blue: #3b82f6;
+  --blue-light: rgba(59, 130, 246, 0.1);
 
   --shadow: 0 2px 8px rgba(26, 23, 20, 0.06);
   --shadow-lg: 0 12px 40px rgba(26, 23, 20, 0.12);
@@ -194,4 +196,99 @@ select.form-control {
   margin-top: 1.5rem;
   font-size: 0.75rem;
   color: var(--muted);
+}
+
+/* Print Specific Styles from reference */
+.print-token-card {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.print-token-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.print-token-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.print-token-status {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.print-token-status.active {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.print-token-status.inactive {
+  background: #cbd5e1;
+  color: var(--muted);
+}
+
+.print-token-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.print-connection-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.print-connection-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.print-connection-item label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.print-connection-item span {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  padding: 0.4rem 0.6rem;
+  background: var(--card);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.alert-info {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--blue-light);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--blue);
 }

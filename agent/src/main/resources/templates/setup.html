@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuração - Agente de Impressão</title>
+    <title>Configuração - TableSplit Agent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,21 +20,33 @@
 
         <div class="setup-card">
             <div class="setup-header">
-                <h1>Configuração Inicial</h1>
-                <p>Conecte este agente ao seu restaurante para começar a imprimir os pedidos automaticamente.</p>
+                <h1>Configuração do Agente</h1>
+                <p>Conecte este dispositivo à sua conta para imprimir pedidos em tempo real.</p>
             </div>
 
             <form action="/configure" method="POST">
-                <div class="form-group">
-                    <label for="token">Token de Ativação</label>
-                    <input type="text" id="token" name="token" class="form-control" placeholder="Cole o token gerado no dashboard" required>
+                <div class="print-token-card">
+                    <div class="print-token-header">
+                        <span class="print-token-label">Token de Ativação</span>
+                        <span th:class="${connected ? 'print-token-status active' : 'print-token-status inactive'}">
+                            <span th:text="${connected ? 'Conectado' : 'Desconectado'}">Desconectado</span>
+                        </span>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <input type="text" id="token" name="token" class="form-control" 
+                               th:value="${configToken}"
+                               placeholder="Cole o token pa_live_..." required>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="printer">Impressora de Pedidos</label>
                     <select id="printer" name="printer" class="form-control" required>
-                        <option value="" disabled selected>Selecione uma impressora...</option>
-                        <option th:each="printerName : ${printers}" th:value="${printerName}" th:text="${printerName}">Printer Name</option>
+                        <option value="" disabled th:selected="${selectedPrinter == null}">Selecione uma impressora...</option>
+                        <option th:each="printerName : ${printers}" 
+                                th:value="${printerName}" 
+                                th:text="${printerName}"
+                                th:selected="${printerName == selectedPrinter}">Printer Name</option>
                     </select>
                 </div>
 
@@ -44,14 +56,25 @@
                 </button>
             </form>
 
-            <div class="status-badge">
-                <div class="status-dot"></div>
-                <span>Aguardando configuração...</span>
+            <div th:if="${connected}" class="print-connection-info shadow-sm">
+                <div class="print-connection-item">
+                    <label>Status da Fila</label>
+                    <span th:text="${queueName}">restaurant_kitchen_queue</span>
+                </div>
+                <div class="print-connection-item">
+                    <label>Host</label>
+                    <span th:text="${rabbitHost}">mq.tablesplit.com</span>
+                </div>
+            </div>
+
+            <div class="alert-info">
+                <strong>💡 Como funciona:</strong><br>
+                O agente monitora a fila de pedidos e utiliza a impressora selecionada acima para emitir os tickets automaticamente.
             </div>
         </div>
 
         <div class="footer-text">
-            &copy; 2026 TableSplit - Gerenciamento Inteligente de Restaurantes
+            &copy; 2026 TableSplit Platform • v1.2.0
         </div>
     </div>
 </body>
