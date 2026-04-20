@@ -15,6 +15,9 @@ public class PrintAgentApiController {
   @Value("${spring.rabbitmq.addresses:localhost:5672}")
   private String rabbitAddresses;
 
+  @Value("${app.integration.rabbit.public-addresses:}")
+  private String publicRabbitAddresses;
+
   @Value("${spring.rabbitmq.username:guest}")
   private String rabbitUsername;
 
@@ -30,11 +33,14 @@ public class PrintAgentApiController {
     try {
       PrintAgentTokenEntity token = printAgentService.validateAndUseToken(request.token());
 
+      String effectiveRabbitAddress = (publicRabbitAddresses != null && !publicRabbitAddresses.isBlank()) 
+                                      ? publicRabbitAddresses : rabbitAddresses;
+
       PrintAgentConfigDTO config =
           new PrintAgentConfigDTO(
               token.getRestaurant().getId(),
               token.getRestaurant().getName(),
-              rabbitAddresses,
+              effectiveRabbitAddress,
               rabbitUsername,
               rabbitPassword,
               "restaurant." + token.getRestaurant().getId() + ".queue",
