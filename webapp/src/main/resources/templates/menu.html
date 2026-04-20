@@ -325,8 +325,9 @@
             <div class="category-item" th:data-category-id="${category.id}"
                  th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|"
                  th:each="category : ${menu.categories}">
+                <span class="category-order" th:text="${category.order}">1</span>
                 <span class="category-name"
-                      th:text="${'#'+category.order + ' ' + category.name[#locale.language]}">Starters</span>
+                      th:text="${category.name[#locale.language]}">Starters</span>
               <span class="category-count" th:text="${category.amount}">2</span>
               <div class="category-actions">
                 <button type="button"
@@ -583,18 +584,20 @@
           <label class="form-label">Imagens do Item</label>
           <p class="form-hint" style="margin-top: 0; margin-bottom: 0.5rem;">A primeira imagem será a principal.
             Arraste para reordenar.</p>
-          <div class="image-gallery-upload" id="itemImagesGallery">
-            <!-- Images will be added here dynamically -->
+          <div class="image-gallery-upload">
+            <div id="itemImagesGallery" style="display: contents;">
+              <!-- Images will be added here dynamically -->
+            </div>
+            <label class="image-upload-add" id="imageUploadTrigger">
+              <input type="file" class="image-upload-input" id="itemImageInput" name="newImages" accept="image/*"
+                     multiple onchange="handleImageUpload(event)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Adicionar</span>
+            </label>
           </div>
-          <label class="image-upload-add" id="imageUploadTrigger">
-            <input type="file" class="image-upload-input" id="itemImageInput" name="newImages" accept="image/*"
-                   multiple onchange="handleImageUpload(event)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            <span>Adicionar</span>
-          </label>
         </div>
 
         <div class="form-group">

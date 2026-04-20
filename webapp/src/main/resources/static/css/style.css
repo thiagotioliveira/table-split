@@ -1425,13 +1425,32 @@ a {
   color: var(--primary);
 }
 
-.category-item svg {
-  width: 1rem;
-  height: 1rem;
+.category-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--background-secondary);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.category-item.active .category-order {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .category-name {
   flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .category-count {

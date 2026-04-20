@@ -1482,7 +1482,7 @@
 
         // Public link functions
         function copyLink() {
-            navigator.clipboard.writeText('https://' + domain + '/@' + restaurant.slug);
+            navigator.clipboard.writeText('https://www.' + domain + '/@' + restaurant.slug);
             alert(i18n.labelLinkCopied);
         }
 
@@ -1491,7 +1491,7 @@
                 navigator.share({
                     title: restaurant.name,
                     text: i18n.labelCheckoutMenu,
-                    url: 'https://' + domain + '/@' + restaurant.slug
+                    url: 'https://www.' + domain + '/@' + restaurant.slug
                 });
             } else {
                 copyLink();
