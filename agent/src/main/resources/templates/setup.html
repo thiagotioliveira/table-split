@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuração - TableSplit Agent</title>
+    <title th:text="#{page.setup.title}">Setup - TableSplit Agent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,16 +20,17 @@
 
         <div class="setup-card">
             <div class="setup-header">
-                <h1>Configuração do Agente</h1>
-                <p>Conecte este dispositivo à sua conta para imprimir pedidos em tempo real.</p>
+                <h1 th:text="#{page.setup.header}">Agent Configuration</h1>
+                <p th:text="#{page.setup.description}">Connect this device to your account to print orders in real-time.</p>
             </div>
 
             <form action="/configure" method="POST">
                 <div class="print-token-card">
                     <div class="print-token-header">
-                        <span class="print-token-label">Token de Ativação</span>
+                        <span class="print-token-label" th:text="#{page.setup.token.label}">Activation Token</span>
                         <span th:class="${connected ? 'print-token-status active' : 'print-token-status inactive'}">
-                            <span th:text="${connected ? 'Conectado' : 'Desconectado'}">Desconectado</span>
+                            <span th:if="${connected}" th:text="#{page.setup.status.connected}">Conectado</span>
+                            <span th:unless="${connected}" th:text="#{page.setup.status.disconnected}">Desconectado</span>
                         </span>
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
@@ -40,9 +41,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="printer">Impressora de Pedidos</label>
+                    <label for="printer" th:text="#{page.setup.printer.label}">Order Printer</label>
                     <select id="printer" name="printer" class="form-control" required>
-                        <option value="" disabled th:selected="${selectedPrinter == null}">Selecione uma impressora...</option>
+                        <option value="" disabled th:selected="${selectedPrinter == null}" th:text="#{page.setup.printer.placeholder}">Select a printer...</option>
                         <option th:each="printerName : ${printers}" 
                                 th:value="${printerName}" 
                                 th:text="${printerName}"
@@ -52,24 +53,24 @@
 
                 <button type="submit" class="btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                    Salvar e Conectar
+                    <span th:text="#{page.setup.button.save}">Save and Connect</span>
                 </button>
             </form>
 
             <div th:if="${connected}" class="print-connection-info shadow-sm">
                 <div class="print-connection-item">
-                    <label>Status da Fila</label>
+                    <label th:text="#{page.setup.connection.queue}">Queue Status</label>
                     <span th:text="${queueName}">restaurant_kitchen_queue</span>
                 </div>
                 <div class="print-connection-item">
-                    <label>Host</label>
+                    <label th:text="#{page.setup.connection.host}">Host</label>
                     <span th:text="${rabbitHost}">mq.tablesplit.com</span>
                 </div>
             </div>
 
             <div class="alert-info">
-                <strong>💡 Como funciona:</strong><br>
-                O agente monitora a fila de pedidos e utiliza a impressora selecionada acima para emitir os tickets automaticamente.
+                <strong th:text="#{page.setup.howitworks.title}">💡 How it works:</strong><br>
+                <span th:text="#{page.setup.howitworks.description}">The agent monitors the order queue...</span>
             </div>
         </div>
 
