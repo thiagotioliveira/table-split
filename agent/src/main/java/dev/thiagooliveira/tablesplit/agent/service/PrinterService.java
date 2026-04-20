@@ -4,6 +4,8 @@ import dev.thiagooliveira.tablesplit.agent.model.IntegrationOrderDTO;
 import java.awt.*;
 import java.awt.print.*;
 import java.time.format.DateTimeFormatter;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,13 @@ public class PrinterService {
   private static final Logger log = LoggerFactory.getLogger(PrinterService.class);
   private static final DateTimeFormatter DATE_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+  public java.util.List<String> getAvailablePrinters() {
+    PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+    return java.util.Arrays.stream(printServices)
+        .map(javax.print.PrintService::getName)
+        .collect(java.util.stream.Collectors.toList());
+  }
 
   public void printOrder(IntegrationOrderDTO order) {
     log.info("Starting print job for ticket: {}", order.ticketId());

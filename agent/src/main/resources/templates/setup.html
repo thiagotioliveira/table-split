@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração - Agente de Impressão</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/agent.css">
+</head>
+<body>
+    <div class="setup-container">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            </div>
+            <div class="logo-text">TableSplit Agent</div>
+        </div>
+
+        <div class="setup-card">
+            <div class="setup-header">
+                <h1>Configuração Inicial</h1>
+                <p>Conecte este agente ao seu restaurante para começar a imprimir os pedidos automaticamente.</p>
+            </div>
+
+            <form action="/configure" method="POST">
+                <div class="form-group">
+                    <label for="token">Token de Ativação</label>
+                    <input type="text" id="token" name="token" class="form-control" placeholder="Cole o token gerado no dashboard" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="printer">Impressora de Pedidos</label>
+                    <select id="printer" name="printer" class="form-control" required>
+                        <option value="" disabled selected>Selecione uma impressora...</option>
+                        <option th:each="printerName : ${printers}" th:value="${printerName}" th:text="${printerName}">Printer Name</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                    Salvar e Conectar
+                </button>
+            </form>
+
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Aguardando configuração...</span>
+            </div>
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 TableSplit - Gerenciamento Inteligente de Restaurantes
+        </div>
+    </div>
+</body>
+</html>
