@@ -104,9 +104,11 @@
                 flex-direction: column;
                 text-align: center;
             }
+
             .restaurant-meta {
                 justify-content: center;
             }
+
             .restaurant-actions {
                 width: 100%;
                 flex-direction: column;
@@ -195,6 +197,7 @@
                 flex-direction: column;
                 text-align: center;
             }
+
             .public-link-actions {
                 width: 100%;
                 justify-content: center;
@@ -203,7 +206,6 @@
 
         /* Section Title */
         .section-title {
-            font-family: var(--font-display);
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1rem;
@@ -221,7 +223,7 @@
         /* Quick Actions Grid */
         .actions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -230,9 +232,9 @@
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1.5rem;
+            padding: 1.25rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.875rem;
             text-decoration: none;
             color: inherit;
             transition: all 0.15s ease;
@@ -246,10 +248,10 @@
         }
 
         .action-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--primary-light);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -257,19 +259,75 @@
         }
 
         .action-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             color: var(--primary);
         }
 
+        .action-icon.green {
+            background: var(--green-light);
+        }
+
+        .action-icon.green svg {
+            color: var(--green);
+        }
+
+        .action-icon.blue {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .action-icon.blue svg {
+            color: #3b82f6;
+        }
+
+        .action-icon.purple {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .action-icon.purple svg {
+            color: #8b5cf6;
+        }
+
+        .action-icon.pink {
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .action-icon.pink svg {
+            color: #ec4899;
+        }
+
+        .action-icon.amber {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .action-icon.amber svg {
+            color: #f59e0b;
+        }
+
+        .action-icon.red {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .action-icon.red svg {
+            color: #ef4444;
+        }
+
+        .action-icon.teal {
+            background: rgba(20, 184, 166, 0.1);
+        }
+
+        .action-icon.teal svg {
+            color: #14b8a6;
+        }
+
         .action-content h3 {
-            font-size: 1rem;
+            font-size: 0.9375rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.125rem;
         }
 
         .action-content p {
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             color: var(--muted);
             line-height: 1.4;
         }
@@ -309,8 +367,56 @@
             color: var(--primary);
         }
 
-        /* Recent Section */
-        .recent-section {
+        .stat-value.green {
+            color: var(--green);
+        }
+
+        .stat-value.blue {
+            color: #3b82f6;
+        }
+
+        .stat-value.purple {
+            color: #8b5cf6;
+        }
+
+        .stat-value.amber {
+            color: #f59e0b;
+        }
+
+        .stat-value.red {
+            color: #ef4444;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.up {
+            color: var(--green);
+        }
+
+        .stat-change.down {
+            color: #ef4444;
+        }
+
+        .stat-change svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Insights Grid */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
@@ -318,7 +424,7 @@
             box-shadow: var(--shadow);
         }
 
-        .recent-header {
+        .insight-header {
             padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -326,28 +432,47 @@
             justify-content: space-between;
         }
 
-        .recent-header h3 {
+        .insight-header h3 {
             font-size: 0.9375rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .recent-list {
+        .insight-header h3 svg {
+            width: 18px;
+            height: 18px;
+            color: var(--primary);
+        }
+
+        .insight-body {
+            padding: 1rem 1.25rem;
+        }
+
+        /* Insight List */
+        .insight-list {
             list-style: none;
         }
 
-        .recent-item {
+        .insight-item {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1rem 1.25rem;
+            padding: 0.75rem 0;
             border-bottom: 1px solid var(--border);
         }
 
-        .recent-item:last-child {
+        .insight-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
-        .recent-item-img {
+        .insight-item:first-child {
+            padding-top: 0;
+        }
+
+        .insight-item-img {
             width: 48px;
             height: 48px;
             background: var(--background-secondary);
@@ -356,173 +481,338 @@
             overflow: hidden;
         }
 
-        .recent-item-img img {
+        .insight-item-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .recent-item-info {
+        .insight-item-info {
             flex: 1;
             min-width: 0;
         }
 
-        .recent-item-name {
+        .insight-item-name {
             font-size: 0.875rem;
             font-weight: 500;
             margin-bottom: 0.125rem;
         }
 
-        .recent-item-category {
+        .insight-item-meta {
             font-size: 0.75rem;
             color: var(--muted);
+        }
+
+        .insight-item-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Recent list specific styles */
+        .recent-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .recent-item:last-child {
+            border-bottom: none;
         }
 
         .recent-item-price {
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--primary);
+            text-align: right;
         }
 
-        /* User Menu in Sidebar */
-        .user-menu-container {
-            position: relative;
+        /* Status Badge in Insights */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
 
-        .user-menu-trigger {
+        .status-dot.green {
+            background: var(--green);
+        }
+
+        .status-dot.amber {
+            background: #f59e0b;
+        }
+
+        .status-dot.red {
+            background: #ef4444;
+        }
+
+        .status-dot.gray {
+            background: var(--muted);
+        }
+
+        /* Table Status Grid */
+        .tables-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+        }
+
+        .table-mini {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .table-mini:hover {
+            transform: scale(1.1);
+        }
+
+        .table-mini.free {
+            background: var(--green-light);
+            color: var(--green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .table-mini.occupied {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .table-mini.reserved {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Tables Legend */
+        .tables-legend {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.free {
+            background: var(--green-light);
+            border: 1px solid var(--green);
+        }
+
+        .legend-dot.occupied {
+            background: var(--primary-light);
+            border: 1px solid var(--primary);
+        }
+
+        .legend-dot.reserved {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid #8b5cf6;
+        }
+
+        /* Mini Chart */
+        .mini-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 60px;
+            padding-top: 0.5rem;
+        }
+
+        .mini-chart-bar {
+            flex: 1;
+            background: var(--primary-light);
+            border-radius: 3px 3px 0 0;
+            min-height: 8px;
+            transition: height 0.3s ease;
+        }
+
+        .mini-chart-bar.highlight {
+            background: var(--primary);
+        }
+
+        /* Staff List */
+        .staff-item {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem;
-            width: 100%;
-            background: var(--background-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
+            padding: 0.5rem 0;
         }
 
-        .user-menu-trigger:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-        }
-
-        .user-avatar {
+        .staff-avatar {
             width: 36px;
             height: 36px;
+            border-radius: 50%;
             background: var(--primary);
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .staff-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .staff-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .staff-role {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .staff-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .staff-status.online {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .promo-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* Activity Timeline */
+        .activity-timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .activity-item {
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .activity-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .activity-dot {
+            position: absolute;
+            left: -1.5rem;
+            top: 2px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
+            background: var(--card);
+            border: 2px solid var(--primary);
+        }
+
+        .activity-dot.green {
+            border-color: var(--green);
+        }
+
+        .activity-dot.amber {
+            border-color: #f59e0b;
+        }
+
+        .activity-dot.red {
+            border-color: #ef4444;
+        }
+
+        .activity-content {
+            font-size: 0.8125rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.125rem;
+        }
+
+        /* Gallery Mini Grid */
+        .gallery-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .gallery-mini-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-mini-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-mini-item.more {
+            background: var(--background-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.875rem;
             font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .user-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .user-name {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--foreground);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-email {
-            font-size: 0.75rem;
             color: var(--muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-menu-arrow {
-            color: var(--muted);
-            transition: transform 0.2s;
-        }
-
-        .user-menu-container.open .user-menu-arrow {
-            transform: rotate(180deg);
-        }
-
-        .user-submenu {
-            position: absolute;
-            bottom: calc(100% + 0.5rem);
-            left: 0;
-            right: 0;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.2s;
-            z-index: 100;
-        }
-
-        .user-menu-container.open .user-submenu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .user-submenu-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            color: var(--foreground);
-            cursor: pointer;
-            transition: background 0.15s;
-            text-decoration: none;
-        }
-
-        .user-submenu-item:first-child {
-            border-radius: var(--radius) var(--radius) 0 0;
-        }
-
-        .user-submenu-item:last-child {
-            border-radius: 0 0 var(--radius) var(--radius);
-        }
-
-        .user-submenu-item:hover {
-            background: var(--background-secondary);
-        }
-
-        .user-submenu-item.danger {
-            color: var(--destructive);
-        }
-
-        .user-submenu-item.danger:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .user-submenu-item svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .user-submenu-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 0.25rem 0;
         }
     </style>
 </head>
+
 <body>
     <div th:insert="~{components/sidebar :: sidebar(#{page.dashboard.header.title}, ~{}, false)}"></div>
+
     <!-- Main Content -->
     <main class="main-content">
+
         <div class="dashboard-body">
             <!-- Welcome -->
             <div class="welcome-section">
@@ -534,39 +824,38 @@
             <div class="restaurant-card">
                 <div class="restaurant-logo">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-                        <path d="M7 2v20"/>
-                        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                        <path d="M7 2v20" />
+                        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
                     </svg>
                 </div>
                 <div class="restaurant-info">
                     <h2 class="restaurant-name" th:text="${dashboard.restaurant.name}">Cantina Bella Italia</h2>
                     <div class="restaurant-meta">
-            <div class="restaurant-meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span th:text="${dashboard.restaurant.address}">São Paulo, SP</span>
-            </div>
-            <span class="restaurant-meta-item" th:if="${false}">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-                <path d="M7 2v20"/>
-                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-              </svg>
-              Italiana
-            </span>
+                        <span class="restaurant-meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span th:text="${dashboard.restaurant.address}">São Paulo, SP</span>
+                        </span>
+                        <span class="restaurant-meta-item" th:if="${false}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                                <path d="M7 2v20" />
+                                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+                            </svg>
+                            Italiana
+                        </span>
                     </div>
                 </div>
                 <div class="restaurant-actions">
-                    <a th:href="${'/@' + dashboard.restaurant.slug}" class="btn btn-outline" target="_blank">
+                    <a href="/settings" class="btn btn-outline">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/>
-                            <line x1="10" y1="14" x2="21" y2="3"/>
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                            <circle cx="12" cy="12" r="3" />
                         </svg>
-                        <span th:text="#{page.dashboard.label.button.public.profile}">View Public Profile</span>
+                        <span th:text="#{page.dashboard.label.settings}">Editar</span>
                     </a>
                 </div>
             </div>
@@ -575,180 +864,648 @@
             <div class="public-link">
                 <div class="public-link-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-                        <path d="M2 12h20"/>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
                     </svg>
                 </div>
                 <div class="public-link-content">
-                    <div class="public-link-label" th:text="#{page.dashboard.label.menu.online}">Your menu is online!</div>
-                    <div class="public-link-url"><span th:text="#{app.domain}">tablesplit.app</span>/@<span th:text="${dashboard.restaurant.slug}"></span></div>
+                    <div class="public-link-label" th:text="#{page.dashboard.label.menu.online}">Seu cardápio está online!</div>
+                    <div class="public-link-url"><span th:text="#{app.domain}">tablesplit.com</span>/@<span th:text="${dashboard.restaurant.slug}"></span></div>
                 </div>
                 <div class="public-link-actions">
                     <button class="btn-icon" title="Copiar link" onclick="copyLink()">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                         </svg>
                     </button>
                     <button class="btn-icon" title="Compartilhar" onclick="shareLink()">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="5" r="3"/>
-                            <circle cx="6" cy="12" r="3"/>
-                            <circle cx="18" cy="19" r="3"/>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                         </svg>
                     </button>
+                </div>
+            </div>
+
+            <!-- Main Stats Overview -->
+            <h2 class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18" />
+                    <path d="m19 9-5 5-4-4-3 3" />
+                </svg>
+                Visão Geral - Hoje
+            </h2>
+            <div class="stats-row">
+                <div class="stat-card" style="opacity: 0.7;">
+                    <div class="stat-label">Faturamento</div>
+                    <div class="stat-value green">€ 4.587,82</div>
+                    <div class="stat-change up">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m18 15-6-6-6 6" />
+                        </svg>
+                        +12% vs ontem
+                    </div>
+                </div>
+                <div class="stat-card" style="opacity: 0.7;">
+                    <div class="stat-label">Pedidos</div>
+                    <div class="stat-value highlight">68</div>
+                    <div class="stat-change up">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m18 15-6-6-6 6" />
+                        </svg>
+                        +8% vs ontem
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.category}">Categorias</div>
+                    <div class="stat-value blue" th:text="${dashboard.categories.total}">4</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items}">Itens</div>
+                    <div class="stat-value purple" th:text="${dashboard.items.total}">18</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.active}">Ativos</div>
+                    <div class="stat-value amber" th:text="${dashboard.items.totalActive}">16</div>
                 </div>
             </div>
 
             <!-- Quick Actions -->
             <h2 class="section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="7" height="9" x="3" y="3" rx="1"/>
-                    <rect width="7" height="5" x="14" y="3" rx="1"/>
-                    <rect width="7" height="9" x="14" y="12" rx="1"/>
-                    <rect width="7" height="5" x="3" y="16" rx="1"/>
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
                 </svg>
-                <span th:text="#{page.dashboard.label.quick.access}">Quick access</span>
+                <span th:text="#{page.dashboard.label.quick.access}">Acesso Rápido</span>
             </h2>
             <div class="actions-grid">
                 <a href="/menu" class="action-card">
                     <div class="action-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-                            <path d="M7 2v20"/>
-                            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                            <path d="M7 2v20" />
+                            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
                         </svg>
                     </div>
                     <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.menu}">Menu</h3>
-                        <p th:text="#{page.dashboard.label.menu.hint}">Manage categories and items on your menu.</p>
+                        <h3 th:text="#{page.dashboard.label.menu}">Cardápio</h3>
+                        <p th:text="${dashboard.items.total + ' itens • ' + dashboard.categories.total + ' categorias'}">18 itens • 4 categorias</p>
                     </div>
                 </a>
 
-                <a href="/settings" class="action-card">
-                    <div class="action-icon">
+                <a href="/promotions" class="action-card">
+                    <div class="action-icon red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                            <path d="m9 12 2 2 4-4" />
                         </svg>
                     </div>
                     <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.settings}">Configurações</h3>
-                        <p th:text="#{page.dashboard.label.settings.hint}">Update your information, schedules, and contact details.</p>
-                    </div>
-                </a>
-
-                <a href="/tables" class="action-card">
-                    <div class="action-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="5" height="5" x="3" y="3" rx="1"></rect>
-                            <rect width="5" height="5" x="16" y="3" rx="1"></rect>
-                            <rect width="5" height="5" x="3" y="16" rx="1"></rect>
-                            <rect width="5" height="5" x="16" y="16" rx="1"></rect>
-                            <path d="M21 16V8a5 5 0 0 0-5-5H8"></path>
-                            <path d="M3 8v8a5 5 0 0 0 5 5h8"></path>
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.tables}">Mesas</h3>
-                        <p th:text="#{page.dashboard.label.tables.hint}">Manage active tables and orders.</p>
+                        <h3>Promoções</h3>
+                        <p>Gerencie as promoções do cardápio.</p>
                     </div>
                 </a>
 
                 <a href="/orders" class="action-card">
-                    <div class="action-icon" style="background: #fff7ed;">
+                    <div class="action-icon green">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-                            <path d="M3 6h18"></path>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                            <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z" />
+                            <path d="M12 11h4" />
+                            <path d="M12 16h4" />
+                            <path d="M8 11h.01" />
+                            <path d="M8 16h.01" />
                         </svg>
                     </div>
                     <div class="action-content">
                         <h3 th:text="#{page.dashboard.label.orders}">Pedidos</h3>
-                        <p th:text="#{page.dashboard.label.orders.hint}">Visualize e gerencie os pedidos em andamento.</p>
+                        <p th:text="#{page.dashboard.label.orders.hint}">Visualize e gerencie os pedidos.</p>
+                    </div>
+                </a>
+
+                <a href="/tables" class="action-card">
+                    <div class="action-icon purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <path d="M7 7h.01" />
+                            <path d="M17 7h.01" />
+                            <path d="M7 17h.01" />
+                            <path d="M17 17h.01" />
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3 th:text="#{page.dashboard.label.tables}">Mesas</h3>
+                        <p th:text="#{page.dashboard.label.tables.hint}">Gerencie mesas e acessos.</p>
+                    </div>
+                </a>
+
+                <a href="/gallery" class="action-card">
+                    <div class="action-icon pink">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3>Galeria</h3>
+                        <p>Adicione fotos do seu restaurante.</p>
+                    </div>
+                </a>
+
+                <a href="/feedbacks" class="action-card">
+                    <div class="action-icon blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            <path d="M12 7v2"></path>
+                            <path d="M12 13h.01"></path>
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3>Feedbacks</h3>
+                        <p>Veja o que os clientes estão achando.</p>
+                    </div>
+                </a>
+
+                <a href="/staff" class="action-card">
+                    <div class="action-icon amber">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3>Equipe</h3>
+                        <p>Adicione funcionários para ter acesso a plataforma.</p>
+                    </div>
+                </a>
+
+                <a href="/reports" class="action-card">
+                    <div class="action-icon blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18" />
+                            <path d="m19 9-5 5-4-4-3 3" />
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3>Relatórios</h3>
+                        <p>Tenha uma visão mais detalhada do seu restaurante.</p>
+                    </div>
+                </a>
+
+                <a href="/settings" class="action-card">
+                    <div class="action-icon teal">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <div class="action-content">
+                        <h3 th:text="#{page.dashboard.label.settings}">Configurações</h3>
+                        <p th:text="#{page.dashboard.label.settings.hint}">Perfil e preferências.</p>
                     </div>
                 </a>
             </div>
 
-            <!-- Stats -->
-            <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 3v18h18"/>
-                    <path d="m19 9-5 5-4-4-3 3"/>
-                </svg>
-                <span th:text="#{page.dashboard.label.menu.summary}">Menu Summary</span>
-            </h2>
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.category}">Categories</div>
-                    <div class="stat-value" th:text="${dashboard.categories.total}">4</div>
+            <!-- Insights Grid -->
+            <div class="insights-grid">
+                <!-- Pedidos Insight (Static) -->
+                <div class="insight-card" style="opacity: 0.8;">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z" />
+                            </svg>
+                            Pedidos em Andamento
+                        </h3>
+                        <a href="/orders" class="btn btn-ghost">Ver todos</a>
+                    </div>
+                    <div class="insight-body">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="flex: 1; text-align: center; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">4</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">Pendentes</div>
+                            </div>
+                            <div style="flex: 1; text-align: center; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">5</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">Preparando</div>
+                            </div>
+                            <div style="flex: 1; text-align: center; padding: 0.75rem; background: var(--green-light); border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--green);">3</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">Prontos</div>
+                            </div>
+                        </div>
+                        <ul class="insight-list">
+                            <li class="insight-item">
+                                <span class="status-dot amber"></span>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Pedido #1042 - Mesa 5</div>
+                                    <div class="insight-item-meta">3 itens • há 8 min</div>
+                                </div>
+                                <div class="insight-item-value">R$ 142,00</div>
+                            </li>
+                            <li class="insight-item">
+                                <span class="status-dot green"></span>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Pedido #1041 - Mesa 2</div>
+                                    <div class="insight-item-meta">2 itens • Pronto para servir</div>
+                                </div>
+                                <div class="insight-item-value">R$ 89,00</div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items}">Items</div>
-                    <div class="stat-value highlight" th:text="${dashboard.items.total}">18</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.active}">Active</div>
-                    <div class="stat-value" th:text="${dashboard.items.totalActive}">16</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.inactive}">Inactive</div>
-                    <div class="stat-value" th:text="${dashboard.items.totalInactive}">2</div>
-                </div>
-            </div>
 
-            <!-- Recent Items -->
-            <div class="recent-section" th:if="${!dashboard.items.list.isEmpty()}">
-                <div class="recent-header">
-                    <h3>Itens Recentes</h3>
-                    <a href="/menu" class="btn btn-ghost">Ver todos</a>
+                <!-- Mesas Insight (Static) -->
+                <div class="insight-card" style="opacity: 0.8;">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="3" rx="2" />
+                                <path d="M7 7h.01" />
+                                <path d="M17 7h.01" />
+                                <path d="M7 17h.01" />
+                                <path d="M17 17h.01" />
+                            </svg>
+                            Status das Mesas
+                        </h3>
+                        <a href="/tables" class="btn btn-ghost">Gerenciar</a>
+                    </div>
+                    <div class="insight-body">
+                        <div class="tables-mini-grid">
+                            <div class="table-mini occupied">1</div>
+                            <div class="table-mini occupied">2</div>
+                            <div class="table-mini free">3</div>
+                            <div class="table-mini occupied">4</div>
+                            <div class="table-mini reserved">5</div>
+                            <div class="table-mini free">6</div>
+                            <div class="table-mini occupied">7</div>
+                            <div class="table-mini occupied">8</div>
+                            <div class="table-mini free">9</div>
+                            <div class="table-mini occupied">10</div>
+                            <div class="table-mini reserved">11</div>
+                            <div class="table-mini free">12</div>
+                        </div>
+                        <div class="tables-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot free"></span>
+                                Livre (4)
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot occupied"></span>
+                                Ocupada (6)
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot reserved"></span>
+                                Reservada (2)
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <ul class="recent-list" th:each="item : ${dashboard.items.list}">
-                    <li class="recent-item">
-                        <div class="recent-item-img">
-                            <img th:if="${item.imageUrl != null && !item.imageUrl.isEmpty()}" th:src="${item.imageUrl + '?w=100&h=100&fit=crop'}" alt="">
-                            <svg th:if="${item.imageUrl == null || item.imageUrl.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+
+                <!-- Promoções Insight -->
+                <div class="insight-card" style="opacity: 0.8;">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+                            Promoções Ativas
+                        </h3>
+                        <a href="/promotions" class="btn btn-ghost">Ver todas</a>
+                    </div>
+                    <div class="insight-body">
+                        <ul class="insight-list">
+                            <li class="insight-item">
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        Happy Hour
+                                        <span class="promo-badge">-20%</span>
+                                    </div>
+                                    <div class="insight-item-meta">Bebidas • 17h às 19h</div>
+                                </div>
+                                <div class="insight-item-value green">42 usos</div>
+                            </li>
+                            <li class="insight-item">
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        Combo Família
+                                        <span class="promo-badge">-15%</span>
+                                    </div>
+                                    <div class="insight-item-meta">Pratos principais + Sobremesa</div>
+                                </div>
+                                <div class="insight-item-value green">28 usos</div>
+                            </li>
+                            <li class="insight-item">
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Cupom: BEMVINDO10</div>
+                                    <div class="insight-item-meta">R$ 10 off • Primeira compra</div>
+                                </div>
+                                <div class="insight-item-value green">15 usos</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <!-- Cardápio Insight -->
+                <div class="insight-card" style="opacity: 0.8;">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                            Mais Vendidos Hoje
+                        </h3>
+                        <a href="/menu" class="btn btn-ghost">Ver cardápio</a>
+                    </div>
+                    <div class="insight-body">
+                        <ul class="insight-list">
+                            <li class="insight-item">
+                                <div class="insight-item-img">
+                                    <img src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=100&h=100&fit=crop" alt="">
+                                </div>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Lasanha Bolonhesa</div>
+                                    <div class="insight-item-meta">Pratos Principais</div>
+                                </div>
+                                <div class="insight-item-value">18x</div>
+                            </li>
+                            <li class="insight-item">
+                                <div class="insight-item-img">
+                                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=100&h=100&fit=crop" alt="">
+                                </div>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Pizza Margherita</div>
+                                    <div class="insight-item-meta">Pizzas</div>
+                                </div>
+                                <div class="insight-item-value">14x</div>
+                            </li>
+                            <li class="insight-item">
+                                <div class="insight-item-img">
+                                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=100&h=100&fit=crop" alt="">
+                                </div>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name">Tiramisù</div>
+                                    <div class="insight-item-meta">Sobremesas</div>
+                                </div>
+                                <div class="insight-item-value">11x</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Cardápio Insight (Itens Recentes - DYNAMIC) -->
+                <div class="insight-card" th:if="${!dashboard.items.list.isEmpty()}">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                                <path d="M7 2v20" />
+                                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+                            </svg>
+                            Itens Recentes
+                        </h3>
+                        <a href="/menu" class="btn btn-ghost">Ver cardápio</a>
+                    </div>
+                    <div class="insight-body">
+                        <ul class="recent-list">
+                            <li class="recent-item" th:each="item : ${dashboard.items.list}">
+                                <div class="insight-item-img">
+                                    <img th:if="${item.imageUrl != null && !item.imageUrl.isEmpty()}" th:src="${item.imageUrl + '?w=100&h=100&fit=crop'}" alt="">
+                                    <svg th:if="${item.imageUrl == null || item.imageUrl.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                                        <circle cx="9" cy="9" r="2" />
+                                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                                    </svg>
+                                </div>
+                                <div class="insight-item-info">
+                                    <div class="insight-item-name" th:text="${item.name[#locale.language]}">Lasanha Bolonhesa</div>
+                                    <div class="insight-item-meta" th:text="${item.categoryName[#locale.language]}">Pratos Principais</div>
+                                </div>
+                                <div class="recent-item-price"><span th:text="${dashboard.restaurant.currencySymbol}"></span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Equipe Insight -->
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            Equipe em Turno
+                        </h3>
+                        <a href="/staff" class="btn btn-ghost">Ver todos</a>
+                    </div>
+                    <div class="insight-body">
+                        <div class="staff-item">
+                            <div class="staff-avatar">CS</div>
+                            <div class="staff-info">
+                                <div class="staff-name">Carlos Silva</div>
+                                <div class="staff-role">Garçom • Turno Noite</div>
+                            </div>
+                            <span class="staff-status online">Online</span>
                         </div>
-                        <div class="recent-item-info">
-                            <div class="recent-item-name" th:text="${item.name[#locale.language]}">Lasanha Bolonhesa</div>
-                            <div class="recent-item-category" th:text="${item.categoryName[#locale.language]}">Pratos Principais</div>
+                        <div class="staff-item">
+                            <div class="staff-avatar" style="background: #8b5cf6;">MO</div>
+                            <div class="staff-info">
+                                <div class="staff-name">Maria Oliveira</div>
+                                <div class="staff-role">Cozinheira • Turno Noite</div>
+                            </div>
+                            <span class="staff-status online">Online</span>
                         </div>
-                        <div class="recent-item-price"><span th:text="${dashboard.restaurant.currencySymbol}"></span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></div>
-                    </li>
-                </ul>
+                        <div class="staff-item">
+                            <div class="staff-avatar" style="background: #14b8a6;">PS</div>
+                            <div class="staff-info">
+                                <div class="staff-name">Pedro Santos</div>
+                                <div class="staff-role">Garçom • Turno Noite</div>
+                            </div>
+                            <span class="staff-status online">Online</span>
+                        </div>
+                        <div class="staff-item">
+                            <div class="staff-avatar" style="background: #ec4899;">AL</div>
+                            <div class="staff-info">
+                                <div class="staff-name">Ana Lima</div>
+                                <div class="staff-role">Caixa • Turno Noite</div>
+                            </div>
+                            <span class="staff-status online">Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galeria Insight -->
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                            Galeria de Fotos
+                        </h3>
+                        <a href="/gallery" class="btn btn-ghost">Ver galeria</a>
+                    </div>
+                    <div class="insight-body">
+                        <div class="gallery-mini-grid">
+                            <div class="gallery-mini-item">
+                                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=150&h=150&fit=crop" alt="">
+                            </div>
+                            <div class="gallery-mini-item">
+                                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=150&h=150&fit=crop" alt="">
+                            </div>
+                            <div class="gallery-mini-item">
+                                <img src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=150&h=150&fit=crop" alt="">
+                            </div>
+                            <div class="gallery-mini-item">
+                                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=150&h=150&fit=crop" alt="">
+                            </div>
+                            <div class="gallery-mini-item">
+                                <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=150&h=150&fit=crop" alt="">
+                            </div>
+                            <div class="gallery-mini-item more">+19</div>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8125rem;">
+                            <span style="color: var(--muted);">24 fotos no total</span>
+                            <span style="color: var(--green);">3 novas esta semana</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relatórios Insight -->
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                            Faturamento Semanal
+                        </h3>
+                        <a href="/reports" class="btn btn-ghost">Ver relatórios</a>
+                    </div>
+                    <div class="insight-body">
+                        <div class="mini-chart">
+                            <div class="mini-chart-bar" style="height: 45%;"></div>
+                            <div class="mini-chart-bar" style="height: 60%;"></div>
+                            <div class="mini-chart-bar" style="height: 35%;"></div>
+                            <div class="mini-chart-bar" style="height: 80%;"></div>
+                            <div class="mini-chart-bar" style="height: 95%;"></div>
+                            <div class="mini-chart-bar" style="height: 70%;"></div>
+                            <div class="mini-chart-bar highlight" style="height: 55%;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem;">
+                            <span>Seg</span>
+                            <span>Ter</span>
+                            <span>Qua</span>
+                            <span>Qui</span>
+                            <span>Sex</span>
+                            <span>Sáb</span>
+                            <span>Hoje</span>
+                        </div>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="font-size: 0.8125rem; color: var(--muted);">Total da semana</span>
+                                <span style="font-size: 1rem; font-weight: 700; color: var(--green);">R$ 32.450</span>
+                            </div>
+                            <div class="stat-change up" style="justify-content: flex-end;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                +18% vs semana passada
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atividade Recente -->
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Atividade Recente
+                        </h3>
+                    </div>
+                    <div class="insight-body">
+                        <div class="activity-timeline">
+                            <div class="activity-item">
+                                <div class="activity-dot green"></div>
+                                <div class="activity-content">Pedido #1042 criado - Mesa 5</div>
+                                <div class="activity-time">há 8 minutos</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot"></div>
+                                <div class="activity-content">Carlos Silva fez login no sistema</div>
+                                <div class="activity-time">há 15 minutos</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot amber"></div>
+                                <div class="activity-content">Mesa 7 solicitou a conta</div>
+                                <div class="activity-time">há 22 minutos</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot green"></div>
+                                <div class="activity-content">Pagamento recebido - R$ 245,00</div>
+                                <div class="activity-time">há 28 minutos</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-dot red"></div>
+                                <div class="activity-content">Item cancelado: Risoto de Camarão</div>
+                                <div class="activity-time">há 35 minutos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
-</body>
-<script th:inline="javascript">
-    const domain = /*[[#{app.domain}]]*/[];
-    const restaurant = /*[[${dashboard.restaurant}]]*/[];
 
-    const i18n = {
-        labelLinkCopied: /*[[#{page.dashboard.label.link.copied}]]*/ 'Link Copied',
-        labelCheckoutMenu: /*[[#{page.dashboard.label.checkout.menu}]]*/ 'Link Copied',
-    };
-</script>
-<script>
-    // Public link functions
-    function copyLink() {
-        navigator.clipboard.writeText('https://'+domain+'/@'+restaurant.slug);
-        alert(i18n.labelLinkCopied);
-    }
+    <script th:inline="javascript">
+        const domain = /*[[${#messages.msg('app.domain')}]]*/ 'tablesplit.app';
+        const restaurant = /*[[${dashboard.restaurant}]]*/ {};
 
-    function shareLink() {
-        if (navigator.share) {
-            navigator.share({
-                title: restaurant.name,
-                text: i18n.labelCheckoutMenu,
-                url: 'https://'+domain+'/@'+restaurant.slug
-            });
-        } else {
-            copyLink();
+        const i18n = {
+            labelLinkCopied: /*[[#{page.dashboard.label.link.copied}]]*/ 'Link Copied',
+            labelCheckoutMenu: /*[[#{page.dashboard.label.checkout.menu}]]*/ 'Confira nosso cardápio!',
+        };
+
+        // Sidebar
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-    }
-</script>
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Public link functions
+        function copyLink() {
+            navigator.clipboard.writeText('https://' + domain + '/@' + restaurant.slug);
+            alert(i18n.labelLinkCopied);
+        }
+
+        function shareLink() {
+            if (navigator.share) {
+                navigator.share({
+                    title: restaurant.name,
+                    text: i18n.labelCheckoutMenu,
+                    url: 'https://' + domain + '/@' + restaurant.slug
+                });
+            } else {
+                copyLink();
+            }
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('userMenuContainer');
+            if (container && !container.contains(e.target)) {
+                container.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+
 </html>
