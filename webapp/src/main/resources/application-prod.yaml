@@ -1,5 +1,8 @@
 cloudinary:
   root-folder: prod
+app:
+  register:
+    enabled: false
 
 logging:
   level:

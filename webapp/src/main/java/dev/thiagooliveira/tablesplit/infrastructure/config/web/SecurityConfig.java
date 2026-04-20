@@ -87,6 +87,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/",
                         "/actuator/health",
+                        "/actuator/info",
                         "/login",
                         "/forgot-password",
                         "/login-staff",

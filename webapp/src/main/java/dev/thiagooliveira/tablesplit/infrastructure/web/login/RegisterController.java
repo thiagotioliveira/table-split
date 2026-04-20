@@ -14,6 +14,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterMode
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,16 +37,19 @@ public class RegisterController {
   private final PasswordEncoder passwordEncoder;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
+  private final boolean registerEnabled;
 
   public RegisterController(
       AuthenticationManager authenticationManager,
       PasswordEncoder passwordEncoder,
       TransactionalContext transactionalContext,
-      CreateAccount createAccount) {
+      CreateAccount createAccount,
+      @Value("${app.register.enabled}") boolean registerEnabled) {
     this.authenticationManager = authenticationManager;
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
+    this.registerEnabled = registerEnabled;
   }
 
   @ModelAttribute("languages")
@@ -83,6 +87,11 @@ public class RegisterController {
     if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
       return "redirect:/dashboard";
     }
+
+    if (!registerEnabled) {
+      model.addAttribute("alert", AlertModel.error("error.register.enabled.false"));
+    }
+
     model.addAttribute("form", new RegisterModel());
     return "register";
   }
@@ -93,6 +102,10 @@ public class RegisterController {
       BindingResult bindingResult,
       Model model,
       HttpServletRequest request) {
+    if (!registerEnabled) {
+      model.addAttribute("alert", AlertModel.error("error.register.enabled.false"));
+      return "register";
+    }
     if (bindingResult.hasErrors()) {
       model.addAttribute("alert", AlertModel.error("error.register.required.missing"));
       return "register";

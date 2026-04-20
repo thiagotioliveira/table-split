@@ -11,7 +11,6 @@ import jakarta.persistence.PersistenceContext;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.UUID;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,10 @@ public class OrderCleanerService {
 
   public void cleanOldOrders() {
     ZonedDateTime threshold = ZonedDateTime.now(ZoneId.of(zoneId)).minusDays(retentionDays);
-    logger.info("Starting cleanup of old orders for all tenants. Retention Days: {} Threshold: {}", retentionDays, threshold);
+    logger.info(
+        "Starting cleanup of old orders for all tenants. Retention Days: {} Threshold: {}",
+        retentionDays,
+        threshold);
 
     List<RestaurantEntity> restaurants = restaurantJpaRepository.findAll();
     logger.info("Found {} restaurants/tenants to process.", restaurants.size());
@@ -81,8 +83,9 @@ public class OrderCleanerService {
       transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
       transactionTemplate.executeWithoutResult(
           status -> {
-              var slug = restaurant.getSlug();
-            logger.info("Processing tenant '{}' schema: {} with threshold: {}", slug, schema, threshold);
+            var slug = restaurant.getSlug();
+            logger.info(
+                "Processing tenant '{}' schema: {} with threshold: {}", slug, schema, threshold);
 
             // Manual fallback to ensure search_path is correct for this specific connection
             // We detect the DB and use the correct syntax for H2 or PostgreSQL
@@ -107,13 +110,20 @@ public class OrderCleanerService {
               return;
             }
 
-            logger.info("Found {} orders to remove in '{}' schema {}.", ordersToRemove.size(), slug, schema);
+            logger.info(
+                "Found {} orders to remove in '{}' schema {}.",
+                ordersToRemove.size(),
+                slug,
+                schema);
 
             // Delete orders (this will cascade to tickets, items, payments, feedbacks, etc.)
             orderJpaRepository.deleteAll(ordersToRemove);
 
             logger.info(
-                "'{}' [{}] Cleanup completed. Total orders removed: {}", slug, schema, ordersToRemove.size());
+                "'{}' [{}] Cleanup completed. Total orders removed: {}",
+                slug,
+                schema,
+                ordersToRemove.size());
           });
     } finally {
       TenantContext.clear();
