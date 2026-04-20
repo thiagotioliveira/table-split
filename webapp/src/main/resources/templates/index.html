@@ -4,30 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{app.title}">TableSplit - Digital Menu for Restaurants</title>
+  <meta name="description" content="Plataforma completa para restaurantes: menu digital com QR Code, gestão de mesas, pedidos digitais e divisão de conta automática.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Backgrounds */
-      --background: #faf8f5;
-      --muted-bg: #f3efe9;
-      --foreground: #1a1714;
-
-      /* Primary colors */
       --primary: #c9a050;
       --primary-dark: #a88535;
       --primary-light: rgba(201, 160, 80, 0.15);
-
-      /* Neutral / muted */
-      --muted: #6b635a;
-
-      /* Borders */
-      --border: #e8e4de;
-
-      /* Status colors */
-      --success: #2d5a47;
-      --success-light: rgba(45, 90, 71, 0.12);
+      --secondary: #1e293b;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --green-light: rgba(34, 197, 94, 0.1);
+      --purple: #8b5cf6;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #6b635a;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-dark: #0f172a;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
+      --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
     }
 
     * {
@@ -38,1242 +40,1780 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--background);
-      color: var(--foreground);
+      color: var(--text-primary);
       line-height: 1.6;
+      background: var(--bg-primary);
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
     }
 
     /* Header */
     .header {
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
+      position: fixed;
       top: 0;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      left: 0;
+      right: 0;
       z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
     }
 
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
+    .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 72px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 10px;
       text-decoration: none;
-      color: var(--foreground);
+      color: var(--text-primary);
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--primary);
-      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .logo-icon svg {
-      width: 20px;
-      height: 20px;
       color: white;
     }
 
     .logo-text {
-      font-size: 1.25rem;
+      font-size: 1.375rem;
       font-weight: 700;
+      /*background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;*/
+      color: var(--text-primary);
+      background-clip: text;
+    }
+
+    .nav {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav a:hover {
+      color: var(--primary);
     }
 
     .header-actions {
       display: flex;
-      gap: 0.75rem;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 4px;
+      margin-right: 8px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1.25rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: var(--radius);
       text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
       border: none;
-      font-family: inherit;
     }
 
     .btn-ghost {
-      color: var(--muted);
       background: transparent;
-      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border: 2px solid var(--border);
     }
 
     .btn-ghost:hover {
-      color: var(--foreground);
-      background: var(--muted-bg);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
-      background: var(--primary);
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
     }
 
     .btn-primary:hover {
-      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
     }
 
     .btn-outline {
-      color: var(--foreground);
       background: white;
-      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border: 2px solid var(--border);
     }
 
     .btn-outline:hover {
-      background: var(--muted-bg);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     .btn-lg {
-      padding: 0.875rem 1.75rem;
+      padding: 14px 28px;
       font-size: 1rem;
+    }
+
+    .btn-xl {
+      padding: 18px 36px;
+      font-size: 1.0625rem;
     }
 
     /* Hero */
     .hero {
-      padding: 5rem 1.5rem;
-      text-align: center;
-      background: linear-gradient(180deg, var(--primary-light) 0%, transparent 100%);
-    }
-
-    .hero-inner {
-      max-width: 680px;
-      margin: 0 auto;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-      padding: 0.375rem 0.875rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: var(--success-light);
-      color: var(--success);
-      border-radius: 9999px;
-      margin-bottom: 1.5rem;
-    }
-
-    .badge svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .hero h1 span {
-      color: var(--primary);
-    }
-
-    .hero p {
-      font-size: 1.125rem;
-      color: var(--muted);
-      margin-bottom: 2rem;
-      max-width: 520px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    /* MVP Flow Section */
-    .section {
-      padding: 5rem 1.5rem;
-    }
-
-    .section-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .section-header h2 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-
-    .section-header p {
-      font-size: 1rem;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
-    /* Flow Steps */
-    .flow-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-    }
-
-    .flow-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
+      padding: 140px 0 80px;
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
       position: relative;
       overflow: hidden;
     }
 
-    .flow-card::before {
+    .hero::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--primary);
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    .flow-number {
-      width: 40px;
-      height: 40px;
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       background: var(--primary-light);
       color: var(--primary);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.125rem;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-    }
-
-    .flow-card h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-
-    .flow-card p {
-      font-size: 0.9375rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
-
-    .flow-features {
-      display: flex;
-      flex-direction: column;
-      gap: 0.625rem;
-    }
-
-    .flow-feature {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      padding: 8px 16px;
+      border-radius: 50px;
       font-size: 0.875rem;
-      color: var(--foreground);
+      font-weight: 600;
+      margin-bottom: 24px;
     }
 
-    .flow-feature svg {
+    .hero-badge svg {
       width: 18px;
       height: 18px;
-      color: var(--success);
-      flex-shrink: 0;
     }
 
-    /* Customer View Section */
-    .alt-section {
-      background: var(--muted-bg);
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
     }
 
-    .split-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: center;
+    .hero-title .gradient {
+      background: linear-gradient(135deg, var(--primary), #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .split-text h2 {
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
       font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      color: var(--primary);
     }
 
-    .split-text p {
-      font-size: 1rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
+    .hero-stat-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
     }
 
-    .feature-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    /* Problems Section */
+    .problems {
+      padding: 100px 0;
+      background: var(--bg-dark);
+      color: white;
+      position: relative;
     }
 
-    .feature-item {
-      display: flex;
-      gap: 0.875rem;
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
     }
 
-    .feature-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--primary-light);
-      border-radius: 10px;
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.8);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .problems .section-badge {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .problems .section-subtitle {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .problem-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .problem-card:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-4px);
+    }
+
+    .problem-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: rgba(239, 68, 68, 0.15);
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .feature-icon svg {
-      width: 20px;
-      height: 20px;
-      color: var(--primary);
-    }
-
-    .feature-item h4 {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .feature-item p {
-      font-size: 0.8125rem;
-      color: var(--muted);
-      margin: 0;
-    }
-
-    /* Phone Mockup */
-    .phone-mockup {
-      width: 280px;
-      height: 560px;
-      background: #18181B;
-      border-radius: 40px;
-      padding: 12px;
-      margin: 0 auto;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    }
-
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      background: white;
-      border-radius: 30px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .phone-header {
-      padding: 1rem;
-      background: var(--primary);
-      color: white;
-    }
-
-    .phone-restaurant-name {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .phone-restaurant-cat {
-      font-size: 0.75rem;
-      opacity: 0.8;
-    }
-
-    .phone-content {
-      flex: 1;
-      padding: 1rem;
-      overflow: hidden;
-    }
-
-    .phone-section-title {
-      font-size: 0.6875rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .phone-categories {
-      display: flex;
-      gap: 0.375rem;
-      margin-bottom: 1rem;
-      overflow-x: auto;
-    }
-
-    .phone-category {
-      padding: 0.375rem 0.625rem;
-      font-size: 0.625rem;
-      font-weight: 500;
-      background: var(--muted-bg);
-      border-radius: 9999px;
-      white-space: nowrap;
-    }
-
-    .phone-category.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    .phone-item {
-      display: flex;
-      gap: 0.625rem;
-      padding: 0.625rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .phone-item-img {
-      width: 48px;
-      height: 48px;
-      background: var(--muted-bg);
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-
-    .phone-item-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .phone-item-name {
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-bottom: 0.125rem;
-    }
-
-    .phone-item-desc {
-      font-size: 0.625rem;
-      color: var(--muted);
-      margin-bottom: 0.25rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .phone-item-price {
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    /* CTA Section */
-    .cta-section {
-      padding: 5rem 1.5rem;
-      text-align: center;
-      background: var(--foreground);
-      color: white;
-    }
-
-    .cta-section h2 {
       font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
     }
 
-    .cta-section p {
-      font-size: 1rem;
-      opacity: 0.7;
-      margin-bottom: 2rem;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
+    .problem-title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
 
-    /* Footer */
-    .footer {
-      padding: 2rem 1.5rem;
-      border-top: 1px solid var(--border);
+    .problem-desc {
+      font-size: 0.9375rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* Solution Section */
+    .solution {
+      padding: 100px 0;
+      background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
+
+    .solution .section-badge {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .solution-intro {
+      max-width: 800px;
+      margin: 0 auto 64px;
       text-align: center;
     }
 
-    .footer p {
-      font-size: 0.8125rem;
-      color: var(--muted);
+    .solution-intro p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 2rem;
-      }
-      
-      .flow-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .split-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-      
-      .phone-mockup {
-        order: -1;
-      }
-      
-      .header-actions .btn-primary {
-        display: none;
-      }
-      
-      .header-actions .btn-ghost {
-        display: inline-flex;
-      }
-
-      .pricing-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-
-      .pricing-card.featured {
-        transform: none;
-      }
-
-      .pricing-card.featured:hover {
-        transform: translateY(-8px);
-      }
-    }
-
-    /* Features Grid */
-    .features-grid {
+    .solution-features {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
     }
-    .feature-card {
+
+    .solution-feature {
       background: white;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: all 0.2s;
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all 0.3s;
     }
-    .feature-card:hover {
+
+    .solution-feature:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
       transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.05);
     }
-    .feature-icon-new {
+
+    .solution-feature-icon {
       width: 48px;
       height: 48px;
       background: var(--primary-light);
-      color: var(--primary);
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-    .feature-icon-new svg {
-      width: 24px;
-      height: 24px;
-    }
-    .feature-title-new {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    .feature-desc-new {
-      font-size: 0.9375rem;
-      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 1.5rem;
     }
 
-    /* Benefits */
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-    .benefit-card {
-      display: flex;
-      gap: 1rem;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-    }
-    .benefit-icon-new {
-      flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-      color: var(--success);
-    }
-    .benefit-title-new {
+    .solution-feature h3 {
       font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 0.25rem;
+      margin-bottom: 8px;
     }
-    .benefit-desc-new {
-      font-size: 0.875rem;
-      color: var(--muted);
+
+    .solution-feature p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+
+    .solution-highlights {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .solution-highlight {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .solution-highlight-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--green-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+    }
+
+    .solution-highlight-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Features Detail */
+    .features-detail {
+      padding: 100px 0;
+      background: var(--bg-secondary);
+    }
+
+    .features-detail .section-badge {
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--purple);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
     /* Pricing Section */
+    .pricing {
+      padding: 100px 0;
+      background: var(--bg-primary);
+    }
+
+    .pricing .section-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-      margin-top: 3rem;
+      gap: 32px;
+      align-items: stretch;
     }
 
     .pricing-card {
       background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem 2rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
       display: flex;
       flex-direction: column;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
       position: relative;
     }
 
     .pricing-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-      border-color: var(--primary);
+      box-shadow: var(--shadow-xl);
     }
 
     .pricing-card.featured {
-      border: 2px solid var(--primary);
-      transform: scale(1.05);
-      z-index: 10;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light), var(--shadow-lg);
     }
 
-    .pricing-card.featured:hover {
-      transform: scale(1.05) translateY(-8px);
-    }
-
-    .pricing-badge {
+    .pricing-card.featured::before {
+      content: 'MAIS POPULAR';
       position: absolute;
-      top: -12px;
+      top: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
-      padding: 0.25rem 1rem;
-      border-radius: 9999px;
+      padding: 6px 16px;
+      border-radius: 50px;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.05em;
-      text-transform: uppercase;
     }
 
-    .pricing-header {
-      text-align: center;
-      margin-bottom: 2rem;
+    .pricing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+
+    .pricing-badge.starter {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .pricing-badge.professional {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .pricing-badge.enterprise {
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--purple);
     }
 
     .pricing-name {
-      font-size: 1.125rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .pricing-desc {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      min-height: 48px;
     }
 
     .pricing-price {
-      font-size: 2.5rem;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pricing-amount {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .pricing-currency {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .pricing-value {
+      font-size: 3rem;
       font-weight: 800;
-      color: var(--foreground);
+      line-height: 1;
     }
 
     .pricing-period {
-      font-size: 0.875rem;
-      color: var(--muted);
-      font-weight: 400;
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .pricing-contact {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--purple);
     }
 
     .pricing-features {
-      list-style: none;
-      margin: 0 0 2rem 0;
-      padding: 0;
       flex: 1;
+      margin-bottom: 32px;
     }
 
-    .pricing-feature {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.9375rem;
-      color: var(--foreground);
-      margin-bottom: 1rem;
+    .pricing-features-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
     }
 
-    .pricing-feature svg {
-      width: 18px;
-      height: 18px;
-      color: var(--success);
-      flex-shrink: 0;
+    .pricing-features ul {
+      list-style: none;
     }
 
-    .pricing-feature.muted {
-      color: var(--muted);
-      opacity: 0.6;
-    }
-
-    .pricing-feature.muted svg {
-      color: var(--muted);
-    }
-
-    /* Double Column Flow */
-    .how-grid-new {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-    }
-    .how-column-new h3 {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .how-icon-new {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .how-icon-new.primary { background: var(--primary-light); color: var(--primary); }
-    .how-icon-new.accent { background: var(--success-light); color: var(--success); }
-    
-    .steps-new {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .step-new {
+    .pricing-features li {
       display: flex;
       align-items: flex-start;
-      gap: 1rem;
-      padding: 1rem;
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 0.9375rem;
+      border-bottom: 1px solid var(--border);
     }
-    .step-number-new {
-      background: var(--muted-bg);
-      width: 28px;
-      height: 28px;
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-features li svg {
+      width: 20px;
+      height: 20px;
+      color: var(--green);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .pricing-cta {
+      margin-top: auto;
+    }
+
+    .pricing-cta .btn {
+      width: 100%;
+    }
+
+    /* How it Works */
+    .how-it-works {
+      padding: 100px 0;
+      background: var(--bg-dark);
+      color: white;
+    }
+
+    .how-it-works .section-badge {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .how-it-works .section-subtitle {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .how-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .how-tab {
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: var(--radius);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .how-tab:hover {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+
+    .how-tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .how-step {
+      text-align: center;
+      position: relative;
+    }
+
+    .how-step::after {
+      content: '';
+      position: absolute;
+      top: 40px;
+      right: -12px;
+      width: calc(100% - 80px);
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+    }
+
+    .how-step:last-child::after {
+      display: none;
+    }
+
+    .how-step-number {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.875rem;
+      font-size: 2rem;
       font-weight: 700;
-      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .how-step h3 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .how-step p {
+      font-size: 0.9375rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta {
+      padding: 100px 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .cta .btn {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+
+    .cta .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Footer */
+    .footer {
+      padding: 48px 0;
+      background: var(--bg-dark);
+      color: white;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .footer-logo span {
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    .footer-copy {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.875rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .nav {
+        display: none;
+      }
+
+      .problems-grid,
+      .features-grid,
+      .how-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .solution-features {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
-      .benefits-grid, .how-grid-new {
+      .hero {
+        padding: 120px 0 60px;
+      }
+
+      .hero-title {
+        font-size: 2.25rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.0625rem;
+      }
+
+      .section-title {
+        font-size: 1.875rem;
+      }
+
+      .problems-grid,
+      .features-grid,
+      .solution-features,
+      .how-steps {
         grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        gap: 32px;
+      }
+
+      .solution-highlights {
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .how-step::after {
+        display: none;
+      }
+
+      .header-actions .btn-primary {
+        display: none;
+      }
+
+      .cta h2 {
+        font-size: 1.75rem;
+      }
+
+      .cta p {
+        font-size: 1rem;
+      }
+    }
+
+    /* Hamburger Menu */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .hamburger svg {
+      width: 24px;
+      height: 24px;
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 1024px) {
+      .hamburger {
+        display: flex;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-inner">
+<!-- Header -->
+<header class="header">
+  <div class="container">
+    <div class="header-content">
       <a href="/" class="logo">
         <div class="logo-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-            <path d="M7 2v20"/>
-            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
         </div>
-        <span class="logo-text" th:text="#{app.name}">TableSplit</span>
+        <span class="logo-text">TableSplit</span>
       </a>
+
+      <nav class="nav">
+        <a href="#problemas" data-i18n="nav.problems">O Problema</a>
+        <a href="#solucao" data-i18n="nav.solution">A Solução</a>
+        <a href="#funcionalidades" data-i18n="nav.features">Funcionalidades</a>
+        <a href="#planos" data-i18n="nav.pricing">Planos</a>
+      </nav>
+
       <div class="header-actions">
-        <a href="/login" class="btn btn-ghost">Entrar</a>
-        <a href="/register" class="btn btn-primary">Começar grátis</a>
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="pt">🇵🇹</button>
+          <button class="lang-btn" data-lang="en">🇬🇧</button>
+        </div>
+        <a href="/templates/login.html" class="btn btn-ghost" data-i18n="nav.login">Entrar</a>
+        <a href="/templates/register.html" class="btn btn-primary" data-i18n="nav.register">Começar Grátis</a>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="badge" th:if="${false}">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-        100% gratuito para começar
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L12 6"/><path d="M12 18 L12 22"/><path d="M4.93 4.93 L7.76 7.76"/><path d="M16.24 16.24 L19.07 19.07"/><path d="M2 12 L6 12"/><path d="M18 12 L22 12"/><path d="M4.93 19.07 L7.76 16.24"/><path d="M16.24 7.76 L19.07 4.93"/></svg>
+        <span data-i18n="hero.badge">Plataforma Completa para Restaurantes</span>
       </div>
-      <h1 class="hero-title">
-        Divisão de Conta <span class="gradient">Automática</span> para Restaurantes
+
+      <h1 class="hero-title" data-i18n="hero.title">
+        O seu restaurante <span class="gradient">100% digital</span>, sem complicações
       </h1>
-      <p class="hero-subtitle">
-        Seus clientes escaneiam o QR Code, fazem pedidos individualmente e cada um paga apenas o que consumiu. Simples assim.
+
+      <p class="hero-subtitle" data-i18n="hero.subtitle">
+        Menu digital com QR Code, gestão de mesas, pedidos diretos para a cozinha e divisão de conta automática. Tudo numa única plataforma pensada para Portugal.
       </p>
+
       <div class="hero-actions">
-        <a href="/register" class="btn btn-primary btn-lg">Criar conta grátis</a>
-        <a href="/@cantinabrasileira" class="btn btn-outline btn-lg">Ver demonstração</a>
+        <a th:href="${'/register'}" class="btn btn-primary btn-xl">
+          <span data-i18n="hero.cta">Experimentar Grátis</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a th:href="${'/@cantinabrasileira'}" target="_blank" class="btn btn-outline btn-xl" data-i18n="hero.demo">Ver Como Funciona</a>
       </div>
 
-      <!-- Preview Cards adapted to the design -->
-      <style>
-        .hero-preview {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
-          margin-top: 4rem;
-        }
-        .preview-item-new {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 16px;
-          border: 1px solid var(--border);
-          text-align: left;
-        }
-        .preview-icon-new {
-          width: 40px;
-          height: 40px;
-          background: var(--primary-light);
-          color: var(--primary);
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 1rem;
-          font-weight: 800;
-          position: relative;
-        }
-        .preview-icon-new svg { width: 20px; height: 20px; }
-        .preview-step-num {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          width: 18px;
-          height: 18px;
-          background: var(--primary);
-          color: white;
-          font-size: 10px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .preview-title-new { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .preview-desc-new { font-size: 0.8125rem; color: var(--muted); line-height: 1.4; }
-        @media (max-width: 768px) { .hero-preview { grid-template-columns: 1fr; } }
-      </style>
-      <div class="hero-preview">
-        <div class="preview-item-new">
-          <div class="preview-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
-            <span class="preview-step-num">1</span>
-          </div>
-          <h3 class="preview-title-new">Cliente Escaneia</h3>
-          <p class="preview-desc-new">QR Code na mesa abre o menu digital instantaneamente</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">100%</div>
+          <div class="hero-stat-label" data-i18n="hero.stat1">Na cloud</div>
         </div>
-        <div class="preview-item-new">
-          <div class="preview-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-            <span class="preview-step-num">2</span>
-          </div>
-          <h3 class="preview-title-new">Faz o Pedido</h3>
-          <p class="preview-desc-new">Cada pessoa adiciona seus itens individualmente</p>
+        <div class="hero-stat">
+          <div class="hero-stat-value">🇵🇹 🇬🇧</div>
+          <div class="hero-stat-label" data-i18n="hero.stat2">Multilingue</div>
         </div>
-        <div class="preview-item-new">
-          <div class="preview-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
-            <span class="preview-step-num">3</span>
-          </div>
-          <h3 class="preview-title-new">Conta Dividida</h3>
-          <p class="preview-desc-new">Sistema calcula automaticamente o valor de cada um</p>
+        <div class="hero-stat">
+          <div class="hero-stat-value">0€</div>
+          <div class="hero-stat-label" data-i18n="hero.stat3">Para começar</div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Features Section -->
-  <section id="funcionalidades" class="section">
-    <div class="section-inner">
-      <div class="section-header">
-        <h2>Tudo que seu restaurante precisa</h2>
-        <p>Funcionalidades pensadas para melhorar a experiência dos seus clientes e facilitar a gestão</p>
+<!-- Problems -->
+<section id="problemas" class="problems">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="problems.badge">O Problema</span>
+      <h2 class="section-title" data-i18n="problems.title">Os desafios de um restaurante tradicional</h2>
+      <p class="section-subtitle" data-i18n="problems.subtitle">Problemas que custam tempo, dinheiro e clientes todos os dias</p>
+    </div>
+
+    <div class="problems-grid">
+      <div class="problem-card">
+        <div class="problem-icon">📋</div>
+        <h3 class="problem-title" data-i18n="problems.menu.title">Menú sem identidade</h3>
+        <p class="problem-desc" data-i18n="problems.menu.desc">O cliente não sabe o que vai comer. Cardápios físicos não têm fotos, são rígidos e caros de atualizar.</p>
       </div>
-      
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><path d="M21 16V8a5 5 0 0 0-5-5H8"/><path d="M3 8v8a5 5 0 0 0 5 5h8"/></svg>
-          </div>
-          <h3 class="feature-title-new">QR Code por Mesa</h3>
-          <p class="feature-desc-new">Cada mesa tem seu próprio código. Clientes acessam o menu digitalizando com o celular.</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3 class="feature-title-new">Pedidos Individuais</h3>
-          <p class="feature-desc-new">Cada pessoa na mesa registra seus próprios itens. Sem confusão na hora de pagar.</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
-          </div>
-          <h3 class="feature-title-new">Divisão Automática</h3>
-          <p class="feature-desc-new">O sistema calcula exatamente quanto cada pessoa deve pagar, incluindo taxa de serviço.</p>
-        </div>
+
+      <div class="problem-card">
+        <div class="problem-icon">✋</div>
+        <h3 class="problem-title" data-i18n="problems.waiter.title">Chamar o garçom é uma lotaria</h3>
+        <p class="problem-desc" data-i18n="problems.waiter.desc">O cliente fica com a mão levantada à espera. O empregado está ocupado. Tempo perdido, cliente frustrado.</p>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-icon">🧮</div>
+        <h3 class="problem-title" data-i18n="problems.bill.title">Quem deve o quê?</h3>
+        <p class="problem-desc" data-i18n="problems.bill.desc">No final, cada um tentando calcular o que consumiu. Erros, discussões, demora — um fim de refeição desagradável.</p>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-icon">🌍</div>
+        <h3 class="problem-title" data-i18n="problems.lang.title">Cardápio só em português</h3>
+        <p class="problem-desc" data-i18n="problems.lang.desc">Portugal recebe milhões de turistas por ano. Um menu sem tradução afasta clientes estrangeiros e perde vendas.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Detailed Flow Section -->
-  <section id="como-funciona" class="section alt-section">
-    <div class="section-inner">
-      <div class="section-header">
-        <h2>Como Funciona</h2>
-        <p>Um fluxo simples e intuitivo para restaurantes e clientes</p>
+<!-- Solution -->
+<section id="solucao" class="solution">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="solution.badge">✓ A Solução</span>
+      <h2 class="section-title" data-i18n="solution.title">Uma plataforma completa, pensada para Portugal</h2>
+    </div>
+
+    <div class="solution-intro">
+      <p data-i18n="solution.intro">O TableSplit digitaliza o seu restaurante sem exigir hardware adicional, formação técnica ou contratos longos. Funciona em qualquer smartphone ou tablet — basta ter internet.</p>
+    </div>
+
+    <div class="solution-features">
+      <div class="solution-feature">
+        <div class="solution-feature-icon">📱</div>
+        <h3 data-i18n="solution.f1.title">Menu Digital QR</h3>
+        <p data-i18n="solution.f1.desc">Clientes acedem ao menu com fotos pelo telemóvel. Sem app, sem download.</p>
       </div>
-      
-      <div class="how-grid-new">
-        <div class="how-column-new">
-          <h3>
-            <div class="how-icon-new primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
-            </div>
-            <span>Para o Restaurante</span>
-          </h3>
-          <div class="steps-new">
-            <div class="step-new">
-              <div class="step-number-new">1</div>
-              <p>Crie sua conta e cadastre seu restaurante</p>
-            </div>
-            <div class="step-new">
-              <div class="step-number-new">2</div>
-              <p>Adicione as mesas e configure o menu</p>
-            </div>
-            <div class="step-new">
-              <div class="step-number-new">3</div>
-              <p>Imprima os QR Codes e coloque nas mesas</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="how-column-new">
-          <h3>
-            <div class="how-icon-new accent">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <span>Para o Cliente</span>
-          </h3>
-          <div class="steps-new">
-            <div class="step-new">
-              <div class="step-number-new">1</div>
-              <p>Escaneie o QR Code da mesa com seu celular</p>
-            </div>
-            <div class="step-new">
-              <div class="step-number-new">2</div>
-              <p>Informe seu nome e entre na sessão da mesa</p>
-            </div>
-            <div class="step-new">
-              <div class="step-number-new">3</div>
-              <p>Navegue pelo menu e faça seus pedidos</p>
-            </div>
-          </div>
-        </div>
+
+      <div class="solution-feature">
+        <div class="solution-feature-icon">🪑</div>
+        <h3 data-i18n="solution.f2.title">Gestão de Mesas</h3>
+        <p data-i18n="solution.f2.desc">Mapa visual do salão com estado em tempo real de cada mesa.</p>
+      </div>
+
+      <div class="solution-feature">
+        <div class="solution-feature-icon">📤</div>
+        <h3 data-i18n="solution.f3.title">Pedidos Diretos</h3>
+        <p data-i18n="solution.f3.desc">Pedidos vão direto da mesa para a cozinha, sem erros de comunicação.</p>
+      </div>
+
+      <div class="solution-feature">
+        <div class="solution-feature-icon">🎁</div>
+        <h3 data-i18n="solution.f4.title">Promoções e Combos</h3>
+        <p data-i18n="solution.f4.desc">Crie ofertas, menus do dia e combos para atrair e fidelizar clientes.</p>
+      </div>
+
+      <div class="solution-feature">
+        <div class="solution-feature-icon">⭐</div>
+        <h3 data-i18n="solution.f5.title">Feedback dos Pratos</h3>
+        <p data-i18n="solution.f5.desc">Os clientes avaliam o que consumiram. Saiba o que funciona e o que melhorar.</p>
+      </div>
+
+      <div class="solution-feature">
+        <div class="solution-feature-icon">📊</div>
+        <h3 data-i18n="solution.f6.title">Dashboard Completo</h3>
+        <p data-i18n="solution.f6.desc">Análise de vendas, relatórios e insights para tomar melhores decisões.</p>
       </div>
     </div>
-  </section>
 
-  <!-- Customer View Section -->
-  <section class="section alt-section">
-    <div class="section-inner">
-      <div class="split-content">
-        <div class="split-text">
-          <h2>Seu cliente visualiza o cardápio pelo celular</h2>
-          <p>O perfil público do seu restaurante mostra todas as informações e permite que seus clientes naveguem pelo cardápio de forma simples e intuitiva.</p>
-          <div class="feature-list">
-            <div class="feature-item">
-              <div class="feature-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                </svg>
-              </div>
-              <div>
-                <h4>Link compartilhável</h4>
-                <p>Envie o link por WhatsApp, redes sociais ou imprima em QR Code.</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-                  <line x1="12" y1="18" x2="12.01" y2="18"/>
-                </svg>
-              </div>
-              <div>
-                <h4>100% responsivo</h4>
-                <p>Funciona perfeitamente em celulares, tablets e computadores.</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-              </div>
-              <div>
-                <h4>Múltiplos idiomas</h4>
-                <p>Atenda turistas e clientes estrangeiros com cardápio traduzido.</p>
-              </div>
-            </div>
-          </div>
+    <div class="solution-highlights">
+      <div class="solution-highlight">
+        <div class="solution-highlight-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
-        
-        <!-- Phone Mockup -->
-        <div class="phone-mockup">
-          <div class="phone-screen">
-            <div class="phone-header">
-              <div class="phone-restaurant-name">Trattoria Bella</div>
-              <div class="phone-restaurant-cat">Culinária Italiana</div>
-            </div>
-            <div class="phone-content">
-              <div class="phone-section-title">Categorias</div>
-              <div class="phone-categories">
-                <span class="phone-category active">Entradas</span>
-                <span class="phone-category">Massas</span>
-                <span class="phone-category">Carnes</span>
-                <span class="phone-category">Sobremesas</span>
-              </div>
-              <div class="phone-section-title">Entradas</div>
-              <div class="phone-item">
-                <div class="phone-item-img"></div>
-                <div class="phone-item-info">
-                  <div class="phone-item-name">Bruschetta Clássica</div>
-                  <div class="phone-item-desc">Pão italiano com tomate e manjericão</div>
-                  <div class="phone-item-price">R$ 28,00</div>
-                </div>
-              </div>
-              <div class="phone-item">
-                <div class="phone-item-img"></div>
-                <div class="phone-item-info">
-                  <div class="phone-item-name">Carpaccio de Filé</div>
-                  <div class="phone-item-desc">Lâminas finas com rúcula e parmesão</div>
-                  <div class="phone-item-price">R$ 45,00</div>
-                </div>
-              </div>
-              <div class="phone-item">
-                <div class="phone-item-img"></div>
-                <div class="phone-item-info">
-                  <div class="phone-item-name">Arancini</div>
-                  <div class="phone-item-desc">Bolinhos de risoto recheados</div>
-                  <div class="phone-item-price">R$ 32,00</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <span data-i18n="solution.h1">100% na cloud — acesso de qualquer lugar</span>
+      </div>
+      <div class="solution-highlight">
+        <div class="solution-highlight-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
         </div>
+        <span data-i18n="solution.h2">Sem fidelização — cancela quando quiser</span>
+      </div>
+      <div class="solution-highlight">
+        <div class="solution-highlight-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        </div>
+        <span data-i18n="solution.h3">Multilingue — 🇵🇹 PT | 🇬🇧 EN</span>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Benefits Section -->
-  <section id="beneficios" class="section">
-    <div class="section-inner">
-      <div class="section-header">
-        <h2>Benefícios para seu Negócio</h2>
+<!-- Features Detail -->
+<section id="funcionalidades" class="features-detail">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="features.badge">Funcionalidades</span>
+      <h2 class="section-title" data-i18n="features.title">Tudo o que precisa num só lugar</h2>
+      <p class="section-subtitle" data-i18n="features.subtitle">Ferramentas completas para gerir o seu restaurante de forma moderna e eficiente</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔲</div>
+        <h3 data-i18n="features.qr.title">QR Code Personalizado</h3>
+        <p data-i18n="features.qr.desc">Cada mesa com código único. Cliente escaneia e acede ao menu instantaneamente.</p>
       </div>
-      
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div class="benefit-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-          </div>
-          <div>
-            <h3 class="benefit-title-new">Menos Erros</h3>
-            <p class="benefit-desc-new">Elimina conferência manual de pedidos e divisão de conta</p>
-          </div>
-        </div>
-        
-        <div class="benefit-card">
-          <div class="benefit-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-          </div>
-          <div>
-            <h3 class="benefit-title-new">Mais Agilidade</h3>
-            <p class="benefit-desc-new">Clientes fazem pedidos diretamente, sem esperar garçom</p>
-          </div>
-        </div>
-        
-        <div class="benefit-card">
-          <div class="benefit-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-          </div>
-          <div>
-            <h3 class="benefit-title-new">Melhor Experiência</h3>
-            <p class="benefit-desc-new">Interface moderna que impressiona seus clientes</p>
-          </div>
-        </div>
-        
-        <div class="benefit-card">
-          <div class="benefit-icon-new">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-          </div>
-          <div>
-            <h3 class="benefit-title-new">Controle Total</h3>
-            <p class="benefit-desc-new">Acompanhe tudo em tempo real pelo painel de gestão</p>
-          </div>
-        </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📸</div>
+        <h3 data-i18n="features.photos.title">Menu com Fotos</h3>
+        <p data-i18n="features.photos.desc">Imagens apetitosas que vendem. Atualize preços e disponibilidade em tempo real.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3 data-i18n="features.individual.title">Pedidos Individuais</h3>
+        <p data-i18n="features.individual.desc">Cada pessoa regista os seus itens. Divisão de conta automática e sem confusão.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3 data-i18n="features.notifications.title">Notificações em Tempo Real</h3>
+        <p data-i18n="features.notifications.desc">Alertas instantâneos de pedidos, chamadas de garçom e atualizações de estado.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3 data-i18n="features.map.title">Mapa de Mesas</h3>
+        <p data-i18n="features.map.desc">Visualize o estado do salão. Livre, ocupada, a pedir, a pagar — tudo num olhar.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏷️</div>
+        <h3 data-i18n="features.promos.title">Promoções e Descontos</h3>
+        <p data-i18n="features.promos.desc">Crie cupões, combos e ofertas especiais para aumentar vendas e fidelizar clientes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3 data-i18n="features.multilang.title">Menu Multilingue</h3>
+        <p data-i18n="features.multilang.desc">Suporte para Português e Inglês. Ideal para turistas que visitam Portugal.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3 data-i18n="features.analytics.title">Relatórios e Análises</h3>
+        <p data-i18n="features.analytics.desc">Veja o que mais vende, horários de pico, desempenho da equipa e mais.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Pricing Section -->
-  <section id="planos" class="section alt-section">
-    <div class="section-inner">
-      <div class="section-header">
-        <h2>Escolha o plano ideal para o seu negócio</h2>
-        <p>Preços transparentes que acompanham o crescimento do seu restaurante.</p>
-      </div>
+<!-- Pricing -->
+<section id="planos" class="pricing">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="pricing.badge">Planos</span>
+      <h2 class="section-title" data-i18n="pricing.title">Escolha o plano ideal para o seu negócio</h2>
+      <p class="section-subtitle" data-i18n="pricing.subtitle">Comece gratuitamente e evolua conforme suas necessidades</p>
+    </div>
 
-      <div class="pricing-grid">
-        <!-- Starter -->
-        <div class="pricing-card">
-          <div class="pricing-header">
-            <div class="pricing-name">Starter</div>
-            <div class="pricing-price">€ 39,99<span class="pricing-period">/mês</span></div>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card">
+        <span class="pricing-badge starter" data-i18n="pricing.starter.badge">STARTER</span>
+        <h3 class="pricing-name" data-i18n="pricing.starter.name">Starter</h3>
+        <p class="pricing-desc" data-i18n="pricing.starter.desc">Perfeito para começar a digitalizar o seu menu</p>
+
+        <div class="pricing-price">
+          <div class="pricing-amount">
+            <span class="pricing-currency">€</span>
+            <span class="pricing-value">29,90</span>
+            <span class="pricing-period" data-i18n="pricing.free">/mês</span>
           </div>
-          <ul class="pricing-features">
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Menu Digital (QR Code)
+        </div>
+
+        <div class="pricing-features">
+          <p class="pricing-features-title" data-i18n="pricing.includes">Inclui:</p>
+          <ul>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.starter.f1">Menu digital com QR Code</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Até 6 categorias
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.starter.f2">Fotos e descrições dos itens</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Até 40 produtos
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.starter.f3">Promoções, combos e galeria</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              10 fotos na galeria
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.starter.f4">QR Code personalizável</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              5 promoções ativas
-            </li>
-            <li class="pricing-feature muted">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-              Gestão de Mesas
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.starter.f5">Menu multilingue (🇵🇹/🇬🇧)</span>
             </li>
           </ul>
-          <a href="/register" class="btn btn-outline">Começar agora</a>
         </div>
 
-        <!-- Professional -->
-        <div class="pricing-card featured">
-          <div class="pricing-badge">Mais Popular</div>
-          <div class="pricing-header">
-            <div class="pricing-name">Professional</div>
-            <div class="pricing-price">€ 99,00<span class="pricing-period">/mês</span></div>
+        <div class="pricing-cta">
+          <a href="/templates/register.html" class="btn btn-outline btn-lg" data-i18n="pricing.starter.cta" th:if="${false}">Começar Grátis</a>
+        </div>
+      </div>
+
+      <!-- Professional -->
+      <div class="pricing-card featured">
+        <span class="pricing-badge professional" data-i18n="pricing.professional.badge">PROFESSIONAL</span>
+        <h3 class="pricing-name" data-i18n="pricing.professional.name">Professional</h3>
+        <p class="pricing-desc" data-i18n="pricing.professional.desc">Gestão completa do salão e cozinha em tempo real</p>
+
+        <div class="pricing-price">
+          <div class="pricing-amount">
+            <span class="pricing-currency">€</span>
+            <span class="pricing-value">89,90</span>
+            <span class="pricing-period" data-i18n="pricing.monthly">/mês</span>
           </div>
-          <ul class="pricing-features">
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Tudo do Starter
-            </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Gestão de até 15 Mesas
-            </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Até 100 produtos
-            </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Gestão de Pedidos & Cozinha
-            </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              5 usuários (Garçons/Cozinha)
-            </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Relatórios de Venda
-            </li>
-          </ul>
-          <a href="/register" class="btn btn-primary">Testar Grátis</a>
         </div>
 
-        <!-- Enterprise -->
-        <div class="pricing-card">
-          <div class="pricing-header">
-            <div class="pricing-name">Enterprise</div>
-            <div class="pricing-price">Sob consulta</div>
-          </div>
-          <ul class="pricing-features">
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Múltiplos Restaurantes
+        <div class="pricing-features">
+          <p class="pricing-features-title" data-i18n="pricing.everything">Tudo do Starter, mais:</p>
+          <ul>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f1">Mapa visual de mesas em tempo real</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Mesas e Produtos Ilimitados
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f2">Pedidos digitais para a cozinha</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Integração com PDV customizada
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f3">Gestão de conta por mesa</span>
             </li>
-            <li class="pricing-feature">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Suporte Prioritário 24/7
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f4">Promoções, combos e galeria</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f5">Notificações em tempo real</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f6">Dashboard com análises</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.professional.f7">Histórico de 90 dias</span>
             </li>
           </ul>
-          <a href="mailto:thiago@thiagoti.com" class="btn btn-outline">Fale Conosco</a>
+        </div>
+
+        <div class="pricing-cta">
+          <a href="/templates/register.html" class="btn btn-primary btn-lg" data-i18n="pricing.professional.cta" th:if="${false}">Experimentar 14 dias grátis</a>
+        </div>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card">
+        <span class="pricing-badge enterprise" data-i18n="pricing.enterprise.badge">ENTERPRISE</span>
+        <h3 class="pricing-name" data-i18n="pricing.enterprise.name">Enterprise</h3>
+        <p class="pricing-desc" data-i18n="pricing.enterprise.desc">Soluções personalizadas para cadeias e grupos</p>
+
+        <div class="pricing-price">
+          <span class="pricing-contact" data-i18n="pricing.enterprise.price">Sob consulta</span>
+        </div>
+
+        <div class="pricing-features">
+          <p class="pricing-features-title" data-i18n="pricing.everything">Tudo do Professional, mais:</p>
+          <ul>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f1">Múltiplos restaurantes</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f2">API e integrações personalizadas</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f3">Histórico ilimitado</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f4">Gestor de conta dedicado</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f5">Suporte prioritário 24/7</span>
+            </li>
+            <li>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span data-i18n="pricing.enterprise.f6">Formação personalizada</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="pricing-cta">
+          <a href="mailto:contacto@tablesplit.pt" class="btn btn-outline btn-lg" data-i18n="pricing.enterprise.cta" th:if="${false}">Falar com Vendas</a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <h2>Pronto para digitalizar seu cardápio?</h2>
-    <p>Comece gratuitamente e tenha seu cardápio online em minutos.</p>
-    <a href="/register" class="btn btn-primary btn-lg">Criar conta grátis</a>
-  </section>
+<!-- How it Works -->
+<section id="como-funciona" class="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge" data-i18n="howItWorks.badge">Como Funciona</span>
+      <h2 class="section-title" data-i18n="howItWorks.title">Pronto em menos de 1 hora</h2>
+      <p class="section-subtitle" data-i18n="howItWorks.subtitle">Configuração simples, sem complicações técnicas</p>
+    </div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p class="footer-copy">&copy; 2026 TableSplit. All rights reserved.</p>
-  </footer>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-number">1</div>
+        <h3 data-i18n="howItWorks.s1.title">Registe-se</h3>
+        <p data-i18n="howItWorks.s1.desc">Crie sua conta gratuita e adicione as informações do seu restaurante.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-number">2</div>
+        <h3 data-i18n="howItWorks.s2.title">Configure o Menu</h3>
+        <p data-i18n="howItWorks.s2.desc">Adicione categorias, pratos com fotos e preços. Traduza para inglês se quiser.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-number">3</div>
+        <h3 data-i18n="howItWorks.s3.title">Gere o QR Code</h3>
+        <p data-i18n="howItWorks.s3.desc">O sistema gera automaticamente um QR Code para imprimir ou exibir.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-number">4</div>
+        <h3 data-i18n="howItWorks.s4.title">Está Pronto!</h3>
+        <p data-i18n="howItWorks.s4.desc">Clientes escaneiam e acedem ao menu. Atualize a qualquer momento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-content">
+      <h2 data-i18n="cta.title">Pronto para modernizar o seu restaurante?</h2>
+      <p data-i18n="cta.subtitle">Junte-se aos restaurantes que já usam o TableSplit para oferecer uma experiência superior aos seus clientes.</p>
+      <a th:href="${'/register'}" class="btn btn-xl">
+        <span data-i18n="cta.button">Começar Gratuitamente</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <div class="footer-logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+        </div>
+        <span>TableSplit</span>
+      </div>
+
+      <div class="footer-links" th:if="${false}">
+        <a href="#" data-i18n="footer.privacy">Privacidade</a>
+        <a href="#" data-i18n="footer.terms">Termos</a>
+        <a href="mailto:contacto@tablesplit.pt" data-i18n="footer.contact">Contacto</a>
+      </div>
+
+      <p class="footer-copy" data-i18n="footer.copy">© 2026 TableSplit. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const translations = {
+    pt: {
+      'nav.problems': 'O Problema',
+      'nav.solution': 'A Solução',
+      'nav.features': 'Funcionalidades',
+      'nav.pricing': 'Planos',
+      'nav.login': 'Entrar',
+      'nav.register': 'Começar Grátis',
+      'hero.badge': 'Plataforma Completa para Restaurantes',
+      'hero.title': 'O seu restaurante <span class="gradient">100% digital</span>, sem complicações',
+      'hero.subtitle': 'Menu digital com QR Code, gestão de mesas, pedidos diretos para a cozinha e divisão de conta automática. Tudo numa única plataforma pensada para Portugal.',
+      'hero.cta': 'Experimentar Grátis',
+      'hero.demo': 'Ver Como Funciona',
+      'hero.stat1': 'Na cloud',
+      'hero.stat2': 'Multilingue',
+      'hero.stat3': 'Para começar',
+      'problems.badge': 'O Problema',
+      'problems.title': 'Os desafios de um restaurante tradicional',
+      'problems.subtitle': 'Problemas que custam tempo, dinheiro e clientes todos os dias',
+      'problems.menu.title': 'Menú sem identidade',
+      'problems.menu.desc': 'O cliente não sabe o que vai comer. Cardápios físicos não têm fotos, são rígidos e caros de atualizar.',
+      'problems.waiter.title': 'Chamar o garçom é uma lotaria',
+      'problems.waiter.desc': 'O cliente fica com a mão levantada à espera. O empregado está ocupado. Tempo perdido, cliente frustrado.',
+      'problems.bill.title': 'Quem deve o quê?',
+      'problems.bill.desc': 'No final, cada um tentando calcular o que consumiu. Erros, discussões, demora — um fim de refeição desagradável.',
+      'problems.lang.title': 'Cardápio só em português',
+      'problems.lang.desc': 'Portugal recebe milhões de turistas por ano. Um menu sem tradução afasta clientes estrangeiros e perde vendas.',
+      'solution.badge': '✓ A Solução',
+      'solution.title': 'Uma plataforma completa, pensada para Portugal',
+      'solution.intro': 'O TableSplit digitaliza o seu restaurante sem exigir hardware adicional, formação técnica ou contratos longos. Funciona em qualquer smartphone ou tablet — basta ter internet.',
+      'solution.f1.title': 'Menu Digital QR',
+      'solution.f1.desc': 'Clientes acedem ao menu com fotos pelo telemóvel. Sem app, sem download.',
+      'solution.f2.title': 'Gestão de Mesas',
+      'solution.f2.desc': 'Mapa visual do salão com estado em tempo real de cada mesa.',
+      'solution.f3.title': 'Pedidos Diretos',
+      'solution.f3.desc': 'Pedidos vão direto da mesa para a cozinha, sem erros de comunicação.',
+      'solution.f4.title': 'Promoções e Combos',
+      'solution.f4.desc': 'Crie ofertas, menus do dia e combos para atrair e fidelizar clientes.',
+      'solution.f5.title': 'Feedback dos Pratos',
+      'solution.f5.desc': 'Os clientes avaliam o que consumiram. Saiba o que funciona e o que melhorar.',
+      'solution.f6.title': 'Dashboard Completo',
+      'solution.f6.desc': 'Análise de vendas, relatórios e insights para tomar melhores decisões.',
+      'solution.h1': '100% na cloud — acesso de qualquer lugar',
+      'solution.h2': 'Sem fidelização — cancela quando quiser',
+      'solution.h3': 'Multilingue — 🇵🇹 PT | 🇬🇧 EN',
+      'features.badge': 'Funcionalidades',
+      'features.title': 'Tudo o que precisa num só lugar',
+      'features.subtitle': 'Ferramentas completas para gerir o seu restaurante de forma moderna e eficiente',
+      'features.qr.title': 'QR Code Personalizado',
+      'features.qr.desc': 'Cada mesa com código único. Cliente escaneia e acede ao menu instantaneamente.',
+      'features.photos.title': 'Menu com Fotos',
+      'features.photos.desc': 'Imagens apetitosas que vendem. Atualize preços e disponibilidade em tempo real.',
+      'features.individual.title': 'Pedidos Individuais',
+      'features.individual.desc': 'Cada pessoa regista os seus itens. Divisão de conta automática e sem confusão.',
+      'features.notifications.title': 'Notificações em Tempo Real',
+      'features.notifications.desc': 'Alertas instantâneos de pedidos, chamadas de garçom e atualizações de estado.',
+      'features.map.title': 'Mapa de Mesas',
+      'features.map.desc': 'Visualize o estado do salão. Livre, ocupada, a pedir, a pagar — tudo num olhar.',
+      'features.promos.title': 'Promoções e Descontos',
+      'features.promos.desc': 'Crie cupões, combos e ofertas especiais para aumentar vendas e fidelizar clientes.',
+      'features.multilang.title': 'Menu Multilingue',
+      'features.multilang.desc': 'Suporte para Português e Inglês. Ideal para turistas que visitam Portugal.',
+      'features.analytics.title': 'Relatórios e Análises',
+      'features.analytics.desc': 'Veja o que mais vende, horários de pico, desempenho da equipa e mais.',
+      'pricing.badge': 'Planos',
+      'pricing.title': 'Escolha o plano ideal para o seu negócio',
+      'pricing.subtitle': 'Comece gratuitamente e evolua conforme suas necessidades',
+      'pricing.free': '/mês',
+      'pricing.monthly': '/mês',
+      'pricing.includes': 'Inclui:',
+      'pricing.everything': 'Tudo do anterior, mais:',
+      'pricing.starter.badge': 'STARTER',
+      'pricing.starter.name': 'Starter',
+      'pricing.starter.desc': 'Perfeito para começar a digitalizar o seu menu',
+      'pricing.starter.f1': 'Menu digital com QR Code',
+      'pricing.starter.f2': 'Fotos e descrições dos itens',
+      'pricing.starter.f3': 'Promoções, combos e galeria',
+      'pricing.starter.f4': 'QR Code personalizável',
+      'pricing.starter.f5': 'Menu multilingue (🇵🇹/🇬🇧)',
+      'pricing.starter.cta': 'Começar Grátis',
+      'pricing.professional.badge': 'PROFESSIONAL',
+      'pricing.professional.name': 'Professional',
+      'pricing.professional.desc': 'Gestão completa do salão e cozinha em tempo real',
+      'pricing.professional.f1': 'Mapa visual de mesas em tempo real',
+      'pricing.professional.f2': 'Pedidos digitais para a cozinha',
+      'pricing.professional.f3': 'Gestão de conta por mesa',
+      'pricing.professional.f4': 'Promoções, combos e galeria',
+      'pricing.professional.f5': 'Notificações em tempo real',
+      'pricing.professional.f6': 'Dashboard com análises',
+      'pricing.professional.f7': 'Histórico de 90 dias',
+      'pricing.professional.cta': 'Experimentar 14 dias grátis',
+      'pricing.enterprise.badge': 'ENTERPRISE',
+      'pricing.enterprise.name': 'Enterprise',
+      'pricing.enterprise.desc': 'Soluções personalizadas para cadeias e grupos',
+      'pricing.enterprise.price': 'Sob consulta',
+      'pricing.enterprise.f1': 'Múltiplos restaurantes',
+      'pricing.enterprise.f2': 'API e integrações personalizadas',
+      'pricing.enterprise.f3': 'Histórico ilimitado',
+      'pricing.enterprise.f4': 'Gestor de conta dedicado',
+      'pricing.enterprise.f5': 'Suporte prioritário 24/7',
+      'pricing.enterprise.f6': 'Formação personalizada',
+      'pricing.enterprise.cta': 'Falar com Vendas',
+      'howItWorks.badge': 'Como Funciona',
+      'howItWorks.title': 'Pronto em menos de 1 hora',
+      'howItWorks.subtitle': 'Configuração simples, sem complicações técnicas',
+      'howItWorks.s1.title': 'Registe-se',
+      'howItWorks.s1.desc': 'Crie sua conta gratuita e adicione as informações do seu restaurante.',
+      'howItWorks.s2.title': 'Configure o Menu',
+      'howItWorks.s2.desc': 'Adicione categorias, pratos com fotos e preços. Traduza para inglês se quiser.',
+      'howItWorks.s3.title': 'Gere o QR Code',
+      'howItWorks.s3.desc': 'O sistema gera automaticamente um QR Code para imprimir ou exibir.',
+      'howItWorks.s4.title': 'Está Pronto!',
+      'howItWorks.s4.desc': 'Clientes escaneiam e acedem ao menu. Atualize a qualquer momento.',
+      'cta.title': 'Pronto para modernizar o seu restaurante?',
+      'cta.subtitle': 'Junte-se aos restaurantes que já usam o TableSplit para oferecer uma experiência superior aos seus clientes.',
+      'cta.button': 'Começar Gratuitamente',
+      'footer.privacy': 'Privacidade',
+      'footer.terms': 'Termos',
+      'footer.contact': 'Contacto',
+      'footer.copy': '© 2025 TableSplit. Todos os direitos reservados.'
+    },
+    en: {
+      'nav.problems': 'The Problem',
+      'nav.solution': 'The Solution',
+      'nav.features': 'Features',
+      'nav.pricing': 'Pricing',
+      'nav.login': 'Login',
+      'nav.register': 'Start Free',
+      'hero.badge': 'Complete Platform for Restaurants',
+      'hero.title': 'Your restaurant <span class="gradient">100% digital</span>, hassle-free',
+      'hero.subtitle': 'Digital menu with QR Code, table management, direct orders to the kitchen and automatic bill splitting. All in one platform designed for Portugal.',
+      'hero.cta': 'Try Free',
+      'hero.demo': 'See How It Works',
+      'hero.stat1': 'In the cloud',
+      'hero.stat2': 'Multilingual',
+      'hero.stat3': 'To start',
+      'problems.badge': 'The Problem',
+      'problems.title': 'The challenges of a traditional restaurant',
+      'problems.subtitle': 'Problems that cost time, money and customers every day',
+      'problems.menu.title': 'Menu without identity',
+      'problems.menu.desc': 'The customer doesn\'t know what they\'re ordering. Physical menus have no photos, are rigid and expensive to update.',
+      'problems.waiter.title': 'Calling the waiter is a lottery',
+      'problems.waiter.desc': 'The customer waits with raised hand. The staff is busy. Time wasted, frustrated customer.',
+      'problems.bill.title': 'Who owes what?',
+      'problems.bill.desc': 'At the end, everyone trying to calculate what they consumed. Errors, arguments, delays — an unpleasant end to the meal.',
+      'problems.lang.title': 'Menu only in Portuguese',
+      'problems.lang.desc': 'Portugal receives millions of tourists per year. A menu without translation turns away foreign customers and loses sales.',
+      'solution.badge': '✓ The Solution',
+      'solution.title': 'A complete platform, designed for Portugal',
+      'solution.intro': 'TableSplit digitizes your restaurant without requiring additional hardware, technical training or long contracts. Works on any smartphone or tablet — just need internet.',
+      'solution.f1.title': 'Digital QR Menu',
+      'solution.f1.desc': 'Customers access the menu with photos on their phone. No app, no download.',
+      'solution.f2.title': 'Table Management',
+      'solution.f2.desc': 'Visual map of the dining room with real-time status of each table.',
+      'solution.f3.title': 'Direct Orders',
+      'solution.f3.desc': 'Orders go directly from table to kitchen, without communication errors.',
+      'solution.f4.title': 'Promotions and Combos',
+      'solution.f4.desc': 'Create offers, daily menus and combos to attract and retain customers.',
+      'solution.f5.title': 'Dish Feedback',
+      'solution.f5.desc': 'Customers rate what they consumed. Know what works and what to improve.',
+      'solution.f6.title': 'Complete Dashboard',
+      'solution.f6.desc': 'Sales analysis, reports and insights to make better decisions.',
+      'solution.h1': '100% in the cloud — access from anywhere',
+      'solution.h2': 'No commitment — cancel anytime',
+      'solution.h3': 'Multilingual — 🇵🇹 PT | 🇬🇧 EN',
+      'features.badge': 'Features',
+      'features.title': 'Everything you need in one place',
+      'features.subtitle': 'Complete tools to manage your restaurant in a modern and efficient way',
+      'features.qr.title': 'Custom QR Code',
+      'features.qr.desc': 'Each table with unique code. Customer scans and accesses the menu instantly.',
+      'features.photos.title': 'Menu with Photos',
+      'features.photos.desc': 'Appetizing images that sell. Update prices and availability in real time.',
+      'features.individual.title': 'Individual Orders',
+      'features.individual.desc': 'Each person registers their items. Automatic bill splitting without confusion.',
+      'features.notifications.title': 'Real-Time Notifications',
+      'features.notifications.desc': 'Instant alerts for orders, waiter calls and status updates.',
+      'features.map.title': 'Table Map',
+      'features.map.desc': 'View the dining room status. Free, occupied, ordering, paying — all at a glance.',
+      'features.promos.title': 'Promotions and Discounts',
+      'features.promos.desc': 'Create coupons, combos and special offers to increase sales and retain customers.',
+      'features.multilang.title': 'Multilingual Menu',
+      'features.multilang.desc': 'Support for Portuguese and English. Ideal for tourists visiting Portugal.',
+      'features.analytics.title': 'Reports and Analytics',
+      'features.analytics.desc': 'See what sells most, peak hours, team performance and more.',
+      'pricing.badge': 'Pricing',
+      'pricing.title': 'Choose the ideal plan for your business',
+      'pricing.subtitle': 'Start for free and scale as your needs grow',
+      'pricing.free': '/month',
+      'pricing.monthly': '/month',
+      'pricing.includes': 'Includes:',
+      'pricing.everything': 'Everything from previous, plus:',
+      'pricing.starter.badge': 'STARTER',
+      'pricing.starter.name': 'Starter',
+      'pricing.starter.desc': 'Perfect to start digitizing your menu',
+      'pricing.starter.f1': 'Digital menu with QR Code',
+      'pricing.starter.f2': 'Photos and item descriptions',
+      'pricing.starter.f3': 'Promotions, combos and gallery',
+      'pricing.starter.f4': 'Customizable QR Code',
+      'pricing.starter.f5': 'Multilingual menu (🇵🇹/🇬🇧)',
+      'pricing.starter.cta': 'Start Free',
+      'pricing.professional.badge': 'PROFESSIONAL',
+      'pricing.professional.name': 'Professional',
+      'pricing.professional.desc': 'Complete management of dining room and kitchen in real time',
+      'pricing.professional.f1': 'Visual real-time table map',
+      'pricing.professional.f2': 'Digital orders to kitchen',
+      'pricing.professional.f3': 'Per-table bill management',
+      'pricing.professional.f4': 'Promotions, combos and gallery',
+      'pricing.professional.f5': 'Real-time notifications',
+      'pricing.professional.f6': 'Dashboard with analytics',
+      'pricing.professional.f7': '90-day history',
+      'pricing.professional.cta': 'Try 14 days free',
+      'pricing.enterprise.badge': 'ENTERPRISE',
+      'pricing.enterprise.name': 'Enterprise',
+      'pricing.enterprise.desc': 'Custom solutions for chains and groups',
+      'pricing.enterprise.price': 'Contact us',
+      'pricing.enterprise.f1': 'Multiple restaurants',
+      'pricing.enterprise.f2': 'API and custom integrations',
+      'pricing.enterprise.f3': 'Unlimited history',
+      'pricing.enterprise.f4': 'Dedicated account manager',
+      'pricing.enterprise.f5': 'Priority 24/7 support',
+      'pricing.enterprise.f6': 'Custom training',
+      'pricing.enterprise.cta': 'Talk to Sales',
+      'howItWorks.badge': 'How It Works',
+      'howItWorks.title': 'Ready in less than 1 hour',
+      'howItWorks.subtitle': 'Simple setup, no technical complications',
+      'howItWorks.s1.title': 'Sign Up',
+      'howItWorks.s1.desc': 'Create your free account and add your restaurant information.',
+      'howItWorks.s2.title': 'Configure Menu',
+      'howItWorks.s2.desc': 'Add categories, dishes with photos and prices. Translate to English if you want.',
+      'howItWorks.s3.title': 'Generate QR Code',
+      'howItWorks.s3.desc': 'The system automatically generates a QR Code to print or display.',
+      'howItWorks.s4.title': 'You\'re Ready!',
+      'howItWorks.s4.desc': 'Customers scan and access the menu. Update anytime.',
+      'cta.title': 'Ready to modernize your restaurant?',
+      'cta.subtitle': 'Join the restaurants that already use TableSplit to offer a superior experience to their customers.',
+      'cta.button': 'Start for Free',
+      'footer.privacy': 'Privacy',
+      'footer.terms': 'Terms',
+      'footer.contact': 'Contact',
+      'footer.copy': '© 2025 TableSplit. All rights reserved.'
+    }
+  };
+
+  let currentLang = localStorage.getItem('lang') || 'pt';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (translations[lang][key]) {
+        el.innerHTML = translations[lang][key];
+      }
+    });
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+
+    // Update "MAIS POPULAR" badge
+    const featuredCard = document.querySelector('.pricing-card.featured');
+    if (featuredCard) {
+      featuredCard.style.setProperty('--popular-text', lang === 'en' ? '"MOST POPULAR"' : '"MAIS POPULAR"');
+    }
+
+    document.title = lang === 'pt'
+            ? 'TableSplit - Menu Digital com QR Code para Restaurantes em Portugal'
+            : 'TableSplit - Digital Menu with QR Code for Restaurants in Portugal';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+    setLanguage(currentLang);
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>
