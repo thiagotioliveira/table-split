@@ -18,6 +18,8 @@ server:
 
 app:
   configured: false
+  manager:
+    url: https://www.tablesplit.app
   version: "@project.version@"
 
 logging:
