@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class PrintAgentTokenEntity {
   public PrintAgentTokenEntity(RestaurantEntity restaurant, String token) {
     this.restaurant = restaurant;
     this.token = token;
-    this.createdAt = ZonedDateTime.now();
+    this.createdAt = Time.now();
   }
 
   public static String generateTokenValue() {

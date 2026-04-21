@@ -26,8 +26,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalC
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.UUID;
@@ -829,8 +827,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   DiscountType.PERCENTAGE,
                   new BigDecimal("20"),
                   BigDecimal.ZERO,
-                  LocalDateTime.now(),
-                  LocalDateTime.now().plusMonths(3),
+                  Time.nowLocalDateTime(),
+                  Time.nowLocalDateTime().plusMonths(3),
                   Set.of(DayOfWeek.values()),
                   LocalTime.of(17, 0),
                   LocalTime.of(20, 0),
@@ -847,8 +845,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   DiscountType.PERCENTAGE,
                   new BigDecimal("10"),
                   BigDecimal.ZERO,
-                  LocalDateTime.now(),
-                  LocalDateTime.now().plusMonths(3),
+                  Time.nowLocalDateTime(),
+                  Time.nowLocalDateTime().plusMonths(3),
                   Set.of(
                       DayOfWeek.MONDAY,
                       DayOfWeek.TUESDAY,
@@ -878,8 +876,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   "Combo Casal Perfeito",
                   "Moqueca de Peixe, 2 Caipirinhas e 1 Pudim de Leite.",
                   new BigDecimal("35.00"), // Original around 22 + 7*2 + 4.5 = 40.5
-                  LocalDateTime.now(),
-                  LocalDateTime.now().plusMonths(1),
+                  Time.nowLocalDateTime(),
+                  Time.nowLocalDateTime().plusMonths(1),
                   List.of(
                       new Combo.ComboItem(moqueca.getId(), 1),
                       new Combo.ComboItem(caipirinha.getId(), 2),
@@ -897,8 +895,8 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   "Mix de Entradas",
                   "Dadinhos de Tapioca, Coxinhas de Frango e 2 Chopps Gelados.",
                   new BigDecimal("14.50"), // Original around 7.5 + 6.0 + 2.5 * 2 = 18.5
-                  LocalDateTime.now(),
-                  LocalDateTime.now().plusMonths(1),
+                  Time.nowLocalDateTime(),
+                  Time.nowLocalDateTime().plusMonths(1),
                   List.of(
                       new Combo.ComboItem(dadinhos.getId(), 1),
                       new Combo.ComboItem(coxinhas.getId(), 1),
@@ -920,7 +918,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   new BigDecimal("10"),
                   null,
                   new BigDecimal("30"),
-                  LocalDate.now().plusMonths(6),
+                  Time.nowLocalDate().plusMonths(6),
                   100,
                   List.of(new Coupon.CouponRule(CouponRuleType.NEW_CUSTOMER, "true")),
                   true));
@@ -935,7 +933,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                   new BigDecimal("5"),
                   null,
                   new BigDecimal("50"),
-                  LocalDate.now().plusMonths(1),
+                  Time.nowLocalDate().plusMonths(1),
                   null,
                   List.of(new Coupon.CouponRule(CouponRuleType.MIN_ITEM_QUANTITY, "3")),
                   true));

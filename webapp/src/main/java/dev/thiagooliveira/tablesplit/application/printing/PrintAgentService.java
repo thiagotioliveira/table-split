@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.Print
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.PrintAgentTokenJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class PrintAgentService {
             .findByToken(tokenValue)
             .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
 
-    token.setLastUsedAt(ZonedDateTime.now());
+    token.setLastUsedAt(ZonedDateTime.now(Time.getZoneId()));
     return tokenRepository.save(token);
   }
 }

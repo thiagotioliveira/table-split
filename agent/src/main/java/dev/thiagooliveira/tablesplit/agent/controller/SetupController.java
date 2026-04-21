@@ -65,7 +65,7 @@ public class SetupController {
       @RequestParam String printer,
       RedirectAttributes redirectAttributes) {
     try {
-      String url = managerUrl + "/api/v1/agent/activate";
+      String url = managerUrl + "/api/print-agent/activate";
       var request = Map.of("token", token);
 
       var response = restTemplate.postForEntity(url, request, Map.class);

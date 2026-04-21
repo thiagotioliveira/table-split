@@ -8,9 +8,9 @@
 		<version>1.3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>table-split-agent</artifactId>
-	<version>0.2.2-SNAPSHOT</version>
-	<name>agent</name>
+	<artifactId>table-split-print-agent</artifactId>
+	<version>0.3.0-SNAPSHOT</version>
+	<name>print-agent</name>
 	<description>Print Agent</description>
 
 	<properties/>

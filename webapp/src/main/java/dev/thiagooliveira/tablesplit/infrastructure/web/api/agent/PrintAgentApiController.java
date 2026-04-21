@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.web.api.agent;
+package dev.thiagooliveira.tablesplit.infrastructure.web.api.agent;
 
 import dev.thiagooliveira.tablesplit.application.printing.PrintAgentService;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.PrintAgentTokenEntity;
@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/agent")
+@RequestMapping("/api/print-agent")
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+    name = "app.integration.rabbit.enabled",
+    havingValue = "true")
 public class PrintAgentApiController {
 
   private final PrintAgentService printAgentService;
@@ -33,8 +36,10 @@ public class PrintAgentApiController {
     try {
       PrintAgentTokenEntity token = printAgentService.validateAndUseToken(request.token());
 
-      String effectiveRabbitAddress = (publicRabbitAddresses != null && !publicRabbitAddresses.isBlank()) 
-                                      ? publicRabbitAddresses : rabbitAddresses;
+      String effectiveRabbitAddress =
+          (publicRabbitAddresses != null && !publicRabbitAddresses.isBlank())
+              ? publicRabbitAddresses
+              : rabbitAddresses;
 
       PrintAgentConfigDTO config =
           new PrintAgentConfigDTO(

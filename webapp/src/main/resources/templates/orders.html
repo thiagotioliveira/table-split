@@ -12,6 +12,7 @@
     <script th:inline="javascript">
         const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
         const currencyCode = /*[[${currencyCode}]]*/ 'BRL';
+        const zoneId = /*[[${zoneId}]]*/ 'Europe/Lisbon';
     </script>
     <style>
         /* Orders specific styles */
@@ -1432,7 +1433,7 @@
     }, 5000);
     */
     // SSE connection
-    const restaurantId = [[${restaurantId}]];
+    const restaurantId = /*[[${restaurantId}]]*/ null;
     let eventSource = null;
 
     function connect() {
@@ -1566,14 +1567,30 @@
         if (newBadge) newBadge.textContent = parseInt(newBadge.textContent) + delta;
     }
 
+    function toIsoWithTimeZone(date) {
+        const parts = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: zoneId,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).formatToParts(date);
+
+        const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+
+        return `${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}:${map.second}`;
+    }
+
     // ===== Order History Modal =====
     function openHistoryModal() {
         // Set default dates (last 7 days)
         const today = new Date();
         const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-        document.getElementById('historyDateEnd').value = today.toISOString().slice(0, 16);
-        document.getElementById('historyDateStart').value = weekAgo.toISOString().slice(0, 16);
+        document.getElementById('historyDateEnd').value = toIsoWithTimeZone(today).slice(0, 16);
+        document.getElementById('historyDateStart').value = toIsoWithTimeZone(weekAgo).slice(0, 16);
 
         fetchHistory();
         document.getElementById('historyModal').classList.add('active');
@@ -1593,18 +1610,25 @@
 
         let url = '/orders/history';
         const params = new URLSearchParams();
-        if (start) params.append('start', new Date(start).toISOString());
-        if (end) params.append('end', new Date(end).toISOString());
+        if (start) params.append('start', toIsoWithTimeZone(new Date(start)));
+        if (end) params.append('end', toIsoWithTimeZone(new Date(end)));
 
         if (params.toString()) {
             url += '?' + params.toString();
         }
 
         fetch(url)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Erro ao buscar histórico');
+                return res.json();
+            })
             .then(data => {
-                renderHistoryList(data.orders);
+                renderHistoryList(data.orders || []);
                 updateHistorySummary(data);
+            })
+            .catch(err => {
+                console.error(err);
+                renderHistoryList([]);
             });
     }
 

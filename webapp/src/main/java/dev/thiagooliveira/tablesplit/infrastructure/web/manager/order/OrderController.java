@@ -7,11 +7,11 @@ import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets.TicketWithTable;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.HistoryResponse;
@@ -20,7 +20,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.Tick
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +92,7 @@ public class OrderController {
     model.addAttribute("readyCount", ticketsByStatus.getOrDefault("READY", List.of()).size());
 
     ZonedDateTime startOfDay =
-        ZonedDateTime.now(ZoneId.systemDefault())
-            .toLocalDate()
-            .atStartOfDay(ZoneId.systemDefault());
+        ZonedDateTime.now(Time.getZoneId()).toLocalDate().atStartOfDay(Time.getZoneId());
     ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
     long deliveredTodayCount =
         getHistoryTickets.execute(context.getRestaurant().getId(), startOfDay, endOfDay).stream()
@@ -110,6 +107,7 @@ public class OrderController {
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
+    model.addAttribute("zoneId", Time.getZoneId().getId());
 
     return "orders";
   }
@@ -119,12 +117,16 @@ public class OrderController {
   public HistoryResponse history(
       Authentication auth,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-          ZonedDateTime start,
+          java.time.LocalDateTime start,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-          ZonedDateTime end) {
+          java.time.LocalDateTime end) {
     AccountContext context = (AccountContext) auth.getPrincipal();
+
+    ZonedDateTime zStart = start != null ? start.atZone(Time.getZoneId()) : null;
+    ZonedDateTime zEnd = end != null ? end.atZone(Time.getZoneId()) : null;
+
     List<TicketWithTable> history =
-        getHistoryTickets.execute(context.getRestaurant().getId(), start, end);
+        getHistoryTickets.execute(context.getRestaurant().getId(), zStart, zEnd);
 
     List<TicketModel> orders =
         history.stream()
@@ -212,7 +214,7 @@ public class OrderController {
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(ticket.getCreatedAt());
-    long minutes = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
+    long minutes = Duration.between(ticket.getCreatedAt(), Time.nowZonedDateTime()).toMinutes();
     boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 
     return new TicketModel(

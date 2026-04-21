@@ -1,6 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.utils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,5 +20,17 @@ public class Time {
 
   public static ZoneId getZoneId() {
     return zoneId;
+  }
+
+  public static ZonedDateTime nowZonedDateTime() {
+    return ZonedDateTime.now(zoneId);
+  }
+
+  public static LocalDateTime nowLocalDateTime() {
+    return LocalDateTime.now(zoneId);
+  }
+
+  public static LocalDate nowLocalDate() {
+    return LocalDate.now(zoneId);
   }
 }

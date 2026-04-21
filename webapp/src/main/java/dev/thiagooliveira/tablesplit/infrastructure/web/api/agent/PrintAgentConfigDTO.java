@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.web.api.agent;
+package dev.thiagooliveira.tablesplit.infrastructure.web.api.agent;
 
 import java.util.UUID;
 

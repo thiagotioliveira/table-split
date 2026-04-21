@@ -1,12 +1,12 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class GetItem {
   // ── Private helpers ──────────────────────────────────────────────────────────
 
   private List<Promotion> activePromotions(UUID restaurantId) {
-    var now = LocalDateTime.now();
+    var now = Time.nowLocalDateTime();
     var today = now.getDayOfWeek();
     var currentTime = now.toLocalTime();
 
