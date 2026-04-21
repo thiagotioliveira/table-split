@@ -3,18 +3,21 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 import dev.thiagooliveira.tablesplit.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.ForbiddenException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(NoResourceFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public String handleGenericException(NoResourceFoundException ex, Model model) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
@@ -29,6 +32,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(NotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public String handleNotFoundException(NotFoundException ex, Model model) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
@@ -43,6 +47,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ForbiddenException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public String handleForbiddenException(ForbiddenException ex, Model model) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     boolean authenticated = !new AuthenticationTrustResolverImpl().isAnonymous(authentication);

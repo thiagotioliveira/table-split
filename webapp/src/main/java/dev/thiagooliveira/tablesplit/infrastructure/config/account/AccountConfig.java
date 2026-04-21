@@ -54,4 +54,9 @@ public class AccountConfig {
   public GetStaff getStaff(StaffRepository staffRepository) {
     return new GetStaff(staffRepository);
   }
+
+  @Bean
+  public GetAccount getAccount(AccountRepository accountRepository) {
+    return new GetAccount(accountRepository);
+  }
 }

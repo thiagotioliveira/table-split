@@ -1,10 +1,12 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 
+import dev.thiagooliveira.tablesplit.application.account.GetAccount;
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
@@ -41,6 +43,7 @@ public class CustomerTableController {
   private final SubmitGeneralFeedback submitGeneralFeedback;
   private final TransactionalContext transactionalContext;
   private final MessageSource messageSource;
+  private final GetAccount getAccount;
 
   public CustomerTableController(
       GetRestaurant getRestaurant,
@@ -55,7 +58,8 @@ public class CustomerTableController {
       RateItem rateItem,
       SubmitGeneralFeedback submitGeneralFeedback,
       TransactionalContext transactionalContext,
-      MessageSource messageSource) {
+      MessageSource messageSource,
+      GetAccount getAccount) {
     this.getRestaurant = getRestaurant;
     this.getTables = getTables;
     this.getCategory = getCategory;
@@ -69,6 +73,7 @@ public class CustomerTableController {
     this.submitGeneralFeedback = submitGeneralFeedback;
     this.transactionalContext = transactionalContext;
     this.messageSource = messageSource;
+    this.getAccount = getAccount;
   }
 
   @PostMapping("/@{slug}/table/{tableCode}/customer-name")
@@ -81,6 +86,7 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
     var table = getTable(restaurant, tableCode);
 
     try {
@@ -105,7 +111,8 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
-    var table = getTable(restaurant, tableCode);
+    checkPlan(restaurant);
+    getTable(restaurant, tableCode);
 
     model.addAttribute(
         "profile",
@@ -133,6 +140,7 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
     var table = getTable(restaurant, tableCode);
     var activeOrder = getOrder.execute(table.getId()).orElse(null);
 
@@ -262,6 +270,7 @@ public class CustomerTableController {
           getRestaurant
               .execute(slug)
               .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+      checkPlan(restaurant);
       var table = getTable(restaurant, tableCode);
       var activeOrder = getOrder.execute(table.getId()).orElse(null);
 
@@ -391,6 +400,7 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
     var table =
         getTables
             .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
@@ -423,6 +433,7 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
     request.setRestaurantId(restaurant.getId());
     request.setTableCod(tableCode);
     request.setServiceFee(restaurant.getServiceFee());
@@ -442,6 +453,7 @@ public class CustomerTableController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
 
     java.util.UUID customerId = null;
     if (customerIdStr != null && !customerIdStr.isBlank()) {
@@ -465,6 +477,12 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody RateItemRequest request) {
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
+
     transactionalContext.execute(() -> rateItem.execute(request.itemId(), request.rating()));
     return ResponseEntity.ok().build();
   }
@@ -475,11 +493,28 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody GeneralFeedbackRequest request) {
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    checkPlan(restaurant);
+
     transactionalContext.execute(
         () ->
             submitGeneralFeedback.execute(
                 request.orderId(), request.customerId(), request.rating(), request.comment()));
     return ResponseEntity.ok().build();
+  }
+
+  private void checkPlan(Restaurant restaurant) {
+    var account =
+        getAccount
+            .execute(restaurant.getAccountId())
+            .orElseThrow(() -> new NotFoundException("error.account.not.found"));
+
+    if (account.getEffectivePlan() == Plan.STARTER) {
+      throw new NotFoundException("error.plan.feature.not_available");
+    }
   }
 
   public record RateItemRequest(java.util.UUID itemId, Integer rating) {}
