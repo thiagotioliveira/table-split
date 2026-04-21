@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
@@ -126,7 +127,8 @@ class CustomerTableControllerIT extends H2IT {
   void shouldReturnNotFound_whenPlanIsStarter() throws Exception {
     mockMvc
         .perform(get("/@" + starterRestaurant.getSlug() + "/table/01"))
-        .andExpect(status().isNotFound());
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/@" + starterRestaurant.getSlug() + "/menu"));
 
     mockMvc
         .perform(

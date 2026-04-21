@@ -82,10 +82,7 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody UpdateCustomerNameRequest request) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
     var table = getTable(restaurant, tableCode);
 
@@ -107,11 +104,10 @@ public class CustomerTableController {
   @GetMapping("/@{slug}/table/{tableCode}")
   public String index(
       @PathVariable String slug, @PathVariable String tableCode, Locale locale, Model model) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
-    checkPlan(restaurant);
+    var restaurant = getRestaurantBySlug(slug);
+    if (isStarter(restaurant)) {
+      return redirectToMenu(restaurant);
+    }
     getTable(restaurant, tableCode);
 
     model.addAttribute(
@@ -136,11 +132,10 @@ public class CustomerTableController {
       jakarta.servlet.http.HttpServletResponse response,
       Model model,
       Locale locale) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
-    checkPlan(restaurant);
+    var restaurant = getRestaurantBySlug(slug);
+    if (isStarter(restaurant)) {
+      return redirectToMenu(restaurant);
+    }
     var table = getTable(restaurant, tableCode);
     var activeOrder = getOrder.execute(table.getId()).orElse(null);
 
@@ -266,10 +261,7 @@ public class CustomerTableController {
       @CookieValue(value = "ts_customer_id", required = false) String customerId,
       Locale locale) {
     try {
-      var restaurant =
-          getRestaurant
-              .execute(slug)
-              .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+      var restaurant = getRestaurantBySlug(slug);
       checkPlan(restaurant);
       var table = getTable(restaurant, tableCode);
       var activeOrder = getOrder.execute(table.getId()).orElse(null);
@@ -396,10 +388,7 @@ public class CustomerTableController {
       @PathVariable String tableCode,
       @RequestBody OpenTableRequest request,
       jakarta.servlet.http.HttpServletResponse response) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
     var table =
         getTables
@@ -429,10 +418,7 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody PlaceOrderRequest request) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
     request.setRestaurantId(restaurant.getId());
     request.setTableCod(tableCode);
@@ -449,10 +435,7 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @CookieValue(value = "ts_customer_id", required = false) String customerIdStr) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
 
     java.util.UUID customerId = null;
@@ -477,10 +460,7 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody RateItemRequest request) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
 
     transactionalContext.execute(() -> rateItem.execute(request.itemId(), request.rating()));
@@ -493,10 +473,7 @@ public class CustomerTableController {
       @PathVariable String slug,
       @PathVariable String tableCode,
       @RequestBody GeneralFeedbackRequest request) {
-    var restaurant =
-        getRestaurant
-            .execute(slug)
-            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
 
     transactionalContext.execute(
@@ -507,14 +484,27 @@ public class CustomerTableController {
   }
 
   private void checkPlan(Restaurant restaurant) {
+    if (isStarter(restaurant)) {
+      throw new NotFoundException("error.plan.feature.not_available");
+    }
+  }
+
+  private boolean isStarter(Restaurant restaurant) {
     var account =
         getAccount
             .execute(restaurant.getAccountId())
             .orElseThrow(() -> new NotFoundException("error.account.not.found"));
+    return account.getEffectivePlan() == Plan.STARTER;
+  }
 
-    if (account.getEffectivePlan() == Plan.STARTER) {
-      throw new NotFoundException("error.plan.feature.not_available");
-    }
+  private String redirectToMenu(Restaurant restaurant) {
+    return "redirect:/@" + restaurant.getSlug() + "/menu";
+  }
+
+  private Restaurant getRestaurantBySlug(String slug) {
+    return getRestaurant
+        .execute(slug)
+        .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
   }
 
   public record RateItemRequest(java.util.UUID itemId, Integer rating) {}
