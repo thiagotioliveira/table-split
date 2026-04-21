@@ -2658,6 +2658,13 @@
     const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
     const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
     const tableCode = /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'';
+
+    function getCsrfHeaders() {
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        return (csrfToken && csrfHeader) ? { [csrfHeader]: csrfToken } : {};
+    }
+
     const activePayments = /*[[${customerMenu.payments}]]*/[];
     const tableCustomersNames = /*[[${customerMenu.customers}]]*/ [];
     const isReviewMode = /*[[${customerMenu.reviewMode}]]*/ false;
@@ -2869,7 +2876,10 @@
             try {
                 const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/waiter/call`, {
                     method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...getCsrfHeaders()
+                    }
                 });
                 if (response.ok) {
                     localStorage.setItem('lastWaiterCallTime', now);
@@ -3068,9 +3078,9 @@
         try {
             const response = await fetch(window.location.pathname + '/order', {
                 method: 'POST',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    ...getCsrfHeaders()
                 },
                 body: JSON.stringify(orderRequest)
             });
@@ -3215,15 +3225,12 @@
         updateOrdersUI();
 
         try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-            
             const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/item`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                    ...getCsrfHeaders()
                 },
                 body: JSON.stringify({ itemId, rating })
             });
@@ -3250,22 +3257,14 @@
 
         
         try {
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-            
             const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/general`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                    ...getCsrfHeaders()
                 },
-                body: JSON.stringify({ 
-                    orderId: activeOrderId, 
-                    customerId: myCustomerId, 
-                    rating: selectedExpRating, 
-                    comment: comment 
-                })
+                body: JSON.stringify({ rating: selectedExpRating, comment })
             });
 
             if (response.ok) {
@@ -3424,7 +3423,10 @@
                 try {
                     const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/customer-name`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            ...getCsrfHeaders()
+                        },
                         body: JSON.stringify({ customerId: myCustomerId, name: newName })
                     });
                     if (response.status === 409) {
@@ -4069,7 +4071,10 @@
 
         fetch(entryTablePath, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...getCsrfHeaders()
+            },
             body: JSON.stringify({ customerId: customer.id, customerName: customer.name })
         })
         .then(response => {

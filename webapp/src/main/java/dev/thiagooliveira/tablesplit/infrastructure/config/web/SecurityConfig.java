@@ -124,7 +124,9 @@ public class SecurityConfig {
                       "/images/**",
                       "/@**",
                       "/@**/**",
-                      "/api/print-agent/**")
+                      "/api/print-agent/**",
+                      "/api/notifications/sse/subscribe/**",
+                      "/api/notifications/push/public-key")
                   .permitAll();
 
               if (env.acceptsProfiles(Profiles.of("h2"))) {

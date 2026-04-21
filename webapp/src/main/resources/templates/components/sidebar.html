@@ -98,7 +98,7 @@
     </div>
 </header>
 
-    <script src="/js/push-notifications.js?v=20260421-1"></script>
+    <script th:src="@{/js/push-notifications.js(v=${appVersion})}"></script>
 
     <script th:inline="javascript">
     // Sidebar functions
@@ -160,7 +160,7 @@
         const restaurantId = /*[[${context.restaurant.id}]]*/ null;
         const contextData = /*[[${context}]]*/ null;
         console.log('Sidebar Context:', contextData);
-        const alertSoundUrl = /*[[@{/sounds/alert.mp3}]]*/ '/sounds/alert.mp3';
+        const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
         
         const updateOrdersBadge = () => {
             const badge = document.getElementById('ordersBadge');
