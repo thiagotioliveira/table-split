@@ -136,7 +136,7 @@ public enum Module {
   }
 
   public static Set<Module> staffAvailableModules() {
-    return Set.of(MENU, PROMOTIONS, TABLES, ORDERS, RESERVATION, GALLERY, REPORTS);
+    return Set.of(MENU, PROMOTIONS, TABLES, ORDERS, GALLERY, REPORTS);
   }
 
   public static List<Module> sidebarModules(Plan plan) {
