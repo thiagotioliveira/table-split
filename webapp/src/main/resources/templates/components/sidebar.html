@@ -159,7 +159,6 @@
     {
         const restaurantId = /*[[${context.restaurant.id}]]*/ null;
         const contextData = /*[[${context}]]*/ null;
-        console.log('Sidebar Context:', contextData);
         const alertSoundUrl = /*[[@{/media/alert.wav}]]*/ '/media/alert.wav';
         
         const updateOrdersBadge = () => {
@@ -232,12 +231,15 @@
                     const type = payload.type;
                     
                     // New Ticket or Status alert
-                    if (type === 'TICKET_CREATED' || type === 'TICKET_STATUS_CHANGED') {
+                    if (type === 'TICKET_CREATED') {
                         const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
                         if (soundEnabled) {
                             const audio = new Audio(alertSoundUrl);
                             audio.play().catch(e => console.log('Audio blocked', e));
                         }
+                    }
+
+                    if (type === 'TICKET_CREATED' || type === 'TICKET_STATUS_CHANGED') {
                         updateOrdersBadge();
                     }
                     
