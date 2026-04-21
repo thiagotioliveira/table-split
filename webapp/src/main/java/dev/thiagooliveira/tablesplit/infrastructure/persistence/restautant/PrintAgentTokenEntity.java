@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
 import dev.thiagooliveira.tablesplit.domain.common.Time;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -33,6 +34,28 @@ public class PrintAgentTokenEntity {
 
   public static String generateTokenValue() {
     return "pa_live_" + UUID.randomUUID().toString().replace("-", "");
+  }
+
+  public PrintAgentToken toDomain() {
+    var domain = new PrintAgentToken();
+    domain.setId(this.id);
+    domain.setToken(this.token);
+    domain.setRestaurantId(this.restaurant.getId());
+    domain.setCreatedAt(this.createdAt);
+    domain.setLastUsedAt(this.lastUsedAt);
+    return domain;
+  }
+
+  public static PrintAgentTokenEntity fromDomain(PrintAgentToken domain) {
+    var entity = new PrintAgentTokenEntity();
+    entity.setId(domain.getId());
+    entity.setToken(domain.getToken());
+    var restaurant = new RestaurantEntity();
+    restaurant.setId(domain.getRestaurantId());
+    entity.setRestaurant(restaurant);
+    entity.setCreatedAt(domain.getCreatedAt());
+    entity.setLastUsedAt(domain.getLastUsedAt());
+    return entity;
   }
 
   public UUID getId() {

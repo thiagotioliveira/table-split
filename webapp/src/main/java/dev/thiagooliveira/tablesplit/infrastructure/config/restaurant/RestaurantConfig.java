@@ -2,14 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
-import dev.thiagooliveira.tablesplit.application.restaurant.CreateRestaurant;
-import dev.thiagooliveira.tablesplit.application.restaurant.DeleteRestaurantImage;
-import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
-import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurantImages;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
-import dev.thiagooliveira.tablesplit.application.restaurant.SetRestaurantCoverImage;
-import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
-import dev.thiagooliveira.tablesplit.application.restaurant.UploadRestaurantImage;
+import dev.thiagooliveira.tablesplit.application.restaurant.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -57,5 +50,22 @@ public class RestaurantConfig {
   public SetRestaurantCoverImage setRestaurantCoverImage(
       RestaurantRepository restaurantRepository) {
     return new SetRestaurantCoverImage(restaurantRepository);
+  }
+
+  @Bean
+  public GetOrCreateToken getOrCreateToken(
+      PrintAgentTokenRepository tokenRepository, RestaurantRepository restaurantRepository) {
+    return new GetOrCreateToken(tokenRepository, restaurantRepository);
+  }
+
+  @Bean
+  public RegenerateToken regenerateToken(
+      PrintAgentTokenRepository tokenRepository, RestaurantRepository restaurantRepository) {
+    return new RegenerateToken(tokenRepository, restaurantRepository);
+  }
+
+  @Bean
+  public ValidateAndUseToken validateAndUseToken(PrintAgentTokenRepository tokenRepository) {
+    return new ValidateAndUseToken(tokenRepository);
   }
 }

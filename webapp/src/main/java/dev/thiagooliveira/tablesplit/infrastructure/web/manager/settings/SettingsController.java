@@ -1,7 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings;
 
-import dev.thiagooliveira.tablesplit.application.printing.PrintAgentService;
+import dev.thiagooliveira.tablesplit.application.restaurant.GetOrCreateToken;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.application.restaurant.RegenerateToken;
 import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
@@ -17,6 +18,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.settings.model.SettingsModel;
 import jakarta.validation.Valid;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,17 +35,23 @@ public class SettingsController {
   private final TransactionalContext transactionalContext;
   private final GetRestaurant getRestaurant;
   private final UpdateRestaurant updateRestaurant;
-  private final PrintAgentService printAgentService;
+  private final GetOrCreateToken getOrCreateToken;
+  private final RegenerateToken regenerateToken;
+  private final MessageSource messageSource;
 
   public SettingsController(
       TransactionalContext transactionalContext,
       GetRestaurant getRestaurant,
       UpdateRestaurant updateRestaurant,
-      PrintAgentService printAgentService) {
+      GetOrCreateToken getOrCreateToken,
+      RegenerateToken regenerateToken,
+      MessageSource messageSource) {
     this.transactionalContext = transactionalContext;
     this.getRestaurant = getRestaurant;
     this.updateRestaurant = updateRestaurant;
-    this.printAgentService = printAgentService;
+    this.getOrCreateToken = getOrCreateToken;
+    this.regenerateToken = regenerateToken;
+    this.messageSource = messageSource;
   }
 
   @GetMapping
@@ -50,7 +59,8 @@ public class SettingsController {
     ContextModel context = (ContextModel) model.getAttribute("context");
     var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
 
-    String printToken = printAgentService.getOrCreateToken(restaurant.getId());
+    String printToken =
+        this.transactionalContext.execute(() -> this.getOrCreateToken.execute(restaurant.getId()));
 
     model.addAttribute("form", new SettingsModel(restaurant));
     model.addAttribute("languages", Language.values());
@@ -67,9 +77,11 @@ public class SettingsController {
     ContextModel context = (ContextModel) model.getAttribute("context");
     if (!context.isProfessionalOrHigher()) {
       throw new org.springframework.security.access.AccessDeniedException(
-          "Funcionalidade disponível apenas no plano Profissional");
+          messageSource.getMessage(
+              "error.plan.feature.professional_only", null, LocaleContextHolder.getLocale()));
     }
-    printAgentService.regenerateToken(context.getRestaurant().getId());
+    this.transactionalContext.execute(
+        () -> regenerateToken.execute(context.getRestaurant().getId()));
     redirectAttributes.addFlashAttribute(
         "alert", AlertModel.success("alert.settings.print.token.regenerated"));
     return "redirect:/settings";

@@ -1,7 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.api.agent;
 
-import dev.thiagooliveira.tablesplit.application.printing.PrintAgentService;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.PrintAgentTokenEntity;
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.application.restaurant.ValidateAndUseToken;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
     havingValue = "true")
 public class PrintAgentApiController {
 
-  private final PrintAgentService printAgentService;
+  private final ValidateAndUseToken validateAndUseToken;
+  private final GetRestaurant getRestaurant;
   private final dev.thiagooliveira.tablesplit.infrastructure.persistence.account
           .AccountJpaRepository
       accountRepository;
@@ -31,21 +33,23 @@ public class PrintAgentApiController {
   private String rabbitPassword;
 
   public PrintAgentApiController(
-      PrintAgentService printAgentService,
+      ValidateAndUseToken validateAndUseToken,
+      GetRestaurant getRestaurant,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountJpaRepository
           accountRepository) {
-    this.printAgentService = printAgentService;
+    this.validateAndUseToken = validateAndUseToken;
+    this.getRestaurant = getRestaurant;
     this.accountRepository = accountRepository;
   }
 
   @PostMapping("/activate")
   public ResponseEntity<PrintAgentConfigDTO> activate(@RequestBody ActivationRequest request) {
     try {
-      PrintAgentTokenEntity token = printAgentService.validateAndUseToken(request.token());
+      PrintAgentToken token = validateAndUseToken.execute(request.token());
 
       var account =
           accountRepository
-              .findById(token.getRestaurant().getAccountId())
+              .findById(token.getRestaurantId())
               .orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
       if (account.getPlan() != dev.thiagooliveira.tablesplit.domain.account.Plan.PROFESSIONAL
@@ -58,15 +62,20 @@ public class PrintAgentApiController {
               ? publicRabbitAddresses
               : rabbitAddresses;
 
+      var restaurant =
+          getRestaurant
+              .execute(token.getRestaurantId())
+              .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
+
       PrintAgentConfigDTO config =
           new PrintAgentConfigDTO(
-              token.getRestaurant().getId(),
-              token.getRestaurant().getName(),
+              token.getRestaurantId(),
+              restaurant.getName(),
               effectiveRabbitAddress,
               rabbitUsername,
               rabbitPassword,
-              "restaurant." + token.getRestaurant().getId() + ".queue",
-              "restaurant." + token.getRestaurant().getId() + ".orders");
+              "restaurant." + token.getRestaurantId() + ".queue",
+              "restaurant." + token.getRestaurantId() + ".orders");
 
       return ResponseEntity.ok(config);
     } catch (IllegalArgumentException e) {
