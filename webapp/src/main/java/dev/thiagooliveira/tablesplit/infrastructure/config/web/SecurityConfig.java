@@ -7,12 +7,15 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +30,12 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  private final Environment env;
+
+  public SecurityConfig(Environment env) {
+    this.env = env;
+  }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -50,9 +59,9 @@ public class SecurityConfig {
   @Order(1)
   public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/api/system/**")
-        .csrf(csrf -> csrf.disable())
-        .formLogin(form -> form.disable())
-        .logout(logout -> logout.disable())
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .logout(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .httpBasic(
             httpBasic ->
@@ -74,54 +83,64 @@ public class SecurityConfig {
   public SecurityFilterChain webSecurityFilterChain(HttpSecurity http, TenantFilter tenantFilter)
       throws Exception {
 
-    http.csrf(csrf -> csrf.disable()) // desabilita CSRF se for necessário (por ex. APIs)
-        .headers(
-            headers ->
-                headers.frameOptions(
-                    HeadersConfigurer.FrameOptionsConfig
-                        ::sameOrigin)) // H2 console nao funciona sem isso TODO
-        .authorizeHttpRequests(
-            auth ->
-                auth
-                    // Recursos públicos
-                    .requestMatchers(
-                        "/",
-                        "/actuator/health",
-                        "/actuator/info",
-                        "/login",
-                        "/forgot-password",
-                        "/login-staff",
-                        "/register",
-                        "/css/**",
-                        "/media/**",
-                        "/js/**",
-                        "/pwa-install.js",
-                        "/manifest.json",
-                        "/sw.js",
-                        "/favicon.ico",
-                        "/images/**",
-                        "/@**",
-                        "/@**/**",
-                        "/api/notifications/**",
-                        "/api/print-agent/**",
-                        "/h2-console/**")
-                    .permitAll()
+    // Configuração de Headers baseada em perfil
+    http.headers(
+        headers -> {
+          if (env.acceptsProfiles(Profiles.of("h2"))) {
+            headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
+          }
+        });
 
-                    // Qualquer /@{algo} público
-                    .requestMatchers("/@**")
-                    .permitAll()
+    // Configuração de CSRF baseada em perfil
+    http.csrf(
+        csrf -> {
+          if (env.acceptsProfiles(Profiles.of("prod"))) {
+            csrf.ignoringRequestMatchers("/api/print-agent/**");
+            if (env.acceptsProfiles(Profiles.of("h2"))) {
+              csrf.ignoringRequestMatchers("/h2-console/**");
+            }
+          } else {
+            csrf.disable();
+          }
+        });
 
-                    // Recursos protegidos
-                    .requestMatchers(
-                        Arrays.stream(Module.values())
-                            .filter(Module::isActive)
-                            .map(m -> String.format("/%s/**", m.getView()))
-                            .toArray(String[]::new))
-                    .authenticated()
+    http.authorizeHttpRequests(
+            auth -> {
+              auth.requestMatchers(
+                      "/",
+                      "/actuator/health",
+                      "/actuator/info",
+                      "/login",
+                      "/forgot-password",
+                      "/login-staff",
+                      "/register",
+                      "/css/**",
+                      "/media/**",
+                      "/js/**",
+                      "/pwa-install.js",
+                      "/manifest.json",
+                      "/sw.js",
+                      "/favicon.ico",
+                      "/images/**",
+                      "/@**",
+                      "/@**/**",
+                      "/api/notifications/**",
+                      "/api/print-agent/**")
+                  .permitAll();
 
-                    // Qualquer outra requisição exige autenticação
-                    .anyRequest()
-                    .authenticated())
+              if (env.acceptsProfiles(Profiles.of("h2"))) {
+                auth.requestMatchers("/h2-console/**").permitAll();
+              }
+
+              auth.requestMatchers(
+                      Arrays.stream(Module.values())
+                          .filter(Module::isActive)
+                          .map(m -> String.format("/%s/**", m.getView()))
+                          .toArray(String[]::new))
+                  .authenticated()
+                  .anyRequest()
+                  .authenticated();
+            })
         .formLogin(
             form ->
                 form.loginPage("/login")
