@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesas</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <title th:text="#{page.tables.title}">Mesas</title>
     <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
     <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
@@ -3088,7 +3089,7 @@
                 <div class="waiter-alerts-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                 </div>
-                <span class="waiter-alerts-title">Chamadas de Garçom</span>
+                <span class="waiter-alerts-title" th:text="#{page.tables.waiter.alerts.title}">Chamadas de Garçom</span>
             </div>
             <div class="waiter-alerts-list" id="waiterAlertsList">
                 <!-- Alerts will be added here dynamically -->
@@ -3108,33 +3109,33 @@
                 </button>
 
                 <div class="tables-panel-header" th:if="${false}">
-                    <h2>Minhas Mesas</h2>
-                    <p>12 mesas atribuídas</p>
+                    <h2 th:text="#{page.tables.panel.title}">Minhas Mesas</h2>
+                    <p th:text="#{page.tables.panel.subtitle(12)}">12 mesas atribuídas</p>
                 </div>
 
                 <div class="waiter-info-bar" th:if="${false}">
                     <div class="waiter-avatar">CS</div>
                     <div class="waiter-details">
-                        <div class="name">Carlos Silva</div>
-                        <div class="shift">Turno: 18:00 - 02:00</div>
+                        <div class="name" th:text="${session.user != null ? session.user.name : 'Staff'}">Carlos Silva</div>
+                        <div class="shift" th:text="#{page.tables.panel.staff.shift}">Turno: 18:00 - 02:00</div>
                     </div>
                 </div>
 
                 <div class="tables-filter">
                     <div class="filter-buttons">
                         <button class="filter-btn active" onclick="filterTables('all')">
-                            Todas <span class="count" th:text="${count}">12</span>
+                            <span th:text="#{page.tables.filter.all}">Todas</span> <span class="count" th:text="${count}">12</span>
                         </button>
                         <button class="filter-btn" onclick="filterTables('free')">
-                            Livres <span class="count" th:text="${countAvailable}">4</span>
+                            <span th:text="#{page.tables.filter.free}">Livres</span> <span class="count" th:text="${countAvailable}">4</span>
                         </button>
                         <button class="filter-btn" onclick="filterTables('occupied')">
-                            Ocupadas <span class="count" th:text="${countOccupied}">6</span>
+                            <span th:text="#{page.tables.filter.occupied}">Ocupadas</span> <span class="count" th:text="${countOccupied}">6</span>
                         </button>
                     </div>
                     <button class="add-table-btn" onclick="openNewTableModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                        Nova Mesa
+                        <span th:text="#{page.tables.button.new}">Nova Mesa</span>
                     </button>
                 </div>
 
@@ -3147,15 +3148,15 @@
                           th:data-status="${table.status.name().toLowerCase()}" 
                           th:onclick="selectTable(this.getAttribute('data-table'))">
                         <div class="table-card-header">
-                            <span class="table-number" th:text="${'Mesa ' + table.cod}">Mesa 01</span>
+                            <span class="table-number" th:text="#{page.tables.card.table(${table.cod})}">Mesa 01</span>
                             <span class="table-status" 
                                   th:classappend="${table.status.name().toLowerCase()}" 
-                                  th:text="${table.status.name() == 'AVAILABLE' ? 'Livre' : (table.status.name() == 'WAITING' ? 'Aguardando' : 'Ocupada')}">Status</span>
+                                  th:text="${table.status.name() == 'AVAILABLE' ? #messages.msg('page.tables.status.free') : (table.status.name() == 'WAITING' ? #messages.msg('page.tables.status.waiting') : (table.status.name() == 'BILL' ? #messages.msg('page.tables.status.bill') : #messages.msg('page.tables.status.occupied')))}">Status</span>
                         </div>
                         <div class="table-card-info">
-                            <span th:if="${table.status.name() == 'AVAILABLE'}">Disponível</span>
-                            <span th:if="${table.status.name() == 'WAITING'}">Aguardando Pedido</span>
-                            <span th:if="${table.status.name() == 'OCCUPIED'}">Em uso</span>
+                            <span th:if="${table.status.name() == 'AVAILABLE'}" th:text="#{page.tables.card.status.free}">Disponível</span>
+                            <span th:if="${table.status.name() == 'WAITING'}" th:text="#{page.tables.card.status.waiting}">Aguardando Pedido</span>
+                            <span th:if="${table.status.name() == 'OCCUPIED'}" th:text="#{page.tables.card.status.occupied}">Em uso</span>
                             <span class="table-total" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(table.balance, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                         </div>
                     </div>
@@ -3168,25 +3169,27 @@
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <button class="show-tables-btn" onclick="openTablesPanel()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-                            Ver Mesas
+                            <span th:text="#{page.tables.header.view.tables}">Ver Mesas</span>
                         </button>
                         <div class="selected-table-info" id="selectedTableInfo">
                             <div id="activeTableInfo">
-                                <h2 th:if="${selectedTableObj == null}">Selecione uma mesa</h2>
-                                <p th:if="${selectedTableObj == null}">Clique em uma mesa na lista para gerenciá-la</p>
+                                <h2 th:if="${selectedTableObj == null}" th:text="#{page.tables.header.selection.empty.title}">Selecione uma mesa</h2>
+                                <p th:if="${selectedTableObj == null}" th:text="#{page.tables.header.selection.empty.subtitle}">Clique em uma mesa na lista para gerenciá-la</p>
                                 
-                                <h2 th:if="${selectedTableObj != null}" th:text="${'Mesa ' + selectedTableObj.cod}">Mesa XX</h2>
+                                <h2 th:if="${selectedTableObj != null}" th:text="#{page.tables.card.table(${selectedTableObj.cod})}">Mesa XX</h2>
                                 <p th:if="${selectedTableObj != null}">
-                                    <span th:text="${orderLoaded ? 'Mesa ocupada' : 'Mesa livre - Pronta para novos clientes'}">Status</span>
+                                    <span th:text="${orderLoaded ? #messages.msg('page.tables.header.status.occupied') : #messages.msg('page.tables.header.status.free')}">Status</span>
                                     <span th:if="${orderLoaded and orderTimeAgo != null}" 
-                                          th:text="${' • Ativa ' + orderTimeAgo}"
                                           th:title="${'Aberta em: ' + orderOpenedAtFormatted}"
-                                          style="color: var(--muted); font-size: 0.85rem; font-weight: 400; cursor: help;"> • Ativa agora</span>
+                                          style="color: var(--muted); font-size: 0.85rem; font-weight: 400; cursor: help;">
+                                        <span th:text="#{page.tables.header.status.active(${orderTimeAgo})}">Ativa h? X min</span>
+                                        <span th:text="' • ' + #{page.tables.header.status.active.now}"> • Ativa agora</span>
+                                    </span>
                                 </p>
                             </div>
                             <div id="historyViewInfo" style="display: none;">
-                                <h2 id="historyHeaderTitle">Histórico - Mesa XX</h2>
-                                <p id="historyHeaderDates">Abertura: --/-- | Fechamento: --/--</p>
+                                <h2 id="historyHeaderTitle" th:text="#{page.tables.header.history.title('XX')}">Histórico - Mesa XX</h2>
+                                <p id="historyHeaderDates" th:text="#{page.tables.header.history.subtitle('--/--', '--/--')}">Abertura: --/-- | Fechamento: --/--</p>
                             </div>
                         </div>
                     </div>
@@ -3194,29 +3197,29 @@
                         <div id="activeOrderActions" style="display: contents;">
                             <button class="action-btn primary" id="btnNewOrder" onclick="openOrderModal(selectedTable, selectedTableCod)" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                <span>Novo Pedido</span>
+                                <span th:text="#{page.tables.button.order.new}">Novo Pedido</span>
                             </button>
                             <button class="action-btn" onclick="openHistoryModal()">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                <span>Histórico</span>
+                                <span th:text="#{page.tables.button.history}">Histórico</span>
                             </button>
                             <button class="action-btn purple" id="btnViewBill" onclick="openBillModal()" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                <span>Ver Conta</span>
+                                <span th:text="#{page.tables.button.bill.view}">Ver Conta</span>
                             </button>
                             <button class="action-btn" onclick="openQrModal(selectedTableCod)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
-                                <span>QR Code</span>
+                                <span th:text="#{page.tables.button.qr}">QR Code</span>
                              </button>
                              <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                <span>Fechar Mesa</span>
+                                <span th:text="#{page.tables.button.table.close}">Fechar Mesa</span>
                             </button>
                         </div>
                         <div id="historyViewActions" style="display: none;">
                             <button class="action-btn" onclick="exitHistoryView()">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                <span>Voltar para Mesa</span>
+                                <span th:text="#{page.tables.button.back.to.table}">Voltar para Mesa</span>
                             </button>
                         </div>
                     </div>
@@ -3228,8 +3231,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                         </svg>
-                        <h3>Nenhuma mesa selecionada</h3>
-                        <p>Selecione uma mesa na lista para ver os pedidos e gerenciar</p>
+                        <h3 th:text="#{page.tables.main.empty.title}">Nenhuma mesa selecionada</h3>
+                        <p th:text="#{page.tables.main.empty.subtitle}">Selecione uma mesa na lista para ver os pedidos e gerenciar</p>
                     </div>
 
                     <!-- Detalhe da Mesa -->
@@ -3238,19 +3241,19 @@
                         <div class="quick-actions" id="quickActionsEmpty" th:style="${selectedTableObj != null && !orderLoaded} ? 'display: grid;' : 'display: none;'">
                             <div class="quick-action-card" onclick="openTable()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span>Abrir Mesa</span>
+                                <span th:text="#{page.tables.quick.open}">Abrir Mesa</span>
                             </div>
                             <div class="quick-action-card" onclick="openQrModal(selectedTableCod)">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
-                                <span>QR Code</span>
+                                <span th:text="#{page.tables.button.qr}">QR Code</span>
                             </div>
                             <div class="quick-action-card" style="color: var(--foreground);" onclick="openDeleteTableModal()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                <span>Excluir Mesa</span>
+                                <span th:text="#{page.tables.quick.delete}">Excluir Mesa</span>
                             </div>
                             <div class="quick-action-card" onclick="openReservationsModal()" th:if="${false}">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span>Ver Reservas</span>
+                                <span th:text="#{page.tables.quick.reservations}">Ver Reservas</span>
                             </div>
                         </div>
 
@@ -3259,7 +3262,7 @@
                             <div class="section-header">
                                 <h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                    Clientes na Mesa
+                                    <span th:text="#{page.tables.clients.title}">Clientes na Mesa</span>
                                 </h3>
                             </div>
 
@@ -3308,7 +3311,7 @@
                                                             th:attr="onclick=|resetToPending('${item.id}', '${item.name}')|">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                                                     </button>
-                                                    <button th:if="${item.status != 'Cancelado'}" class="order-item-action cancel" title="Cancelar" 
+                                                    <button th:if="${item.status != 'CANCELLED' and item.status != 'Cancelado'}" class="order-item-action cancel" th:title="#{page.tables.modal.cancel.item.title}" 
                                                             th:attr="onclick=|openCancelItemModal('${item.id}', '${item.name}', ${item.quantity}, ${item.unitPrice})|">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                                     </button>
@@ -3319,12 +3322,12 @@
                                 </div>
                                 <button class="add-order-btn" th:attr="onclick=|openOrderModal(selectedTable, selectedTableCod, '${client.key.name}')|">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                    Adicionar pedido para <span th:text="${client.key.name}">Cliente</span>
+                                    <span th:text="#{page.tables.clients.button.add.for(${client.key.name})}">Adicionar pedido para Cliente</span>
                                 </button>
                             </div>
 
                             <div th:if="${clients == null || clients.empty}" style="padding: 2rem; text-align: center; color: var(--muted);">
-                                Nenhum item pedido nesta mesa ainda.
+                                <p th:text="#{page.tables.clients.empty}">No items ordered at this table yet.</p>
                             </div>
 
                         </div>
@@ -3333,25 +3336,25 @@
                         <div class="bill-summary" th:if="${orderLoaded}">
                             <h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                Resumo da Conta
+                                <span th:text="#{page.tables.bill.summary.title}">Resumo da Conta</span>
                             </h3>
                             <div class="bill-row">
-                                <span>Subtotal</span>
+                                <span th:text="#{page.tables.bill.label.subtotal}">Subtotal</span>
                                 <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                             </div>
                             <div class="bill-row">
-                                <span>Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
+                                <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
                                 <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                             </div>
                             <div class="bill-row total">
-                                <span>Total da Mesa</span>
+                                <span th:text="#{page.tables.bill.label.total}">Total da Mesa</span>
                                 <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                             </div>
 
                             <div class="payments-history" th:if="${not #lists.isEmpty(payments)}">
                                 <h3>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-                                    Pagamentos Realizados
+                                    <span th:text="#{page.tables.bill.payments.title}">Pagamentos Realizados</span>
                                 </h3>
                                 <div class="payment-history-item" th:each="payment : ${payments}">
                                     <div class="payment-info">
@@ -3376,17 +3379,17 @@
                                     </div>
                                 </div>
                                 <div class="bill-row paid">
-                                    <span>Total Pago</span>
+                                    <span th:text="#{page.tables.bill.label.paid}">Total Pago</span>
                                     <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderPaidAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                                 </div>
                                 <div class="bill-row remaining">
-                                    <span>Saldo Restante</span>
+                                    <span th:text="#{page.tables.bill.label.remaining}">Saldo Restante</span>
                                     <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                                 </div>
                             </div>
                             <button class="close-table-btn" onclick="openCloseTableModal()" th:if="${false}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></svg>
-                                Fechar Mesa
+                                <span th:text="#{page.tables.modal.close.title(selectedTableCod)}">Close Table</span>
                             </button>
                         </div>
                     </div>
@@ -3403,9 +3406,51 @@
     const orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
 
+    const i18n = {
+        cardTable: /*[[#{page.tables.card.table('')}]]*/ 'Table {0}',
+        headerStatusActive: /*[[#{page.tables.header.status.active('')}]]*/ 'Active {0}',
+        headerStatusActiveNow: /*[[#{page.tables.header.status.active.now}]]*/ 'Active Now',
+        headerOpenedAt: /*[[#{page.tables.header.status.opened.at('')}]]*/ 'Opened: {0}',
+        waiterAlertsTitle: /*[[#{page.tables.waiter.alerts.title}]]*/ 'Waiter Calls',
+        statusOpen: /*[[#{page.tables.js.status.open}]]*/ 'Open',
+        statusPending: /*[[#{page.tables.js.status.pending}]]*/ 'Pending',
+        statusClosed: /*[[#{page.tables.js.status.closed}]]*/ 'Closed',
+        statusCancelled: /*[[#{page.tables.js.status.cancelled}]]*/ 'Cancelled',
+        errorNoTableSelected: /*[[#{page.tables.js.error.no.table.simple}]]*/ 'No table selected',
+        errorNoTableSelectedBody: /*[[#{page.tables.js.error.no.table}]]*/ 'Error: No table selected.',
+        historyHeaderTitle: /*[[#{page.tables.header.history.title}]]*/ 'History - Table {0}',
+        historyHeaderSubtitle: /*[[#{page.tables.header.history.subtitle}]]*/ 'Opened: {0} | Closed: {1}',
+        historyFilterPrompt: /*[[#{page.tables.modal.history.placeholder.filter}]]*/ 'Click filter to load history',
+        historyEmpty: /*[[#{page.tables.modal.history.placeholder.empty}]]*/ 'No orders found',
+        statusBill: /*[[#{page.tables.js.status.bill}]]*/ 'Bill Requested',
+        errorSelectCustomer: /*[[#{page.tables.js.error.select.customer}]]*/ 'Select a customer for payment',
+        errorInvalidAmount: /*[[#{page.tables.js.error.invalid.amount}]]*/ 'Inform a valid amount for payment',
+        billSummaryHistoryTitle: /*[[#{page.tables.modal.order.summary.title}]]*/ 'Order Summary (History)',
+        billLabelSubtotal: /*[[#{page.tables.bill.label.subtotal}]]*/ 'Subtotal',
+        billLabelServiceFee: /*[[#{page.tables.bill.label.service.fee}]]*/ 'Service fee ({0}%)',
+        billLabelTotal: /*[[#{page.tables.bill.label.total}]]*/ 'Total',
+        paymentsHistoryTitle: /*[[#{page.tables.bill.payments.title}]]*/ 'Payments in History',
+        clientOrderHistoryTitle: /*[[#{page.tables.clients.title}]]*/ 'Customers in Order (History)',
+        historyClientsTitle: /*[[#{page.tables.modal.history.clients.title}]]*/ 'Customers in Order (History)',
+        historyPaymentsTitle: /*[[#{page.tables.modal.history.payments.title}]]*/ 'Payments in History',
+        noNotifications: /*[[#{page.tables.modal.notifications.empty}]]*/ 'No pending notifications',
+        goToTable: /*[[#{page.tables.modal.notifications.go.to.table}]]*/ 'Go to table',
+        historyPlaceholderFilter: /*[[#{page.tables.modal.history.placeholder.filter}]]*/ 'Click filter to load history',
+        historyNoOrders: /*[[#{page.tables.modal.history.placeholder.empty}]]*/ 'No orders found',
+        cancelErrorDefault: /*[[#{page.tables.js.cancel.error.default}]]*/ 'Error cancelling item. Please try again.',
+        cancelErrorNetwork: /*[[#{page.tables.js.cancel.error.network}]]*/ 'Network error when cancelling item.',
+        timeAgoNow: /*[[#{page.tables.js.time.ago.now}]]*/ 'now',
+        timeAgoOneMin: /*[[#{page.tables.js.time.ago.one.min}]]*/ '1 min ago',
+        timeAgoMins: /*[[#{page.tables.js.time.ago.mins}]]*/ '{0} min ago',
+        feedbackRedirect: /*[[#{page.tables.js.feedback.redirect}]]*/ 'Your opinion is very important to us. Redirecting in {0} seconds...',
+        newClientPrompt: /*[[#{page.tables.js.new.client.prompt}]]*/ 'New customer name:',
+        newClientErrorMinLength: /*[[#{page.tables.js.new.client.error.min.length}]]*/ 'Customer name must be at least 3 characters.',
+        btnAddClient: /*[[#{page.tables.add.client}]]*/ '+Client'
+    };
+
     function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
-            alert('Nenhuma mesa selecionada');
+            alert(i18n.errorNoTableSelectedBody);
             return;
         }
 
@@ -3534,7 +3579,8 @@
         if (card) {
             card.classList.add('selected');
             selectedTable = tableId;
-            selectedTableCod = card.querySelector('.table-number').textContent.replace('Mesa ', '').trim();
+            const tablePrefix = i18n.cardTable.replace('{0}', '').trim();
+            selectedTableCod = card.querySelector('.table-number').textContent.replace(tablePrefix, '').trim();
 
             // Close mobile panel
             closeTablesPanel();
@@ -3543,10 +3589,10 @@
 
     function getStatusText(status) {
         const texts = {
-            free: 'Mesa livre - Pronta para novos clientes',
-            occupied: 'Mesa ocupada',
-            waiting: 'Pedidos prontos aguardando entrega',
-            bill: 'Cliente solicitou a conta'
+            free: i18n.statusOpen,
+            occupied: i18n.statusPending,
+            waiting: i18n.statusClosed,
+            bill: i18n.statusBill
         };
         return texts[status] || '';
     }
@@ -3575,9 +3621,9 @@
     // Notifications
     // =====================
     const notifications = [
-        { id: 1, table: 'Mesa 04', message: 'Chamou o garçom', time: '2 min', urgent: true },
-        { id: 2, table: 'Mesa 07', message: 'Pediu a conta', time: '5 min', urgent: false },
-        { id: 3, table: 'Mesa 03', message: 'Pedido pronto para entrega', time: '8 min', urgent: false }
+        { id: 1, table: i18n.cardTable.replace('{0}', '04'), message: 'Waiter called', time: '2 min', urgent: true },
+        { id: 2, table: i18n.cardTable.replace('{0}', '07'), message: 'Requested bill', time: '5 min', urgent: false },
+        { id: 3, table: i18n.cardTable.replace('{0}', '03'), message: 'Order ready', time: '8 min', urgent: false }
     ];
 
     function toggleNotifications() {
@@ -3625,7 +3671,7 @@
 
     function openTable() {
         if (!selectedTable) {
-            alert('Erro: Nenhuma mesa selecionada.');
+            alert(i18n.errorNoTableSelectedBody);
             return;
         }
         console.log('Abrindo mesa:', selectedTable);
@@ -3636,7 +3682,7 @@
 
     function openDeleteTableModal() {
         if (!selectedTable) return;
-        const label = `Mesa ${String(selectedTableCod).padStart(2, '0')}`;
+        const label = i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0'));
         document.getElementById('deleteTableNumber').textContent = label;
         document.getElementById('deleteTableNumberBody').textContent = label;
         document.getElementById('deleteTableModal').classList.add('active');
@@ -3655,7 +3701,7 @@
 
     function openBillModal() {
         document.getElementById('billModal').classList.add('active');
-        document.getElementById('billTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTableCod).padStart(2, '0')}` : '';
+        document.getElementById('billTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
     }
 
     function closeBillModal() {
@@ -3664,7 +3710,7 @@
 
     function openCloseTableModal() {
         document.getElementById('closeTableModal').classList.add('active');
-        document.getElementById('closeTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTableCod).padStart(2, '0')}` : '';
+        document.getElementById('closeTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
     }
 
     function closeCloseTableModal() {
@@ -3715,7 +3761,7 @@
     function processPartialPayment() {
         const selectedRadio = document.querySelector('input[name="customerId"]:checked');
         if (!selectedRadio) {
-            alert('Selecione um cliente para o pagamento');
+            alert(i18n.errorSelectCustomer);
             return;
         }
 
@@ -3723,7 +3769,7 @@
         const amount = document.getElementById('partialPaymentAmount').value;
 
         if (!amount || parseFloat(amount) <= 0) {
-            alert('Informe um valor válido para o pagamento');
+            alert(i18n.errorInvalidAmount);
             return;
         }
 
@@ -3774,7 +3820,10 @@
 
     function openHistoryModal() {
         document.getElementById('historyModal').classList.add('active');
-        document.getElementById('historyTableNumber').textContent = selectedTable ? `Mesa ${String(selectedTableCod).padStart(2, '0')}` : '';
+        
+        const tableLabel = i18n.cardTable.replace('{0}', String(selectedTableCod || '??').padStart(2, '0'));
+        const titleEl = document.getElementById('historyTableNumber');
+        if (titleEl) titleEl.textContent = selectedTable ? tableLabel : '';
 
         // Set default date range (last 7 days)
         const now = new Date();
@@ -3783,15 +3832,20 @@
 
         const formatForInput = (date) => {
             const pad = (n) => String(n).padStart(2, '0');
-            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
         };
 
-        document.getElementById('historyDateEnd').value = formatForInput(now);
-        document.getElementById('historyDateStart').value = formatForInput(start);
-        document.getElementById('historyStatusFilter').value = 'all';
+        const endInput = document.getElementById('historyEndDate');
+        const startInput = document.getElementById('historyStartDate');
+        const statusInput = document.getElementById('historyStatusFilter');
+
+        if (endInput) endInput.value = formatForInput(now);
+        if (startInput) startInput.value = formatForInput(start);
+        if (statusInput) statusInput.value = 'all';
 
         // Clear table content as requested
-        document.getElementById('ordersTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">Clique em filtrar para carregar o histórico</td></tr>';
+        const tableBody = document.getElementById('ordersTableBody');
+        if (tableBody) tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--muted);">${i18n.historyFilterPrompt}</td></tr>`;
     }
 
     function closeHistoryModal() {
@@ -3799,8 +3853,8 @@
     }
 
     function filterOrderHistory() {
-        const start = document.getElementById('historyDateStart').value;
-        const end = document.getElementById('historyDateEnd').value;
+        const start = document.getElementById('historyStartDate').value;
+        const end = document.getElementById('historyEndDate').value;
         const status = document.getElementById('historyStatusFilter').value;
 
         if (start && end) {
@@ -3849,7 +3903,7 @@
         tbody.innerHTML = '';
 
         if (ordersToRender.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">Nenhum pedido encontrado</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">${i18n.historyNoOrders}</td></tr>`;
             return;
         }
 
@@ -3900,10 +3954,10 @@
 
     function getStatusBadge(status) {
         const badges = {
-            'OPEN': '<span class="order-status-badge open">Aberta</span>',
-            'PENDING': '<span class="order-status-badge pending">Pendente</span>',
-            'CLOSED': '<span class="order-status-badge closed">Fechada</span>',
-            'CANCELLED': '<span class="order-status-badge cancelled">Cancelada</span>'
+            'OPEN': `<span class="order-status-badge open">${i18n.statusOpen}</span>`,
+            'PENDING': `<span class="order-status-badge pending">${i18n.statusPending}</span>`,
+            'CLOSED': `<span class="order-status-badge closed">${i18n.statusClosed}</span>`,
+            'CANCELLED': `<span class="order-status-badge cancelled">${i18n.statusCancelled}</span>`
         };
         return badges[status] || `<span class="order-status-badge">${status}</span>`;
     }
@@ -3918,11 +3972,12 @@
         // Update Header
         document.getElementById('activeTableInfo').style.display = 'none';
         document.getElementById('historyViewInfo').style.display = 'block';
-        document.getElementById('historyHeaderTitle').textContent = `Histórico - Mesa ${order.tableId ? (tables.find(t => t.id === order.tableId)?.cod || '??') : '??'}`;
+        const tableCod = order.tableId ? (tables.find(t => t.id === order.tableId)?.cod || '??') : '??';
+        document.getElementById('historyHeaderTitle').textContent = `${i18n.historyTitle} - ${i18n.cardTable.replace('{0}', tableCod)}`;
         
         const openedAt = formatDateTime(order.openedAt);
-        const closedAt = order.closedAt ? formatDateTime(order.closedAt) : 'Aberta';
-        document.getElementById('historyHeaderDates').textContent = `Abertura: ${openedAt} | Fechamento: ${closedAt}`;
+        const closedAt = order.closedAt ? formatDateTime(order.closedAt) : i18n.statusOpen;
+        document.getElementById('historyHeaderDates').textContent = `${i18n.historyOpened}: ${openedAt} | ${i18n.historyClosed}: ${closedAt}`;
 
         // Update Actions
         document.getElementById('activeOrderActions').style.display = 'none';
@@ -3961,7 +4016,7 @@
         // Group items by client
         const clients = {};
         order.items.forEach(item => {
-            const clientName = item.customerName || 'Mesa'; // Default to 'Mesa' if no name
+            const clientName = item.customerName || i18n.tableLabel; // Default to 'Mesa' if no name
             if (!clients[clientName]) clients[clientName] = [];
             clients[clientName].push(item);
         });
@@ -3970,7 +4025,7 @@
             <div class="section-header">
                 <h3>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Clientes no Pedido (Histórico)
+                    ${i18n.historyClientsTitle}
                 </h3>
             </div>
         `;
@@ -4044,18 +4099,18 @@
         billSummary.innerHTML = `
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Resumo do Pedido (Histórico)
+                ${i18n.billSummaryHistoryTitle}
             </h3>
             <div class="bill-row">
-                <span>Subtotal</span>
+                <span>${i18n.billLabelSubtotal}</span>
                 <span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
             </div>
             <div class="bill-row">
-                <span>Taxa de serviço (${order.serviceFee}%)</span>
+                <span>${i18n.billLabelServiceFee.replace('{0}', order.serviceFee)}</span>
                 <span>${currencySymbol} ${fee.toFixed(2).replace('.', ',')}</span>
             </div>
             <div class="bill-row total">
-                <span>Total</span>
+                <span>${i18n.billLabelTotal}</span>
                 <span>${currencySymbol} ${total.toFixed(2).replace('.', ',')}</span>
             </div>
         `;
@@ -4072,7 +4127,7 @@
             paymentsHistory.innerHTML = `
                 <h3>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-                    Pagamentos no Histórico
+                    ${i18n.historyPaymentsTitle}
                 </h3>
                 ${order.payments.map(payment => `
                 <div class="payment-history-item">
@@ -4108,7 +4163,7 @@
     }
 
     function closeAllNotificationsModal() {
-        document.getElementById('allNotificationsModal').classList.remove('active');
+        document.getElementById('allNotificationsModal').classList.add('active');
     }
 
     function dismissNotification(id) {
@@ -4127,7 +4182,7 @@
     function renderAllNotifications() {
         const list = document.getElementById('allNotificationsList');
         if (notifications.length === 0) {
-            list.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--muted);">Nenhuma notificação pendente</div>';
+            list.innerHTML = `<div style="padding: 3rem; text-align: center; color: var(--muted);">${i18n.noNotifications}</div>`;
             return;
         }
         list.innerHTML = notifications.map(n => `
@@ -4143,7 +4198,7 @@
           <div class="notification-actions">
             <button class="action-btn primary" onclick="selectTableFromNotification(${n.id})">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              Ir para mesa
+              ${i18n.goToTable}
             </button>
             <button class="action-btn" onclick="dismissNotification(${n.id})">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4180,7 +4235,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Criar Nova Mesa
+                <span th:text="#{page.tables.modal.new.table.title}">Criar Nova Mesa</span>
             </h3>
             <button class="modal-close" onclick="closeNewTableModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4195,8 +4250,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="modal-btn" onclick="closeNewTableModal()">Cancelar</button>
-                <button type="submit" class="modal-btn primary">Criar Mesa</button>
+                <button type="button" class="modal-btn" onclick="closeNewTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+                <button type="submit" class="modal-btn primary" th:text="#{page.tables.modal.new.table.button.submit}">Criar Mesa</button>
             </div>
         </form>
     </div>
@@ -4222,7 +4277,7 @@
 
             <!-- Categories -->
             <div class="category-chips" id="categoryChips">
-                <button type="button" class="category-chip active" onclick="filterMenuItems('all')">Todos</button>
+                <button class="category-chip active" onclick="filterMenuItems('all')" th:text="#{page.tables.modal.order.category.all}">Todos</button>
                 <button type="button" th:each="category : ${categories}" 
                         class="category-chip"
                         th:text="${category.name[#locale.language]}"
@@ -4293,7 +4348,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                Conta - <span id="billTableNumber">Mesa 02</span>
+                <span th:text="#{page.tables.modal.bill.title}">Conta</span> - <span id="billTableNumber">Mesa 02</span>
             </h3>
             <button class="modal-close" onclick="closeBillModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4327,9 +4382,9 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closeBillModal()">Fechar</button>
-            <button class="modal-btn" onclick="closeBillModal(); openPartialPaymentModal();">Pagar Parcial</button>
-            <button class="modal-btn success" onclick="closeBillModal(); openCloseTableModal();">Fechar Conta</button>
+            <button class="modal-btn" onclick="closeBillModal()" th:text="#{page.tables.modal.button.cancel}">Fechar</button>
+            <button class="modal-btn" onclick="closeBillModal(); openPartialPaymentModal();" th:text="#{page.tables.modal.bill.button.partial}">Pagar Parcial</button>
+            <button class="modal-btn success" onclick="closeBillModal(); openCloseTableModal();" th:text="#{page.tables.modal.bill.button.close}">Fechar Conta</button>
         </div>
     </div>
 </div>
@@ -4340,7 +4395,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                Fechar <span id="closeTableNumber">Mesa 02</span>
+                <span th:text="#{page.tables.modal.close.title('')}">Fechar</span> <span id="closeTableNumber">Mesa 02</span>
             </h3>
             <button class="modal-close" onclick="closeCloseTableModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4370,8 +4425,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closeCloseTableModal()">Cancelar</button>
-            <button class="modal-btn success" onclick="confirmCloseTable()">Confirmar Pagamento</button>
+            <button class="modal-btn" onclick="closeCloseTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+            <button class="modal-btn success" onclick="confirmCloseTable()" th:text="#{page.tables.modal.payment.button.confirm}">Confirmar Pagamento</button>
         </div>
     </div>
 </div>
@@ -4394,13 +4449,12 @@
             </p>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closeDeleteTableModal()">Cancelar</button>
-            <button class="modal-btn" style="background: var(--destructive); color: white; border-color: var(--destructive);" onclick="confirmDeleteTable()">Sim, Excluir</button>
+            <button class="modal-btn" onclick="closeDeleteTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+            <button class="modal-btn" style="background: var(--destructive); color: white; border-color: var(--destructive);" onclick="confirmDeleteTable()" th:text="#{page.tables.modal.button.delete.confirm}">Sim, Excluir</button>
         </div>
     </div>
 </div>
 
-<!-- Pagar Parcial Modal -->
 <!-- Pagar Parcial Modal -->
 <div class="modal-overlay" id="partialPaymentModal">
     <div class="modal">
@@ -4506,13 +4560,13 @@
         </div>
         <div class="modal-body">
             <div class="history-filters">
-                <div class="form-group">
-                    <label>Data Início</label>
-                    <input type="datetime-local" class="form-input" id="historyDateStart">
+                <div class="filter-group">
+                    <label class="form-label" th:text="#{page.tables.modal.history.label.start}">Data Início</label>
+                    <input type="date" id="historyStartDate" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label>Data Fim</label>
-                    <input type="datetime-local" class="form-input" id="historyDateEnd">
+                <div class="filter-group">
+                    <label class="form-label" th:text="#{page.tables.modal.history.label.end}">Data Fim</label>
+                    <input type="date" id="historyEndDate" class="form-input">
                 </div>
                 <div class="form-group">
                     <label>Status</label>
@@ -4525,19 +4579,20 @@
                 </div>
                 <button class="btn-filter" onclick="filterOrderHistory()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                    Filtrar
+                    <span th:text="#{page.tables.modal.history.button.filter}">Filtrar</span>
                 </button>
             </div>
             <div class="history-table-container">
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Abertura</th>
-                            <th>Fechamento</th>
-                            <th>Taxa</th>
-                            <th>Status</th>
-                            <th>Total</th>
+                            <th th:text="#{page.tables.modal.history.table.id}">ID</th>
+                            <th th:text="#{page.tables.modal.history.table.opened}">Abertura</th>
+                            <th th:text="#{page.tables.modal.history.table.closed}">Fechamento</th>
+                            <th th:text="#{page.tables.modal.history.table.fee}">Taxa</th>
+                            <th th:text="#{page.tables.modal.history.table.status}">Status</th>
+                            <th th:text="#{page.tables.modal.history.table.total}">Total</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="ordersTableBody">
@@ -4558,7 +4613,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                Reservas de Hoje
+                <span th:text="#{page.tables.modal.reservations.title}">Reservas de Hoje</span>
             </h3>
             <button class="modal-close" onclick="closeReservationsModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4566,55 +4621,16 @@
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label>Data</label>
-                <input type="date" class="form-input" id="reservationsDateFilter" value="2025-01-18">
+                <label th:text="#{page.tables.modal.history.table.opened}">Data</label>
+                <input type="date" class="form-input" id="reservationsDateFilter">
             </div>
-            <div class="reservations-list">
-                <div class="reservation-card">
-                    <div class="reservation-info">
-                        <h4>João Silva</h4>
-                        <p>Mesa 05 • (11) 99999-1234</p>
-                    </div>
-                    <div class="reservation-time">
-                        <div class="time">19:00</div>
-                        <div class="guests">4 pessoas</div>
-                    </div>
-                </div>
-                <div class="reservation-card">
-                    <div class="reservation-info">
-                        <h4>Maria Santos</h4>
-                        <p>Mesa 08 • (11) 99999-5678</p>
-                    </div>
-                    <div class="reservation-time">
-                        <div class="time">20:00</div>
-                        <div class="guests">2 pessoas</div>
-                    </div>
-                </div>
-                <div class="reservation-card">
-                    <div class="reservation-info">
-                        <h4>Pedro Costa</h4>
-                        <p>Mesa 12 • (11) 99999-9012</p>
-                    </div>
-                    <div class="reservation-time">
-                        <div class="time">20:30</div>
-                        <div class="guests">6 pessoas</div>
-                    </div>
-                </div>
-                <div class="reservation-card">
-                    <div class="reservation-info">
-                        <h4>Ana Oliveira</h4>
-                        <p>Mesa 03 • (11) 99999-3456</p>
-                    </div>
-                    <div class="reservation-time">
-                        <div class="time">21:00</div>
-                        <div class="guests">3 pessoas</div>
-                    </div>
-                </div>
+            <div class="reservations-list" id="reservationsList">
+                <!-- Populated by JS -->
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closeReservationsModal()">Fechar</button>
-            <a href="reservations.html" class="modal-btn primary">Ver Todas Reservas</a>
+            <button class="modal-btn" onclick="closeReservationsModal()" th:text="#{page.tables.modal.button.cancel}">Fechar</button>
+            <a href="/reservations" class="modal-btn primary" th:text="#{page.tables.modal.reservations.button.view.all}">Ver Todas Reservas</a>
         </div>
     </div>
 </div>
@@ -4625,7 +4641,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                Todas as Notificações
+                <span th:text="#{page.tables.modal.notifications.title}">Todas as Notificações</span>
             </h3>
             <button class="modal-close" onclick="closeAllNotificationsModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4637,8 +4653,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn danger" onclick="clearAllNotifications(); closeAllNotificationsModal();">Limpar Todas</button>
-            <button class="modal-btn" onclick="closeAllNotificationsModal()">Fechar</button>
+            <button class="modal-btn" onclick="clearAllNotifications()" th:text="#{page.tables.modal.notifications.button.clear}">Limpar Todas</button>
+            <button class="modal-btn primary" onclick="closeAllNotificationsModal()" th:text="#{page.tables.modal.button.cancel}">Fechar</button>
         </div>
     </div>
 </div>
@@ -4650,7 +4666,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                Cancelar Item
+                <span th:text="#{page.tables.modal.cancel.item.title}">Cancelar Item</span>
             </h3>
             <button class="modal-close" onclick="closeCancelItemModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -4659,37 +4675,25 @@
         <div class="modal-body cancel-modal-content">
             <div class="cancel-modal-item">
                 <div class="cancel-modal-item-name" id="cancelItemName">--</div>
-                <div class="cancel-modal-item-price" id="cancelItemPrice">${currencySymbol} 0,00 cada</div>
-            </div>
-
-            <div class="cancel-qty-label">Quantidade a cancelar:</div>
-            <div class="cancel-qty-selector">
-                <button class="cancel-qty-btn" id="cancelQtyMinus" onclick="adjustCancelQty(-1)">-</button>
-                <div class="cancel-qty-value" id="cancelQtyValue">1</div>
-                <button class="cancel-qty-btn" id="cancelQtyPlus" onclick="adjustCancelQty(1)">+</button>
-            </div>
-            <div class="cancel-qty-label">de <span id="cancelQtyMax">1</span> unidade(s)</div>
-
-            <div class="cancel-modal-total" style="margin: 1rem 0; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius); font-weight: 600; color: var(--red);">
-                Total a cancelar: <span id="cancelTotalValue">${currencySymbol} 0,00</span>
+                <div class="cancel-modal-item-price" id="cancelItemPrice"><span th:text="${currencySymbol}"></span> 0,00 cada</div>
             </div>
 
             <div class="cancel-modal-reason">
-                <label>Motivo do cancelamento:</label>
+                <label th:text="#{page.tables.modal.cancel.item.reason.label}">Motivo do cancelamento:</label>
                 <select id="cancelReason">
-                    <option value="">Selecione um motivo (opcional)</option>
-                    <option value="cliente_desistiu">Cliente desistiu</option>
-                    <option value="erro_pedido">Erro no pedido</option>
-                    <option value="item_indisponivel">Item indisponível</option>
-                    <option value="outro">Outro</option>
+                    <option value="" th:text="#{page.tables.modal.cancel.item.reason.placeholder}">Selecione um motivo (opcional)</option>
+                    <option value="cliente_desistiu" th:text="#{page.tables.modal.cancel.item.reason.client}">Cliente desistiu</option>
+                    <option value="erro_pedido" th:text="#{page.tables.modal.cancel.item.reason.error}">Erro no pedido</option>
+                    <option value="item_indisponivel" th:text="#{page.tables.modal.cancel.item.reason.out}">Item indisponível</option>
+                    <option value="outro" th:text="#{page.tables.modal.cancel.item.reason.other}">Outro</option>
                 </select>
             </div>
 
             <div class="cancel-modal-footer">
-                <button class="btn-secondary" onclick="closeCancelItemModal()">Voltar</button>
+                <button class="btn-secondary" onclick="closeCancelItemModal()" th:text="#{page.tables.modal.button.cancel}">Voltar</button>
                 <button class="btn-danger" id="confirmCancelBtn" onclick="confirmCancelItem()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    Cancelar Item
+                    <span th:text="#{page.tables.modal.cancel.item.button.confirm}">Cancelar Item</span>
                 </button>
             </div>
         </div>
@@ -4700,16 +4704,19 @@
 <div class="modal-overlay" id="deliverItemModal">
     <div class="modal" style="max-width: 380px;">
         <div class="modal-header">
-            <h3>Marcar como Entregue</h3>
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span th:text="#{page.tables.modal.deliver.item.title}">Marcar como Entregue</span>
+            </h3>
             <button class="modal-close" onclick="document.getElementById('deliverItemModal').classList.remove('active')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div class="modal-body">
-            <p>Confirma que o item <strong id="deliverItemName"></strong> foi entregue ao cliente?</p>
+            <p th:text="#{page.tables.modal.deliver.item.body('')}">Confirma que o item <strong id="deliverItemName"></strong> foi entregue ao cliente?</p>
             <div class="cancel-modal-footer" style="margin-top: 1.5rem">
-                <button class="btn-secondary" onclick="document.getElementById('deliverItemModal').classList.remove('active')">Voltar</button>
-                <button class="action-btn success" id="confirmDeliverBtn" onclick="confirmDeliverItem()">Sim, Entregar</button>
+                <button class="btn-secondary" onclick="document.getElementById('deliverItemModal').classList.remove('active')" th:text="#{page.tables.modal.button.cancel}">Voltar</button>
+                <button class="action-btn success" id="confirmDeliverBtn" onclick="confirmDeliverItem()" th:text="#{page.tables.modal.deliver.item.button.confirm}">Sim, Entregar</button>
             </div>
         </div>
     </div>
@@ -4719,16 +4726,19 @@
 <div class="modal-overlay" id="resetItemModal">
     <div class="modal" style="max-width: 380px;">
         <div class="modal-header">
-            <h3>Voltar para Pendente</h3>
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span th:text="#{page.tables.modal.reset.item.title}">Voltar para Pendente</span>
+            </h3>
             <button class="modal-close" onclick="document.getElementById('resetItemModal').classList.remove('active')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div class="modal-body">
-            <p>Deseja marcar o item <strong id="resetItemName"></strong> como pendente novamente?</p>
+            <p th:text="#{page.tables.modal.reset.item.body('')}">Deseja marcar o item <strong id="resetItemName"></strong> como pendente novamente?</p>
             <div class="cancel-modal-footer" style="margin-top: 1.5rem">
-                <button class="btn-secondary" onclick="document.getElementById('resetItemModal').classList.remove('active')">Voltar</button>
-                <button class="action-btn primary" id="confirmResetBtn" onclick="confirmResetToPending()">Sim, Pendente</button>
+                <button class="btn-secondary" onclick="document.getElementById('resetItemModal').classList.remove('active')" th:text="#{page.tables.modal.button.cancel}">Voltar</button>
+                <button class="action-btn primary" id="confirmResetBtn" onclick="confirmResetToPending()" th:text="#{page.tables.modal.reset.item.button.confirm}">Sim, Pendente</button>
             </div>
         </div>
     </div>
@@ -4738,23 +4748,26 @@
 <div class="modal-overlay" id="qrModal">
     <div class="modal" style="max-width: 400px; text-align: center;">
         <div class="modal-header">
-            <h3>QR Code da Mesa</h3>
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
+                <span th:text="#{page.tables.modal.qr.title}">QR Code da Mesa</span> - <span id="qrTableTitle">Mesa XX</span>
+            </h3>
             <button class="modal-close" onclick="closeQrModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div class="modal-body">
             <div id="qrPrintArea" style="padding: 2rem; background: white; border-radius: 8px;">
-                <h2 id="qrTableTitle" style="margin-bottom: 1rem; color: #333;">Mesa XX</h2>
+                <h2 id="qrTableTitleDisplay" style="margin-bottom: 1rem; color: #333;">Mesa XX</h2>
                 <div id="qrcode" style="display: flex; justify-content: center; margin-bottom: 1rem;"></div>
-                <p style="font-size: 0.9rem; color: #666;">Escaneie para ver o cardápio e fazer seu pedido</p>
+                <p style="font-size: 0.9rem; color: #666;" th:text="#{page.tables.modal.qr.subtitle}">Escaneie para ver o cardápio e fazer seu pedido</p>
                 <p id="qrUrl" style="font-size: 0.75rem; color: #999; margin-top: 0.5rem; word-break: break-all;"></p>
             </div>
             <div class="modal-footer" style="justify-content: center; gap: 1rem; margin-top: 1rem;">
-                <button class="modal-btn" onclick="closeQrModal()">Fechar</button>
+                <button class="modal-btn" onclick="closeQrModal()" th:text="#{page.tables.modal.button.cancel}">Fechar</button>
                 <button class="modal-btn primary" onclick="printQrCode()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
-                    Imprimir QR
+                    <span th:text="#{page.tables.modal.qr.button.print}">Imprimir QR</span>
                 </button>
             </div>
         </div>
@@ -4840,11 +4853,11 @@
             if (response.ok) {
                 window.location.href = `/tables?selectedTableId=${selectedTable}`;
             } else {
-                alert('Erro ao cancelar o item. Tente novamente.');
+                alert(i18n.cancelErrorDefault);
                 btn.disabled = false;
             }
         } catch (err) {
-            alert('Erro de rede ao cancelar o item.');
+            alert(i18n.cancelErrorNetwork);
             btn.disabled = false;
         }
     }
@@ -4921,7 +4934,7 @@
         
         const timer = setInterval(() => {
             timeLeft--;
-            if (redirectTextEl) redirectTextEl.textContent = `Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...`;
+            if (redirectTextEl) redirectTextEl.textContent = i18n.feedbackRedirect.replace('{0}', timeLeft);
             
             if (circleEl) {
                 const offset = 100 - ( (10 - timeLeft) * 10 );
@@ -4942,7 +4955,7 @@
     function openOrderModal(tableId, tableCod, preselectedClientName = null) {
         currentTableId = tableId;
         currentTableCod = tableCod;
-        document.getElementById('orderModalTable').textContent = `Mesa ${tableCod}`;
+        document.getElementById('orderModalTable').textContent = i18n.cardTable.replace('{0}', tableCod);
         
         const tableClients = getTableClients();
         orderClients = {};
@@ -4999,7 +5012,7 @@
             `;
         }).join('');
         
-        html += `<button class="order-tab add-client-tab" onclick="addNewClientTab()">+ Cliente</button>`;
+        html += `<button class="order-tab add-client-tab" onclick="addNewClientTab()">${i18n.btnAddClient}</button>`;
         container.innerHTML = html;
     }
 
@@ -5032,12 +5045,12 @@
     }
 
     function addNewClientTab() {
-        const rawName = prompt('Nome do novo cliente:');
+        const rawName = prompt(i18n.newClientPrompt);
         if (!rawName || !rawName.trim()) return;
 
         const trimmed = rawName.trim();
         if (trimmed.length < 3) {
-            alert('O nome do cliente deve ter pelo menos 3 caracteres.');
+            alert(i18n.newClientErrorMinLength);
             return;
         }
 
@@ -5137,7 +5150,7 @@
                         <strong>${item.name}</strong>
                         ${priceHtml}
                     </div>
-                    <input type="text" class="form-input" style="margin-top: 0.5rem;" placeholder="Observação (ex: sem cebola)"
+                    <input type="text" class="form-input" style="margin-top: 0.5rem;" placeholder="${i18n.itemNotePlaceholder}"
                         value="${item.note}" onchange="updateItemNote('${id}', this.value)">
                 </div>
                 <div class="qty-controls" style="margin-left: 1rem;">
@@ -5235,7 +5248,7 @@
         );
         
         if (clientsWithItems.length === 0) {
-            alert('Por favor, adicione pelo menos um item para algum cliente.');
+            alert(i18n.orderErrorEmpty);
             return;
         }
 
@@ -5426,7 +5439,7 @@
             existing.dataset.callId = event.id;
             const timeSpan = existing.querySelector('.waiter-alert-time');
             timeSpan.title = timeFormatted;
-            timeSpan.textContent = 'agora';
+            timeSpan.textContent = i18n.timeAgoNow;
             
             // Handle badge
             let badge = existing.querySelector('.waiter-alert-badge');
@@ -5511,7 +5524,9 @@
 
         const url = `${window.location.protocol}//${window.location.host}/@${restaurantSlug}/table/${tableCod}`;
         
-        document.getElementById('qrTableTitle').textContent = `Mesa ${tableCod}`;
+        const titleText = i18n.cardTable.replace('{0}', tableCod);
+        document.getElementById('qrTableTitle').textContent = titleText;
+        document.getElementById('qrTableTitleDisplay').textContent = titleText;
         document.getElementById('qrUrl').textContent = url;
         
         const qrcodeContainer = document.getElementById('qrcode');
