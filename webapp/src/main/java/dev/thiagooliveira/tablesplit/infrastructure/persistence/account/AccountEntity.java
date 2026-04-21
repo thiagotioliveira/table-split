@@ -79,6 +79,10 @@ public class AccountEntity {
     this.createdAt = createdAt;
   }
 
+  public Plan getPlan() {
+    return plan;
+  }
+
   public void setPlan(Plan plan) {
     this.plan = plan;
   }

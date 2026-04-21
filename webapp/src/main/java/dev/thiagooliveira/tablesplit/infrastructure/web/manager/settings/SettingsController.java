@@ -65,9 +65,13 @@ public class SettingsController {
   public String regenerateToken(
       Authentication auth, Model model, RedirectAttributes redirectAttributes) {
     ContextModel context = (ContextModel) model.getAttribute("context");
+    if (!context.isProfessionalOrHigher()) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Funcionalidade disponível apenas no plano Profissional");
+    }
     printAgentService.regenerateToken(context.getRestaurant().getId());
     redirectAttributes.addFlashAttribute(
-        "alert", AlertModel.success("Token regenerado com sucesso!"));
+        "alert", AlertModel.success("alert.settings.print.token.regenerated"));
     return "redirect:/settings";
   }
 

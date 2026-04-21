@@ -12,6 +12,7 @@ public class ContextModel {
   private final RestaurantContextModel restaurant;
   private final List<Module> sidebarModules;
   private final List<Module> footerModules;
+  private final dev.thiagooliveira.tablesplit.domain.account.Plan plan;
   private final long pendingOrdersCount;
   private final long waiterCallCount;
 
@@ -19,6 +20,7 @@ public class ContextModel {
     var account = (AccountContext) auth.getPrincipal();
     var user = account.getUser();
     var restaurant = account.getRestaurant();
+    this.plan = account.getPlan();
     this.user =
         new UserContextModel(
             user.getId(), user.getFirstName(), user.getLastName(), user.getEmail());
@@ -60,6 +62,15 @@ public class ContextModel {
 
   public List<Module> getFooterModules() {
     return footerModules;
+  }
+
+  public dev.thiagooliveira.tablesplit.domain.account.Plan getPlan() {
+    return plan;
+  }
+
+  public boolean isProfessionalOrHigher() {
+    return plan == dev.thiagooliveira.tablesplit.domain.account.Plan.PROFESSIONAL
+        || plan == dev.thiagooliveira.tablesplit.domain.account.Plan.ENTERPRISE;
   }
 
   public static class UserContextModel {

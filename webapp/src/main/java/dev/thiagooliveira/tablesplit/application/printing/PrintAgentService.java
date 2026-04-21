@@ -46,11 +46,16 @@ public class PrintAgentService {
             .findById(restaurantId)
             .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
 
-    tokenRepository.findByRestaurantId(restaurantId).ifPresent(tokenRepository::delete);
+    PrintAgentTokenEntity tokenEntity =
+        tokenRepository
+            .findByRestaurantId(restaurantId)
+            .orElseGet(() -> new PrintAgentTokenEntity(restaurant, ""));
 
-    PrintAgentTokenEntity newToken =
-        new PrintAgentTokenEntity(restaurant, PrintAgentTokenEntity.generateTokenValue());
-    return tokenRepository.save(newToken).getToken();
+    tokenEntity.setToken(PrintAgentTokenEntity.generateTokenValue());
+    tokenEntity.setCreatedAt(ZonedDateTime.now(Time.getZoneId()));
+    tokenEntity.setLastUsedAt(null);
+
+    return tokenRepository.save(tokenEntity).getToken();
   }
 
   @Transactional
