@@ -95,7 +95,7 @@ public class SecurityConfig {
     http.csrf(
         csrf -> {
           if (env.acceptsProfiles(Profiles.of("prod"))) {
-            csrf.ignoringRequestMatchers("/api/print-agent/**", "/api/notifications/**", "/@**/**");
+            csrf.ignoringRequestMatchers("/api/print-agent/**");
             if (env.acceptsProfiles(Profiles.of("h2"))) {
               csrf.ignoringRequestMatchers("/h2-console/**");
             }

@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${profile.name}">Restaurante Sabor & Arte</title>
+  <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+
   <style>
     :root {
       /* Backgrounds */
@@ -2356,9 +2359,15 @@
         // Loading state
         if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
         fetch(entryTablePath, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+            },
             body: JSON.stringify({ customerId: customer.id, customerName: customer.name })
         })
         .then(response => {

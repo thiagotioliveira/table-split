@@ -85,10 +85,16 @@ const PushNotifications = {
             if (subscription) {
                 await subscription.unsubscribe();
                 
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
                 // Notify server
                 await fetch('/api/notifications/push/unsubscribe', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                    },
                     body: JSON.stringify(subscription.endpoint)
                 });
             }
@@ -109,9 +115,15 @@ const PushNotifications = {
             auth: this.arrayBufferToBase64Url(token)
         };
 
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
         await fetch('/api/notifications/push/subscribe', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+            },
             body: JSON.stringify(data)
         });
     },
@@ -119,7 +131,15 @@ const PushNotifications = {
     async sendTest() {
         console.log('[Push] Sending test notification...');
         try {
-            const response = await fetch('/api/notifications/push/test', { method: 'POST' });
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            const response = await fetch('/api/notifications/push/test', { 
+                method: 'POST',
+                headers: {
+                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                }
+            });
             if (!response.ok) {
                 const error = await response.text();
                 throw new Error('Erro ao enviar comando de teste: ' + error);
@@ -154,9 +174,15 @@ const PushNotifications = {
         if (!subscription) return null;
 
         try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
             const response = await fetch('/api/notifications/push/status', {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
+                headers: { 
+                    'Content-Type': 'text/plain',
+                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                },
                 body: subscription.endpoint
             });
             if (response.ok) {
@@ -179,9 +205,15 @@ const PushNotifications = {
         };
 
         try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
             const response = await fetch('/api/notifications/push/preferences', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+                },
                 body: JSON.stringify(data)
             });
             return response.ok;

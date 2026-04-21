@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{page.gallery.title}">Galeria de Fotos</title>
+  <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -470,8 +473,14 @@
     uploadBtn.disabled = true;
     uploadBtn.innerHTML = 'Enviando...';
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
     fetch('/gallery', {
       method: 'POST',
+      headers: {
+          ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
+      },
       body: formData
     }).then(response => {
       if (response.redirected) {
