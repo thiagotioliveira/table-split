@@ -2706,7 +2706,8 @@
         timeAgoMin: [[#{page.customer.menu.time.ago.min}]],
         timeAgoHour: [[#{page.customer.menu.time.ago.hour}]],
         errorEntryTable: [[#{page.customer.menu.entry.error.fail}]],
-        errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]]
+        errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]],
+        badgeClient: [[#{page.customer.menu.badge.client}]]
     };
 
     const paymentMethods = {
@@ -2718,7 +2719,8 @@
         /*[/]*/
     };
 </script>
-<script>
+<script th:inline="javascript">
+    let entrySelectedClientId = null;
     let cart = [];
     let currentModalItem = null;
     let modalQty = 1;
@@ -4020,8 +4022,6 @@
  */
 
     // ── Entry Modal Functions ──────────────────────────────────────────────────
-
-    let entrySelectedClientId = null;
 
     function openEntryModal() {
         const overlay = document.getElementById('entryModalOverlay');
