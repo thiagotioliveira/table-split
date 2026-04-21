@@ -2132,8 +2132,8 @@
                 <polyline points="21 15 16 10 5 21"/>
             </svg>
         </div>
-        <p class="hero-placeholder-text">Nenhuma foto adicionada</p>
-        <p class="hero-placeholder-hint">Adicione fotos do seu restaurante nas configurações</p>
+        <p class="hero-placeholder-text" th:text="#{page.customer.menu.hero.no.photos}">Nenhuma foto adicionada</p>
+        <p class="hero-placeholder-hint" th:text="#{page.customer.menu.hero.add.photos.hint}">Adicione fotos do seu restaurante nas configurações</p>
     </div>
 
     <!-- Hero Carousel (Cover images) -->
@@ -2156,12 +2156,12 @@
             <!-- Active table session badge -->
             <button class="hero-badge" onclick="openTableModal()" th:if="${customerMenu.hasTable() and !showEntryModal}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
-                <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
+                <span th:text="#{page.customer.menu.badge.table}">Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
             </button>
             <!-- Entry mode badge (before joining) -->
             <button class="hero-badge" onclick="openEntryModal()" th:if="${showEntryModal}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M5 16h14"/></svg>
-                <span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
+                <span th:text="#{page.customer.menu.badge.table}">Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span>
             </button>
 
             <!-- User Identity Badge -->
@@ -2169,7 +2169,7 @@
                     onclick="if(!isReviewMode) openUserEditModal()" 
                     th:if="${customerMenu.hasTable() and !showEntryModal}" id="userBadgeBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span class="user-badge-name" id="userBadgeName">Cliente</span>
+                <span class="user-badge-name" id="userBadgeName" th:text="#{page.customer.menu.badge.client}">Cliente</span>
             </button>
             <!-- Language Selector -->
             <div class="lang-selector">
@@ -2242,8 +2242,8 @@
 
 <!-- Review Mode Header -->
 <div class="review-header">
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;" data-i18n="thanksVisit">Obrigado pela visita!</h1>
-    <p style="opacity: 0.8; font-size: 0.875rem;" data-i18n="feedbackInvite">Sua ajuda é fundamental para melhorarmos nosso serviço.</p>
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;" data-i18n="thanksVisit" th:text="#{page.customer.menu.review.thanks}">Obrigado pela visita!</h1>
+    <p style="opacity: 0.8; font-size: 0.875rem;" data-i18n="feedbackInvite" th:text="#{page.customer.menu.review.feedback.hint}">Sua ajuda é fundamental para melhorarmos nosso serviço.</p>
 </div>
 <!-- Quick Info Bar -->
 <div class="quick-info" th:if="${customerMenu.hasTable()}">
@@ -2251,22 +2251,22 @@
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         </div>
-        <span class="quick-info-label" data-i18n="callWaiter">Chamar</span>
-        <span class="quick-info-value" data-i18n="waiter">Garçom</span>
+        <span class="quick-info-label" data-i18n="callWaiter" th:text="#{page.customer.menu.quick.call}">Chamar</span>
+        <span class="quick-info-value" data-i18n="waiter" th:text="#{page.customer.menu.quick.waiter}">Garçom</span>
     </div>
     <div class="quick-info-item" onclick="openTableModal()" th:if="${!showEntryModal}">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
         </div>
-        <span class="quick-info-label" data-i18n="tableBill">Conta</span>
+        <span class="quick-info-label" data-i18n="tableBill" th:text="#{page.customer.menu.quick.bill}">Conta</span>
         <span class="quick-info-value" id="quickTableTotal">R$ 0,00</span>
     </div>
     <div class="quick-info-item" th:if="${false}">
         <div class="quick-info-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <span class="quick-info-label" data-i18n="atTable">Na mesa</span>
-        <span class="quick-info-value">3 <span data-i18n="people">pessoas</span></span>
+        <span class="quick-info-label" data-i18n="atTable" th:text="#{page.customer.menu.quick.at.table}">Na mesa</span>
+        <span class="quick-info-value">3 <span data-i18n="people" th:text="#{page.customer.menu.quick.people}">pessoas</span></span>
     </div>
 </div>
 
@@ -2274,11 +2274,11 @@
 <nav class="main-tabs">
     <button class="main-tab active" onclick="switchTab('menu', this)">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="m6 17 11-1"/></svg>
-        <span data-i18n="menu">Cardápio</span>
+        <span data-i18n="menu" th:text="#{page.customer.menu.tab.menu}">Cardápio</span>
     </button>
     <button class="main-tab" onclick="switchTab('orders', this)" th:if="${customerMenu.hasTable() and !showEntryModal}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span data-i18n="myOrders">Meus Pedidos</span>
+        <span data-i18n="myOrders" th:text="#{page.customer.menu.tab.my.orders}">Meus Pedidos</span>
         <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
     </button>
 </nav>
@@ -2298,7 +2298,7 @@
     <div class="search-container">
         <div class="search-wrapper">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" class="search-input" placeholder="Buscar no cardápio..." oninput="searchItems(this.value)">
+            <input type="text" class="search-input" th:placeholder="#{page.customer.menu.search.placeholder}" oninput="searchItems(this.value)">
         </div>
     </div>
 
@@ -2350,22 +2350,22 @@
             <div class="orders-empty-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
-            <h3>Nenhum pedido ainda</h3>
-            <p>Seus pedidos enviados aparecerão aqui</p>
+            <h3 th:text="#{page.customer.menu.orders.empty.title}">Nenhum pedido ainda</h3>
+            <p th:text="#{page.customer.menu.orders.empty.subtitle}">Seus pedidos enviados aparecerão aqui</p>
         </div>
         <div id="ordersList"></div>
         <div class="orders-summary" id="ordersSummary" style="display: none;" th:if="${false}">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                Resumo do seu consumo
+                <span th:text="#{page.customer.menu.orders.summary.title}">Resumo do seu consumo</span>
             </h3>
-            <div class="summary-row"><span>Subtotal</span><span id="mySubtotal">R$ 0,00</span></div>
-            <div class="summary-row"><span>Taxa de serviço (10%)</span><span id="myServiceFee">R$ 0,00</span></div>
-            <div class="summary-row total"><span>Seu Total</span><span class="value" id="myTotal">R$ 0,00</span></div>
+            <div class="summary-row"><span th:text="#{page.customer.menu.orders.summary.subtotal}">Subtotal</span><span id="mySubtotal">R$ 0,00</span></div>
+            <div class="summary-row"><span th:text="#{page.customer.menu.orders.summary.service.fee}">Taxa de serviço (10%)</span><span id="myServiceFee">R$ 0,00</span></div>
+            <div class="summary-row total"><span th:text="#{page.customer.menu.orders.summary.total}">Seu Total</span><span class="value" id="myTotal">R$ 0,00</span></div>
         </div>
         <!-- Finalize Review Button (Only in Review Mode) -->
         <div class="review-footer" style="display: none;">
-            <button class="exp-submit" style="width: 100%; padding: 1rem; font-size: 1rem;" onclick="finalizeReview()" data-i18n="finishFeedback">Finalizar e Sair</button>
+            <button class="exp-submit" style="width: 100%; padding: 1rem; font-size: 1rem;" onclick="finalizeReview()" data-i18n="finishFeedback" th:text="#{page.customer.menu.review.finish}">Finalizar e Sair</button>
         </div>
     </div>
 </div>
@@ -2377,7 +2377,7 @@
             <div class="cart-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </div>
-            <span class="cart-count" id="cartCount">0 itens</span>Ver carrinho
+            <span class="cart-count" id="cartCount">0 <span th:text="#{page.customer.menu.cart.items}">itens</span></span> <span th:text="#{page.customer.menu.cart.view}">Ver carrinho</span>
         </div>
         <span class="cart-btn-right" id="cartTotal">R$ 0,00</span>
     </button>
@@ -2388,24 +2388,24 @@
     <div class="cart-drawer" onclick="event.stopPropagation()">
         <div class="cart-handle"></div>
         <div class="cart-header">
-            <h2 class="cart-title">Seu Pedido</h2>
-            <button class="cart-clear" onclick="clearCart()">Limpar</button>
+            <h2 class="cart-title" th:text="#{page.customer.menu.cart.title}">Seu Pedido</h2>
+            <button class="cart-clear" onclick="clearCart()" th:text="#{page.customer.menu.cart.clear}">Limpar</button>
         </div>
         <div class="cart-empty" id="cartEmpty">
             <div class="cart-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
-            <h3 class="cart-empty-title">Carrinho vazio</h3>
-            <p class="cart-empty-text">Adicione itens do cardápio</p>
+            <h3 class="cart-empty-title" th:text="#{page.customer.menu.cart.empty.title}">Carrinho vazio</h3>
+            <p class="cart-empty-text" th:text="#{page.customer.menu.cart.empty.subtitle}">Adicione itens do cardápio</p>
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-note" id="cartNote" style="display: none;">
-            <label class="cart-note-label" for="cart-note-input">Observações do pedido</label>
-            <textarea class="cart-note-input" id="cart-note-input" placeholder="Ex: Sem cebola, ponto da carne..." rows="2" maxlength="100"></textarea>
+            <label class="cart-note-label" for="cart-note-input" th:text="#{page.customer.menu.cart.notes.label}">Observações do pedido</label>
+            <textarea class="cart-note-input" id="cart-note-input" th:placeholder="#{page.customer.menu.cart.notes.placeholder}" rows="2" maxlength="100"></textarea>
         </div>
         <div class="cart-footer" id="cartFooter" style="display: none;">
             <div class="cart-summary">
-                <div class="cart-row"><span>Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
-                <div class="cart-row" th:if="${false}"><span>Taxa de serviço (10%)</span><span id="cartServiceFee">R$ 0,00</span></div>
-                <div class="cart-row total" th:if="${false}"><span>Total</span><span class="value" id="cartTotalFinal">R$ 0,00</span></div>
+                <div class="cart-row"><span th:text="#{page.customer.menu.orders.summary.subtotal}">Subtotal</span><span id="cartSubtotal">R$ 0,00</span></div>
+                <div class="cart-row" th:if="${false}"><span th:text="#{page.customer.menu.orders.summary.service.fee}">Taxa de serviço (10%)</span><span id="cartServiceFee">R$ 0,00</span></div>
+                <div class="cart-row total" th:if="${false}"><span th:text="#{page.customer.menu.orders.summary.total}">Total</span><span class="value" id="cartTotalFinal">R$ 0,00</span></div>
             </div>
             <button class="checkout-btn" onclick="submitOrder()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
@@ -2419,9 +2419,9 @@
 <div class="modal-overlay" id="orderSentModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
-        <h3 class="modal-title">Pedido Enviado!</h3>
-        <p class="modal-text">Seu pedido foi recebido pela cozinha. Acompanhe o status na aba "Meus Pedidos".</p>
-        <button class="modal-btn primary" onclick="closeOrderSentModal()">Continuar</button>
+        <h3 class="modal-title" th:text="#{page.customer.menu.orders.sent.title}">Pedido Enviado!</h3>
+        <p class="modal-text" th:text="#{page.customer.menu.orders.sent.subtitle}">Seu pedido foi recebido pela cozinha. Acompanhe o status na aba "Meus Pedidos".</p>
+        <button class="modal-btn primary" onclick="closeOrderSentModal()" th:text="#{page.customer.menu.orders.sent.continue}">Continuar</button>
     </div>
 </div>
 
@@ -2429,10 +2429,10 @@
 <div class="modal-overlay" id="confirmWaiterModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon warning"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
-        <h3 class="modal-title">Chamar Garçom?</h3>
-        <p class="modal-text">Um garçom será notificado e virá atendê-lo na Mesa 2.</p>
-        <button class="modal-btn primary" onclick="callWaiter()">Sim, Chamar</button>
-        <button class="modal-btn secondary" onclick="closeConfirmWaiterModal()">Cancelar</button>
+        <h3 class="modal-title" th:text="#{page.customer.menu.waiter.confirm.title}">Chamar Garçom?</h3>
+        <p class="modal-text" th:text="#{page.customer.menu.waiter.confirm.subtitle(${customerMenu.tableModel.cod})}">Um garçom será notificado e virá atendê-lo na Mesa 2.</p>
+        <button class="modal-btn primary" onclick="callWaiter()" th:text="#{page.customer.menu.waiter.confirm.yes}">Sim, Chamar</button>
+        <button class="modal-btn secondary" onclick="closeConfirmWaiterModal()" th:text="#{page.customer.menu.waiter.confirm.no}">Cancelar</button>
     </div>
 </div>
 
@@ -2440,9 +2440,9 @@
 <div class="modal-overlay" id="waiterCalledModal" th:if="${customerMenu.hasTable()}">
     <div class="modal-content">
         <div class="modal-icon success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></div>
-        <h3 class="modal-title">Garçom Chamado!</h3>
-        <p class="modal-text">Um garçom foi notificado e está a caminho.</p>
-        <button class="modal-btn primary" onclick="closeWaiterCalledModal()">OK</button>
+        <h3 class="modal-title" th:text="#{page.customer.menu.waiter.called.title}">Garçom Chamado!</h3>
+        <p class="modal-text" th:text="#{page.customer.menu.waiter.called.subtitle}">Um garçom foi notificado e está a caminho.</p>
+        <button class="modal-btn primary" onclick="closeWaiterCalledModal()" th:text="#{page.customer.menu.waiter.called.ok}">OK</button>
     </div>
 </div>
 
@@ -2450,7 +2450,7 @@
 <div class="modal-overlay" id="tableModal" onclick="closeTableModal()" th:if="${customerMenu.hasTable()}">
     <div class="table-modal-content" onclick="event.stopPropagation()">
         <div class="table-modal-header">
-            <h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg><span>Mesa</span> <span th:text="${customerMenu.tableModel.cod}"></span> - Conta Completa</h2>
+            <h2><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/></svg><span th:text="#{page.customer.menu.table.bill.title(${customerMenu.tableModel.cod})}">Mesa 07 - Conta Completa</span></h2>
             <button class="table-modal-close" onclick="closeTableModal()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
         <div class="table-modal-body" id="tableModalBody">
@@ -2458,11 +2458,11 @@
         </div>
         <div class="table-modal-footer">
             <div id="paymentsHistoryContainer"></div>
-            <div class="table-total-row"><span>Subtotal da Mesa</span><span id="tableSubtotal">R$ 0,00</span></div>
-            <div class="table-total-row"><span>Taxa de serviço (10%)</span><span id="tableServiceFee">R$ 0,00</span></div>
-            <div class="table-total-row grand"><span>Total da Mesa</span><span class="value" id="tableGrandTotal">R$ 0,00</span></div>
-            <div class="table-total-row paid" id="tablePaidRow" style="display: none;"><span>Total Pago</span><span id="tablePaidAmount">R$ 0,00</span></div>
-            <div class="table-total-row remaining" id="tableRemainingRow" style="display: none;"><span>Saldo Restante</span><span class="value" id="tableRemainingAmount">R$ 0,00</span></div>
+            <div class="table-total-row"><span th:text="#{page.customer.menu.table.bill.subtotal}">Subtotal da Mesa</span><span id="tableSubtotal">R$ 0,00</span></div>
+            <div class="table-total-row"><span th:text="#{page.customer.menu.table.bill.service.fee}">Taxa de serviço (10%)</span><span id="tableServiceFee">R$ 0,00</span></div>
+            <div class="table-total-row grand"><span th:text="#{page.customer.menu.table.bill.total}">Total da Mesa</span><span class="value" id="tableGrandTotal">R$ 0,00</span></div>
+            <div class="table-total-row paid" id="tablePaidRow" style="display: none;"><span th:text="#{page.customer.menu.table.bill.paid}">Total Pago</span><span id="tablePaidAmount">R$ 0,00</span></div>
+            <div class="table-total-row remaining" id="tableRemainingRow" style="display: none;"><span th:text="#{page.customer.menu.table.bill.remaining}">Saldo Restante</span><span class="value" id="tableRemainingAmount">R$ 0,00</span></div>
         </div>
     </div>
 </div>
@@ -2479,17 +2479,17 @@
         </div>
         <div class="item-modal-content">
             <div class="item-modal-header">
-                <h2 class="item-modal-name" id="itemModalName">Nome</h2>
+                <h2 class="item-modal-name" id="itemModalName" th:text="#{page.customer.menu.item.detail.name}">Nome</h2>
                 <span class="item-modal-price" id="itemModalPrice">R$ 0,00</span>
             </div>
-            <p class="item-modal-desc" id="itemModalDesc">Descrição</p>
+            <p class="item-modal-desc" id="itemModalDesc" th:text="#{page.customer.menu.item.detail.desc}">Descrição</p>
             <div class="item-modal-tags" id="itemModalTags"></div>
         </div>
         <div class="item-modal-footer" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}">
             <div class="client-selector" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}" id="modalClientSelector">
                 <div class="client-selector-label">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Pedido para:
+                    <th:block th:text="#{page.customer.menu.item.detail.order.for}">Pedido para:</th:block>
                 </div>
                 <div class="client-selector-options" id="clientOptions"></div>
             </div>
@@ -2501,7 +2501,7 @@
                 </div>
                 <button class="modal-add-btn" onclick="addFromModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    Adicionar <span id="modalTotalPrice">R$ 0,00</span>
+                    <span th:text="#{page.customer.menu.item.detail.add}">Adicionar</span> <span id="modalTotalPrice">R$ 0,00</span>
                 </button>
             </div>
         </div>
@@ -2511,12 +2511,12 @@
 <!-- Add Client Modal -->
 <div class="add-client-modal" id="addClientModal" onclick="closeAddClientModal()">
     <div class="add-client-content" onclick="event.stopPropagation()">
-        <h4>Adicionar pessoa</h4>
-        <p>Adicione alguém para fazer pedidos em nome dessa pessoa</p>
-        <input type="text" class="add-client-input" id="newClientName" placeholder="Nome da pessoa" maxlength="30">
+        <h4 th:text="#{page.customer.menu.client.add.title}">Adicionar pessoa</h4>
+        <p th:text="#{page.customer.menu.client.add.subtitle}">Adicione alguém para fazer pedidos em nome dessa pessoa</p>
+        <input type="text" class="add-client-input" id="newClientName" th:placeholder="#{page.customer.menu.client.add.input.placeholder}" maxlength="30">
         <div class="add-client-actions">
-            <button class="btn-cancel" onclick="closeAddClientModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="confirmAddClient()">Adicionar</button>
+            <button class="btn-cancel" onclick="closeAddClientModal()" th:text="#{page.customer.menu.waiter.confirm.no}">Cancelar</button>
+            <button class="btn-confirm" onclick="confirmAddClient()" th:text="#{page.customer.menu.client.add.confirm}">Adicionar</button>
         </div>
     </div>
 </div>
@@ -2528,11 +2528,11 @@
         <div class="waiter-modal-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         </div>
-        <h3 data-i18n="callWaiterTitle">Chamar Garçom?</h3>
-        <p data-i18n="callWaiterDesc">Um garçom será notificado e virá até sua mesa em breve.</p>
+        <h3 data-i18n="callWaiterTitle" th:text="#{page.customer.menu.waiter.modal.title}">Chamar Garçom?</h3>
+        <p data-i18n="callWaiterDesc" th:text="#{page.customer.menu.waiter.modal.body}">Um garçom será notificado e virá até sua mesa em breve.</p>
         <div class="waiter-modal-actions">
-            <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel">Cancelar</button>
-            <button class="waiter-modal-btn primary" id="callWaiterBtn" onclick="callWaiter()" data-i18n="callNow">Chamar Agora</button>
+            <button class="waiter-modal-btn secondary" onclick="closeWaiterModal()" data-i18n="cancel" th:text="#{page.customer.menu.waiter.confirm.no}">Cancelar</button>
+            <button class="waiter-modal-btn primary" id="callWaiterBtn" onclick="callWaiter()" data-i18n="callNow" th:text="#{page.customer.menu.waiter.modal.call.now}">Chamar Agora</button>
         </div>
     </div>
 </div>
@@ -2544,16 +2544,16 @@
             <div class="user-edit-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
-            <h3>Editar seu nome</h3>
+            <h3 th:text="#{page.customer.menu.user.edit.title}">Editar seu nome</h3>
         </div>
         <div class="user-edit-field">
-            <label>Este nome será usado para identificar seus pedidos</label>
-            <input type="text" id="userNameInput" placeholder="Seu nome" maxlength="30">
-            <span id="userNameError" style="display:none; font-size:0.75rem; color:var(--destructive); margin-top:0.35rem; display:none;">O nome deve ter pelo menos 3 caracteres.</span>
+            <label th:text="#{page.customer.menu.user.edit.label}">Este nome será usado para identificar seus pedidos</label>
+            <input type="text" id="userNameInput" th:placeholder="#{page.customer.menu.user.edit.input.placeholder}" maxlength="30">
+            <span id="userNameError" style="display:none; font-size:0.75rem; color:var(--destructive); margin-top:0.35rem; display:none;" th:text="#{page.customer.menu.user.edit.error.min.length}">O nome deve ter pelo menos 3 caracteres.</span>
         </div>
         <div class="user-edit-actions">
-            <button class="user-edit-btn secondary" onclick="closeUserEditModal()">Cancelar</button>
-            <button class="user-edit-btn primary" onclick="saveUserName()">Salvar</button>
+            <button class="user-edit-btn secondary" onclick="closeUserEditModal()" th:text="#{page.customer.menu.waiter.confirm.no}">Cancelar</button>
+            <button class="user-edit-btn primary" onclick="saveUserName()" th:text="#{page.customer.menu.user.edit.save}">Salvar</button>
         </div>
     </div>
 </div>
@@ -2578,8 +2578,8 @@
             </div>
 
             <!-- Badge + title -->
-            <div class="entry-hero-badge">QR escaneado</div>
-            <h2 class="entry-hero-title" th:text="'Mesa ' + ${customerMenu.tableModel.cod}">Mesa 07</h2>
+            <div class="entry-hero-badge" th:text="#{page.customer.menu.entry.badge}">QR escaneado</div>
+            <h2 class="entry-hero-title" th:text="#{page.customer.menu.entry.table.title(${customerMenu.tableModel.cod})}">Mesa 07</h2>
             <p class="entry-hero-sub" th:text="${customerMenu.restaurant.name}">Cantina Bella Italia</p>
         </div>
 
@@ -2591,7 +2591,7 @@
                  th:if="${tableCustomers != null and !#sets.isEmpty(tableCustomers)}">
                 <div class="entry-clients-label">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Já na mesa — selecione:
+                    <th:block th:text="#{page.customer.menu.entry.clients.label}">Já na mesa — selecione:</th:block>
                 </div>
                 <div class="entry-clients-list" id="entryClientsList">
                     <button type="button"
@@ -2603,24 +2603,24 @@
                         <span th:text="${client.name}">João</span>
                     </button>
                 </div>
-                <div class="entry-clients-divider">ou entre com novo nome</div>
+                <div class="entry-clients-divider" th:text="#{page.customer.menu.entry.clients.divider}">ou entre com novo nome</div>
             </div>
 
             <!-- Name input -->
             <form class="entry-form-group" id="entryNameGroup" onsubmit="handleEntrySubmit(event)">
-                <label class="entry-form-label" for="entryCustomerName">Seu nome</label>
+                <label class="entry-form-label" for="entryCustomerName" th:text="#{page.customer.menu.entry.name.label}">Seu nome</label>
                 <div class="entry-input-wrapper">
                     <input type="text" id="entryCustomerName" class="entry-form-input"
-                           placeholder="Ex: Maria, João..."
+                           th:placeholder="#{page.customer.menu.entry.name.placeholder}"
                            autocomplete="off" minlength="3" required>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
-                <div class="entry-form-error" id="entryNameError">Nome deve ter pelo menos 3 caracteres</div>
+                <div class="entry-form-error" id="entryNameError" th:text="#{page.customer.menu.entry.error.min.length}">Nome deve ter pelo menos 3 caracteres</div>
             </form>
 
             <!-- Submit -->
             <button class="entry-submit-btn" id="entrySubmitBtn" onclick="handleEntrySubmit(event)">
-                <span class="entry-btn-text">Entrar na mesa</span>
+                <span class="entry-btn-text" th:text="#{page.customer.menu.entry.submit}">Entrar na mesa</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 <div class="entry-spinner"></div>
             </button>
@@ -2633,7 +2633,7 @@
         th:if="${showEntryModal}"
         onclick="openEntryModal()">
     <span class="fab-pulse"></span>
-    <span th:text="'Entrar na Mesa ' + ${customerMenu.tableModel.cod}">Entrar na Mesa 07</span>
+    <span th:text="#{page.customer.menu.entry.fab(${customerMenu.tableModel.cod})}">Entrar na Mesa 07</span>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 </button>
 
@@ -2676,6 +2676,39 @@
     const restaurantId = /*[[${customerMenu.getRestaurant().getId()}]]*/ null;
 
 
+    const i18n = {
+        item: [[#{page.customer.menu.cart.item}]],
+        items: [[#{page.customer.menu.cart.items}]],
+        waiterCallNow: [[#{page.customer.menu.waiter.modal.call.now}]],
+        waiterWait: [[#{page.customer.menu.waiter.modal.wait}]],
+        errorWaiterCall: [[#{page.customer.menu.waiter.error.call}]],
+        errorWaiterConnection: [[#{page.customer.menu.waiter.error.connection}]],
+        errorOrderSubmit: [[#{page.customer.menu.orders.error.submit}]],
+        errorOrderConnection: [[#{page.customer.menu.orders.error.connection}]],
+        errorReviewSubmit: [[#{page.customer.menu.review.error.submit}]],
+        errorReviewConnection: [[#{page.customer.menu.review.error.connection}]],
+        errorUserSync: [[#{page.customer.menu.user.error.sync}]],
+        thanksVisit: [[#{page.customer.menu.review.thanks}]],
+        feedbackSuccessText: [[#{page.customer.menu.review.success.text}]],
+        tableBillEmpty: [[#{page.customer.menu.table.bill.empty}]],
+        tableBillYou: [[#{page.customer.menu.table.bill.you}]],
+        tableBillOthers: [[#{page.customer.menu.table.bill.others}]],
+        tableBillPaymentsTitle: [[#{page.customer.menu.table.bill.payments.title}]],
+        clientAddOther: [[#{page.customer.menu.client.add.other}]],
+        searchPlaceholder: [[#{page.customer.menu.search.placeholder}]],
+        experienceTitle: [[#{page.customer.menu.review.experience.title}]],
+        experienceSubtitle: [[#{page.customer.menu.review.experience.subtitle}]],
+        experienceCommentPlaceholder: [[#{page.customer.menu.review.experience.comment.placeholder}]],
+        experienceSubmit: [[#{page.customer.menu.review.experience.submit}]],
+        experienceThanks: [[#{page.customer.menu.review.experience.thanks}]],
+        redirectNow: [[#{page.customer.menu.review.success.go.now}]],
+        timeAgoNow: [[#{page.customer.menu.time.ago.now}]],
+        timeAgoMin: [[#{page.customer.menu.time.ago.min}]],
+        timeAgoHour: [[#{page.customer.menu.time.ago.hour}]],
+        errorEntryTable: [[#{page.customer.menu.entry.error.fail}]],
+        errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]]
+    };
+
     const paymentMethods = {
         /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
         "[(${method.name()})]": {
@@ -2697,7 +2730,7 @@
     // Customer identity from localStorage
     const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
     const myCustomerId = _restaurantCustomer.id || null;
-    let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || 'Cliente';
+    let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || [[#{page.customer.menu.badge.client}]];
 
     // Guard: if at a table session (menu view) but no customer id, redirect back to table entry page
     // In entry mode (showEntryModal=true), this is expected — don't redirect
@@ -2723,7 +2756,7 @@
             return String(o.customerId).toLowerCase() !== safeMyCustomerId;
         })
         .reduce((acc, item) => {
-            const cname = item.customerName || 'Outros';
+            const cname = item.customerName || i18n.tableBillOthers;
             if (!acc[cname]) acc[cname] = [];
             acc[cname].push({
                 ...item,
@@ -2836,6 +2869,7 @@
 
         if (lastCall && (now - lastCall < COOLDOWN)) {
             btn.disabled = true;
+            const initialRemaining = Math.ceil((COOLDOWN - (now - lastCall)) / 1000);
             
             if (waiterCallInterval) clearInterval(waiterCallInterval);
             
@@ -2845,20 +2879,19 @@
                 
                 if (remaining <= 0) {
                     btn.disabled = false;
-                    btn.textContent = 'Chamar Agora';
+                    btn.textContent = i18n.waiterCallNow;
                     clearInterval(waiterCallInterval);
                     localStorage.removeItem('lastWaiterCallTime');
                 } else {
-                    btn.textContent = `Aguarde (${remaining}s)`;
+                    btn.textContent = i18n.waiterWait.replace('{0}', remaining);
                 }
             }, 1000);
             
             // Initial update
-            const initialRemaining = Math.ceil((COOLDOWN - (now - lastCall)) / 1000);
-            btn.textContent = `Aguarde (${initialRemaining}s)`;
+            btn.textContent = i18n.waiterWait.replace('{0}', initialRemaining);
         } else {
             btn.disabled = false;
-            btn.textContent = 'Chamar Agora';
+            btn.textContent = i18n.waiterCallNow;
         }
     }
 
@@ -2890,11 +2923,11 @@
                 } else if (response.status === 409) {
                     refreshTableData();
                 } else {
-                    alert('Erro ao chamar o garçom. Tente novamente.');
+                    alert(i18n.errorWaiterCall);
                 }
             } catch (error) {
                 console.error('Error calling waiter:', error);
-                alert('Erro de conexão ao chamar o garçom.');
+                alert(i18n.errorWaiterConnection);
             }
         }
     }
@@ -2982,7 +3015,7 @@
 
         cartFloat.style.display = totalItems > 0 ? 'block' : 'none';
         const cartCount = document.getElementById('cartCount');
-        if (cartCount) cartCount.textContent = totalItems + ' ' + (totalItems === 1 ? 'item' : 'itens');
+        if (cartCount) cartCount.textContent = totalItems + ' ' + (totalItems === 1 ? i18n.item : i18n.items);
         const cartTotal = document.getElementById('cartTotal');
         if (cartTotal) cartTotal.textContent = formatPrice(subtotal);
 
@@ -3011,7 +3044,7 @@
                   <div class="cart-client-header">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <span class="cart-client-name">${clientName}</span>
-                    <span class="cart-client-count">${clientCount} ${clientCount === 1 ? 'item' : 'itens'}</span>
+                    <span class="cart-client-count">${clientCount} ${clientCount === 1 ? i18n.item : i18n.items}</span>
                   </div>`;
                 items.forEach(item => {
                     html += `<div class="cart-item">
@@ -3094,11 +3127,11 @@
             } else if (response.status === 409) {
                 refreshTableData();
             } else {
-                alert('Erro ao enviar pedido. Tente novamente.');
+                alert(i18n.errorOrderSubmit);
             }
         } catch (error) {
             console.error('Error submitting order:', error);
-            alert('Erro de conexão. Verifique sua internet.');
+            alert(i18n.errorOrderConnection);
         }
     }
 
@@ -3191,16 +3224,16 @@
         if (isReviewMode && !feedbackAlreadySent) {
             html += `
                 <div class="experience-card" id="experienceCard">
-                    <h3>Como foi a sua experiência?</h3>
-                    <p>Avalie o nosso atendimento e ambiente.</p>
+                    <h3>${i18n.experienceTitle}</h3>
+                    <p>${i18n.experienceSubtitle}</p>
                     <div class="exp-stars">
                         ${[1, 2, 3, 4, 5].map(n => `
                             <svg class="exp-star ${selectedExpRating >= n ? 'active' : ''}" data-val="${n}" onclick="selectExpRating(${n})" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                         `).join('')}
                     </div>
                     <div class="exp-form ${isFormActive ? 'active' : ''}" id="expForm">
-                        <textarea class="exp-textarea" id="expComment" maxlength="500" placeholder="Algum comentário (opcional)...">${currentComment}</textarea>
-                        <button class="exp-submit" onclick="confirmGeneralFeedback()">Enviar Avaliação</button>
+                        <textarea class="exp-textarea" id="expComment" maxlength="500" placeholder="${i18n.experienceCommentPlaceholder}">${currentComment}</textarea>
+                        <button class="exp-submit" onclick="confirmGeneralFeedback()">${i18n.experienceSubmit}</button>
                     </div>
                 </div>
             `;
@@ -3253,7 +3286,7 @@
         if (!experienceCard) return;
         
         // Hide UI
-        experienceCard.innerHTML = '<div style="text-align: center; padding: 1rem;"><h3>Obrigado pelo seu feedback!</h3></div>';
+        experienceCard.innerHTML = `<div style="text-align: center; padding: 1rem;"><h3>${i18n.experienceThanks}</h3></div>`;
 
         
         try {
@@ -3271,11 +3304,11 @@
                 showFeedbackSuccessAndRedirect();
             } else {
                 const errorText = await response.text();
-                alert('Erro ao enviar feedback: ' + response.status + ' - ' + errorText);
+                alert(i18n.errorReviewSubmit.replace('{0}', response.status).replace('{1}', errorText));
             }
         } catch (e) {
             console.error('Falha ao enviar feedback geral', e);
-            alert('Erro de conexão ao enviar feedback.');
+            alert(i18n.errorReviewConnection);
         }
     }
 
@@ -3301,8 +3334,8 @@
             <div style="width: 80px; height: 80px; background: #16a34a; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
                 <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <h2 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 1rem; color: var(--foreground);" data-i18n="feedbackSuccessTitle">Obrigado pela sua visita!</h2>
-            <p id="feedbackRedirectText" style="color: var(--muted); margin-bottom: 2rem; max-width: 300px;" data-i18n="feedbackSuccessText">Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...</p>
+            <h2 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 1rem; color: var(--foreground);" data-i18n="feedbackSuccessTitle">${i18n.thanksVisit}</h2>
+            <p id="feedbackRedirectText" style="color: var(--muted); margin-bottom: 2rem; max-width: 300px;" data-i18n="feedbackSuccessText">${i18n.feedbackSuccessText.replace('{0}', timeLeft)}</p>
             <div style="position: relative; width: 60px; height: 60px;">
                 <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
                     <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e8e4de" stroke-width="3" />
@@ -3310,7 +3343,7 @@
                 </svg>
                 <div id="countdownText" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: var(--primary);">${timeLeft}</div>
             </div>
-            <button onclick="finalizeReview()" style="margin-top: 2rem; background: none; border: 1px solid var(--border); padding: 0.75rem 1.5rem; border-radius: var(--radius); color: var(--muted); font-weight: 500; cursor: pointer;" data-i18n="redirectNow">Ir agora</button>
+            <button onclick="finalizeReview()" style="margin-top: 2rem; background: none; border: 1px solid var(--border); padding: 0.75rem 1.5rem; border-radius: var(--radius); color: var(--muted); font-weight: 500; cursor: pointer;" data-i18n="redirectNow">${i18n.redirectNow}</button>
         `;
 
         document.body.appendChild(overlay);
@@ -3324,7 +3357,7 @@
             const redirectTextEl = document.getElementById('feedbackRedirectText');
             
             if (textEl) textEl.textContent = timeLeft;
-            if (redirectTextEl) redirectTextEl.textContent = `Sua opinião é muito importante para nós. Redirecionando em ${timeLeft} segundos...`;
+            if (redirectTextEl) redirectTextEl.textContent = i18n.feedbackSuccessText.replace('{0}', timeLeft);
             
             if (circleEl) {
                 const offset = 100 - (timeLeft / 10) * 100;
@@ -3361,9 +3394,9 @@
         const d = parseDate(date);
         const mins = Math.floor((new Date() - d) / 60000);
         if (isNaN(mins)) return '';
-        if (mins < 1) return 'agora';
-        if (mins < 60) return `há ${mins} min`;
-        return `há ${Math.floor(mins / 60)}h`;
+        if (mins < 1) return i18n.timeAgoNow;
+        if (mins < 60) return i18n.timeAgoMin.replace('{0}', mins);
+        return i18n.timeAgoHour.replace('{0}', Math.floor(mins / 60));
     }
 
     function formatHour(date) {
@@ -3434,7 +3467,7 @@
                         closeUserEditModal();
                         return;
                     }
-                    if (!response.ok) throw new Error('Failed to sync name with server');
+                    if (!response.ok) throw new Error(i18n.errorUserSync);
 
                     myCustomerName = newName;
                     
@@ -3510,8 +3543,8 @@
             html += `
           <div class="person-section">
             <div class="person-header">
-              <div class="person-avatar">EU</div>
-              <span class="person-name">Você</span>
+              <div class="person-avatar">${i18n.tableBillYou.substring(0, 2).toUpperCase()}</div>
+              <span class="person-name">${i18n.tableBillYou}</span>
               <span class="person-total">${formatPrice(mySubtotal)}</span>
             </div>
             ${myOrders.map(o => `
@@ -3587,10 +3620,10 @@
                     <div class="payments-history">
                         <h3>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-                            Pagamentos Realizados
+                            ${i18n.tableBillPaymentsTitle}
                         </h3>
                         ${activePayments.map(p => {
-                            const customer = tableCustomersFromBackend.find(c => String(c.id) === String(p.customerId)) || { name: 'Cliente' };
+                            const customer = tableCustomersFromBackend.find(c => String(c.id) === String(p.customerId)) || { name: i18n.badgeClient };
                             const paidTime = parseDate(p.paidAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             const methodInfo = paymentMethods[String(p.method).toUpperCase()] || { label: p.method, icon: '' };
                             return `
@@ -4082,14 +4115,14 @@
                 localStorage.setItem('restaurantCustomer', JSON.stringify(customer));
                 window.location.href = window.location.pathname.endsWith('/menu') ? window.location.pathname : window.location.pathname + '/menu';
             } else {
-                throw new Error('Falha ao entrar na mesa');
+                throw new Error(i18n.errorEntryTable);
             }
         })
         .catch(error => {
             console.error('Entry error:', error);
             if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
             if (group) group.classList.add('has-error');
-            if (errorEl) errorEl.textContent = 'Não foi possível registrar seu acesso. Tente novamente.';
+            if (errorEl) errorEl.textContent = i18n.errorEntryTableRegister;
         });
     }
 
