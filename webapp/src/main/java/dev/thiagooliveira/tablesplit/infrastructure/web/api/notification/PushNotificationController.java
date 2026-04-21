@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/notifications/push")
+@RequestMapping("/api/notifications")
 public class PushNotificationController {
 
   private static final Logger logger = LoggerFactory.getLogger(PushNotificationController.class);
@@ -50,7 +50,7 @@ public class PushNotificationController {
     this.dismissWaiterCall = dismissWaiterCall;
   }
 
-  @PostMapping("/subscribe")
+  @PostMapping({"/push/subscribe", "/subscribe"})
   public ResponseEntity<Void> subscribe(Authentication auth, @RequestBody SubscriptionData data) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
@@ -65,13 +65,13 @@ public class PushNotificationController {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/unsubscribe")
+  @PostMapping({"/push/unsubscribe", "/unsubscribe"})
   public ResponseEntity<Void> unsubscribe(@RequestBody String endpoint) {
     unsubscribe.execute(endpoint);
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/public-key")
+  @GetMapping({"/push/public-key", "/public-key"})
   public ResponseEntity<String> getPublicKey() {
     String key = pushNotificationService.getPublicKey();
     logger.debug(
@@ -81,7 +81,7 @@ public class PushNotificationController {
         .body(key);
   }
 
-  @PostMapping("/status")
+  @PostMapping({"/push/status", "/status"})
   public ResponseEntity<java.util.Map<String, Boolean>> getStatus(@RequestBody String endpoint) {
     return getPreferences
         .execute(endpoint)
@@ -89,14 +89,14 @@ public class PushNotificationController {
         .orElse(ResponseEntity.notFound().build());
   }
 
-  @PostMapping("/preferences")
+  @PostMapping({"/push/preferences", "/preferences"})
   public ResponseEntity<Void> updatePreferences(@RequestBody UpdatePreferencesRequest request) {
     updatePreferences.execute(
         request.endpoint(), request.notifyNewOrders(), request.notifyCallWaiter());
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/test")
+  @PostMapping({"/push/test", "/test"})
   public ResponseEntity<Void> sendTest(Authentication auth) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
@@ -109,7 +109,7 @@ public class PushNotificationController {
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/active-calls")
+  @GetMapping({"/push/active-calls", "/active-calls"})
   public ResponseEntity<
           java.util.List<
               dev.thiagooliveira.tablesplit.infrastructure.web.api.notification.model
@@ -136,7 +136,7 @@ public class PushNotificationController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/calls/count")
+  @GetMapping({"/push/calls/count", "/calls/count"})
   public ResponseEntity<Long> getCallsCount(Authentication auth) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
@@ -145,7 +145,7 @@ public class PushNotificationController {
     return ResponseEntity.ok(count);
   }
 
-  @PostMapping("/calls/dismiss")
+  @PostMapping({"/push/calls/dismiss", "/calls/dismiss"})
   public ResponseEntity<Void> dismissCall(@RequestBody UUID id) {
     dismissWaiterCall.execute(id);
     return ResponseEntity.ok().build();
