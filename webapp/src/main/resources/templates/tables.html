@@ -3474,7 +3474,7 @@
             note: note
         };
 
-        if (await performAction(`/tables/${selectedTable}/payment`, params)) {
+        if (await performAction(`/tables/${selectedTable}/payment`, params, 'POST', true)) {
             closeCloseTableModal();
             // After successful payment, close the order
             const orderId = document.getElementById('jsData').dataset.orderId || ''; // We might need to add orderId to jsData
@@ -3797,7 +3797,7 @@
             note: note
         };
 
-        if (await performAction(`/tables/${selectedTable}/payment`, params)) {
+        if (await performAction(`/tables/${selectedTable}/payment`, params, 'POST', true)) {
             closePartialPaymentModal();
         }
     }
