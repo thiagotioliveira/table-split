@@ -3188,7 +3188,7 @@
                                 </p>
                             </div>
                             <div id="historyViewInfo" style="display: none;">
-                                <h2 id="historyHeaderTitle" th:text="#{page.tables.header.history.title('XX')}">Histórico - Mesa XX</h2>
+                                <h2 id="historyHeaderTitle" th:text="${selectedTableObj != null} ? #{page.tables.header.history.title(${selectedTableObj.cod})} : ''">Histórico - Mesa XX</h2>
                                 <p id="historyHeaderDates" th:text="#{page.tables.header.history.subtitle('--/--', '--/--')}">Abertura: --/-- | Fechamento: --/--</p>
                             </div>
                         </div>
@@ -3307,7 +3307,7 @@
                                                             th:attr="onclick=|deliverOrderItem('${item.id}', '${item.name}')|">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                                     </button>
-                                                    <button th:if="${item.status == 'Entregue'}" class="order-item-action reset" title="Voltar para Pendente" 
+                                                    <button th:if="${item.status == 'Entregue' or item.status == 'DELIVERED'}" class="order-item-action reset" th:title="#{page.tables.modal.reset.item.title}" 
                                                             th:attr="onclick=|resetToPending('${item.id}', '${item.name}')|">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                                                     </button>
@@ -3407,10 +3407,10 @@
     const restaurantId = /*[[${restaurantId}]]*/ null;
 
     const i18n = {
-        cardTable: /*[[#{page.tables.card.table('')}]]*/ 'Table {0}',
-        headerStatusActive: /*[[#{page.tables.header.status.active('')}]]*/ 'Active {0}',
+        cardTable: /*[[#{page.tables.card.table('{0}')}]]*/ 'Table {0}',
+        headerStatusActive: /*[[#{page.tables.header.status.active('{0}')}]]*/ 'Active {0}',
         headerStatusActiveNow: /*[[#{page.tables.header.status.active.now}]]*/ 'Active Now',
-        headerOpenedAt: /*[[#{page.tables.header.status.opened.at('')}]]*/ 'Opened: {0}',
+        headerOpenedAt: /*[[#{page.tables.header.status.opened.at('{0}')}]]*/ 'Opened: {0}',
         waiterAlertsTitle: /*[[#{page.tables.waiter.alerts.title}]]*/ 'Waiter Calls',
         statusOpen: /*[[#{page.tables.js.status.open}]]*/ 'Open',
         statusPending: /*[[#{page.tables.js.status.pending}]]*/ 'Pending',
@@ -3445,9 +3445,14 @@
         feedbackRedirect: /*[[#{page.tables.js.feedback.redirect}]]*/ 'Your opinion is very important to us. Redirecting in {0} seconds...',
         newClientPrompt: /*[[#{page.tables.js.new.client.prompt}]]*/ 'New customer name:',
         newClientErrorMinLength: /*[[#{page.tables.js.new.client.error.min.length}]]*/ 'Customer name must be at least 3 characters.',
-        btnAddClient: /*[[#{page.tables.add.client}]]*/ '+Client'
+        btnAddClient: /*[[#{page.tables.add.client}]]*/ '+Client',
+        historyTitle: /*[[#{page.tables.modal.history.title}]]*/ 'History',
+        historyOpened: /*[[#{page.tables.modal.history.opened}]]*/ 'Opened',
+        historyClosed: /*[[#{page.tables.modal.history.closed}]]*/ 'Closed',
+        tableLabel: /*[[#{page.tables.modal.history.table.label}]]*/ 'Table',
+        itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)'
     };
-
+    console.log('>>' + i18n.cardTable);
     function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
             alert(i18n.errorNoTableSelectedBody);
@@ -4263,7 +4268,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Novo Pedido - <span id="orderModalTable">Mesa 01</span>
+                <span th:text="#{page.tables.button.order.new}">Novo Pedido</span> - <span id="orderModalTable">Mesa 01</span>
             </h3>
             <button type="button" class="modal-close" onclick="closeOrderModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4372,11 +4377,11 @@
                     <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                 </div>
                 <div class="bill-summary-row">
-                    <span>Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
+                    <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
                     <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                 </div>
                 <div class="bill-summary-row total">
-                    <span>Total</span>
+                    <span th:text="#{page.tables.bill.label.total}">Total</span>
                     <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                 </div>
             </div>
@@ -4405,10 +4410,10 @@
             <div style="text-align: center; padding: 1rem 0;">
                 <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;"
                      th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
-                <div style="color: var(--muted);">Saldo restante da conta</div>
+                <div style="color: var(--muted);" th:text="#{page.tables.modal.close.label.remaining}">Saldo restante da conta</div>
             </div>
             <div class="form-group">
-                <label>Método de Pagamento</label>
+                <label th:text="#{page.tables.modal.payment.method.label}">Método de Pagamento</label>
                 <div class="payment-methods">
                     <div class="payment-method-option" th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}">
                         <input type="radio" name="closePayMethod" th:id="${'close' + method.name()}" th:value="${method.name()}" th:checked="${method.name() == 'MB_WAY'}">
@@ -4420,8 +4425,8 @@
                 </div>
             </div>
             <div class="form-group" style="margin-top: 1rem;">
-                <label for="closeTableNote">Observações</label>
-                <textarea id="closeTableNote" rows="2" placeholder="Ex: Mesa completa, cliente solicitou fatura..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); resize: vertical; font-family: inherit; font-size: 0.875rem;"></textarea>
+                <label for="closeTableNote" th:text="#{page.tables.modal.payment.note.label}">Observações</label>
+                <textarea id="closeTableNote" rows="2" th:placeholder="#{page.tables.modal.close.placeholder.notes}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); resize: vertical; font-family: inherit; font-size: 0.875rem;"></textarea>
             </div>
         </div>
         <div class="modal-footer">
@@ -4437,7 +4442,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                Excluir <span id="deleteTableNumber">Mesa</span>
+                <span th:text="#{page.tables.modal.delete.table.title('')}">Excluir </span><span id="deleteTableNumber">Mesa</span>
             </h3>
             <button class="modal-close" onclick="closeDeleteTableModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4445,7 +4450,7 @@
         </div>
         <div class="modal-body">
             <p style="color: var(--muted); text-align: center; padding: 0.5rem 0;">
-                Tem a certeza que deseja excluir <strong id="deleteTableNumberBody">esta mesa</strong>?<br>
+                <span th:text="#{page.tables.modal.delete.table.body('')}">Tem a certeza que deseja excluir </span><strong id="deleteTableNumberBody">esta mesa</strong>?<br>
             </p>
         </div>
         <div class="modal-footer">
@@ -4459,8 +4464,7 @@
 <div class="modal-overlay" id="partialPaymentModal">
     <div class="modal">
         <div class="modal-header">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h3 th:text="#{page.tables.modal.partial.title}">
                 Pagamento Parcial
             </h3>
             <button class="modal-close" onclick="closePartialPaymentModal()">
@@ -4468,7 +4472,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <p style="margin-bottom: 1rem; color: var(--muted);">Selecione o cliente que irá pagar:</p>
+            <p style="margin-bottom: 1rem; color: var(--muted);" th:text="#{page.tables.modal.partial.instructions}">Selecione o cliente que irá pagar:</p>
             <div class="client-payment-list">
                 <div class="client-payment-card" th:each="client : ${clients}">
                     <input type="radio" name="customerId" th:value="${client.key.id}" class="client-payment-check" 
@@ -4479,7 +4483,7 @@
                     </div>
                     <div class="client-payment-value">
                         <span th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
-                              style="font-size: 0.7rem; padding: 2px 8px; background: #22c55e; color: white; border-radius: 20px; font-weight: 600;">PAGO</span>
+                              style="font-size: 0.7rem; padding: 2px 8px; background: #22c55e; color: white; border-radius: 20px; font-weight: 600;" th:text="#{page.tables.js.pago}">PAGO</span>
                         <span th:unless="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
                               th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                     </div>
@@ -4487,14 +4491,14 @@
             </div>
 
             <div style="margin-top: 1rem; padding: 1rem; background: var(--primary-light); border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
-                <span th:text="${'Total a Pagar ('+currencySymbol+'):'}">Total a Pagar ($):</span>
+                <span th:text="#{page.tables.modal.partial.total(${currencySymbol})}">Total a Pagar ($):</span>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <input type="number" step="0.01" id="partialPaymentAmount" value="0.00" style="width: 100px; padding: 0.5rem; font-size: 1rem; font-weight: 600; text-align: right; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card);">
                 </div>
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
-                <label>Método de Pagamento</label>
+                <label th:text="#{page.tables.modal.partial.label.method}">Método de Pagamento</label>
                 <div class="payment-methods">
                     <div class="payment-method-option" th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}">
                         <input type="radio" name="partialPayMethod" th:id="${'partial' + method.name()}" th:value="${method.name()}" th:checked="${method.name() == 'MB_WAY'}">
@@ -4507,8 +4511,8 @@
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
-                <label for="partialPaymentNote">Observações</label>
-                <textarea id="partialPaymentNote" rows="2" placeholder="Ex: Dividir em 2 cartões, troco para € 50..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); resize: vertical; font-family: inherit; font-size: 0.875rem;"></textarea>
+                <label for="partialPaymentNote" th:text="#{page.tables.modal.partial.label.notes}">Observações</label>
+                <textarea id="partialPaymentNote" rows="2" th:placeholder="#{page.tables.modal.partial.placeholder.notes}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); resize: vertical; font-family: inherit; font-size: 0.875rem;"></textarea>
             </div>
 
             <script>
@@ -4519,8 +4523,8 @@
             </script>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closePartialPaymentModal()">Cancelar</button>
-            <button class="modal-btn success" onclick="processPartialPayment()">Processar Pagamento</button>
+            <button class="modal-btn" onclick="closePartialPaymentModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+            <button class="modal-btn success" onclick="processPartialPayment()" th:text="#{page.tables.modal.partial.button.submit}">Processar Pagamento</button>
         </div>
     </div>
 </div>
@@ -4528,19 +4532,19 @@
 <div class="modal-overlay" id="deletePaymentModal">
     <div class="modal">
         <div class="modal-header">
-            <h3>Excluir Pagamento</h3>
+            <h3 th:text="#{page.tables.modal.delete.payment.title}">Excluir Pagamento</h3>
             <button class="modal-close" onclick="closeDeletePaymentModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
         <div class="modal-body">
-            <p>Você tem certeza que deseja excluir este pagamento? Esta ação não pode ser desfeita.</p>
-            <p style="margin-top: 1rem; color: #ef4444; font-weight: 600;">O valor da mesa será recalculado.</p>
+            <p th:text="#{page.tables.modal.delete.payment.body}">Você tem certeza que deseja excluir este pagamento? Esta ação não pode ser desfeita.</p>
+            <p style="margin-top: 1rem; color: #ef4444; font-weight: 600;" th:text="#{page.tables.modal.delete.payment.warning}">O valor da mesa será recalculado.</p>
         </div>
         <div class="modal-footer">
             <form id="deletePaymentForm" method="POST">
-                <button type="button" class="modal-btn" onclick="closeDeletePaymentModal()">Cancelar</button>
-                <button type="submit" class="modal-btn" style="background: #ef4444; color: white; border: none;">Sim, Excluir</button>
+                <button type="button" class="modal-btn" onclick="closeDeletePaymentModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+                <button type="submit" class="modal-btn" style="background: #ef4444; color: white; border: none;" th:text="#{page.tables.modal.button.delete.confirm}">Sim, Excluir</button>
             </form>
         </div>
     </div>
@@ -4552,7 +4556,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Histórico - <span id="historyTableNumber">Mesa 02</span>
+                <span th:text="#{page.tables.button.history}">Histórico</span> - <span id="historyTableNumber">Mesa 02</span>
             </h3>
             <button class="modal-close" onclick="closeHistoryModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4602,7 +4606,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-btn" onclick="closeHistoryModal()">Fechar</button>
+            <button class="modal-btn" onclick="closeHistoryModal()" th:text="#{page.tables.modal.button.cancel}">Fechar</button>
         </div>
     </div>
 </div>
@@ -4678,6 +4682,27 @@
                 <div class="cancel-modal-item-price" id="cancelItemPrice"><span th:text="${currencySymbol}"></span> 0,00 cada</div>
             </div>
 
+            <div class="cancel-modal-qty" style="margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: var(--radius);">
+                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--muted);" th:text="#{page.tables.modal.cancel.item.qty.label}">Quantidade a cancelar:</label>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="qty-selector" style="display: flex; align-items: center; gap: 1rem;">
+                        <button type="button" class="qty-btn" onclick="adjustCancelQty(-1)" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); cursor: pointer;">-</button>
+                        <span id="cancelQtyValue" style="font-size: 1.25rem; font-weight: 700; min-width: 30px; text-align: center;">1</span>
+                        <button type="button" class="qty-btn" onclick="adjustCancelQty(1)" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); cursor: pointer;">+</button>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--muted);">
+                        <span th:text="#{page.tables.modal.cancel.item.qty.max.prefix}">de </span>
+                        <span id="cancelQtyMax">1</span>
+                        <span th:text="#{page.tables.modal.cancel.item.qty.max.suffix}"> unidade(s)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cancel-modal-total" style="margin: 1rem 0; padding: 1rem; background: #fef2f2; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: #991b1b;" th:text="#{page.tables.modal.cancel.item.total.label}">Estorno Total:</span>
+                <span id="cancelTotalValue" style="font-size: 1.1rem; font-weight: 700; color: #ef4444;"></span>
+            </div>
+
             <div class="cancel-modal-reason">
                 <label th:text="#{page.tables.modal.cancel.item.reason.label}">Motivo do cancelamento:</label>
                 <select id="cancelReason">
@@ -4713,7 +4738,11 @@
             </button>
         </div>
         <div class="modal-body">
-            <p th:text="#{page.tables.modal.deliver.item.body('')}">Confirma que o item <strong id="deliverItemName"></strong> foi entregue ao cliente?</p>
+            <p>
+                <span th:text="#{page.tables.modal.deliver.item.status.confirm}">Confirma que o item</span>
+                <strong id="deliverItemName"></strong>
+                <span th:text="#{page.tables.modal.deliver.item.status.question}">foi entregue ao cliente?</span>
+            </p>
             <div class="cancel-modal-footer" style="margin-top: 1.5rem">
                 <button class="btn-secondary" onclick="document.getElementById('deliverItemModal').classList.remove('active')" th:text="#{page.tables.modal.button.cancel}">Voltar</button>
                 <button class="action-btn success" id="confirmDeliverBtn" onclick="confirmDeliverItem()" th:text="#{page.tables.modal.deliver.item.button.confirm}">Sim, Entregar</button>
@@ -4735,7 +4764,11 @@
             </button>
         </div>
         <div class="modal-body">
-            <p th:text="#{page.tables.modal.reset.item.body('')}">Deseja marcar o item <strong id="resetItemName"></strong> como pendente novamente?</p>
+            <p>
+                <span th:text="#{page.tables.modal.reset.item.status.confirm}">Deseja marcar o item</span>
+                <strong id="resetItemName"></strong>
+                <span th:text="#{page.tables.modal.reset.item.status.question}">como pendente novamente?</span>
+            </p>
             <div class="cancel-modal-footer" style="margin-top: 1.5rem">
                 <button class="btn-secondary" onclick="document.getElementById('resetItemModal').classList.remove('active')" th:text="#{page.tables.modal.button.cancel}">Voltar</button>
                 <button class="action-btn primary" id="confirmResetBtn" onclick="confirmResetToPending()" th:text="#{page.tables.modal.reset.item.button.confirm}">Sim, Pendente</button>
