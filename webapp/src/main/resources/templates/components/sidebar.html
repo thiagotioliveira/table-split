@@ -176,7 +176,6 @@
                     return res.json();
                 })
                 .then(count => {
-                    console.log('Orders count fetched:', count);
                     badge.textContent = count;
                     if (count > 0) {
                         badge.style.display = '';
@@ -202,7 +201,6 @@
                     return res.json();
                 })
                 .then(count => {
-                    console.log('Tables count fetched:', count);
                     badge.textContent = count;
                     if (count > 0) {
                         badge.style.display = '';
@@ -217,7 +215,6 @@
         const connectSidebarSSE = () => {
             if (sidebarEventSource) sidebarEventSource.close();
             
-            console.log('Connecting sidebar SSE for restaurant:', restaurantId);
             sidebarEventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
             
             // Initial update
@@ -225,7 +222,6 @@
             updateTablesBadge();
 
             sidebarEventSource.onmessage = function(event) {
-                console.log('Sidebar SSE message received:', event.data);
                 try {
                     const payload = JSON.parse(event.data);
                     const type = payload.type;
@@ -275,12 +271,11 @@
             if (typeof PushNotifications !== 'undefined' && typeof PushNotifications.syncWithServer === 'function') {
                 PushNotifications.syncWithServer();
             }
-            console.log('Sidebar loaded, restaurantId:', restaurantId);
             if (restaurantId) {
-                console.log('Attempting to connect sidebar WS...');
+                console.log('Attempting to connect sidebar SSE...');
                 setTimeout(connectSidebarSSE, 100);
             } else {
-                console.warn('Sidebar: restaurantId not found, WebSocket will not connect');
+                console.warn('Sidebar: restaurantId not found, SSE will not connect');
             }
         });
     }

@@ -3458,7 +3458,7 @@
         tableLabel: /*[[#{page.tables.modal.history.table.label}]]*/ 'Table',
         itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)'
     };
-    console.log('>>' + i18n.cardTable);
+
     async function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
             alert(i18n.errorNoTableSelectedBody);
@@ -5285,7 +5285,6 @@
         eventSource = new EventSource('/api/notifications/sse/subscribe/' + restaurantId);
         
         eventSource.addEventListener('message', function(event) {
-            console.log('SSE message received:', event.data);
             try {
                 const payload = JSON.parse(event.data);
                 const type = payload.type;
