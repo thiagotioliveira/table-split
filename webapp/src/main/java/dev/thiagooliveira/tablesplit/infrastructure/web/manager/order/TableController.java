@@ -171,8 +171,19 @@ public class TableController {
             .collect(Collectors.toList());
     model.addAttribute("categories", categories);
     model.addAttribute("menuItems", menuItems);
-    model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
+    String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
+    model.addAttribute("currencySymbol", currencySymbol);
     model.addAttribute("restaurantId", context.getRestaurant().getId());
+
+    // Defaults for when no order is active
+    model.addAttribute("orderSubtotal", BigDecimal.ZERO);
+    model.addAttribute("orderTotal", BigDecimal.ZERO);
+    model.addAttribute("orderPaidAmount", BigDecimal.ZERO);
+    model.addAttribute("orderRemainingAmount", BigDecimal.ZERO);
+    model.addAttribute("orderServiceFee", context.getRestaurant().getServiceFee());
+    model.addAttribute("orderServiceFeeApplied", false);
+    model.addAttribute("orderServiceFeeAmount", BigDecimal.ZERO);
+    model.addAttribute("orderLoaded", false);
 
     if (selectedTableId != null) {
       var table =
@@ -228,12 +239,16 @@ public class TableController {
                               () ->
                                   new CustomerModel(item.getCustomerId(), item.getCustomerName()));
                   clients.computeIfAbsent(customer, k -> new java.util.ArrayList<>()).add(item);
+                  BigDecimal currentBalance = clientBalances.getOrDefault(customer, BigDecimal.ZERO);
+                  clientBalances.put(customer, currentBalance.add(item.getTotalPrice()));
                 });
 
         model.addAttribute("clients", clients);
+        model.addAttribute("clientBalances", clientBalances);
         model.addAttribute("orderLoaded", true);
         model.addAttribute("orderServiceFee", order.getServiceFee());
-        model.addAttribute("orderServiceFeeApplied", order.feeApplied());
+        model.addAttribute("orderServiceFeeApplied", order.feeApplied().compareTo(BigDecimal.ZERO) > 0);
+        model.addAttribute("orderServiceFeeAmount", order.feeApplied());
         model.addAttribute("orderSubtotal", order.calculateSubtotal());
         model.addAttribute("orderTotal", order.calculateTotal());
         model.addAttribute(

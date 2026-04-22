@@ -3349,7 +3349,7 @@
                             </div>
                             <div class="bill-row">
                                 <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
-                                <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                             </div>
                             <div class="bill-row total">
                                 <span th:text="#{page.tables.bill.label.total}">Total da Mesa</span>
@@ -4358,7 +4358,7 @@
                 </div>
                 <div class="bill-summary-row">
                     <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
-                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeApplied, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
                 </div>
                 <div class="bill-summary-row total">
                     <span th:text="#{page.tables.bill.label.total}">Total</span>
