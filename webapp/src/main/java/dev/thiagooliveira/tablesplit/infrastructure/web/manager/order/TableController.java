@@ -222,7 +222,6 @@ public class TableController {
             .flatMap(
                 t ->
                     t.getItems().stream()
-                        .filter(item -> item.getStatus() != dev.thiagooliveira.tablesplit.domain.order.TicketStatus.CANCELLED)
                         .map(
                             item ->
                                 TicketItemModel.fromDomain(
@@ -267,13 +266,19 @@ public class TableController {
                 .toList());
         model.addAttribute("orderPaidAmount", order.calculatePaidAmount());
         model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
-        Map<UUID, String> customerNames =
-            order.getCustomers().stream()
-                .collect(
-                    Collectors.toMap(
-                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
-                        dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName));
+        Map<UUID, String> customerNames = new java.util.HashMap<>();
         customerNames.put(null, "Mesa");
+        order.getCustomers().forEach(c -> customerNames.put(c.getId(), c.getName()));
+        order.getItems().forEach(item -> {
+            if (item.getCustomerId() != null && !customerNames.containsKey(item.getCustomerId())) {
+                customerNames.put(item.getCustomerId(), "Cliente");
+            }
+        });
+        order.getPayments().forEach(payment -> {
+            if (payment.getCustomerId() != null && !customerNames.containsKey(payment.getCustomerId())) {
+                customerNames.put(payment.getCustomerId(), "Cliente");
+            }
+        });
         model.addAttribute("customerNames", customerNames);
 
         Map<UUID, BigDecimal> clientSubtotals =
