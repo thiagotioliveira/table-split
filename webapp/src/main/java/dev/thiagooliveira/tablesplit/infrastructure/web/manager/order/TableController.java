@@ -172,6 +172,7 @@ public class TableController {
     model.addAttribute("categories", categories);
     model.addAttribute("menuItems", menuItems);
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
+    model.addAttribute("restaurantId", context.getRestaurant().getId());
 
     if (selectedTableId != null) {
       var table =
