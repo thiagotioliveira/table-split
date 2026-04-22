@@ -173,7 +173,7 @@ public class TableController {
     model.addAttribute("menuItems", menuItems);
     String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
     model.addAttribute("currencySymbol", currencySymbol);
-    model.addAttribute("restaurantId", context.getRestaurant().getId());
+    //model.addAttribute("restaurantId", context.getRestaurant().getId());
 
     // Defaults for when no order is active
     model.addAttribute("orderSubtotal", BigDecimal.ZERO);
@@ -222,6 +222,7 @@ public class TableController {
             .flatMap(
                 t ->
                     t.getItems().stream()
+                        .filter(item -> item.getStatus() != dev.thiagooliveira.tablesplit.domain.order.TicketStatus.CANCELLED)
                         .map(
                             item ->
                                 TicketItemModel.fromDomain(
@@ -488,14 +489,16 @@ public class TableController {
   @PostMapping("/{tableId}/payment")
   @ResponseBody
   public org.springframework.http.ResponseEntity<Void> processPayment(
-      @PathVariable UUID tableId,
-      @RequestParam(required = false) UUID customerId,
-      @RequestParam BigDecimal amount,
-      @RequestParam(required = false, defaultValue = "CASH") PaymentMethod method,
-      @RequestParam(required = false) String note) {
+      @PathVariable UUID tableId, @RequestBody PaymentRequest request) {
 
     transactionalContext.execute(
-        () -> processPayment.execute(tableId, customerId, amount, method, note));
+        () ->
+            processPayment.execute(
+                tableId,
+                request.customerId(),
+                request.amount(),
+                request.method() != null ? request.method() : PaymentMethod.CASH,
+                request.note()));
 
     return org.springframework.http.ResponseEntity.ok().build();
   }
@@ -503,8 +506,7 @@ public class TableController {
   @PostMapping("/{tableId}/payment/{paymentId}/delete")
   @ResponseBody
   public org.springframework.http.ResponseEntity<Void> deletePayment(
-      @PathVariable UUID tableId,
-      @PathVariable UUID paymentId) {
+      @PathVariable UUID tableId, @PathVariable UUID paymentId) {
 
     transactionalContext.execute(() -> deletePayment.execute(tableId, paymentId));
 
@@ -514,14 +516,17 @@ public class TableController {
   @PostMapping("/{tableId}/items/{itemId}/status")
   @ResponseBody
   public org.springframework.http.ResponseEntity<Void> updateTicketItemStatus(
-      @PathVariable UUID tableId,
-      @PathVariable UUID itemId,
-      @RequestParam TicketStatus status) {
+      @PathVariable UUID tableId, @PathVariable UUID itemId, @RequestBody StatusRequest request) {
 
-    transactionalContext.execute(() -> updateTicketItemStatus.execute(itemId, status));
+    transactionalContext.execute(() -> updateTicketItemStatus.execute(itemId, request.status()));
 
     return org.springframework.http.ResponseEntity.ok().build();
   }
+
+  public record PaymentRequest(
+      UUID customerId, BigDecimal amount, PaymentMethod method, String note) {}
+
+  public record StatusRequest(TicketStatus status) {}
 
   @ExceptionHandler(TableAlreadyOccupied.class)
   public String handleTableAlreadyOccupied(RedirectAttributes redirectAttributes) {

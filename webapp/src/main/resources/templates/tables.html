@@ -3400,9 +3400,8 @@
                     </div>
                 </div>
             </div>
+            <div th:replace="~{tables :: all-modals}"></div>
         </div>
-
-        <div th:replace="~{tables :: all-modals}"></div>
     </div>
 </main>
 
@@ -3476,6 +3475,7 @@
         };
 
         if (await performAction(`/tables/${selectedTable}/payment`, params)) {
+            closeCloseTableModal();
             // After successful payment, close the order
             const orderId = document.getElementById('jsData').dataset.orderId || ''; // We might need to add orderId to jsData
             // Actually, TableController settled the payment, but did it close the table automatically? 
@@ -4807,6 +4807,14 @@
         document.getElementById('cancelItemModal').classList.remove('active');
     }
 
+    function closeDeliverItemModal() {
+        document.getElementById('deliverItemModal').classList.remove('active');
+    }
+
+    function closeResetItemModal() {
+        document.getElementById('resetItemModal').classList.remove('active');
+    }
+
     // Cancel Item Modal
     let cancelItemData = { itemId: null, itemName: '', maxQty: 1, unitPrice: 0, cancelQty: 1 };
 
@@ -4882,7 +4890,10 @@
         const params = new URLSearchParams();
         params.append('status', status);
         
-        await performAction(`/tables/${selectedTable}/items/${itemId}/status`, Object.fromEntries(params));
+        if (await performAction(`/tables/${selectedTable}/items/${itemId}/status`, Object.fromEntries(params), 'POST', true)) {
+            closeDeliverItemModal();
+            closeResetItemModal();
+        }
     }
 
     function getTableClients() {
