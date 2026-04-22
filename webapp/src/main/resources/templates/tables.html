@@ -3101,7 +3101,12 @@
         <form id="openTableForm" th:action="@{/tables/open-dummy}" method="post" style="display: none;"></form>
         <form id="deleteTableForm" th:action="@{/tables/delete-dummy}" method="post" style="display: none;"></form>
 
-        <div class="waiter-content">
+        <div class="waiter-content" id="waiterContent" th:fragment="waiter-content">
+            <div id="jsData" 
+                 th:data-order-remaining-amount="${orderRemainingAmount}"
+                 th:data-selected-table="${selectedTable}"
+                 th:data-selected-table-cod="${selectedTableObj?.cod}"
+                 style="display: none;"></div>
             <!-- Tables Panel -->
             <aside class="tables-panel" id="tablesPanel">
                 <button class="tables-panel-close" onclick="closeTablesPanel()">
@@ -3164,7 +3169,7 @@
             </aside>
 
             <!-- Main Panel -->
-            <div class="main-panel">
+            <div class="main-panel" id="mainPanel" th:fragment="main-panel">
                 <div class="main-panel-header" id="mainPanelHeader">
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <button class="show-tables-btn" onclick="openTablesPanel()">
@@ -3396,6 +3401,8 @@
                 </div>
             </div>
         </div>
+
+        <div th:replace="~{tables :: all-modals}"></div>
     </div>
 </main>
 
@@ -3403,7 +3410,7 @@
     const menuItems = /*[[${menuItems}]]*/[];
     const tables = /*[[${tables}]]*/ [];
     let orderHistory = /*[[${orderHistory}]]*/ [];
-    const orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
+    let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
 
     const i18n = {
@@ -3453,7 +3460,7 @@
         itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)'
     };
     console.log('>>' + i18n.cardTable);
-    function confirmCloseTable() {
+    async function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
             alert(i18n.errorNoTableSelectedBody);
             return;
@@ -3462,46 +3469,41 @@
         const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
         const note = document.getElementById('closeTableNote')?.value || '';
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/tables/${selectedTable}/payment`;
+        const params = {
+            amount: orderRemainingAmount,
+            method: method,
+            note: note
+        };
 
-        // We don't send customerId for "Close Table" payment as it's a generic settlement
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'customerId';
-        idInput.value = ''; // Null in backend
-        form.appendChild(idInput);
-
-        const amountInput = document.createElement('input');
-        amountInput.type = 'hidden';
-        amountInput.name = 'amount';
-        amountInput.value = orderRemainingAmount;
-        form.appendChild(amountInput);
-
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = 'method';
-        methodInput.value = method;
-        form.appendChild(methodInput);
-
-        const noteInput = document.createElement('input');
-        noteInput.type = 'hidden';
-        noteInput.name = 'note';
-        noteInput.value = note;
-        form.appendChild(noteInput);
-
-        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_csrf';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
+        if (await performAction(`/tables/${selectedTable}/payment`, params)) {
+            // After successful payment, close the order
+            const orderId = document.getElementById('jsData').dataset.orderId || ''; // We might need to add orderId to jsData
+            // Actually, TableController settled the payment, but did it close the table automatically? 
+            // In the original code, it just redirected to /tables?selectedTableId=... which kept it open if balance > 0
+            // But usually closing modal follows payment of the full balance.
+            
+            // If the user then clicks "Fechar Mesa", it calls confirmCloseTable... wait.
+            // The original code was actually submitting to /payment.
+            
+            // Let's check how "Fechar Mesa" button is used.
+            // Original confirmCloseTable submitted to /payment. 
+            // After payment is processed, if balance reaches 0, the user might want to close it.
+            
+            // Actually, I'll just follow the original logic but with AJAX.
+            closeCloseTableModal();
         }
+    }
 
-        document.body.appendChild(form);
-        form.submit();
+    async function handleNewTableSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const params = Object.fromEntries(formData.entries());
+        
+        if (await performAction('/tables/create', params)) {
+            closeNewTableModal();
+            form.reset();
+        }
     }
 </script>
 
@@ -3570,7 +3572,11 @@
 
     function selectTable(tableId) {
         if (selectedTable === tableId) return;
-        window.location.href = `/tables?selectedTableId=${tableId}`;
+        selectedTable = tableId;
+        refreshContent();
+        // Update URL without reload
+        const newUrl = `/tables?selectedTableId=${tableId}`;
+        window.history.pushState({ selectedTableId: tableId }, '', newUrl);
     }
 
     function initializeSelectedTable(tableId) {
@@ -3674,15 +3680,13 @@
     });
 
 
-    function openTable() {
+    async function openTable() {
         if (!selectedTable) {
             alert(i18n.errorNoTableSelectedBody);
             return;
         }
         console.log('Abrindo mesa:', selectedTable);
-        const form = document.getElementById('openTableForm');
-        form.action = `/tables/${selectedTable}/open`;
-        form.submit();
+        await performAction(`/tables/${selectedTable}/open`);
     }
 
     function openDeleteTableModal() {
@@ -3697,11 +3701,10 @@
         document.getElementById('deleteTableModal').classList.remove('active');
     }
 
-    function confirmDeleteTable() {
+    async function confirmDeleteTable() {
         if (!selectedTable) return;
-        const form = document.getElementById('deleteTableForm');
-        form.action = `/tables/${selectedTable}/delete`;
-        form.submit();
+        await performAction(`/tables/${selectedTable}/delete`);
+        closeDeleteTableModal();
     }
 
     function openBillModal() {
@@ -3753,8 +3756,14 @@
         const tableId = btn.dataset.tableId;
         const paymentId = btn.dataset.paymentId;
         const modal = document.getElementById('deletePaymentModal');
-        const form = document.getElementById('deletePaymentForm');
-        form.action = `/tables/${tableId}/payment/${paymentId}/delete`;
+        
+        const confirmBtn = document.getElementById('btnConfirmDeletePayment');
+        confirmBtn.onclick = async () => {
+             if (await performAction(`/tables/${tableId}/payment/${paymentId}/delete`)) {
+                 closeDeletePaymentModal();
+             }
+        };
+
         modal.classList.add('active');
     }
 
@@ -3763,7 +3772,7 @@
     }
 
 
-    function processPartialPayment() {
+    async function processPartialPayment() {
         const selectedRadio = document.querySelector('input[name="customerId"]:checked');
         if (!selectedRadio) {
             alert(i18n.errorSelectCustomer);
@@ -3781,46 +3790,16 @@
         const method = document.querySelector('input[name="partialPayMethod"]:checked')?.value || 'CASH';
         const note = document.getElementById('partialPaymentNote')?.value || '';
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/tables/${selectedTable}/payment`;
+        const params = {
+            customerId: customerId,
+            amount: amount,
+            method: method,
+            note: note
+        };
 
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'customerId';
-        idInput.value = customerId;
-        form.appendChild(idInput);
-
-        const amountInput = document.createElement('input');
-        amountInput.type = 'hidden';
-        amountInput.name = 'amount';
-        amountInput.value = amount;
-        form.appendChild(amountInput);
-
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = 'method';
-        methodInput.value = method;
-        form.appendChild(methodInput);
-
-        const noteInput = document.createElement('input');
-        noteInput.type = 'hidden';
-        noteInput.name = 'note';
-        noteInput.value = note;
-        form.appendChild(noteInput);
-
-        // Required for Spring Security CSRF
-        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_csrf';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
+        if (await performAction(`/tables/${selectedTable}/payment`, params)) {
+            closePartialPaymentModal();
         }
-
-        document.body.appendChild(form);
-        form.submit();
     }
 
     function openHistoryModal() {
@@ -4168,7 +4147,7 @@
     }
 
     function closeAllNotificationsModal() {
-        document.getElementById('allNotificationsModal').classList.add('active');
+        document.getElementById('allNotificationsModal').classList.remove('active');
     }
 
     function dismissNotification(id) {
@@ -4234,33 +4213,34 @@
         initializeSelectedTable(initialTableId);
     }
 </script>
-<!-- Nova Mesa Modal -->
-<div class="modal-overlay" id="newTableModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                <span th:text="#{page.tables.modal.new.table.title}">Criar Nova Mesa</span>
-            </h3>
-            <button class="modal-close" onclick="closeNewTableModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-        </div>
-        <form th:action="@{/tables/create}" th:method="post" th:object="${createTableForm}">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Código da Mesa (2 dígitos)</label>
-                    <input type="text" class="form-input" th:field="*{cod}" placeholder="Ex: 13" required pattern="[0-9]{2}" maxlength="2">
-                    <div class="field-error" th:if="${#fields.hasErrors('cod')}" th:errors="*{cod}">Erro</div>
+<div th:fragment="all-modals">
+    <!-- Nova Mesa Modal -->
+    <div class="modal-overlay" id="newTableModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    <span th:text="#{page.tables.modal.new.table.title}">Criar Nova Mesa</span>
+                </h3>
+                <button class="modal-close" onclick="closeNewTableModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form onsubmit="handleNewTableSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Código da Mesa (2 dígitos)</label>
+                        <input type="text" class="form-input" name="cod" placeholder="Ex: 13" required pattern="[0-9]{2}" maxlength="2">
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="modal-btn" onclick="closeNewTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
-                <button type="submit" class="modal-btn primary" th:text="#{page.tables.modal.new.table.button.submit}">Criar Mesa</button>
-            </div>
-        </form>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn" onclick="closeNewTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+                    <button type="submit" class="modal-btn primary" th:text="#{page.tables.modal.new.table.button.submit}">Criar Mesa</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+    <!-- Rest of the modals will follow -->
 
 <!-- Novo Pedido Modal -->
 <div class="modal-overlay" id="orderModal">
@@ -4541,12 +4521,10 @@
             <p th:text="#{page.tables.modal.delete.payment.body}">Você tem certeza que deseja excluir este pagamento? Esta ação não pode ser desfeita.</p>
             <p style="margin-top: 1rem; color: #ef4444; font-weight: 600;" th:text="#{page.tables.modal.delete.payment.warning}">O valor da mesa será recalculado.</p>
         </div>
-        <div class="modal-footer">
-            <form id="deletePaymentForm" method="POST">
+            <div class="modal-footer">
                 <button type="button" class="modal-btn" onclick="closeDeletePaymentModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
-                <button type="submit" class="modal-btn" style="background: #ef4444; color: white; border: none;" th:text="#{page.tables.modal.button.delete.confirm}">Sim, Excluir</button>
-            </form>
-        </div>
+                <button type="button" class="modal-btn" id="btnConfirmDeletePayment" style="background: #ef4444; color: white; border: none;" th:text="#{page.tables.modal.button.delete.confirm}">Sim, Excluir</button>
+            </div>
     </div>
 </div>
 
@@ -4807,7 +4785,6 @@
     </div>
 </div>
 
-
 <script>
     // Initialize menu items grid when order modal opens
     /*
@@ -4862,35 +4839,18 @@
         if (!cancelItemData.itemId) return;
 
         const reason = document.getElementById('cancelReason').value || null;
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const params = {
+            itemId: cancelItemData.itemId,
+            quantity: cancelItemData.cancelQty,
+            reason: reason
+        };
 
         const btn = document.getElementById('confirmCancelBtn');
         btn.disabled = true;
 
-        try {
-            const response = await fetch('/orders/item/cancel', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
-                },
-                body: JSON.stringify({
-                    itemId: cancelItemData.itemId,
-                    quantity: cancelItemData.cancelQty,
-                    reason: reason
-                })
-            });
-
-            if (response.ok) {
-                window.location.href = `/tables?selectedTableId=${selectedTable}`;
-            } else {
-                alert(i18n.cancelErrorDefault);
-                btn.disabled = false;
-            }
-        } catch (err) {
-            alert(i18n.cancelErrorNetwork);
+        if (await performAction('/orders/item/cancel', params, 'POST', true)) {
+            closeCancelItemModal();
+        } else {
             btn.disabled = false;
         }
     }
@@ -4917,28 +4877,11 @@
         submitItemStatus(itemId, 'PENDING');
     }
 
-    function submitItemStatus(itemId, status) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/tables/${selectedTable}/items/${itemId}/status`;
+    async function submitItemStatus(itemId, status) {
+        const params = new URLSearchParams();
+        params.append('status', status);
         
-        const statusInput = document.createElement('input');
-        statusInput.type = 'hidden';
-        statusInput.name = 'status';
-        statusInput.value = status;
-        form.appendChild(statusInput);
-        
-        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_csrf';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
-        }
-        
-        document.body.appendChild(form);
-        form.submit();
+        await performAction(`/tables/${selectedTable}/items/${itemId}/status`, Object.fromEntries(params));
     }
 
     function getTableClients() {
@@ -5275,7 +5218,7 @@
         document.getElementById('summaryGrandTotal').textContent = `${currencySymbol} ${grandTotal.toFixed(2).replace('.', ',')}`;
     }
 
-    function submitOrder() {
+    async function submitOrder() {
         const clientsWithItems = Object.entries(orderClients).filter(([_, client]) => 
             Object.keys(client.items).length > 0
         );
@@ -5285,112 +5228,34 @@
             return;
         }
 
-        const form = document.getElementById('orderForm');
-        form.action = `/tables/${currentTableId}/order`;
-        
-        // Maintain CSRF tokens if they exist (Thymeleaf adds them automatically with th:action)
-        const csrfInputs = form.querySelectorAll('input[type="hidden"]');
-        const preservedInputs = Array.from(csrfInputs).filter(input => 
-            input.name === '_csrf' || input.name.includes('csrf')
-        );
-        form.innerHTML = ''; 
-        preservedInputs.forEach(input => form.appendChild(input));
+        const tickets = [{
+            note: `Atendimento ${currentTableCod}`,
+            items: []
+        }];
 
-        // Single Ticket for all items
-        const ticketIndex = 0;
-        
-        // Ticket Note (Optional)
-        const ticketNoteInput = document.createElement('input');
-        ticketNoteInput.type = 'hidden';
-        ticketNoteInput.name = `tickets[${ticketIndex}].note`;
-        ticketNoteInput.value = `Atendimento ${currentTableCod}`;
-        form.appendChild(ticketNoteInput);
-
-        let globalItemIndex = 0;
         clientsWithItems.forEach(([clientId, client]) => {
             const items = Object.entries(client.items);
             items.forEach(([itemId, item]) => {
-                // Item ID
-                const itemIdInput = document.createElement('input');
-                itemIdInput.type = 'hidden';
-                itemIdInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].itemId`;
-                itemIdInput.value = itemId;
-                form.appendChild(itemIdInput);
-
-                // Quantity
-                const qtyInput = document.createElement('input');
-                qtyInput.type = 'hidden';
-                qtyInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].quantity`;
-                qtyInput.value = item.qty;
-                form.appendChild(qtyInput);
-
-                // Item Note
-                const itemNoteInput = document.createElement('input');
-                itemNoteInput.type = 'hidden';
-                itemNoteInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].note`;
-                itemNoteInput.value = item.note || '';
-                form.appendChild(itemNoteInput);
-
-                // Optionals for promotion
-                if (item.promotionId) {
-                    const promotionIdInput = document.createElement('input');
-                    promotionIdInput.type = 'hidden';
-                    promotionIdInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].promotionId`;
-                    promotionIdInput.value = item.promotionId;
-                    form.appendChild(promotionIdInput);
-
-                    if (item.originalPrice) {
-                        const originalPriceInput = document.createElement('input');
-                        originalPriceInput.type = 'hidden';
-                        originalPriceInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].originalPrice`;
-                        originalPriceInput.value = item.originalPrice;
-                        form.appendChild(originalPriceInput);
-                    }
-
-                    if (item.discountType) {
-                        const discountTypeInput = document.createElement('input');
-                        discountTypeInput.type = 'hidden';
-                        discountTypeInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].discountType`;
-                        discountTypeInput.value = item.discountType;
-                        form.appendChild(discountTypeInput);
-                    }
-
-                    if (item.discountValue !== undefined && item.discountValue !== null) {
-                        const discountValueInput = document.createElement('input');
-                        discountValueInput.type = 'hidden';
-                        discountValueInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].discountValue`;
-                        discountValueInput.value = item.discountValue;
-                        form.appendChild(discountValueInput);
-                    }
-                }
-
-                // Individual Customer ID (Item Level)
-                const itemCustomerInput = document.createElement('input');
-                itemCustomerInput.type = 'hidden';
-                itemCustomerInput.name = `tickets[${ticketIndex}].items[${globalItemIndex}].customerId`;
-                itemCustomerInput.value = clientId;
-                form.appendChild(itemCustomerInput);
-
-                globalItemIndex++;
+                tickets[0].items.push({
+                    itemId: itemId,
+                    customerId: clientId === 'mesa' ? null : clientId,
+                    quantity: item.qty,
+                    note: item.note || '',
+                    promotionId: item.promotionId || null,
+                    originalPrice: item.originalPrice || null,
+                    discountType: item.discountType || null,
+                    discountValue: item.discountValue || null
+                });
             });
         });
 
-        // Add identified customers to the request
-        clientsWithItems.forEach(([clientId, client], index) => {
-            const customerIdInput = document.createElement('input');
-            customerIdInput.type = 'hidden';
-            customerIdInput.name = `customers[${index}].id`;
-            customerIdInput.value = clientId;
-            form.appendChild(customerIdInput);
+        const params = {
+            tickets: tickets
+        };
 
-            const customerNameInput = document.createElement('input');
-            customerNameInput.type = 'hidden';
-            customerNameInput.name = `customers[${index}].name`;
-            customerNameInput.value = client.name;
-            form.appendChild(customerNameInput);
-        });
-
-        form.submit();
+        if (await performAction(`/tables/${currentTableId}/order`, params, 'POST', true)) {
+            closeOrderModal();
+        }
     }
     // SSE connection
     let eventSource = null;
@@ -5653,10 +5518,78 @@
 
     loadActiveWaiterCalls();
 
-    function updateTableStatus(event) {
+    async function refreshContent() {
+        const tableId = selectedTable || '';
+        const response = await fetch(`/tables/content?selectedTableId=${tableId}`);
+        if (response.ok) {
+            const html = await response.text();
+            
+            // Extract the fragment from the response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newWaiterContent = doc.querySelector('#waiterContent');
+            
+            if (newWaiterContent) {
+                document.querySelector('#waiterContent').innerHTML = newWaiterContent.innerHTML;
+                await refreshState();
+            }
+        }
+    }
+
+    async function performAction(url, params = {}, method = 'POST', isJson = false) {
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+        
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        let body;
+        if (method === 'POST') {
+            if (isJson) {
+                headers['Content-Type'] = 'application/json';
+                body = JSON.stringify(params);
+            } else {
+                body = new URLSearchParams();
+                for (const [key, value] of Object.entries(params)) {
+                    body.append(key, value);
+                }
+            }
+        }
+
+        const response = await fetch(url, { method, headers, body });
+        if (response.ok) {
+            await refreshContent();
+            return true;
+        } else {
+            console.error('Action failed:', await response.text());
+            alert(i18n.alertFetchError);
+            return false;
+        }
+    }
+
+    async function refreshState() {
+        const jsData = document.getElementById('jsData');
+        if (jsData) {
+            orderRemainingAmount = parseFloat(jsData.dataset.orderRemainingAmount) || 0;
+            // Also update currentTableId/Cod if they are available
+            if (jsData.dataset.selectedTable && jsData.dataset.selectedTable !== 'null') {
+                currentTableId = jsData.dataset.selectedTable;
+                selectedTable = jsData.dataset.selectedTable;
+            }
+            if (jsData.dataset.selectedTableCod && jsData.dataset.selectedTableCod !== 'null') {
+                currentTableCod = jsData.dataset.selectedTableCod;
+                selectedTableCod = jsData.dataset.selectedTableCod;
+            }
+        }
+    }
+
+    async function updateTableStatus(event) {
         console.log('Table status changed:', event);
-        // Reload the page to refresh all table cards and the selected table info
-        window.location.reload(); 
+        await refreshContent();
     }
 
 

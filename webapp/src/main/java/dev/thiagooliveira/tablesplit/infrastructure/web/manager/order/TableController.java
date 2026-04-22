@@ -102,6 +102,18 @@ public class TableController {
   @GetMapping
   public String index(
       @RequestParam(required = false) UUID selectedTableId, Authentication auth, Model model) {
+    this.populateModel(selectedTableId, auth, model);
+    return "tables";
+  }
+
+  @GetMapping("/content")
+  public String indexContent(
+      @RequestParam(required = false) UUID selectedTableId, Authentication auth, Model model) {
+    this.populateModel(selectedTableId, auth, model);
+    return "tables :: waiter-content";
+  }
+
+  private void populateModel(UUID selectedTableId, Authentication auth, Model model) {
     var context = (AccountContext) auth.getPrincipal();
 
     var result = getTables.execute(context.getRestaurant().getId());
@@ -159,6 +171,7 @@ public class TableController {
             .collect(Collectors.toList());
     model.addAttribute("categories", categories);
     model.addAttribute("menuItems", menuItems);
+    model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
 
     if (selectedTableId != null) {
       var table =
@@ -314,8 +327,6 @@ public class TableController {
     }
 
     model.addAttribute("createTableForm", new CreateTableForm());
-
-    return "tables";
   }
 
   @GetMapping("/{tableId}/history")
@@ -394,57 +405,56 @@ public class TableController {
   }
 
   @PostMapping("/create")
-  public String createTable(
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> createTable(
       Authentication auth,
       @Valid @ModelAttribute("createTableForm") CreateTableForm form,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes) {
+      BindingResult bindingResult) {
 
     if (bindingResult.hasErrors()) {
-      return "tables";
+      return org.springframework.http.ResponseEntity.badRequest().build();
     }
 
     var context = (AccountContext) auth.getPrincipal();
     transactionalContext.execute(
         () -> createTable.execute(context.getRestaurant().getId(), form.getCod()));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.created"));
-    return "redirect:/tables";
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/delete")
-  public String deleteTable(@PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> deleteTable(@PathVariable UUID tableId) {
     transactionalContext.execute(() -> deleteTable.execute(tableId));
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.deleted"));
-    return "redirect:/tables";
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/open")
-  public String openTable(
-      Authentication auth, @PathVariable UUID tableId, RedirectAttributes redirectAttributes) {
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> openTable(
+      Authentication auth, @PathVariable UUID tableId) {
     var context = (AccountContext) auth.getPrincipal();
     transactionalContext.execute(
         () -> openTable.execute(tableId, context.getRestaurant().getServiceFee(), null, null));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.opened"));
-    return "redirect:/tables?selectedTableId=" + tableId;
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{orderId}/close")
-  public String closeTable(@PathVariable UUID orderId, RedirectAttributes redirectAttributes) {
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> closeTable(@PathVariable UUID orderId) {
 
     transactionalContext.execute(() -> closeTable.execute(orderId));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.table.closed"));
-    return "redirect:/tables";
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/order")
-  public String placeOrder(
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> placeOrder(
       Authentication auth,
       @PathVariable UUID tableId,
-      @ModelAttribute PlaceOrderRequest request,
-      RedirectAttributes redirectAttributes) {
+      @RequestBody PlaceOrderRequest request) {
     var account = (AccountContext) auth.getPrincipal();
     var table =
         getTables
@@ -456,49 +466,45 @@ public class TableController {
 
     transactionalContext.execute(() -> placeOrder.execute(request));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.order.placed"));
-    return "redirect:/tables?selectedTableId=" + tableId;
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/payment")
-  public String processPayment(
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> processPayment(
       @PathVariable UUID tableId,
       @RequestParam(required = false) UUID customerId,
       @RequestParam BigDecimal amount,
       @RequestParam(required = false, defaultValue = "CASH") PaymentMethod method,
-      @RequestParam(required = false) String note,
-      RedirectAttributes redirectAttributes) {
+      @RequestParam(required = false) String note) {
 
     transactionalContext.execute(
         () -> processPayment.execute(tableId, customerId, amount, method, note));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.processed"));
-    return "redirect:/tables?selectedTableId=" + tableId;
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/payment/{paymentId}/delete")
-  public String deletePayment(
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> deletePayment(
       @PathVariable UUID tableId,
-      @PathVariable UUID paymentId,
-      RedirectAttributes redirectAttributes) {
+      @PathVariable UUID paymentId) {
 
     transactionalContext.execute(() -> deletePayment.execute(tableId, paymentId));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.payment.deleted"));
-    return "redirect:/tables?selectedTableId=" + tableId;
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @PostMapping("/{tableId}/items/{itemId}/status")
-  public String updateTicketItemStatus(
+  @ResponseBody
+  public org.springframework.http.ResponseEntity<Void> updateTicketItemStatus(
       @PathVariable UUID tableId,
       @PathVariable UUID itemId,
-      @RequestParam TicketStatus status,
-      RedirectAttributes redirectAttributes) {
+      @RequestParam TicketStatus status) {
 
     transactionalContext.execute(() -> updateTicketItemStatus.execute(itemId, status));
 
-    redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.item.status.updated"));
-    return "redirect:/tables?selectedTableId=" + tableId;
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 
   @ExceptionHandler(TableAlreadyOccupied.class)
