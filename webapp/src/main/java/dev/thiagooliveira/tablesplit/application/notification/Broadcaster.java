@@ -20,22 +20,40 @@ public class Broadcaster {
   }
 
   public void newOrder(UUID restaurantId, String payload) {
-    broadcast(restaurantId, payload, PushSubscription::isNotifyNewOrders);
+    newOrder(restaurantId, payload, null);
+  }
+
+  public void newOrder(UUID restaurantId, String payload, UUID excludeId) {
+    broadcast(restaurantId, payload, excludeId, PushSubscription::isNotifyNewOrders);
   }
 
   public void callWaiter(UUID restaurantId, String payload) {
-    broadcast(restaurantId, payload, PushSubscription::isNotifyCallWaiter);
+    broadcast(restaurantId, payload, null, PushSubscription::isNotifyCallWaiter);
   }
 
   public void general(UUID restaurantId, String payload) {
-    broadcast(restaurantId, payload, sub -> true);
+    general(restaurantId, payload, null);
   }
 
-  private void broadcast(UUID restaurantId, String payload, Predicate<PushSubscription> filter) {
+  public void general(UUID restaurantId, String payload, UUID excludeId) {
+    broadcast(restaurantId, payload, excludeId, sub -> true);
+  }
+
+  private void broadcast(
+      UUID restaurantId, String payload, UUID excludeId, Predicate<PushSubscription> filter) {
     List<PushSubscription> subscriptions = repository.findAllByRestaurantId(restaurantId);
-    long count = subscriptions.stream().filter(filter).count();
+    Predicate<PushSubscription> finalFilter =
+        sub -> {
+          if (excludeId != null) {
+            if (excludeId.equals(sub.getStaffId()) || excludeId.equals(sub.getUserId())) {
+              return false;
+            }
+          }
+          return filter.test(sub);
+        };
+    long count = subscriptions.stream().filter(finalFilter).count();
     logger.debug(
         "Broadcasting to {} subscriptions (total entries found: {})", count, subscriptions.size());
-    subscriptions.stream().filter(filter).forEach(sub -> sender.send(sub, payload));
+    subscriptions.stream().filter(finalFilter).forEach(sub -> sender.send(sub, payload));
   }
 }

@@ -12,11 +12,15 @@ import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,7 +53,10 @@ public class TicketEventListener {
     TicketModel model =
         mapToModel(
             event.getRestaurantId(), event.getTicket(), event.getOrder(), event.getTableCod());
-    broadcast(event.getRestaurantId(), "TICKET_CREATED", model);
+
+    UUID initiatedBy = getCurrentUserId();
+
+    broadcast(event.getRestaurantId(), "TICKET_CREATED", model, initiatedBy);
 
     // Send Push Notification
     try {
@@ -57,7 +64,7 @@ public class TicketEventListener {
           String.format(
               "{\"title\": \"Novo Pedido - Mesa %s\", \"body\": \"%s fez um novo pedido\", \"url\": \"/orders\"}",
               event.getTableCod(), model.getCustomerName());
-      broadcaster.newOrder(event.getRestaurantId(), payload);
+      broadcaster.newOrder(event.getRestaurantId(), payload, initiatedBy);
     } catch (Exception e) {
       // Silently fail push if anything goes wrong
     }
@@ -136,7 +143,26 @@ public class TicketEventListener {
   }
 
   private void broadcast(java.util.UUID restaurantId, String type, Object data) {
-    sseService.broadcast(restaurantId, java.util.Map.of("type", type, "data", data));
+    broadcast(restaurantId, type, data, null);
+  }
+
+  private void broadcast(java.util.UUID restaurantId, String type, Object data, UUID initiatedBy) {
+    sseService.broadcast(
+        restaurantId,
+        java.util.Map.of(
+            "type", type, "data", data, "initiatedBy", initiatedBy != null ? initiatedBy : ""));
+  }
+
+  private UUID getCurrentUserId() {
+    try {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      if (auth != null && auth.getPrincipal() instanceof AccountContext context) {
+        return context.getUser().getId();
+      }
+    } catch (Exception e) {
+      // Ignore
+    }
+    return null;
   }
 
   private TicketModel mapToModel(

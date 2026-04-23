@@ -229,10 +229,18 @@
                     
                     // New Ticket or Status alert
                     if (type === 'TICKET_CREATED') {
-                        const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-                        if (soundEnabled) {
-                            const audio = new Audio(alertSoundUrl);
-                            audio.play().catch(e => console.log('Audio blocked', e));
+                        const initiatedBy = payload.initiatedBy;
+                        const currentUserId = contextData && contextData.user ? contextData.user.id : null;
+                        
+                        // Only play sound if it's not initiated by the current user
+                        if (initiatedBy !== currentUserId) {
+                            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                            if (soundEnabled) {
+                                const audio = new Audio(alertSoundUrl);
+                                audio.play().catch(e => console.log('Audio blocked', e));
+                            }
+                        } else {
+                            console.log('Self-initiated ticket, skipping sound');
                         }
                     }
 
