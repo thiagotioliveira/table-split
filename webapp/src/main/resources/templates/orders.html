@@ -849,7 +849,7 @@
 </div>
 <!-- Main Content -->
 <main class="main-content">
-    <div class="dashboard-body">
+    <div class="dashboard-body" th:fragment="dashboardFragment">
 
         <!-- Orders Header -->
         <div class="orders-header">
@@ -1287,15 +1287,24 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
             },
             body: JSON.stringify({ ticketId: ticketId, status: status })
-        }).then(response => {
+        })
+        .then(response => {
             if (response.ok) {
-                window.location.reload();
-            } else {
-                alert('Erro ao mover pedido');
+                return response.text();
             }
+            throw new Error('Erro ao mover pedido');
+        })
+        .then(html => {
+            document.querySelector('.dashboard-body').outerHTML = html;
+            // No need for innerHTML if I return the div itself in the fragment
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Erro ao mover pedido');
         });
     }
 

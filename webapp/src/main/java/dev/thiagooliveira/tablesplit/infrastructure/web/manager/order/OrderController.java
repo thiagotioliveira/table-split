@@ -66,6 +66,11 @@ public class OrderController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
+    populateModel(auth, model);
+    return "orders";
+  }
+
+  private void populateModel(Authentication auth, Model model) {
     AccountContext context = (AccountContext) auth.getPrincipal();
     List<TicketWithTable> ticketsWithTables = getTickets.execute(context.getRestaurant().getId());
 
@@ -108,8 +113,6 @@ public class OrderController {
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("zoneId", Time.getZoneId().getId());
-
-    return "orders";
   }
 
   @GetMapping("/history")
@@ -148,10 +151,12 @@ public class OrderController {
   }
 
   @PostMapping("/move")
-  @ResponseBody
-  public void move(@RequestBody MoveTicketRequest request) {
+  public String move(Authentication auth, @RequestBody MoveTicketRequest request, Model model) {
     transactionalContext.execute(
         () -> moveTicket.execute(request.ticketId(), TicketStatus.valueOf(request.status())));
+
+    populateModel(auth, model);
+    return "orders :: dashboardFragment";
   }
 
   @GetMapping("/{id}")
