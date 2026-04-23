@@ -173,7 +173,6 @@ public class TableController {
     model.addAttribute("menuItems", menuItems);
     String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
     model.addAttribute("currencySymbol", currencySymbol);
-    //model.addAttribute("restaurantId", context.getRestaurant().getId());
 
     // Defaults for when no order is active
     model.addAttribute("orderSubtotal", BigDecimal.ZERO);
@@ -239,7 +238,8 @@ public class TableController {
                               () ->
                                   new CustomerModel(item.getCustomerId(), item.getCustomerName()));
                   clients.computeIfAbsent(customer, k -> new java.util.ArrayList<>()).add(item);
-                  BigDecimal currentBalance = clientBalances.getOrDefault(customer, BigDecimal.ZERO);
+                  BigDecimal currentBalance =
+                      clientBalances.getOrDefault(customer, BigDecimal.ZERO);
                   clientBalances.put(customer, currentBalance.add(item.getTotalPrice()));
                 });
 
@@ -247,7 +247,8 @@ public class TableController {
         model.addAttribute("clientBalances", clientBalances);
         model.addAttribute("orderLoaded", true);
         model.addAttribute("orderServiceFee", order.getServiceFee());
-        model.addAttribute("orderServiceFeeApplied", order.feeApplied().compareTo(BigDecimal.ZERO) > 0);
+        model.addAttribute(
+            "orderServiceFeeApplied", order.feeApplied().compareTo(BigDecimal.ZERO) > 0);
         model.addAttribute("orderServiceFeeAmount", order.feeApplied());
         model.addAttribute("orderSubtotal", order.calculateSubtotal());
         model.addAttribute("orderTotal", order.calculateTotal());
@@ -269,16 +270,24 @@ public class TableController {
         Map<UUID, String> customerNames = new java.util.HashMap<>();
         customerNames.put(null, "Mesa");
         order.getCustomers().forEach(c -> customerNames.put(c.getId(), c.getName()));
-        order.getItems().forEach(item -> {
-            if (item.getCustomerId() != null && !customerNames.containsKey(item.getCustomerId())) {
-                customerNames.put(item.getCustomerId(), "Cliente");
-            }
-        });
-        order.getPayments().forEach(payment -> {
-            if (payment.getCustomerId() != null && !customerNames.containsKey(payment.getCustomerId())) {
-                customerNames.put(payment.getCustomerId(), "Cliente");
-            }
-        });
+        order
+            .getItems()
+            .forEach(
+                item -> {
+                  if (item.getCustomerId() != null
+                      && !customerNames.containsKey(item.getCustomerId())) {
+                    customerNames.put(item.getCustomerId(), "Cliente");
+                  }
+                });
+        order
+            .getPayments()
+            .forEach(
+                payment -> {
+                  if (payment.getCustomerId() != null
+                      && !customerNames.containsKey(payment.getCustomerId())) {
+                    customerNames.put(payment.getCustomerId(), "Cliente");
+                  }
+                });
         model.addAttribute("customerNames", customerNames);
 
         Map<UUID, BigDecimal> clientSubtotals =
@@ -474,9 +483,7 @@ public class TableController {
   @PostMapping("/{tableId}/order")
   @ResponseBody
   public org.springframework.http.ResponseEntity<Void> placeOrder(
-      Authentication auth,
-      @PathVariable UUID tableId,
-      @RequestBody PlaceOrderRequest request) {
+      Authentication auth, @PathVariable UUID tableId, @RequestBody PlaceOrderRequest request) {
     var account = (AccountContext) auth.getPrincipal();
     var table =
         getTables

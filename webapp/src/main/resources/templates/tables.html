@@ -3038,6 +3038,21 @@
             color: var(--muted);
         }
 
+        .waiter-alert-time.urgent {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .waiter-alert-item.urgent {
+            border-color: var(--primary);
+            animation: pulse-waiter 2s infinite;
+        }
+
+        @keyframes pulse-waiter {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1); }
+        }
+
         .waiter-alert-badge {
             background: var(--destructive);
             color: white;
@@ -5355,6 +5370,8 @@
             const timeSpan = existing.querySelector('.waiter-alert-time');
             timeSpan.title = timeFormatted;
             timeSpan.textContent = i18n.timeAgoNow;
+            timeSpan.classList.remove('urgent');
+            existing.classList.remove('urgent');
             
             // Handle badge
             let badge = existing.querySelector('.waiter-alert-badge');
@@ -5373,7 +5390,7 @@
                 <div class="waiter-alert-item" data-table-cod="${event.tableCod}" data-call-id="${event.id || ''}">
                     <span class="waiter-alert-table">Mesa ${event.tableCod}</span>
                     ${countBadge}
-                    <span class="waiter-alert-time" title="${timeFormatted}">agora</span>
+                    <span class="waiter-alert-time" title="${timeFormatted}">${i18n.timeAgoNow}</span>
                     <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
@@ -5398,15 +5415,17 @@
                     
                     calls.forEach(call => {
                         const callDate = new Date(call.createdAt);
-                        const timeAgo = getTimeAgo(callDate);
+                        const result = getTimeAgo(callDate);
+                        const timeAgo = result.text;
+                        const isUrgent = result.urgent;
                         const timeFormatted = callDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                         const countBadge = (call.count && call.count > 1) ? `<span class="waiter-alert-badge">${call.count}</span>` : '';
 
                         const alertHtml = `
-                            <div class="waiter-alert-item" data-table-cod="${call.tableCod}" data-call-id="${call.id}">
+                            <div class="waiter-alert-item${isUrgent ? ' urgent' : ''}" data-table-cod="${call.tableCod}" data-call-id="${call.id}">
                                 <span class="waiter-alert-table">Mesa ${call.tableCod}</span>
                                 ${countBadge}
-                                <span class="waiter-alert-time" title="${timeFormatted}">${timeAgo}</span>
+                                <span class="waiter-alert-time${isUrgent ? ' urgent' : ''}" title="${timeFormatted}">${timeAgo}${isUrgent ? ' ⚠️' : ''}</span>
                                 <button class="waiter-alert-dismiss" onclick="dismissWaiterCall(this)" title="Dispensar">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                                 </button>
@@ -5422,10 +5441,20 @@
 
     function getTimeAgo(date) {
         const seconds = Math.floor((new Date() - date) / 1000);
-        let interval = Math.floor(seconds / 60);
-        if (interval < 1) return 'agora';
-        if (interval === 1) return 'há 1 min';
-        return `há ${interval} min`;
+        let interval = Math.floor(seconds / 3600);
+        if (interval >= 1) {
+            return {
+                text: `há ${interval} h`,
+                urgent: true
+            };
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval < 1) return { text: i18n.timeAgoNow, urgent: false };
+        if (interval === 1) return { text: i18n.timeAgoOneMin, urgent: false };
+        return { 
+            text: i18n.timeAgoMins.replace('{0}', interval), 
+            urgent: interval >= 10 
+        };
     }
 
     // QR Code functions
