@@ -3589,8 +3589,7 @@
         if (selectedTable === tableId) return;
         selectedTable = tableId;
         refreshContent();
-        // Update URL without reload
-        const newUrl = `/tables?selectedTableId=${tableId}`;
+        const newUrl = tableId ? `/tables/${tableId}` : '/tables';
         window.history.pushState({ selectedTableId: tableId }, '', newUrl);
     }
 
@@ -5566,7 +5565,8 @@
 
     async function refreshContent() {
         const tableId = selectedTable || '';
-        const response = await fetch(`/tables/content?selectedTableId=${tableId}`);
+        const url = tableId ? `/tables/${tableId}/content` : '/tables/content';
+        const response = await fetch(url);
         if (response.ok) {
             const html = await response.text();
             

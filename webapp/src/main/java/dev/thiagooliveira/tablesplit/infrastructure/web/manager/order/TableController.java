@@ -99,16 +99,16 @@ public class TableController {
     this.updateTicketItemStatus = updateTicketItemStatus;
   }
 
-  @GetMapping
+  @GetMapping({"", "/{selectedTableId}"})
   public String index(
-      @RequestParam(required = false) UUID selectedTableId, Authentication auth, Model model) {
+      @PathVariable(required = false) UUID selectedTableId, Authentication auth, Model model) {
     this.populateModel(selectedTableId, auth, model);
     return "tables";
   }
 
-  @GetMapping("/content")
+  @GetMapping({"/content", "/{selectedTableId}/content"})
   public String indexContent(
-      @RequestParam(required = false) UUID selectedTableId, Authentication auth, Model model) {
+      @PathVariable(required = false) UUID selectedTableId, Authentication auth, Model model) {
     this.populateModel(selectedTableId, auth, model);
     return "tables :: waiter-content";
   }
@@ -574,7 +574,7 @@ public class TableController {
     redirectAttributes.addFlashAttribute("alert", AlertModel.error(messageKey));
 
     if (tableId != null) {
-      return "redirect:/tables?selectedTableId=" + tableId;
+      return "redirect:/tables/" + tableId;
     }
     return "redirect:/tables";
   }
