@@ -2339,3 +2339,29 @@ a {
   font-size: 0.75rem;
   color: var(--muted);
 }
+
+/* Slim Progress Bar */
+.slim-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: var(--primary);
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  z-index: 99999;
+  box-shadow: 0 0 10px rgba(201, 160, 80, 0.4), 0 0 5px rgba(201, 160, 80, 0.7);
+  transition: width 0.3s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.slim-progress-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px var(--primary), 0 0 5px var(--primary);
+  opacity: 0.8;
+  transform: rotate(3deg) translate(0px, -4px);
+}
