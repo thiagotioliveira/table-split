@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -45,6 +46,7 @@ public class OrderCleanerService {
     this.transactionTemplate = transactionTemplate;
   }
 
+  @Async
   public void cleanOldOrders() {
     ZonedDateTime threshold = ZonedDateTime.now(ZoneId.of(zoneId)).minusDays(retentionDays);
     logger.info(
