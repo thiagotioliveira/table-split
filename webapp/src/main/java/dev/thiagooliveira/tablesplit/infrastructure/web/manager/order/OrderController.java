@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.context.MessageSource;
 
 @Controller
 @RequestMapping("/orders")
@@ -48,6 +49,7 @@ public class OrderController {
   private final MoveTicket moveTicket;
   private final CancelTicketItem cancelTicketItem;
   private final TransactionalContext transactionalContext;
+  private final MessageSource messageSource;
 
   public OrderController(
       GetTickets getTickets,
@@ -55,13 +57,15 @@ public class OrderController {
       GetTicket getTicket,
       MoveTicket moveTicket,
       CancelTicketItem cancelTicketItem,
-      TransactionalContext transactionalContext) {
+      TransactionalContext transactionalContext,
+      MessageSource messageSource) {
     this.getTickets = getTickets;
     this.getHistoryTickets = getHistoryTickets;
     this.getTicket = getTicket;
     this.moveTicket = moveTicket;
     this.cancelTicketItem = cancelTicketItem;
     this.transactionalContext = transactionalContext;
+    this.messageSource = messageSource;
   }
 
   @GetMapping
@@ -218,7 +222,8 @@ public class OrderController {
     if (customerName == null || customerName.isBlank()) customerName = "Mesa " + tableCod;
 
     String timeAgo =
-        dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(ticket.getCreatedAt());
+        dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
+            ticket.getCreatedAt(), messageSource);
     long minutes = Duration.between(ticket.getCreatedAt(), Time.nowZonedDateTime()).toMinutes();
     boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 

@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -33,17 +34,20 @@ public class TicketEventListener {
   private final RegisterWaiterCall registerWaiterCall;
   private final dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
       listActiveWaiterCalls;
+  private final MessageSource messageSource;
 
   public TicketEventListener(
       SseService sseService,
       Broadcaster broadcaster,
       RegisterWaiterCall registerWaiterCall,
       dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls
-          listActiveWaiterCalls) {
+          listActiveWaiterCalls,
+      MessageSource messageSource) {
     this.sseService = sseService;
     this.broadcaster = broadcaster;
     this.registerWaiterCall = registerWaiterCall;
     this.listActiveWaiterCalls = listActiveWaiterCalls;
+    this.messageSource = messageSource;
   }
 
   @org.springframework.transaction.event.TransactionalEventListener(
@@ -204,8 +208,10 @@ public class TicketEventListener {
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
     if (customerName == null || customerName.isBlank()) customerName = "Mesa " + tableCod;
 
+    String timeAgo =
+        dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
+            ticket.getCreatedAt(), messageSource);
     long minutesAgo = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
-    String timeAgo = minutesAgo == 0 ? "agora" : "há " + minutesAgo + " min";
     boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
 
     return new TicketModel(

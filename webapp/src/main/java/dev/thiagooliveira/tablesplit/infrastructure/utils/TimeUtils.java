@@ -15,7 +15,7 @@ public class TimeUtils {
     return dateTime.format(FORMATTER);
   }
 
-  public static String timeAgo(ZonedDateTime dateTime) {
+  private static String timeAgo(ZonedDateTime dateTime) {
     if (dateTime == null) return "";
 
     Duration duration = Duration.between(dateTime, Time.now());
@@ -31,6 +31,29 @@ public class TimeUtils {
       return "há " + minutes + " min";
     } else {
       return "agora";
+    }
+  }
+
+  public static String timeAgo(
+      ZonedDateTime dateTime, org.springframework.context.MessageSource messageSource) {
+    if (dateTime == null) return "";
+    if (messageSource == null) return timeAgo(dateTime);
+
+    Duration duration = Duration.between(dateTime, Time.now());
+    long minutes = duration.toMinutes();
+    long hours = duration.toHours();
+    long days = duration.toDays();
+
+    java.util.Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale();
+
+    if (days > 0) {
+      return messageSource.getMessage("time.ago.days", new Object[] {days}, locale);
+    } else if (hours > 0) {
+      return messageSource.getMessage("time.ago.hours", new Object[] {hours}, locale);
+    } else if (minutes > 0) {
+      return messageSource.getMessage("time.ago.minutes", new Object[] {minutes}, locale);
+    } else {
+      return messageSource.getMessage("time.ago.now", null, locale);
     }
   }
 }

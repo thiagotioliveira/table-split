@@ -50,6 +50,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.context.MessageSource;
 
 @Controller
 @RequestMapping("/tables")
@@ -69,6 +70,7 @@ public class TableController {
   private final DeletePayment deletePayment;
   private final DeleteTable deleteTable;
   private final UpdateTicketItemStatus updateTicketItemStatus;
+  private final MessageSource messageSource;
 
   public TableController(
       TransactionalContext transactionalContext,
@@ -83,7 +85,8 @@ public class TableController {
       ProcessPayment processPayment,
       DeletePayment deletePayment,
       DeleteTable deleteTable,
-      UpdateTicketItemStatus updateTicketItemStatus) {
+      UpdateTicketItemStatus updateTicketItemStatus,
+      MessageSource messageSource) {
     this.transactionalContext = transactionalContext;
     this.openTable = openTable;
     this.closeTable = closeTable;
@@ -97,6 +100,7 @@ public class TableController {
     this.deletePayment = deletePayment;
     this.deleteTable = deleteTable;
     this.updateTicketItemStatus = updateTicketItemStatus;
+    this.messageSource = messageSource;
   }
 
   @GetMapping({"", "/{selectedTableId}"})
@@ -197,7 +201,7 @@ public class TableController {
         model.addAttribute(
             "orderTimeAgo",
             dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
-                order.getOpenedAt()));
+                order.getOpenedAt(), messageSource));
         model.addAttribute(
             "orderOpenedAtFormatted",
             dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.format(
