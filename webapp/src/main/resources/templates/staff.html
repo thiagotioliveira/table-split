@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equipe</title>
+  <title th:text="#{page.staff.header.title}">Equipe</title>
   <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
   <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
@@ -552,7 +552,7 @@
 </head>
 <body>
   <!-- Sidebar -->
-  <div th:replace="~{components/sidebar :: sidebar('Equipe', ~{}, true)}"></div>
+  <div th:replace="~{components/sidebar :: sidebar(#{page.staff.header.title}, ~{}, true)}"></div>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -565,12 +565,12 @@
         <div class="staff-search">
           <div class="search-input-wrapper">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" placeholder="Buscar por nome ou e-mail..." id="searchInput" oninput="filterStaff()">
+            <input type="text" th:placeholder="#{page.staff.search.placeholder}" id="searchInput" oninput="filterStaff()">
           </div>
         </div>
         <button class="btn btn-primary" onclick="openAddModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-          Novo Usuário
+          <span th:text="#{page.staff.button.new}">Novo Usuário</span>
         </button>
       </div>
 
@@ -580,10 +580,10 @@
           <table class="staff-table" id="staffTable">
             <thead>
               <tr>
-                <th>Usuário</th>
-                <th>Módulos</th>
-                <th>Status</th>
-                <th>Ações</th>
+                <th th:text="#{page.staff.table.column.user}">Usuário</th>
+                <th th:text="#{page.staff.table.column.modules}">Módulos</th>
+                <th th:text="#{page.staff.table.column.status}">Status</th>
+                <th th:text="#{page.staff.table.column.actions}">Ações</th>
               </tr>
             </thead>
             <tbody id="staffTableBody">
@@ -595,8 +595,8 @@
         <!-- Empty State (hidden when has data) -->
         <div class="empty-state" id="emptyState" style="display: none;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <h3>Nenhum usuário cadastrado</h3>
-          <p>Comece adicionando membros da sua equipe</p>
+          <h3 th:text="#{page.staff.empty.title}">Nenhum usuário cadastrado</h3>
+          <p th:text="#{page.staff.empty.subtitle}">Comece adicionando membros da sua equipe</p>
         </div>
       </div>
     </div>
@@ -606,7 +606,7 @@
   <div id="userModal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modalTitle">Novo Usuário</h3>
+        <h3 id="modalTitle" th:text="#{page.staff.modal.title.new}">Novo Usuário</h3>
         <button class="modal-close" onclick="closeUserModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
@@ -617,17 +617,17 @@
           
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="firstName">Primeiro Nome *</label>
+              <label class="form-label" for="firstName" th:text="#{page.staff.form.label.firstName}">Primeiro Nome *</label>
               <input type="text" id="firstName" name="firstName" class="form-input" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="lastName">Último Nome *</label>
+              <label class="form-label" for="lastName" th:text="#{page.staff.form.label.lastName}">Último Nome *</label>
               <input type="text" id="lastName" name="lastName" class="form-input" required>
             </div>
           </div>
           
           <div class="form-group">
-            <label class="form-label" for="email">E-mail *</label>
+            <label class="form-label" for="email" th:text="#{page.staff.form.label.email}">E-mail *</label>
             <input type="email" id="email" name="email" class="form-input" required>
           </div>
           
@@ -635,32 +635,32 @@
           <div class="form-group" id="resetPasswordContainer" style="display: none; margin-bottom: 1.5rem;">
             <button type="button" class="btn btn-outline btn-sm" onclick="showResetPassword()">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-              Redefinir Senha do Usuário
+              <span th:text="#{page.staff.form.button.resetPassword}">Redefinir Senha do Usuário</span>
             </button>
           </div>
 
           <!-- Password Section (only for new users or upon reset) -->
           <div class="form-group" id="passwordSection">
-            <label class="form-label">Senha Gerada</label>
+            <label class="form-label" th:text="#{page.staff.form.label.generatedPassword}">Senha Gerada</label>
             <div class="password-display">
               <span class="password-value" id="generatedPassword">********</span>
               <input type="hidden" id="realPassword" name="password">
               <button type="button" class="password-copy-btn" onclick="copyPassword()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                <span id="copyBtnText">Copiar</span>
+                <span id="copyBtnText" th:text="#{page.staff.form.button.copy}">Copiar</span>
               </button>
             </div>
             <div class="password-warning">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-              <span>Copie e salve esta senha em local seguro. Ela não poderá ser visualizada novamente após fechar este modal.</span>
+              <span th:text="#{page.staff.form.password.warning}">Copie e salve esta senha em local seguro. Ela não poderá ser visualizada novamente após fechar este modal.</span>
             </div>
           </div>
           <!-- Status Switch -->
           <div class="form-group">
             <div class="form-switch">
               <div class="form-switch-label">
-                <span class="form-label" style="margin-bottom: 0;">Status do Usuário</span>
-                <p id="statusHint" style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">Usuário ativo: acesso permitido.</p>
+                <span class="form-label" style="margin-bottom: 0;" th:text="#{page.staff.form.label.status}">Status do Usuário</span>
+                <p id="statusHint" style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;" th:text="#{page.staff.form.status.hint.active}">Usuário ativo: acesso permitido.</p>
               </div>
               <div id="userEnabledSwitch" class="switch active" onclick="toggleEnabledSwitch(this)"></div>
               <input type="hidden" name="enabled" id="userEnabledInput" value="true">
@@ -669,7 +669,7 @@
           
           <!-- Modules -->
           <div class="form-group">
-            <label class="modules-label">Módulos de Acesso</label>
+            <label class="modules-label" th:text="#{page.staff.form.label.modules}">Módulos de Acesso</label>
             <div class="modules-grid" id="modulesGrid">
               <label th:each="m : ${availableModules}" class="module-checkbox" th:data-module="${m.name()}">
                 <input type="checkbox" name="modules" th:value="${m.name()}">
@@ -681,10 +681,10 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeUserModal()">Cancelar</button>
+        <button type="button" class="btn btn-outline" onclick="closeUserModal()" th:text="#{page.staff.form.button.cancel}">Cancelar</button>
         <button type="submit" form="userForm" class="btn btn-primary" id="saveBtn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Salvar
+          <span th:text="#{page.staff.form.button.save}">Salvar</span>
         </button>
       </div>
     </div>
@@ -694,7 +694,7 @@
   <div id="deleteModal" class="modal-overlay">
     <div class="modal" style="max-width: 24rem;">
       <div class="modal-header">
-        <h3>Confirmar Exclusão</h3>
+        <h3 th:text="#{page.staff.modal.delete.title}">Confirmar Exclusão</h3>
         <button class="modal-close" onclick="closeDeleteModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
@@ -705,15 +705,15 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
           </div>
           <p class="delete-confirm-name" id="deleteUserName">João Carlos</p>
-          <p class="delete-confirm-text">Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
+          <p class="delete-confirm-text" th:text="#{page.staff.modal.delete.text}">Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
         </div>
         <form id="deleteForm" method="post" style="display: none;"></form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancelar</button>
+        <button type="button" class="btn btn-outline" onclick="closeDeleteModal()" th:text="#{page.staff.form.button.cancel}">Cancelar</button>
         <button type="button" class="btn" style="background: var(--destructive); color: white;" onclick="confirmDelete()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-          Excluir
+          <span th:text="#{page.staff.modal.delete.button}">Excluir</span>
         </button>
       </div>
     </div>
@@ -727,6 +727,19 @@
 
     let deleteUserId = null;
     let currentPassword = '';
+    
+    const i18n = {
+      active: /*[[#{page.staff.table.status.active}]]*/ 'Ativo',
+      inactive: /*[[#{page.staff.table.status.inactive}]]*/ 'Inativo',
+      edit: /*[[#{page.staff.table.action.edit}]]*/ 'Editar',
+      delete: /*[[#{page.staff.table.action.delete}]]*/ 'Excluir',
+      copied: /*[[#{page.staff.form.button.copied}]]*/ 'Copiado!',
+      copy: /*[[#{page.staff.form.button.copy}]]*/ 'Copiar',
+      modalTitleNew: /*[[#{page.staff.modal.title.new}]]*/ 'Novo Usuário',
+      modalTitleEdit: /*[[#{page.staff.modal.title.edit}]]*/ 'Editar Usuário',
+      statusHintActive: /*[[#{page.staff.form.status.hint.active}]]*/ 'Usuário ativo: acesso permitido.',
+      statusHintInactive: /*[[#{page.staff.form.status.hint.inactive}]]*/ 'Usuário inativo: acesso bloqueado.'
+    };
 
     // Module labels and icons
     const moduleInfo = {
@@ -783,15 +796,15 @@
           <td>
             <span class="status-badge ${user.enabled ? 'active' : 'inactive'}">
               <span class="status-dot"></span>
-              ${user.enabled ? 'Ativo' : 'Inativo'}
+              ${user.enabled ? i18n.active : i18n.inactive}
             </span>
           </td>
           <td>
             <div class="staff-actions">
-              <button class="staff-action-btn" title="Editar" onclick="openEditModal('${user.id}')">
+              <button class="staff-action-btn" th:title="#{page.staff.table.action.edit}" onclick="openEditModal('${user.id}')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
               </button>
-              <button class="staff-action-btn delete" title="Excluir" onclick="openDeleteModal('${user.id}')">
+              <button class="staff-action-btn delete" th:title="#{page.staff.table.action.delete}" onclick="openDeleteModal('${user.id}')">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
               </button>
             </div>
@@ -824,7 +837,7 @@
     // Modal Functions
     // ============================================
     function openAddModal() {
-      document.getElementById('modalTitle').textContent = 'Novo Usuário';
+      document.getElementById('modalTitle').textContent = i18n.modalTitleNew;
       document.getElementById('userForm').action = '/staff/new';
       document.getElementById('userId').value = '';
       document.getElementById('firstName').value = '';
@@ -843,7 +856,7 @@
       
       document.getElementById('userEnabledSwitch').classList.add('active');
       document.getElementById('userEnabledInput').value = 'true';
-      document.getElementById('statusHint').textContent = 'Usuário ativo: acesso permitido.';
+      document.getElementById('statusHint').textContent = i18n.statusHintActive;
 
       document.getElementById('resetPasswordContainer').style.display = 'none';
       document.getElementById('passwordSection').style.display = 'block';
@@ -865,15 +878,15 @@
       const isActive = el.classList.contains('active');
       input.value = isActive ? 'true' : 'false';
       document.getElementById('statusHint').textContent = isActive ? 
-        'Usuário ativo: acesso permitido.' : 
-        'Usuário inativo: acesso bloqueado.';
+        i18n.statusHintActive : 
+        i18n.statusHintInactive;
     }
 
     function openEditModal(id) {
       const user = staffList.find(u => u.id === id);
       if (!user) return;
       
-      document.getElementById('modalTitle').textContent = 'Editar Usuário';
+      document.getElementById('modalTitle').textContent = i18n.modalTitleEdit;
       document.getElementById('userForm').action = '/staff/' + id + '/edit';
       document.getElementById('userId').value = user.id;
       document.getElementById('firstName').value = user.firstName;
@@ -894,11 +907,11 @@
       if (user.enabled) {
         enabledSwitch.classList.add('active');
         enabledInput.value = 'true';
-        document.getElementById('statusHint').textContent = 'Usuário ativo: acesso permitido.';
+        document.getElementById('statusHint').textContent = i18n.statusHintActive;
       } else {
         enabledSwitch.classList.remove('active');
         enabledInput.value = 'false';
-        document.getElementById('statusHint').textContent = 'Usuário inativo: acesso bloqueado.';
+        document.getElementById('statusHint').textContent = i18n.statusHintInactive;
       }
       
       document.getElementById('userModal').classList.add('active');
@@ -935,9 +948,8 @@
       const pwd = document.getElementById('generatedPassword').textContent;
       navigator.clipboard.writeText(pwd).then(() => {
           const btnText = document.getElementById('copyBtnText');
-          const originalText = btnText.textContent;
-          btnText.textContent = 'Copiado!';
-          setTimeout(() => btnText.textContent = originalText, 2000);
+          btnText.textContent = i18n.copied;
+          setTimeout(() => btnText.textContent = i18n.copy, 2000);
       });
     }
 
