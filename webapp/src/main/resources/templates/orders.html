@@ -1541,7 +1541,7 @@
             </div>
         `).join('');
 
-        const totalFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ticket.total);
+        const totalFormatted = formatCurrency(ticket.total);
 
         return `
             <div class="order-card ${ticket.urgent ? 'urgent' : ''}" data-ticket-id="${ticket.id}">
@@ -1699,8 +1699,8 @@
 
     function updateHistorySummary(data) {
         document.getElementById('historyTotalOrders').textContent = data.totalOrders;
-        document.getElementById('historyTotalRevenue').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.totalRevenue);
-        document.getElementById('historyAvgTicket').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.avgTicket);
+        document.getElementById('historyTotalRevenue').textContent = formatCurrency(data.totalRevenue);
+        document.getElementById('historyAvgTicket').textContent = formatCurrency(data.avgTicket);
     }
 
     // Close modal on outside click
