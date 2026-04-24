@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.cleaner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,25 +182,35 @@ class OrderCleanerApiIT extends PostgresIT {
         .perform(post("/api/system/cleaner/run").with(httpBasic("system", "supersecret")))
         .andExpect(status().isOk());
 
-    TenantContext.setCurrentTenant(tenantSchema);
-    List<OrderEntity> allAfter = orderJpaRepository.findAll();
-    assertThat(allAfter).hasSize(1);
+    await()
+        .atMost(5, TimeUnit.SECONDS)
+        .untilAsserted(
+            () -> {
+              TenantContext.setCurrentTenant(tenantSchema);
+              try {
+                List<OrderEntity> allAfter = orderJpaRepository.findAll();
+                assertThat(allAfter).hasSize(1);
 
-    // Verify cascade deletion and manual feedback deletion
-    assertThat(feedbackJpaRepository.findAll()).isEmpty();
-    assertThat(
-            jdbcTemplate.queryForObject(
-                String.format("SELECT count(*) FROM %s.tickets", tenantSchema), Integer.class))
-        .isZero();
-    assertThat(
-            jdbcTemplate.queryForObject(
-                String.format("SELECT count(*) FROM %s.ticket_items", tenantSchema), Integer.class))
-        .isZero();
-    assertThat(
-            jdbcTemplate.queryForObject(
-                String.format("SELECT count(*) FROM %s.payments", tenantSchema), Integer.class))
-        .isZero();
-
-    TenantContext.clear();
+                // Verify cascade deletion and manual feedback deletion
+                assertThat(feedbackJpaRepository.findAll()).isEmpty();
+                assertThat(
+                        jdbcTemplate.queryForObject(
+                            String.format("SELECT count(*) FROM %s.tickets", tenantSchema),
+                            Integer.class))
+                    .isZero();
+                assertThat(
+                        jdbcTemplate.queryForObject(
+                            String.format("SELECT count(*) FROM %s.ticket_items", tenantSchema),
+                            Integer.class))
+                    .isZero();
+                assertThat(
+                        jdbcTemplate.queryForObject(
+                            String.format("SELECT count(*) FROM %s.payments", tenantSchema),
+                            Integer.class))
+                    .isZero();
+              } finally {
+                TenantContext.clear();
+              }
+            });
   }
 }

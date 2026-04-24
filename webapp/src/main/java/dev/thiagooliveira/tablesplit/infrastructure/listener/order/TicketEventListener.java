@@ -18,8 +18,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.Tick
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.context.event.EventListener;
 import org.springframework.context.MessageSource;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
