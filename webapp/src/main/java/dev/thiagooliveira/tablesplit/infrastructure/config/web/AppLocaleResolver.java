@@ -13,12 +13,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-public class RestaurantLocaleResolver extends SessionLocaleResolver {
+public class AppLocaleResolver extends SessionLocaleResolver {
 
   private final GetRestaurant getRestaurant;
   private static final Pattern SLUG_PATTERN = Pattern.compile("/@([a-zA-Z0-9.-]+)");
 
-  public RestaurantLocaleResolver(GetRestaurant getRestaurant) {
+  public AppLocaleResolver(GetRestaurant getRestaurant) {
     this.getRestaurant = getRestaurant;
   }
 

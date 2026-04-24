@@ -201,7 +201,7 @@ public class TableController {
         model.addAttribute(
             "orderTimeAgo",
             dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
-                order.getOpenedAt(), messageSource));
+                order.getOpenedAt(), messageSource, userLanguage));
         model.addAttribute(
             "orderOpenedAtFormatted",
             dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.format(

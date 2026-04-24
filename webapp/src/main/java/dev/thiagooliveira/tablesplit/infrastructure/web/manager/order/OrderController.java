@@ -223,7 +223,7 @@ public class OrderController {
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
-            ticket.getCreatedAt(), messageSource);
+            ticket.getCreatedAt(), messageSource, userLanguage);
     long minutes = Duration.between(ticket.getCreatedAt(), Time.nowZonedDateTime()).toMinutes();
     boolean urgent = minutes > 15 && ticket.getStatus().isPending();
 

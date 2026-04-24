@@ -15,17 +15,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class RestaurantLocaleResolverTest {
+class AppLocaleResolverTest {
 
   @Mock private GetRestaurant getRestaurant;
 
   @Mock private HttpServletRequest request;
 
-  private RestaurantLocaleResolver resolver;
+  private AppLocaleResolver resolver;
 
   @BeforeEach
   void setUp() {
-    resolver = new RestaurantLocaleResolver(getRestaurant);
+    resolver = new AppLocaleResolver(getRestaurant);
     resolver.setDefaultLocale(Locale.ENGLISH);
   }
 

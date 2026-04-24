@@ -157,6 +157,18 @@ public class TicketEventListener {
             "type", type, "data", data, "initiatedBy", initiatedBy != null ? initiatedBy : ""));
   }
 
+  private Language getCurrentUserLanguage() {
+    try {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      if (auth != null && auth.getPrincipal() instanceof AccountContext context) {
+        return context.getUser().getLanguage();
+      }
+    } catch (Exception e) {
+      // Ignore
+    }
+    return null;
+  }
+
   private UUID getCurrentUserId() {
     try {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -210,7 +222,7 @@ public class TicketEventListener {
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
-            ticket.getCreatedAt(), messageSource);
+            ticket.getCreatedAt(), messageSource, getCurrentUserLanguage());
     long minutesAgo = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
     boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
 

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.utils;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -35,7 +36,9 @@ public class TimeUtils {
   }
 
   public static String timeAgo(
-      ZonedDateTime dateTime, org.springframework.context.MessageSource messageSource) {
+      ZonedDateTime dateTime,
+      org.springframework.context.MessageSource messageSource,
+      Language language) {
     if (dateTime == null) return "";
     if (messageSource == null) return timeAgo(dateTime);
 
@@ -44,7 +47,10 @@ public class TimeUtils {
     long hours = duration.toHours();
     long days = duration.toDays();
 
-    java.util.Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    java.util.Locale locale =
+        language != null
+            ? java.util.Locale.forLanguageTag(language.name().toLowerCase())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
 
     if (days > 0) {
       return messageSource.getMessage("time.ago.days", new Object[] {days}, locale);

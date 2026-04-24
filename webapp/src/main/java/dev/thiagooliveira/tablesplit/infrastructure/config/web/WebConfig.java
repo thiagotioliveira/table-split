@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Bean
   public LocaleResolver localeResolver() {
-    RestaurantLocaleResolver resolver = new RestaurantLocaleResolver(getRestaurant);
+    AppLocaleResolver resolver = new AppLocaleResolver(getRestaurant);
     resolver.setDefaultLocale(Locale.ENGLISH);
     return resolver;
   }
