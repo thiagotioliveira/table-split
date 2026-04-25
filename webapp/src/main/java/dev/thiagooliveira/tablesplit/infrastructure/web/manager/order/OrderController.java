@@ -76,7 +76,12 @@ public class OrderController {
 
   private void populateModel(Authentication auth, Model model) {
     AccountContext context = (AccountContext) auth.getPrincipal();
-    List<TicketWithTable> ticketsWithTables = getTickets.execute(context.getRestaurant().getId());
+
+    ZonedDateTime startOfDay =
+        ZonedDateTime.now(Time.getZoneId()).toLocalDate().atStartOfDay(Time.getZoneId());
+
+    List<TicketWithTable> ticketsWithTables =
+        getTickets.execute(context.getRestaurant().getId(), startOfDay);
 
     List<TicketModel> allTickets =
         ticketsWithTables.stream()
@@ -89,6 +94,18 @@ public class OrderController {
     Map<String, List<TicketModel>> ticketsByStatus =
         allTickets.stream().collect(Collectors.groupingBy(t -> t.getStatus().name()));
 
+    if (ticketsByStatus.containsKey("DELIVERED")) {
+      List<TicketModel> delivered = new java.util.ArrayList<>(ticketsByStatus.get("DELIVERED"));
+      // Sort by createdAt desc to get the most recent ones
+      delivered.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+
+      if (delivered.size() > 10) {
+        ticketsByStatus.put("DELIVERED", delivered.subList(0, 10));
+      } else {
+        ticketsByStatus.put("DELIVERED", delivered);
+      }
+    }
+
     model.addAttribute("ticketsByStatus", ticketsByStatus);
     model.addAttribute("allTickets", allTickets);
 
@@ -100,8 +117,6 @@ public class OrderController {
         "deliveredCount", ticketsByStatus.getOrDefault("DELIVERED", List.of()).size());
     model.addAttribute("readyCount", ticketsByStatus.getOrDefault("READY", List.of()).size());
 
-    ZonedDateTime startOfDay =
-        ZonedDateTime.now(Time.getZoneId()).toLocalDate().atStartOfDay(Time.getZoneId());
     ZonedDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
     long deliveredTodayCount =
         getHistoryTickets.execute(context.getRestaurant().getId(), startOfDay, endOfDay).stream()

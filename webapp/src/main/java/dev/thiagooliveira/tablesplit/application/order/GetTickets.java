@@ -20,11 +20,25 @@ public class GetTickets {
     this.tableRepository = tableRepository;
   }
 
-  public List<TicketWithTable> execute(UUID restaurantId) {
-    List<Order> openOrders =
-        orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN);
+  public List<TicketWithTable> execute(
+      UUID restaurantId, java.time.ZonedDateTime closedAtThreshold) {
+    List<Order> orders =
+        new java.util.ArrayList<>(
+            orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN));
+
+    if (closedAtThreshold != null) {
+      orders.addAll(
+          orderRepository.findAllByRestaurantIdAndStatusAndClosedAtAfter(
+              restaurantId, OrderStatus.CLOSED, closedAtThreshold));
+    } else {
+      orders.addAll(
+          orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.CLOSED).stream()
+              .filter(Order::hasWaitingTickets)
+              .toList());
+    }
+
     List<TicketWithTable> results = new ArrayList<>();
-    for (Order order : openOrders) {
+    for (Order order : orders) {
       String tableCod =
           tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
       for (Ticket ticket : order.getTickets()) {
@@ -35,9 +49,11 @@ public class GetTickets {
   }
 
   public long countPending(UUID restaurantId) {
-    return orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN).stream()
-        .flatMap(o -> o.getTickets().stream())
-        .filter(Ticket::isPending)
-        .count();
+    List<Order> orders =
+        new java.util.ArrayList<>(
+            orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN));
+    orders.addAll(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.CLOSED));
+
+    return orders.stream().flatMap(o -> o.getTickets().stream()).filter(Ticket::isPending).count();
   }
 }

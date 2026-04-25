@@ -18,6 +18,9 @@ public interface OrderRepository {
 
   List<Order> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
 
+  List<Order> findAllByRestaurantIdAndStatusAndClosedAtAfter(
+      UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold);
+
   Optional<Order> findByTicketId(UUID ticketId);
 
   Optional<Order> findByTicketItemId(UUID itemId);

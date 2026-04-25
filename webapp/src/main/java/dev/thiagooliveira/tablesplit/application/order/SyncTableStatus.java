@@ -17,6 +17,10 @@ public class SyncTableStatus {
   }
 
   public void execute(Order order) {
+    if (order.getStatus() == dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
+      return;
+    }
+
     Table table =
         tableRepository
             .findById(order.getTableId())

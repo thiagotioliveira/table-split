@@ -107,21 +107,6 @@ public class Order {
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = Time.now();
-
-    if (this.tickets != null) {
-      this.tickets.forEach(
-          ticket -> {
-            ticket
-                .getItems()
-                .forEach(
-                    item -> {
-                      if (item.getStatus() != TicketStatus.CANCELLED) {
-                        item.setStatus(TicketStatus.DELIVERED);
-                      }
-                    });
-            ticket.recalculateStatus();
-          });
-    }
   }
 
   public void addCustomer(UUID id, String name) {

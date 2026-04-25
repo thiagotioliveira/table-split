@@ -1346,7 +1346,7 @@
                     <div class="promo-card-body">
                         <h3 class="promo-name" th:text="${promotion.name}">Happy Hour</h3>
                         <p class="promo-description" th:text="${promotion.description}">Desconto em todas as bebidas durante o happy hour</p>
-                        <p class="promo-value" th:text="${promotion.discountType == T(dev.thiagooliveira.tablesplit.domain.menu.DiscountType).PERCENTAGE ? #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 0, 'COMMA') + '% OFF' : currencySymbol + ' ' + #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 2, 'COMMA') + ' OFF'}">20% OFF</p>
+                        <p class="promo-value" th:text="${promotion.discountType.name() == 'PERCENTAGE' ? #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 0, 'COMMA') + '% OFF' : currencySymbol + ' ' + #numbers.formatDecimal(promotion.discountValue, 1, 'POINT', 2, 'COMMA') + ' OFF'}">20% OFF</p>
                         <div class="promo-details">
                             <div class="promo-detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>

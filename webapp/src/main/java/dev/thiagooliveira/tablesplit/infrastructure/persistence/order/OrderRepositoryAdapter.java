@@ -70,6 +70,17 @@ public class OrderRepositoryAdapter implements OrderRepository {
   }
 
   @Override
+  public List<Order> findAllByRestaurantIdAndStatusAndClosedAtAfter(
+      UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold) {
+    return orderJpaRepository
+        .findAllByRestaurantIdAndStatusAndClosedAtAfter(restaurantId, status, threshold)
+        .stream()
+        .map(OrderEntity::toDomain)
+        .map(this::fillItemNames)
+        .toList();
+  }
+
+  @Override
   public Optional<Order> findByTicketId(UUID ticketId) {
     return orderJpaRepository
         .findByTicketId(ticketId)

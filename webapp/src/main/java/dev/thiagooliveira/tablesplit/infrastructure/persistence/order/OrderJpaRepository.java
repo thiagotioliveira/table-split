@@ -21,6 +21,9 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
   List<OrderEntity> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
 
+  List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtAfter(
+      UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold);
+
   @Query(
       "select o from OrderEntity o where o.tableId = :tableId "
           + "and (:status is null or o.status = :status) "
