@@ -45,6 +45,13 @@ public class ItemEntity {
   @Enumerated(EnumType.STRING)
   private Set<ItemTag> tags = new HashSet<>();
 
+  @Convert(converter = QuestionListConverter.class)
+  @Column(name = "questions", columnDefinition = "TEXT")
+  private Map<
+          dev.thiagooliveira.tablesplit.domain.common.Language,
+          List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+      questions = new HashMap<>();
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
@@ -78,6 +85,7 @@ public class ItemEntity {
     domain.setAvailable(this.active);
     domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
     domain.setTags(new ArrayList<>(this.tags));
+    domain.setQuestions(new HashMap<>(this.questions));
     return domain;
   }
 
@@ -99,6 +107,9 @@ public class ItemEntity {
     }
     if (domain.getTags() != null) {
       entity.setTags(new HashSet<>(domain.getTags()));
+    }
+    if (domain.getQuestions() != null) {
+      entity.setQuestions(new HashMap<>(domain.getQuestions()));
     }
     return entity;
   }
@@ -165,6 +176,21 @@ public class ItemEntity {
 
   public void setTags(Set<ItemTag> tags) {
     this.tags = tags;
+  }
+
+  public Map<
+          dev.thiagooliveira.tablesplit.domain.common.Language,
+          List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+      getQuestions() {
+    return questions;
+  }
+
+  public void setQuestions(
+      Map<
+              dev.thiagooliveira.tablesplit.domain.common.Language,
+              List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+          questions) {
+    this.questions = questions;
   }
 
   public OffsetDateTime getDeletedAt() {

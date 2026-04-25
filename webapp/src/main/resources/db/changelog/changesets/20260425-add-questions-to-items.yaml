@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260425-add-questions-to-items
+      author: thiago.oliveira
+      changes:
+        - addColumn:
+            tableName: items
+            columns:
+              - column:
+                  name: questions
+                  type: TEXT
+                  remarks: "Stored as JSON string representing the list of customization questions"

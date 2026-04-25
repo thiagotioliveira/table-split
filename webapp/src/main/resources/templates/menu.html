@@ -23,7 +23,7 @@
       gap: 0.5rem;
       margin-bottom: 1.25rem;
       padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
+      /*border-bottom: 1px solid var(--border);*/
       overflow-x: auto;
     }
 
@@ -272,6 +272,263 @@
       background: var(--accent);
     }
 
+    /* Questions Section */
+    .questions-section {
+      margin-top: 1.5rem;
+      /*padding-top: 1.5rem;
+      border-top: 1px solid var(--border);*/
+    }
+    .questions-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .questions-header h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .questions-header h4 svg {
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+    }
+    .questions-header p {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin: 0.25rem 0 0;
+    }
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .question-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .question-card-header h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .question-card-header .question-type {
+      font-size: 0.6875rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      background: var(--primary);
+      color: white;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .question-card-header .question-type.yes-no {
+      background: #6366f1;
+    }
+    .question-card-header .question-type.multiple {
+      background: #8b5cf6;
+    }
+    .question-card-actions {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .question-card-actions button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 0.375rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .question-card-actions button:hover {
+      background: var(--muted);
+      color: var(--text);
+    }
+    .question-card-actions button.delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    .question-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-top: 0.75rem;
+    }
+    .question-option {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.625rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      color: var(--text-secondary);
+    }
+    .question-option.has-price {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .question-required {
+      font-size: 0.6875rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+    .questions-empty {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: 0.75rem;
+    }
+    .questions-empty svg {
+      width: 40px;
+      height: 40px;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .questions-empty p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+    }
+    .questions-empty span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Question Form */
+    .question-form {
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--primary);
+    }
+    .question-type-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .question-type-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--background);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .question-type-btn:hover {
+      border-color: var(--primary);
+    }
+    .question-type-btn.active {
+      border-color: var(--primary);
+      background: rgba(var(--primary-rgb), 0.1);
+    }
+    .question-type-btn svg {
+      width: 24px;
+      height: 24px;
+      margin: 0 auto 0.5rem;
+      display: block;
+      color: var(--muted);
+    }
+    .question-type-btn.active svg {
+      color: var(--primary);
+    }
+    .question-type-btn span {
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+    .options-builder {
+      margin-top: 1rem;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .option-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 32px;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .option-row input {
+      font-size: 0.875rem;
+    }
+    .remove-option-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 0.375rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .remove-option-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    .add-option-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px dashed var(--border);
+      border-radius: 0.5rem;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .add-option-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .question-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .selection-limits {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+    .selection-limits .form-group {
+      flex: 1;
+    }
+    .selection-limits .form-group label {
+      font-size: 0.75rem;
+    }
+    .selection-limits .form-group input {
+      max-width: 80px;
+    }
+
   </style>
 </head>
 
@@ -284,7 +541,8 @@
 
   <div style="padding: 1.5rem 1.5rem 0">
     <button class="btn btn-primary"
-            th:attr="onclick=|openItemModal(null, '${context.restaurant.customerLanguages[0]}')|">
+            th:data-lang="${context.restaurant.customerLanguages[0]}"
+            onclick="openItemModal(null, this.getAttribute('data-lang'))">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 12h14" />
@@ -302,7 +560,8 @@
           <div class="categories-header">
             <h2 th:text="#{page.menu.category.title}">Categories</h2>
             <button type="button" class="btn btn-ghost btn-sm"
-                    th:attr="onclick=|openCategoryModal(null, '${context.restaurant.customerLanguages[0]}')|">
+                    th:data-lang="${context.restaurant.customerLanguages[0]}"
+                    onclick="openCategoryModal(null, this.getAttribute('data-lang'))">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14" />
@@ -312,7 +571,9 @@
           </div>
 
           <div class="categories-list">
-            <button class="category-item active" th:attr="onclick=|selectCategory(null, '${#locale.language}')|">
+            <button class="category-item active" 
+                    th:data-lang="${#locale.language}"
+                    onclick="selectCategory(null, this.getAttribute('data-lang'))">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m7.5 4.27 9 5.15" />
@@ -326,7 +587,8 @@
             </button>
 
             <div class="category-item" th:data-category-id="${category.id}"
-                 th:attr="onclick=|selectCategory('${category.id}', '${#locale.language}')|"
+                 th:data-lang="${#locale.language}"
+                 onclick="selectCategory(this.getAttribute('data-category-id'), this.getAttribute('data-lang'))"
                  th:each="category : ${menu.categories}">
                 <span class="category-order" th:text="${category.order}">1</span>
                 <span class="category-name"
@@ -334,14 +596,18 @@
               <span class="category-count" th:text="${category.amount}">2</span>
               <div class="category-actions">
                 <button type="button"
-                        th:attr="onclick=|editCategory('${category.id}', '${context.restaurant.customerLanguages[0]}')|">
+                        th:data-id="${category.id}"
+                        th:data-lang="${context.restaurant.customerLanguages[0]}"
+                        onclick="editCategory(this.getAttribute('data-id'), this.getAttribute('data-lang'))">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                   </svg>
                 </button>
                 <button class="delete"
-                        th:attr="onclick=|event.stopPropagation(); deleteCategory('${category.id}', '${#locale.language}')|">
+                        th:data-id="${category.id}"
+                        th:data-lang="${#locale.language}"
+                        onclick="event.stopPropagation(); deleteCategory(this.getAttribute('data-id'), this.getAttribute('data-lang'))">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 6h18" />
@@ -395,14 +661,18 @@
                 <div class="menu-item-actions">
                   <button class="btn btn-ghost btn-sm" th:if="${false}">Desativar</button>
                   <button class="btn btn-ghost btn-sm"
-                          th:attr="onclick=|editItem('${item.id}', '${context.restaurant.customerLanguages[0]}')|">
+                          th:data-id="${item.id}"
+                          th:data-lang="${context.restaurant.customerLanguages[0]}"
+                          onclick="editItem(this.getAttribute('data-id'), this.getAttribute('data-lang'))">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                     </svg>
                   </button>
                   <button class="btn btn-ghost btn-sm" style="color: var(--destructive);"
-                          th:attr="onclick=|deleteItem('${item.id}', '${#locale.language}')|">
+                          th:data-id="${item.id}"
+                          th:data-lang="${#locale.language}"
+                          onclick="deleteItem(this.getAttribute('data-id'), this.getAttribute('data-lang'))">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M3 6h18" />
@@ -528,6 +798,7 @@
     <form id="itemForm" th:action="@{'/menu/items'}" method="post" enctype="multipart/form-data"
           onsubmit="prepareItemSubmit(event)" th:object="${updateItemModel}">
       <input type="hidden" th:field="*{id}">
+      <input type="hidden" name="questionsJson" id="questionsJsonInput">
       <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
         <!-- Language Tabs for Item -->
         <div class="lang-tabs" id="itemLangTabs">
@@ -560,6 +831,34 @@
                       th:placeholder="#{page.menu.item.description.placeholder}" th:field="*{description[__${lang.name()}__]}"
                       rows="3"></textarea>
             <span class="form-error" th:if="${#fields.hasErrors('description[' + lang.name() + ']')}" th:errors="*{description[__${lang.name()}__]}"></span>
+          </div>
+
+          <!-- Questions Section -->
+          <div class="questions-section">
+            <div class="questions-header">
+              <div>
+                <h4>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                  <span th:text="#{page.menu.item.customization.title}">Customization Questions</span>
+                </h4>
+                <p th:text="#{page.menu.item.customization.desc}">Options that the customer can choose when ordering this item</p>
+              </div>
+              <button type="button" class="btn btn-outline btn-sm" 
+                      th:data-lang="${lang.name()}" 
+                      onclick="showQuestionForm(this.getAttribute('data-lang'))">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                <span th:text="#{button.add}">Add</span>
+              </button>
+            </div>
+
+            <!-- Inline editing will be used in the list below -->
+
+            <div class="questions-list" th:id="'questionsDisplayList-' + ${lang.name()}"></div>
+            <div class="questions-empty" th:id="'questionsEmpty-' + ${lang.name()}">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+              <p th:text="#{page.menu.item.customization.empty}">No questions added</p>
+              <span th:text="#{page.menu.item.customization.empty.hint}">Ex: "Want edge?", "Choose size"</span>
+            </div>
           </div>
         </div>
 
@@ -628,7 +927,10 @@
           <div class="tag-suggestions" id="tagSuggestions" style="display: none;">
             <div th:each="tag : ${itemTags}"
                  class="tag-suggestion"
-                 th:attr="onclick=|addTag('${tag.name()}', '${tag.getIcon()}', '#{${tag.getLabel()}}')|"
+                 th:data-id="${tag.name()}"
+                 th:data-icon="${tag.getIcon()}"
+                 th:data-label="#{${tag.getLabel()}}"
+                 onclick="addTag(this.getAttribute('data-id'), this.getAttribute('data-icon'), this.getAttribute('data-label'))"
                  th:classappend="${updateItemModel.tags != null and updateItemModel.tags.contains(tag)} ? ' selected' : ''">
               <span th:text="${tag.getIcon()}"></span>
               <span th:text="#{${tag.getLabel()}}"></span>
@@ -666,10 +968,14 @@
     itemTitle: /*[[#{page.menu.item.title}]]*/ 'Category',
     items: /*[[#{page.menu.item.items}]]*/ 'items',
     item: /*[[#{page.menu.item.item}]]*/ 'item',
+    questionTitle: /*[[#{page.menu.item.question.title}]]*/ 'Question',
+    questionOptions: /*[[#{page.menu.item.question.options}]]*/ 'Options',
+    addOption: /*[[#{page.menu.item.question.option.add}]]*/ 'Add Option',
+    required: /*[[#{page.menu.item.question.required}]]*/ 'Required answer',
   };
   const tagLabels = {
     /*[# th:each="tag : ${itemTags}"]*/
-    "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
+    "[(${tag})]": /*[[#{${tag.getLabel()}}]]*/ "",
     /*[/]*/
   };
 
@@ -679,7 +985,7 @@
   const openCategoryModalFlag = /*[[${openCategoryModal}]]*/ false;
   const jsCategoryId = /*[[${updateCategoryModel.id}]]*/ null;
   const jsItemId = /*[[${updateItemModel.id}]]*/ null;
-  const primaryLang = /*[[${context.restaurant.customerLanguages[0].name()}]]*/ 'PT';
+  const primaryLang = /*[[${context.restaurant.customerLanguages[0]}]]*/ 'PT';
 
   document.addEventListener('DOMContentLoaded', () => {
     if (openCategoryModalFlag) {
@@ -894,6 +1200,27 @@
 
   function prepareItemSubmit(event) {
     syncHiddenTags();
+    
+    // Collect all questions by language (filtering only valid keys)
+    const questionsByLang = {};
+    Object.keys(itemQuestions).forEach(lang => {
+      if (!lang || lang === 'undefined' || lang === 'null') return;
+      questionsByLang[lang] = itemQuestions[lang].map(q => ({
+        id: q.id,
+        title: q.title,
+        type: q.type,
+        required: q.required,
+        minSelections: q.minSelections,
+        maxSelections: q.maxSelections,
+        options: q.options.map(opt => ({
+          id: opt.id,
+          text: opt.text,
+          extraPrice: opt.price
+        }))
+      }));
+    });
+    document.getElementById('questionsJsonInput').value = JSON.stringify(questionsByLang);
+    
     showLoading('Adicionando item');
     const form = document.getElementById('itemForm');
     // Remove any previously added hidden inputs for imageIdsToKeep
@@ -916,6 +1243,12 @@
 
   // Item Modal
   function openItemModal(id, lang) {
+    // Reset questions state for all languages
+    Object.keys(itemQuestions).forEach(l => {
+      itemQuestions[l] = [];
+      renderQuestions(l);
+    });
+
     document.getElementById('itemModalTitle').textContent = id ? i18n.itemModalTitleEdit : i18n.itemModalTitleNew;
     document.getElementById('itemModal').classList.add('active');
     // Reset to first tab
@@ -977,6 +1310,40 @@
           const input = document.getElementById('itemDesc-' + langKey.toUpperCase());
           if (input) input.value = filtered.description[langKey];
         });
+        
+        // Load existing questions
+        if (filtered.questions) {
+          Object.keys(filtered.questions).forEach(langKey => {
+            const langUpper = langKey.toUpperCase();
+            const matchedLang = Object.keys(itemQuestions).find(k => k.toUpperCase() === langUpper);
+
+            if (matchedLang) {
+              filtered.questions[langKey].forEach(q => {
+                const uiQuestion = {
+                  id: q.id,
+                  title: q.title,
+                  type: q.type,
+                  required: q.required,
+                  minSelections: q.minSelections,
+                  maxSelections: q.maxSelections,
+                  options: []
+                };
+                if (q.options) {
+                  q.options.forEach(opt => {
+                    uiQuestion.options.push({
+                      id: opt.id,
+                      text: opt.text || '',
+                      price: opt.extraPrice || 0
+                    });
+                  });
+                }
+                itemQuestions[matchedLang].push(uiQuestion);
+              });
+            }
+          });
+        }
+        // Render for all languages
+        Object.keys(itemQuestions).forEach(l => renderQuestions(l));
       }
     }
   }
@@ -989,6 +1356,12 @@
       const descInput = document.getElementById('itemDesc-' + lang);
       if (nameInput) nameInput.value = '';
       if (descInput) descInput.value = '';
+      
+      // Clear questions
+      if (itemQuestions[lang]) itemQuestions[lang] = [];
+      const qForm = document.getElementById('questionForm-' + lang);
+      if (qForm) qForm.style.display = 'none';
+      renderQuestions(lang);
     });
     document.querySelector('#itemForm [name="price"]').value = '';
     document.querySelector('#itemForm [name="categoryId"]').value = '';
@@ -1003,8 +1376,10 @@
     document.getElementById('tagSuggestions').style.display = 'none';
 
     // Reset availability toggle
-    document.getElementById('itemAvailable').classList.add('active');
-    document.getElementById('itemAvailableInput').value = 'true';
+    const itemAvailable = document.getElementById('itemAvailable');
+    if (itemAvailable) itemAvailable.classList.add('active');
+    const itemAvailableInput = document.getElementById('itemAvailableInput');
+    if (itemAvailableInput) itemAvailableInput.value = 'true';
   }
 
   function toggleAvailableSwitch(el) {
@@ -1064,6 +1439,39 @@
       document.getElementById('categoryModal').classList.add('active');
     } else if (openItemModalFlag) {
       document.getElementById('itemModal').classList.add('active');
+      
+      // Load questions from hidden input if present (on validation error)
+      const qJson = document.getElementById('questionsJsonInput').value;
+      if (qJson) {
+        try {
+          const loadedQuestions = JSON.parse(qJson);
+          loadedQuestions.forEach(q => {
+            Object.keys(q.title).forEach(langKey => {
+              const langUpper = langKey.toUpperCase();
+              if (itemQuestions[langUpper]) {
+                const uiQuestion = {
+                  title: q.title[langKey],
+                  type: q.type,
+                  required: q.required,
+                  minSelections: q.minSelections,
+                  maxSelections: q.maxSelections,
+                  options: []
+                };
+                if (q.options) {
+                  q.options.forEach(opt => {
+                    uiQuestion.options.push({
+                      text: opt.text[langKey],
+                      price: opt.extraPrice
+                    });
+                  });
+                }
+                itemQuestions[langUpper].push(uiQuestion);
+              }
+            });
+          });
+          Object.keys(itemQuestions).forEach(l => renderQuestions(l));
+        } catch (e) { console.error('Error parsing questionsJson', e); }
+      }
     }
   });
 
@@ -1132,6 +1540,149 @@
   function removeTagById(id) {
     const tag = document.querySelector(`#profileTags .profile-tag[data-tag="${id}"]`);
     if (tag) tag.remove();
+  }
+
+  // Questions Management Logic
+  let itemQuestions = {};
+  let currentQuestionOptions = {};
+  let editingQuestionIndex = {};
+
+  // Initialize for all languages dynamically using the tabs in the DOM
+  document.querySelectorAll('.lang-tab').forEach(tab => {
+    const lang = tab.getAttribute('data-lang');
+    if (lang && lang.trim()) {
+      itemQuestions[lang] = [];
+      currentQuestionOptions[lang] = [];
+      editingQuestionIndex[lang] = -1;
+    }
+  });
+
+  function showQuestionForm(lang) {
+    if (!itemQuestions[lang]) itemQuestions[lang] = [];
+    itemQuestions[lang].push({
+      title: '',
+      type: 'YES_NO',
+      options: [],
+      required: false,
+      minSelections: 0,
+      maxSelections: 1
+    });
+    renderQuestions(lang);
+  }
+
+  function hideQuestionForm(lang) {}
+  function selectQuestionType(type, btn, lang) {}
+
+  function addOption(lang) {}
+  function saveQuestion(lang) {}
+  function addOptionToQuestion(lang, qIdx) {
+    if (!itemQuestions[lang][qIdx].options) itemQuestions[lang][qIdx].options = [];
+    itemQuestions[lang][qIdx].options.push({ text: '', price: 0 });
+    renderQuestions(lang);
+  }
+
+  function deleteOption(lang, qIdx, optIdx) {
+    itemQuestions[lang][qIdx].options.splice(optIdx, 1);
+    renderQuestions(lang);
+  }
+
+  function updateQuestionProperty(lang, index, prop, value) {
+    if (prop === 'minSelections' || prop === 'maxSelections') value = parseInt(value) || 0;
+    itemQuestions[lang][index][prop] = value;
+    if (prop === 'type') renderQuestions(lang);
+  }
+
+  function updateOptionProperty(lang, qIdx, optIdx, prop, value) {
+    if (prop === 'price') value = parseFloat(value) || 0;
+    itemQuestions[lang][qIdx].options[optIdx][prop] = value;
+  }
+
+  function renderQuestions(lang) {
+    const list = document.getElementById('questionsDisplayList-' + lang);
+    const empty = document.getElementById('questionsEmpty-' + lang);
+    if (!list || !empty) return;
+    
+    if (!itemQuestions[lang] || itemQuestions[lang].length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    list.innerHTML = itemQuestions[lang].map((q, i) => `
+      <div class="question-card active" style="display: block; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius:12px;">
+        <div class="question-card-header" style="display: flex; gap: 1rem; align-items: start; margin-bottom: 1rem;">
+           <div style="flex: 1;">
+             <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0.25rem;">${i18n.questionTitle}</label>
+             <input type="text" class="form-input" placeholder="${i18n.questionTitle}" value="${q.title || ''}" 
+                    onchange="updateQuestionProperty('${lang}', ${i}, 'title', this.value)">
+           </div>
+           <button type="button" class="btn btn-ghost btn-sm" onclick="deleteQuestion('${lang}', ${i})" style="color: var(--destructive); margin-top: 1.4rem;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+           </button>
+        </div>
+        
+        <div class="question-type-selector" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <button type="button" class="question-type-btn ${q.type === 'YES_NO' ? 'active' : ''}" 
+                  onclick="updateQuestionProperty('${lang}', ${i}, 'type', 'YES_NO')" style="flex: 1; padding: 0.5rem; justify-content: center; height: 36px;">
+            <span>Yes / No</span>
+          </button>
+          <button type="button" class="question-type-btn ${q.type === 'MULTIPLE' ? 'active' : ''}" 
+                  onclick="updateQuestionProperty('${lang}', ${i}, 'type', 'MULTIPLE')" style="flex: 1; padding: 0.5rem; justify-content: center; height: 36px;">
+            <span>Multiple Choice</span>
+          </button>
+        </div>
+
+        ${q.type === 'MULTIPLE' ? `
+          <div class="options-builder" style="display: block; background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border);">
+            <label class="form-label" style="font-size: 0.75rem;">${i18n.questionOptions}</label>
+            <div class="options-list">
+              ${(q.options || []).map((opt, optIdx) => `
+                <div class="option-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <input type="text" class="form-input" placeholder="Option text" value="${opt.text || ''}" 
+                         onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'text', this.value)" style="flex: 1; height: 36px;">
+                  <div style="position: relative; width: 100px;">
+                    <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.875rem; color: var(--text-muted);">€</span>
+                    <input type="number" class="form-input" placeholder="0.00" value="${opt.price || 0}" step="0.01"
+                           onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'price', this.value)" style="padding-left: 1.75rem; width: 100%; height: 36px;">
+                  </div>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="deleteOption('${lang}', ${i}, ${optIdx})" style="color: var(--destructive); padding: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addOptionToQuestion('${lang}', ${i})" style="width: 100%; margin-top: 0.5rem; border-style: dashed; justify-content: center; height: 34px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              <span>${i18n.addOption}</span>
+            </button>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <div style="flex: 1;">
+                <label class="form-label" style="font-size: 0.7rem;">Min.</label>
+                <input type="number" class="form-input" value="${q.minSelections || 0}" onchange="updateQuestionProperty('${lang}', ${i}, 'minSelections', this.value)" min="0" style="height: 36px;">
+              </div>
+              <div style="flex: 1;">
+                <label class="form-label" style="font-size: 0.7rem;">Max.</label>
+                <input type="number" class="form-input" value="${q.maxSelections || 1}" onchange="updateQuestionProperty('${lang}', ${i}, 'maxSelections', this.value)" min="1" style="height: 36px;">
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="q-req-${lang}-${i}" ${q.required ? 'checked' : ''} onchange="updateQuestionProperty('${lang}', ${i}, 'required', this.checked)" style="width: 1rem; height: 1rem;">
+          <label for="q-req-${lang}-${i}" class="form-label" style="margin-bottom: 0; cursor: pointer;">${i18n.required}</label>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function deleteQuestion(lang, index) {
+    if (confirm('Excluir esta pergunta?')) {
+      itemQuestions[lang].splice(index, 1);
+      renderQuestions(lang);
+    }
   }
 
 </script>

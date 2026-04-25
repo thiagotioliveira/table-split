@@ -5,96 +5,158 @@ import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import java.io.IOException;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemTag;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UpdateItemModel {
   private UUID id;
-
-  @NotNull(message = "{error.menu.item.category.required}")
   private UUID categoryId;
-
-  @NotEmpty(message = "{error.menu.item.name.required}")
-  private Map<String, @NotBlank(message = "{error.menu.item.name.required}") String> name;
-
-  @NotEmpty(message = "{error.menu.item.description.required}")
-  private Map<String, @NotBlank(message = "{error.menu.item.description.required}") String>
-      description;
-
-  @NotNull(message = "{error.menu.item.price.required}")
-  @Positive(message = "{error.menu.item.price.positive}")
+  private Map<String, String> name;
+  private Map<String, String> description;
   private BigDecimal price;
+  private List<String> tags;
+  private boolean available;
+  private List<MultipartFile> imagesFile;
+  private List<String> imageIdsToKeep;
+  private String questionsJson;
 
-  private List<UUID> imageIdsToKeep;
-  private List<MultipartFile> newImages;
-  private boolean available = true;
-  private List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags;
+  private static final tools.jackson.databind.ObjectMapper objectMapper =
+      new tools.jackson.databind.ObjectMapper();
 
   public CreateItemCommand toCreateItemCommand() {
+    var imagesToKeep = parseImagesToKeep();
+    var newImagesData = parseNewImages();
+    var imagesCommand = new ImageCommand(imagesToKeep, newImagesData);
+
     return new CreateItemCommand(
-        this.categoryId,
-        this.imageIdsToKeep,
-        toImageCommand(),
-        convertLanguages(this.name),
-        convertLanguages(this.description),
-        this.price,
-        this.tags == null ? List.of() : this.tags,
-        this.available);
+        categoryId,
+        imagesToKeep,
+        imagesCommand,
+        parseMap(name),
+        parseMap(description),
+        price,
+        parseTags(),
+        available,
+        parseQuestions());
   }
 
   public UpdateItemCommand toUpdateItemCommand() {
+    var imagesToKeep = parseImagesToKeep();
+    var newImagesData = parseNewImages();
+    var imagesCommand = new ImageCommand(imagesToKeep, newImagesData);
+
     return new UpdateItemCommand(
-        this.categoryId,
-        this.imageIdsToKeep,
-        toImageCommand(),
-        convertLanguages(this.name),
-        convertLanguages(this.description),
-        this.price,
-        this.tags == null ? List.of() : this.tags,
-        this.available);
+        id,
+        categoryId,
+        imagesToKeep,
+        imagesCommand,
+        parseMap(name),
+        parseMap(description),
+        price,
+        parseTags(),
+        available,
+        parseQuestions());
   }
 
-  private ImageCommand toImageCommand() {
+  private List<UUID> parseImagesToKeep() {
+    return imageIdsToKeep != null
+        ? imageIdsToKeep.stream()
+            .filter(s -> s != null && !s.isBlank())
+            .map(UUID::fromString)
+            .toList()
+        : List.of();
+  }
 
-    List<ImageData> images =
-        newImages == null
-            ? List.of()
-            : newImages.stream()
-                .filter(file -> !file.isEmpty())
-                .map(
-                    file -> {
-                      try {
-                        return new ImageData(
-                            file.getOriginalFilename(), file.getContentType(), file.getBytes());
-                      } catch (IOException e) {
-                        throw new RuntimeException(e);
+  private List<ImageData> parseNewImages() {
+    return imagesFile != null
+        ? imagesFile.stream()
+            .filter(f -> !f.isEmpty())
+            .map(
+                f -> {
+                  try {
+                    return new ImageData(f.getOriginalFilename(), f.getContentType(), f.getBytes());
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                })
+            .toList()
+        : List.of();
+  }
+
+  private Map<Language, String> parseMap(Map<String, String> map) {
+    if (map == null) return Map.of();
+    Map<Language, String> result = new HashMap<>();
+    map.forEach(
+        (k, v) -> {
+          if (v != null && !v.isBlank()) {
+            try {
+              result.put(Language.valueOf(k.toUpperCase()), v);
+            } catch (Exception e) {
+              // Ignore invalid languages
+            }
+          }
+        });
+    return result;
+  }
+
+  private List<ItemTag> parseTags() {
+    if (tags == null) return List.of();
+    return tags.stream().map(ItemTag::valueOf).toList();
+  }
+
+  private Map<
+          dev.thiagooliveira.tablesplit.domain.common.Language,
+          List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+      parseQuestions() {
+    if (questionsJson == null || questionsJson.isBlank()) {
+      return Map.of();
+    }
+    try {
+      // Parse as Map<String, ...> first to avoid Enum key errors
+      Map<String, List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>> rawMap =
+          objectMapper.readValue(
+              questionsJson,
+              new tools.jackson.core.type.TypeReference<
+                  Map<String, List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>>() {});
+
+      Map<
+              dev.thiagooliveira.tablesplit.domain.common.Language,
+              List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+          result = new HashMap<>();
+
+      rawMap.forEach(
+          (langStr, list) -> {
+            if (langStr == null || langStr.isBlank()) return;
+
+            try {
+              dev.thiagooliveira.tablesplit.domain.common.Language lang =
+                  dev.thiagooliveira.tablesplit.domain.common.Language.valueOf(
+                      langStr.toUpperCase());
+
+              if (list != null) {
+                list.forEach(
+                    q -> {
+                      if (q.getId() == null) q.setId(java.util.UUID.randomUUID());
+                      if (q.getOptions() != null) {
+                        q.getOptions()
+                            .forEach(
+                                opt -> {
+                                  if (opt.getId() == null) opt.setId(java.util.UUID.randomUUID());
+                                });
                       }
-                    })
-                .toList();
-
-    return new ImageCommand(imageIdsToKeep == null ? List.of() : imageIdsToKeep, images);
-  }
-
-  private Map<Language, String> convertLanguages(Map<String, String> from) {
-    return from.entrySet().stream()
-        .collect(Collectors.toMap(entry -> Language.valueOf(entry.getKey()), Map.Entry::getValue));
-  }
-
-  public List<UUID> getImageIdsToKeep() {
-    return imageIdsToKeep;
-  }
-
-  public List<MultipartFile> getNewImages() {
-    return newImages;
+                    });
+                result.put(lang, list);
+              }
+            } catch (IllegalArgumentException e) {
+              // Ignore invalid languages like "es-ES" if they appear
+            }
+          });
+      return result;
+    } catch (Exception e) {
+      throw new RuntimeException("Erro ao processar as questões do item", e);
+    }
   }
 
   public UUID getId() {
@@ -103,6 +165,14 @@ public class UpdateItemModel {
 
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public UUID getCategoryId() {
+    return categoryId;
+  }
+
+  public void setCategoryId(UUID categoryId) {
+    this.categoryId = categoryId;
   }
 
   public Map<String, String> getName() {
@@ -129,20 +199,12 @@ public class UpdateItemModel {
     this.price = price;
   }
 
-  public UUID getCategoryId() {
-    return categoryId;
+  public List<String> getTags() {
+    return tags;
   }
 
-  public void setCategoryId(UUID categoryId) {
-    this.categoryId = categoryId;
-  }
-
-  public void setImageIdsToKeep(List<UUID> imageIdsToKeep) {
-    this.imageIdsToKeep = imageIdsToKeep;
-  }
-
-  public void setNewImages(List<MultipartFile> newImages) {
-    this.newImages = newImages;
+  public void setTags(List<String> tags) {
+    this.tags = tags;
   }
 
   public boolean isAvailable() {
@@ -153,11 +215,27 @@ public class UpdateItemModel {
     this.available = available;
   }
 
-  public List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> getTags() {
-    return tags;
+  public List<MultipartFile> getImagesFile() {
+    return imagesFile;
   }
 
-  public void setTags(List<dev.thiagooliveira.tablesplit.domain.menu.ItemTag> tags) {
-    this.tags = tags;
+  public void setImagesFile(List<MultipartFile> imagesFile) {
+    this.imagesFile = imagesFile;
+  }
+
+  public List<String> getImageIdsToKeep() {
+    return imageIdsToKeep;
+  }
+
+  public void setImageIdsToKeep(List<String> imageIdsToKeep) {
+    this.imageIdsToKeep = imageIdsToKeep;
+  }
+
+  public String getQuestionsJson() {
+    return questionsJson;
+  }
+
+  public void setQuestionsJson(String questionsJson) {
+    this.questionsJson = questionsJson;
   }
 }

@@ -931,3 +931,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260411-add-deleted-at-to-restaurant-tables.yaml
   - include:
       file: db/changelog/changesets/20260411-add-feedback-and-ratings.yaml
+  - include:
+      file: db/changelog/changesets/20260425-add-questions-to-items.yaml

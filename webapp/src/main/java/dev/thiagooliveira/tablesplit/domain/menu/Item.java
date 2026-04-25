@@ -16,6 +16,7 @@ public class Item {
   private BigDecimal price;
   private PromotionInfo promotion;
   private List<ItemTag> tags;
+  private Map<Language, List<ItemQuestion>> questions;
 
   public UUID getId() {
     return id;
@@ -91,6 +92,14 @@ public class Item {
 
   public void setTags(List<ItemTag> tags) {
     this.tags = tags;
+  }
+
+  public Map<Language, List<ItemQuestion>> getQuestions() {
+    return questions;
+  }
+
+  public void setQuestions(Map<Language, List<ItemQuestion>> questions) {
+    this.questions = questions;
   }
 
   public record PromotionInfo(

@@ -34,6 +34,7 @@ public class UpdateItem {
     item.setName(command.name());
     item.setAvailable(command.available());
     item.setTags(command.tags());
+    item.setQuestions(command.questions());
     item.setCategory(new Category());
     item.getCategory().setId(command.categoryId());
 
