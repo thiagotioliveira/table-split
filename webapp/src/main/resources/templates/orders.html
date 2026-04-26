@@ -13,6 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
 
     <script th:inline="javascript">
+        const userLanguage = /*[[${userLanguage}]]*/ 'pt';
         const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
         const currencyCode = /*[[${currencyCode}]]*/ 'BRL';
         const zoneId = /*[[${zoneId}]]*/ 'Europe/Lisbon';
@@ -438,16 +439,11 @@
 
         /* Waiter Call Alert */
 
-        /* Delivered column limit */
-        .kanban-body.limited {
-            max-height: 500px;
-            overflow-y: auto;
-        }
 
         .kanban-footer {
             padding: 0.75rem;
-            border-top: 1px solid var(--border);
-            background: var(--card);
+            /*border-top: 1px solid var(--border);*/
+            /*background: var(--card);*/
             text-align: center;
         }
 
@@ -1064,7 +1060,7 @@
                     </div>
                     <span class="kanban-count" th:text="${deliveredCount}">0</span>
                 </div>
-                <div class="kanban-body limited">
+                <div class="kanban-body">
                     <div th:each="ticket : ${ticketsByStatus['DELIVERED']}" class="order-card" style="opacity: 0.7;">
                         <div class="order-header">
                             <div class="order-table">
@@ -1555,16 +1551,19 @@
 
 
     function renderTicketCard(ticket) {
-        const itemsHtml = ticket.items.map(item => `
+        const itemsHtml = ticket.items.map(item => {
+            const itemName = (item.names && item.names[userLanguage]) || item.name;
+            return `
             <div class="order-item">
                 <span class="order-item-qty">${item.quantity}x</span>
                 <div style="flex: 1;">
-                    <div class="order-item-name">${item.name}</div>
+                    <div class="order-item-name">${itemName}</div>
                     ${renderCustomizationSnapshot(item.customizations)}
                     ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         const totalFormatted = formatCurrency(ticket.total);
 

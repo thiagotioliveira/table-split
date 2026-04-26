@@ -10,6 +10,7 @@ public class TicketItemModel {
   private final UUID customerId;
   private final String customerName;
   private final String name;
+  private final java.util.Map<String, String> names;
   private final int quantity;
   private final BigDecimal unitPrice;
   private final BigDecimal totalPrice;
@@ -41,6 +42,7 @@ public class TicketItemModel {
         customerId,
         customerName,
         name,
+        java.util.Map.of("pt", name),
         quantity,
         unitPrice,
         totalPrice,
@@ -73,6 +75,7 @@ public class TicketItemModel {
         customerId,
         customerName,
         name,
+        java.util.Map.of("pt", name),
         quantity,
         unitPrice,
         totalPrice,
@@ -106,6 +109,7 @@ public class TicketItemModel {
         customerId,
         customerName,
         name,
+        java.util.Map.of("pt", name),
         quantity,
         unitPrice,
         totalPrice,
@@ -124,6 +128,7 @@ public class TicketItemModel {
       UUID customerId,
       String customerName,
       String name,
+      java.util.Map<String, String> names,
       int quantity,
       BigDecimal unitPrice,
       BigDecimal totalPrice,
@@ -139,6 +144,7 @@ public class TicketItemModel {
     this.customerId = customerId;
     this.customerName = customerName;
     this.name = name;
+    this.names = names;
     this.quantity = quantity;
     this.unitPrice = unitPrice;
     this.totalPrice = totalPrice;
@@ -158,7 +164,21 @@ public class TicketItemModel {
       java.time.ZonedDateTime createdAt,
       dev.thiagooliveira.tablesplit.domain.common.Language userLanguage) {
 
-    String itemName = item.getName() != null ? item.getName().get(userLanguage) : null;
+    String itemName =
+        item.getName() != null
+            ? item.getName()
+                .getOrDefault(
+                    userLanguage,
+                    item.getName()
+                        .getOrDefault(
+                            dev.thiagooliveira.tablesplit.domain.common.Language.PT,
+                            item.getName().values().stream().findFirst().orElse("Item")))
+            : "Item";
+
+    java.util.Map<String, String> names = new java.util.HashMap<>();
+    if (item.getName() != null) {
+      item.getName().forEach((k, v) -> names.put(k.name().toLowerCase(), v));
+    }
 
     PromotionInfo promotionInfo = null;
     if (item.getPromotionSnapshot() != null) {
@@ -176,6 +196,7 @@ public class TicketItemModel {
         item.getCustomerId(),
         customerName,
         itemName,
+        names,
         item.getQuantity(),
         item.getUnitPrice(),
         item.getTotalPrice(),
@@ -234,6 +255,10 @@ public class TicketItemModel {
 
   public String getName() {
     return name;
+  }
+
+  public java.util.Map<String, String> getNames() {
+    return names;
   }
 
   public int getQuantity() {

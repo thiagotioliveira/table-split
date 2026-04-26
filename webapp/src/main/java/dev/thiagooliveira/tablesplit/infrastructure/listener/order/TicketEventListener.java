@@ -189,34 +189,12 @@ public class TicketEventListener {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
-                item -> {
-                  String name = "Item";
-                  if (item.getName() != null && !item.getName().isEmpty()) {
-                    name =
-                        item.getName()
-                            .getOrDefault(
-                                Language.PT,
-                                item.getName()
-                                    .getOrDefault(
-                                        Language.EN, item.getName().values().iterator().next()));
-                  }
-                  return new TicketItemModel(
-                      item.getId(),
-                      item.getCustomerId(),
-                      order.getCustomerName(item.getCustomerId()),
-                      name,
-                      item.getQuantity(),
-                      item.getUnitPrice(),
-                      item.getTotalPrice(),
-                      item.getNote(),
-                      item.getStatus().getLabel(),
-                      item.getStatus().getCssClass(),
-                      item.getRating(),
-                      ticket.getCreatedAt(),
-                      getItemPromotionInfo(item),
-                      item.getCustomizations(),
-                      TicketItemModel.getCustomizationSummary(item.getCustomizations()));
-                })
+                item ->
+                    TicketItemModel.fromDomain(
+                        item,
+                        order.getCustomerName(item.getCustomerId()),
+                        ticket.getCreatedAt(),
+                        getCurrentUserLanguage()))
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
@@ -240,18 +218,5 @@ public class TicketEventListener {
         ticket.calculateTotal(),
         urgent,
         ticket.getNote());
-  }
-
-  private TicketItemModel.PromotionInfo getItemPromotionInfo(
-      dev.thiagooliveira.tablesplit.domain.order.TicketItem ticketItem) {
-    if (ticketItem.getPromotionSnapshot() != null) {
-      var snapshot = ticketItem.getPromotionSnapshot();
-      return new TicketItemModel.PromotionInfo(
-          snapshot.originalPrice(),
-          ticketItem.getUnitPrice(),
-          snapshot.discountType(),
-          snapshot.discountValue());
-    }
-    return null;
   }
 }

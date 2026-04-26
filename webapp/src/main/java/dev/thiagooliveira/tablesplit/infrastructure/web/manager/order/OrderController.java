@@ -132,6 +132,7 @@ public class OrderController {
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("zoneId", Time.getZoneId().getId());
+    model.addAttribute("userLanguage", context.getUser().getLanguage().name().toLowerCase());
   }
 
   @GetMapping("/history")
