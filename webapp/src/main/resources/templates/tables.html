@@ -199,6 +199,104 @@
             text-align: center;
         }
 
+        /* Question Groups */
+        .question-group {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .question-header {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .question-badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            background: var(--border);
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .question-badge.required {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .options-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .option-item {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+        }
+
+        .option-item.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .option-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .option-price {
+            font-size: 0.8rem;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .question-group.invalid {
+            border-color: var(--destructive);
+            box-shadow: 0 0 0 1px var(--destructive);
+        }
+
+        .question-group .error-message {
+            display: none;
+            color: var(--destructive);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .question-group.invalid .error-message {
+            display: block;
+        }
+
+        .item-questions-summary {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
         /* User Menu in Sidebar */
         .user-menu-container {
             position: relative;
@@ -3472,8 +3570,19 @@
         historyOpened: /*[[#{page.tables.modal.history.opened}]]*/ 'Opened',
         historyClosed: /*[[#{page.tables.modal.history.closed}]]*/ 'Closed',
         tableLabel: /*[[#{page.tables.modal.history.table.label}]]*/ 'Table',
-        itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)'
+        itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)',
+        customizationSingle: /*[[#{page.customer.menu.customization.single}]]*/ 'Escolha uma',
+        customizationMultiple: /*[[#{page.customer.menu.customization.multiple}]]*/ 'Escolha várias',
+        customizationError: /*[[#{page.customer.menu.customization.error}]]*/ 'Selecione as opções obrigatórias'
     };
+
+    const itemQuestionsMap = /*[[${menuItems}]]*/ [];
+    const questionsByItemId = {};
+    itemQuestionsMap.forEach(item => {
+        if (item.questions && item.questions.length > 0) {
+            questionsByItemId[item.id] = item.questions;
+        }
+    });
 
     async function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
@@ -4343,6 +4452,28 @@
     </div>
 </div>
 
+<!-- Item Questions Modal -->
+<div class="modal-overlay" id="itemQuestionsModal" style="z-index: 1100;">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span id="itemQuestionsTitle">Personalizar Item</span>
+            </h3>
+            <button type="button" class="modal-close" onclick="closeItemQuestionsModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" id="itemQuestionsContent" style="padding: 1.5rem; overflow-y: auto; max-height: 70vh;">
+            <!-- Questions rendered by JS -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn" onclick="closeItemQuestionsModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
+            <button type="button" class="modal-btn success" onclick="confirmItemQuestions()" th:text="#{page.tables.modal.order.item.questions.confirm}">Confirmar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Ver Conta Modal -->
 <div class="modal-overlay" id="billModal">
     <div class="modal">
@@ -4930,6 +5061,181 @@
     let selectedMenuItems = {};
     let currentTableId = null;
     let currentTableCod = null;
+    let currentQuestionItem = null;
+    let currentLang = document.documentElement.lang || 'pt';
+
+    function renderItemQuestions(questionsJson, title) {
+        console.log('Rendering questions for:', title, questionsJson);
+        const container = document.getElementById('itemQuestionsContent');
+        if (!container) {
+            console.error('Container itemQuestionsContent not found');
+            return;
+        }
+        
+        document.getElementById('itemQuestionsTitle').textContent = title;
+        
+        let questions = [];
+        try {
+            questions = typeof questionsJson === 'string' ? JSON.parse(questionsJson) : questionsJson;
+        } catch (e) {
+            console.error('Error parsing questions JSON:', e);
+            return false;
+        }
+
+        if (!questions || questions.length === 0) return false;
+
+        const lang = (currentLang || 'pt').toLowerCase();
+        
+        container.innerHTML = questions.map(q => {
+            const qTitle = q.title[lang] || q.title['pt'] || Object.values(q.title)[0] || '';
+            const isRequired = q.required || q.min > 0;
+            const badgeText = q.type === 'SINGLE' ? i18n.customizationSingle : i18n.customizationMultiple;
+            
+            return `
+                <div class="question-group" data-question-id="${q.id}" data-type="${q.type}" data-min="${q.min}" data-max="${q.max}" data-title="${qTitle}">
+                    <div class="question-header">
+                        <div class="question-title">${qTitle}</div>
+                        <div class="question-subtitle">
+                            <span class="question-badge ${isRequired ? 'required' : ''}">${badgeText}</span>
+                            ${isRequired ? '<span style="color: var(--destructive); font-weight: 700;">*</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="options-list">
+                        ${q.options.map(opt => {
+                            const optText = opt.text[lang] || opt.text['pt'] || Object.values(opt.text)[0] || '';
+                            const extraPriceText = opt.extraPrice > 0 ? `+ ${currencySymbol} ${opt.extraPrice.toFixed(2).replace('.', ',')}` : '';
+                            return `
+                                <div class="option-item" 
+                                     onclick="toggleQuestionOption(this)" 
+                                     data-option-id="${opt.id}" 
+                                     data-text="${optText}" 
+                                     data-extra-price="${opt.extraPrice}">
+                                    <div class="option-info">
+                                        <div class="option-text">${optText}</div>
+                                    </div>
+                                    ${extraPriceText ? `<div class="option-price">${extraPriceText}</div>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="error-message">${i18n.customizationError} (${q.min})</div>
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('itemQuestionsModal').classList.add('active');
+        return true;
+    }
+
+    function toggleQuestionOption(el) {
+        const group = el.closest('.question-group');
+        const type = group.dataset.type;
+        const max = parseInt(group.dataset.max || '0');
+
+        if (type === 'SINGLE') {
+            const alreadySelected = el.classList.contains('selected');
+            group.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
+            if (!alreadySelected) {
+                el.classList.add('selected');
+            }
+        } else {
+            const selectedCount = group.querySelectorAll('.option-item.selected').length;
+            if (!el.classList.contains('selected') && max > 0 && selectedCount >= max) {
+                return;
+            }
+            el.classList.toggle('selected');
+        }
+        group.classList.remove('invalid');
+    }
+
+    function closeItemQuestionsModal() {
+        document.getElementById('itemQuestionsModal').classList.remove('active');
+        currentQuestionItem = null;
+    }
+
+    function confirmItemQuestions() {
+        if (!currentQuestionItem) return;
+        console.log('Confirming questions for:', currentQuestionItem.name);
+
+        const customizations = [];
+        const questionGroups = document.querySelectorAll('#itemQuestionsContent .question-group');
+        let allRequiredSatisfied = true;
+
+        questionGroups.forEach(group => {
+            const title = group.dataset.title;
+            const requiredCount = parseInt(group.dataset.min || '0');
+            const selectedOptions = [];
+
+            group.querySelectorAll('.option-item.selected').forEach(opt => {
+                selectedOptions.push({
+                    id: opt.dataset.optionId,
+                    text: opt.dataset.text,
+                    extraPrice: parseFloat(opt.dataset.extraPrice || '0')
+                });
+            });
+
+            if (selectedOptions.length < requiredCount) {
+                group.classList.add('invalid');
+                allRequiredSatisfied = false;
+            } else {
+                group.classList.remove('invalid');
+                if (selectedOptions.length > 0) {
+                    customizations.push({
+                        title,
+                        options: selectedOptions
+                    });
+                }
+            }
+        });
+
+        if (!allRequiredSatisfied) {
+            console.log('Validation failed for some questions');
+            const firstInvalid = document.querySelector('.question-group.invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        console.log('Validation successful, customizations:', customizations);
+
+        // Add to selectedMenuItems
+        const { id, name, price, originalPrice, promotionId, discountType, discountValue, card } = currentQuestionItem;
+        
+        // Key includes customizations to allow same item with different options
+        const customizationKey = customizations.length > 0 ? JSON.stringify(customizations) : '';
+        // Safe base64 for items with unicode chars
+        const safeHash = customizationKey ? btoa(unescape(encodeURIComponent(customizationKey))).substring(0, 10) : '';
+        const itemKey = id + (safeHash ? '_' + safeHash : '');
+        
+        const extraPrice = customizations.reduce((acc, q) => {
+            return acc + q.options.reduce((oAcc, o) => oAcc + o.extraPrice, 0);
+        }, 0);
+
+        selectedMenuItems[itemKey] = { 
+            itemId: id, 
+            name, 
+            price: price + extraPrice, 
+            qty: 1, 
+            note: '', 
+            originalPrice: originalPrice ? originalPrice + extraPrice : null, 
+            promotionId, 
+            discountType, 
+            discountValue,
+            customizations: customizations.length > 0 ? customizations : null
+        };
+        
+        if (card) card.classList.add('selected');
+        
+        if (activeClientTab && orderClients[activeClientTab]) {
+            orderClients[activeClientTab].items = { ...selectedMenuItems };
+        }
+        
+        updateSelectedItemsUI();
+        updateMultiClientSummary();
+        renderOrderTabs();
+        closeItemQuestionsModal();
+    }
 
     function startReviewTimer() {
         let timeLeft = 10;
@@ -5108,11 +5414,21 @@
         const promotionId = card.dataset.promotionId || null;
         const discountType = card.dataset.discountType || null;
         const discountValue = card.dataset.discountValue ? parseFloat(card.dataset.discountValue) : null;
+        const questions = questionsByItemId[id] || [];
+        
+        console.log('toggleMenuItem:', name, 'questions count:', questions.length);
 
         if (selectedMenuItems[id]) {
             delete selectedMenuItems[id];
             card.classList.remove('selected');
         } else {
+            const hasQuestions = questions.length > 0;
+            if (hasQuestions) {
+                console.log('Item has questions, opening modal...');
+                currentQuestionItem = { id, name, price, originalPrice, promotionId, discountType, discountValue, card };
+                renderItemQuestions(questions, name);
+                return;
+            }
             selectedMenuItems[id] = { name, price, qty: 1, note: '', originalPrice, promotionId, discountType, discountValue };
             card.classList.add('selected');
         }
@@ -5147,11 +5463,20 @@
                    </div>`
                 : `<div style="color: var(--primary); font-weight: 600;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</div>`;
 
+            const customizationsHtml = item.customizations ? `
+                <div class="item-questions-summary">
+                    ${item.customizations.flatMap(c => c.options.map(o => o.text)).join(', ')}
+                </div>
+            ` : '';
+
             return `
             <div class="selected-item-row">
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;">
-                        <strong>${item.name}</strong>
+                        <div>
+                            <strong>${item.name}</strong>
+                            ${customizationsHtml}
+                        </div>
                         ${priceHtml}
                     </div>
                     <input type="text" class="form-input" style="margin-top: 0.5rem;" placeholder="${i18n.itemNotePlaceholder}"
@@ -5222,10 +5547,20 @@
                     ? `<span style="text-decoration: line-through; color: var(--muted); font-size: 0.75rem; margin-right: 0.25rem;">${currencySymbol} ${(item.originalPrice * item.qty).toFixed(2).replace('.', ',')}</span>
                        <span style="color: var(--green); font-weight: 700;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`
                     : `<span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`;
+                
+                const customizationsSummary = item.customizations ? `
+                    <div style="font-size: 0.7rem; color: var(--muted); margin-left: 1.5rem; font-style: italic;">
+                        ${item.customizations.flatMap(c => c.options.map(o => o.text)).join(', ')}
+                    </div>
+                ` : '';
+
                 return `
-                    <div class="summary-client-item">
-                        <span>${item.qty}x ${item.name}</span>
-                        <span style="display: flex; align-items: center; gap: 0.2rem;">${priceHtml}</span>
+                    <div class="summary-client-item" style="display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>${item.qty}x ${item.name}</span>
+                            <span style="display: flex; align-items: center; gap: 0.2rem;">${priceHtml}</span>
+                        </div>
+                        ${customizationsSummary}
                     </div>
                 `;
             }).join('');
@@ -5265,14 +5600,21 @@
             const items = Object.entries(client.items);
             items.forEach(([itemId, item]) => {
                 tickets[0].items.push({
-                    itemId: itemId,
+                    itemId: item.itemId || itemId, // use itemId if variation key is different
                     customerId: clientId === 'mesa' ? null : clientId,
                     quantity: item.qty,
                     note: item.note || '',
                     promotionId: item.promotionId || null,
                     originalPrice: item.originalPrice || null,
                     discountType: item.discountType || null,
-                    discountValue: item.discountValue || null
+                    discountValue: item.discountValue || null,
+                    customizations: item.customizations ? JSON.stringify(item.customizations.map(c => ({
+                        title: c.title,
+                        options: c.options.map(o => ({
+                            optionId: o.id,
+                            text: o.text
+                        }))
+                    }))) : null
                 });
             });
         });
