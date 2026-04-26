@@ -45,12 +45,8 @@ public class ItemEntity {
   @Enumerated(EnumType.STRING)
   private Set<ItemTag> tags = new HashSet<>();
 
-  @Convert(converter = QuestionListConverter.class)
-  @Column(name = "questions", columnDefinition = "TEXT")
-  private Map<
-          dev.thiagooliveira.tablesplit.domain.common.Language,
-          List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
-      questions = new HashMap<>();
+  @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemQuestionEntity> questions = new ArrayList<>();
 
   @Override
   public boolean equals(Object o) {
@@ -85,7 +81,21 @@ public class ItemEntity {
     domain.setAvailable(this.active);
     domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
     domain.setTags(new ArrayList<>(this.tags));
-    domain.setQuestions(new HashMap<>(this.questions));
+
+    Map<
+            dev.thiagooliveira.tablesplit.domain.common.Language,
+            List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
+        questionsMap = new HashMap<>();
+    if (this.questions != null) {
+      this.questions.forEach(
+          qe -> {
+            questionsMap
+                .computeIfAbsent(qe.getLanguage(), k -> new ArrayList<>())
+                .add(qe.toDomain());
+          });
+    }
+    domain.setQuestions(questionsMap);
+
     return domain;
   }
 
@@ -109,7 +119,17 @@ public class ItemEntity {
       entity.setTags(new HashSet<>(domain.getTags()));
     }
     if (domain.getQuestions() != null) {
-      entity.setQuestions(new HashMap<>(domain.getQuestions()));
+      domain
+          .getQuestions()
+          .forEach(
+              (lang, list) -> {
+                if (list != null) {
+                  list.forEach(
+                      q -> {
+                        entity.getQuestions().add(ItemQuestionEntity.fromDomain(q, entity, lang));
+                      });
+                }
+              });
     }
     return entity;
   }
@@ -178,18 +198,11 @@ public class ItemEntity {
     this.tags = tags;
   }
 
-  public Map<
-          dev.thiagooliveira.tablesplit.domain.common.Language,
-          List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
-      getQuestions() {
+  public List<ItemQuestionEntity> getQuestions() {
     return questions;
   }
 
-  public void setQuestions(
-      Map<
-              dev.thiagooliveira.tablesplit.domain.common.Language,
-              List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
-          questions) {
+  public void setQuestions(List<ItemQuestionEntity> questions) {
     this.questions = questions;
   }
 

@@ -986,6 +986,7 @@
   const jsCategoryId = /*[[${updateCategoryModel.id}]]*/ null;
   const jsItemId = /*[[${updateItemModel.id}]]*/ null;
   const primaryLang = /*[[${context.restaurant.customerLanguages[0]}]]*/ 'PT';
+  const currencySymbol = /*[[${context.restaurant.currency.symbol}]]*/ '$';
 
   document.addEventListener('DOMContentLoaded', () => {
     if (openCategoryModalFlag) {
@@ -1561,7 +1562,7 @@
     if (!itemQuestions[lang]) itemQuestions[lang] = [];
     itemQuestions[lang].push({
       title: '',
-      type: 'YES_NO',
+      type: 'SINGLE',
       options: [],
       required: false,
       minSelections: 0,
@@ -1588,8 +1589,28 @@
 
   function updateQuestionProperty(lang, index, prop, value) {
     if (prop === 'minSelections' || prop === 'maxSelections') value = parseInt(value) || 0;
-    itemQuestions[lang][index][prop] = value;
-    if (prop === 'type') renderQuestions(lang);
+    
+    const question = itemQuestions[lang][index];
+    question[prop] = value;
+    
+    if (prop === 'type') {
+      if (value === 'SINGLE') {
+        question.maxSelections = 1;
+        if (question.minSelections > 1) question.minSelections = 1;
+      }
+      renderQuestions(lang);
+    } else if (prop === 'required') {
+      if (value) {
+        if (question.minSelections < 1) question.minSelections = 1;
+      } else {
+        question.minSelections = 0;
+      }
+      renderQuestions(lang);
+    } else if (prop === 'minSelections') {
+      if (question.type === 'SINGLE' && value > 1) question.minSelections = 1;
+      question.required = question.minSelections > 0;
+      renderQuestions(lang);
+    }
   }
 
   function updateOptionProperty(lang, qIdx, optIdx, prop, value) {
@@ -1610,7 +1631,7 @@
 
     empty.style.display = 'none';
     list.innerHTML = itemQuestions[lang].map((q, i) => `
-      <div class="question-card active" style="display: block; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius:12px;">
+      <div class="question-card" style="display: block; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius:12px;">
         <div class="question-card-header" style="display: flex; gap: 1rem; align-items: start; margin-bottom: 1rem;">
            <div style="flex: 1;">
              <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0.25rem;">${i18n.questionTitle}</label>
@@ -1623,52 +1644,54 @@
         </div>
         
         <div class="question-type-selector" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-          <button type="button" class="question-type-btn ${q.type === 'YES_NO' ? 'active' : ''}" 
-                  onclick="updateQuestionProperty('${lang}', ${i}, 'type', 'YES_NO')" style="flex: 1; padding: 0.5rem; justify-content: center; height: 36px;">
-            <span>Yes / No</span>
+          <button type="button" class="question-type-btn ${q.type === 'SINGLE' ? 'active' : ''}" 
+                  onclick="updateQuestionProperty('${lang}', ${i}, 'type', 'SINGLE')" style="flex: 1; padding: 0.5rem; justify-content: center; height: 36px;">
+            <span>Single Choice</span>
           </button>
           <button type="button" class="question-type-btn ${q.type === 'MULTIPLE' ? 'active' : ''}" 
                   onclick="updateQuestionProperty('${lang}', ${i}, 'type', 'MULTIPLE')" style="flex: 1; padding: 0.5rem; justify-content: center; height: 36px;">
             <span>Multiple Choice</span>
           </button>
         </div>
-
-        ${q.type === 'MULTIPLE' ? `
-          <div class="options-builder" style="display: block; background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border);">
-            <label class="form-label" style="font-size: 0.75rem;">${i18n.questionOptions}</label>
-            <div class="options-list">
-              ${(q.options || []).map((opt, optIdx) => `
-                <div class="option-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                  <input type="text" class="form-input" placeholder="Option text" value="${opt.text || ''}" 
-                         onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'text', this.value)" style="flex: 1; height: 36px;">
-                  <div style="position: relative; width: 100px;">
-                    <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.875rem; color: var(--text-muted);">€</span>
-                    <input type="number" class="form-input" placeholder="0.00" value="${opt.price || 0}" step="0.01"
-                           onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'price', this.value)" style="padding-left: 1.75rem; width: 100%; height: 36px;">
-                  </div>
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="deleteOption('${lang}', ${i}, ${optIdx})" style="color: var(--destructive); padding: 0.5rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                  </button>
+        
+        <div class="options-builder" style="display: block; background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid var(--border);">
+          <label class="form-label" style="font-size: 0.75rem;">${i18n.questionOptions}</label>
+          <div class="options-list">
+            ${(q.options || []).map((opt, optIdx) => `
+              <div class="option-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <input type="text" class="form-input" placeholder="Option text" value="${opt.text || ''}" 
+                       onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'text', this.value)" style="flex: 1; height: 36px;">
+                <div style="position: relative; width: 100px;">
+                  <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.875rem; color: var(--text-muted);">${currencySymbol}</span>
+                  <input type="number" class="form-input" placeholder="0.00" value="${opt.price || 0}" step="0.01"
+                         onchange="updateOptionProperty('${lang}', ${i}, ${optIdx}, 'price', this.value)" style="padding-left: 1.75rem; width: 100%; height: 36px;">
                 </div>
-              `).join('')}
+                <button type="button" class="btn btn-ghost btn-sm" onclick="deleteOption('${lang}', ${i}, ${optIdx})" style="color: var(--destructive); padding: 0.5rem;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addOptionToQuestion('${lang}', ${i})" style="width: 100%; margin-top: 0.5rem; border-style: dashed; justify-content: center; height: 34px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span>${i18n.addOption}</span>
+          </button>
+          
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <div style="flex: 1;">
+              <label class="form-label" style="font-size: 0.7rem;">Min.</label>
+              <input type="number" class="form-input" value="${q.minSelections || 0}" 
+                     onchange="updateQuestionProperty('${lang}', ${i}, 'minSelections', this.value)" 
+                     min="0" ${q.type === 'SINGLE' ? 'max="1"' : ''} style="height: 36px;">
             </div>
-            <button type="button" class="btn btn-outline btn-sm" onclick="addOptionToQuestion('${lang}', ${i})" style="width: 100%; margin-top: 0.5rem; border-style: dashed; justify-content: center; height: 34px;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              <span>${i18n.addOption}</span>
-            </button>
-            
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-              <div style="flex: 1;">
-                <label class="form-label" style="font-size: 0.7rem;">Min.</label>
-                <input type="number" class="form-input" value="${q.minSelections || 0}" onchange="updateQuestionProperty('${lang}', ${i}, 'minSelections', this.value)" min="0" style="height: 36px;">
-              </div>
-              <div style="flex: 1;">
-                <label class="form-label" style="font-size: 0.7rem;">Max.</label>
-                <input type="number" class="form-input" value="${q.maxSelections || 1}" onchange="updateQuestionProperty('${lang}', ${i}, 'maxSelections', this.value)" min="1" style="height: 36px;">
-              </div>
+            <div style="flex: 1; ${q.type === 'SINGLE' ? 'opacity: 0.5; pointer-events: none;' : ''}">
+              <label class="form-label" style="font-size: 0.7rem;">Max.</label>
+              <input type="number" class="form-input" value="${q.type === 'SINGLE' ? 1 : (q.maxSelections || 1)}" 
+                     onchange="updateQuestionProperty('${lang}', ${i}, 'maxSelections', this.value)" min="1" 
+                     ${q.type === 'SINGLE' ? 'readonly' : ''} style="height: 36px;">
             </div>
           </div>
-        ` : ''}
+        </div>
 
         <div style="display: flex; align-items: center; gap: 0.5rem;">
           <input type="checkbox" id="q-req-${lang}-${i}" ${q.required ? 'checked' : ''} onchange="updateQuestionProperty('${lang}', ${i}, 'required', this.checked)" style="width: 1rem; height: 1rem;">

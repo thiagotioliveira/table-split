@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260426-refactor-item-questions-table
+      author: thiago.oliveira
+      changes:
+        - dropColumn:
+            tableName: items
+            columnName: questions
+        - createTable:
+            tableName: item_questions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: required
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: min_selections
+                  type: integer
+              - column:
+                  name: max_selections
+                  type: integer
+              - column:
+                  name: options
+                  type: TEXT
+                  remarks: "Stored as JSON string representing the list of options"
+        - addForeignKeyConstraint:
+            baseTableName: item_questions
+            baseColumnNames: item_id
+            referencedTableName: items
+            referencedColumnNames: id
+            constraintName: fk_item_questions_item
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_item_questions_item_id
+            tableName: item_questions
+            columns:
+              - column:
+                  name: item_id

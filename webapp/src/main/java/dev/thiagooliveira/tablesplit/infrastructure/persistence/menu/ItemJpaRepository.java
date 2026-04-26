@@ -12,7 +12,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface ItemJpaRepository extends JpaRepository<ItemEntity, UUID> {
 
-  @EntityGraph(attributePaths = "images")
+  @EntityGraph(
+      attributePaths =
+          "images") // We can't easily join questions here for a Map without fetching all of them
+  // unless we use a filter
   @Query(
       "SELECT NEW dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.dto.ItemProjection("
           + "i, tn, td, KEY(tn)) "

@@ -471,7 +471,31 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Classic black bean stew with noble meats, served with rice, kale, farofa, and orange."),
                           new BigDecimal("16.50"),
-                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION))));
+                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION),
+                          true,
+                          Map.of(
+                              Language.PT,
+                              List.of(
+                                  createQuestion(
+                                      "Extras?",
+                                      ItemQuestionType.MULTIPLE,
+                                      false,
+                                      0,
+                                      3,
+                                      createOption("Arroz extra", 2.0),
+                                      createOption("Couve extra", 1.5),
+                                      createOption("Farofa extra", 1.0))),
+                              Language.EN,
+                              List.of(
+                                  createQuestion(
+                                      "Extras?",
+                                      ItemQuestionType.MULTIPLE,
+                                      false,
+                                      0,
+                                      3,
+                                      createOption("Extra rice", 2.0),
+                                      createOption("Extra kale", 1.5),
+                                      createOption("Extra farofa", 1.0)))))));
 
               items.add(
                   this.createItem.execute(
@@ -505,7 +529,31 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "Noble cut of picanha grilled with rock salt, biro-biro rice, and farofa."),
                           new BigDecimal("24.50"),
-                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION))));
+                          List.of(ItemTag.POPULAR, ItemTag.CHEF_RECOMMENDATION),
+                          true,
+                          Map.of(
+                              Language.PT,
+                              List.of(
+                                  createQuestion(
+                                      "Ponto da carne?",
+                                      ItemQuestionType.SINGLE,
+                                      true,
+                                      1,
+                                      1,
+                                      createOption("Mal passado", 0),
+                                      createOption("Ao ponto", 0),
+                                      createOption("Bem passado", 0))),
+                              Language.EN,
+                              List.of(
+                                  createQuestion(
+                                      "Doneness?",
+                                      ItemQuestionType.SINGLE,
+                                      true,
+                                      1,
+                                      1,
+                                      createOption("Rare", 0),
+                                      createOption("Medium", 0),
+                                      createOption("Well done", 0)))))));
 
               items.add(
                   this.createItem.execute(
@@ -673,7 +721,31 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               Language.EN,
                               "National drink prepared with cachaça, fresh Tahiti lime, and ice."),
                           new BigDecimal("7.00"),
-                          List.of(ItemTag.POPULAR))));
+                          List.of(ItemTag.POPULAR),
+                          true,
+                          Map.of(
+                              Language.PT,
+                              List.of(
+                                  createQuestion(
+                                      "Escolha sua base",
+                                      ItemQuestionType.SINGLE,
+                                      true,
+                                      1,
+                                      1,
+                                      createOption("Cachaça", 0),
+                                      createOption("Vodka", 2.0),
+                                      createOption("Sake", 1.5))),
+                              Language.EN,
+                              List.of(
+                                  createQuestion(
+                                      "Choose your base",
+                                      ItemQuestionType.SINGLE,
+                                      true,
+                                      1,
+                                      1,
+                                      createOption("Cachaça", 0),
+                                      createOption("Vodka", 2.0),
+                                      createOption("Sake", 1.5)))))));
 
               items.add(
                   this.createItem.execute(
@@ -958,17 +1030,41 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private void saveItemImages(List<Item> items) {
     items.forEach(
         item -> {
-          String itemNamePT = item.getName().get(Language.PT);
-          String imageUrl = itemNamePTImageUrl.get(itemNamePT);
-
+          String imageUrl = itemNamePTImageUrl.get(item.getName().get(Language.PT));
           if (imageUrl != null) {
-            var image = new ItemImageEntity();
-            image.setItemId(item.getId());
+            ItemImageEntity image = new ItemImageEntity();
             image.setId(UUID.randomUUID());
+            image.setItemId(item.getId());
             image.setName(imageUrl);
             image.setMain(true);
-            this.imageRepository.save(image);
+            imageRepository.save(image);
           }
         });
+  }
+
+  private ItemQuestion createQuestion(
+      String title,
+      ItemQuestionType type,
+      boolean required,
+      int min,
+      int max,
+      ItemOption... options) {
+    ItemQuestion q = new ItemQuestion();
+    q.setId(UUID.randomUUID());
+    q.setTitle(title);
+    q.setType(type);
+    q.setRequired(required);
+    q.setMinSelections(min);
+    q.setMaxSelections(max);
+    q.setOptions(Arrays.asList(options));
+    return q;
+  }
+
+  private ItemOption createOption(String text, double extraPrice) {
+    ItemOption opt = new ItemOption();
+    opt.setId(UUID.randomUUID());
+    opt.setText(text);
+    opt.setExtraPrice(BigDecimal.valueOf(extraPrice));
+    return opt;
   }
 }

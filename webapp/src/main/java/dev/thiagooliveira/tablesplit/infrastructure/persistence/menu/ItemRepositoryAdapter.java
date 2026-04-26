@@ -12,9 +12,12 @@ import org.springframework.stereotype.Component;
 public class ItemRepositoryAdapter implements ItemRepository {
 
   private final ItemJpaRepository itemJpaRepository;
+  private final ItemQuestionJpaRepository itemQuestionJpaRepository;
 
-  public ItemRepositoryAdapter(ItemJpaRepository itemJpaRepository) {
+  public ItemRepositoryAdapter(
+      ItemJpaRepository itemJpaRepository, ItemQuestionJpaRepository itemQuestionJpaRepository) {
     this.itemJpaRepository = itemJpaRepository;
+    this.itemQuestionJpaRepository = itemQuestionJpaRepository;
   }
 
   @Override
@@ -49,6 +52,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
                 var i = projection.item().toDomain();
                 i.setName(new java.util.HashMap<>());
                 i.setDescription(new java.util.HashMap<>());
+                i.setQuestions(new java.util.HashMap<>());
                 return i;
               });
       if (projection.nameTranslation() != null) {
@@ -58,6 +62,21 @@ public class ItemRepositoryAdapter implements ItemRepository {
         domain.getDescription().put(projection.language(), projection.descriptionTranslation());
       }
     }
+
+    if (!itemMap.isEmpty()) {
+      var questions =
+          this.itemQuestionJpaRepository.findByItemIdInAndLanguageIn(itemMap.keySet(), languages);
+      questions.forEach(
+          q -> {
+            var item = itemMap.get(q.getItem().getId());
+            if (item != null) {
+              item.getQuestions()
+                  .computeIfAbsent(q.getLanguage(), k -> new java.util.ArrayList<>())
+                  .add(q.toDomain());
+            }
+          });
+    }
+
     return new java.util.ArrayList<>(itemMap.values());
   }
 
