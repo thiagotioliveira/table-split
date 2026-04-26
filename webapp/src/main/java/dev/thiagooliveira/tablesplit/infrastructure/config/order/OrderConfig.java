@@ -16,14 +16,16 @@ public class OrderConfig {
       OrderRepository orderRepository,
       ItemRepository itemRepository,
       EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus) {
+      SyncTableStatus syncTableStatus,
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
     return new PlaceOrder(
         openTable,
         tableRepository,
         orderRepository,
         itemRepository,
         eventPublisher,
-        syncTableStatus);
+        syncTableStatus,
+        objectMapper);
   }
 
   @Bean

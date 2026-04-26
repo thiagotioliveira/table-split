@@ -126,7 +126,6 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
           "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200",
           "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
           "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1200");
-  private final Time time;
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
   private final CreateCategory createCategory;
@@ -144,7 +143,6 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final StaffRepository staffRepository;
 
   public DemoDataInitializerApplicationRunner(
-      Time time,
       TransactionalContext transactionalContext,
       CreateAccount createAccount,
       CreateCategory createCategory,
@@ -160,7 +158,6 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       org.springframework.context.ApplicationEventPublisher eventPublisher,
       CreateStaff createStaff,
       StaffRepository staffRepository) {
-    this.time = time;
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
     this.createCategory = createCategory;

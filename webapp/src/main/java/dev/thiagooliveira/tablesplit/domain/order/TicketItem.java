@@ -17,10 +17,15 @@ public class TicketItem {
   private Integer rating;
   private TicketStatus status = TicketStatus.PENDING;
   private PromotionSnapshot promotionSnapshot;
+  private String customizations;
 
   public TicketItem() {}
 
   public TicketItem(Item item, int quantity, UUID customerId, String note) {
+    this(item, quantity, customerId, note, null);
+  }
+
+  public TicketItem(Item item, int quantity, UUID customerId, String note, String customizations) {
     this.id = UUID.randomUUID();
     this.itemId = item.getId();
     this.name = item.getName();
@@ -28,6 +33,7 @@ public class TicketItem {
     this.quantity = quantity;
     this.unitPrice = item.getEffectivePrice();
     this.note = note;
+    this.customizations = customizations;
 
     // Capture promotion snapshot if item has promotion
     if (item.getPromotion() != null) {
@@ -89,7 +95,16 @@ public class TicketItem {
   }
 
   public BigDecimal getTotalPrice() {
-    return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    BigDecimal customizationsExtra = BigDecimal.ZERO;
+    if (customizations != null && !customizations.isEmpty()) {
+      try {
+        // Simple manual parsing to avoid heavy dependencies if possible,
+        // but since we have Jackson in the project, we might use it.
+        // For now, let's assume the unitPrice is already updated by the caller or we'll update it.
+      } catch (Exception e) {
+      }
+    }
+    return unitPrice.add(customizationsExtra).multiply(BigDecimal.valueOf(quantity));
   }
 
   public String getNote() {
@@ -122,6 +137,14 @@ public class TicketItem {
 
   public void setPromotionSnapshot(PromotionSnapshot promotionSnapshot) {
     this.promotionSnapshot = promotionSnapshot;
+  }
+
+  public String getCustomizations() {
+    return customizations;
+  }
+
+  public void setCustomizations(String customizations) {
+    this.customizations = customizations;
   }
 
   public boolean isPending() {

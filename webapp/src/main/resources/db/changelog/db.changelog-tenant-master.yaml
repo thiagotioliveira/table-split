@@ -935,3 +935,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260425-add-questions-to-items.yaml
   - include:
       file: db/changelog/changesets/20260426-refactor-item-questions-table.yaml
+  - include:
+      file: db/changelog/changesets/20260426-add-customizations-to-ticket-items.yaml

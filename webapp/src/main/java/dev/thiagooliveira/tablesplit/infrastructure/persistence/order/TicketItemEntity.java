@@ -47,6 +47,7 @@ public class TicketItemEntity {
   private BigDecimal discountValue;
 
   @Column private Integer rating;
+  @Column private String customizations;
 
   public TicketItemEntity() {}
 
@@ -61,6 +62,7 @@ public class TicketItemEntity {
     domain.setNote(this.note);
     domain.setRating(this.rating);
     domain.setStatus(this.status);
+    domain.setCustomizations(this.customizations);
 
     // Restore promotion snapshot if exists
     if (this.discountType != null) {
@@ -83,6 +85,7 @@ public class TicketItemEntity {
     entity.setNote(domain.getNote());
     entity.setRating(domain.getRating());
     entity.setStatus(domain.getStatus());
+    entity.setCustomizations(domain.getCustomizations());
 
     // Save promotion snapshot if exists
     if (domain.getPromotionSnapshot() != null) {
@@ -198,5 +201,13 @@ public class TicketItemEntity {
 
   public void setRating(Integer rating) {
     this.rating = rating;
+  }
+
+  public String getCustomizations() {
+    return customizations;
+  }
+
+  public void setCustomizations(String customizations) {
+    this.customizations = customizations;
   }
 }

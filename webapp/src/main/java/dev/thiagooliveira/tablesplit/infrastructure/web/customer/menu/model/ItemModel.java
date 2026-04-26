@@ -17,6 +17,7 @@ public class ItemModel {
   private final BigDecimal price;
   private PromotionInfo promotion;
   private final List<TagModel> tags;
+  private final List<QuestionModel> questions;
 
   public ItemModel(Item item, String symbol) {
     this.id = item.getId().toString();
@@ -45,6 +46,39 @@ public class ItemModel {
                     })
                 .toList()
             : List.of();
+    this.questions = unifyQuestions(item.getQuestions());
+  }
+
+  private List<QuestionModel> unifyQuestions(
+      Map<Language, List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>> questionsMap) {
+    if (questionsMap == null) return java.util.Collections.emptyList();
+    java.util.Map<java.util.UUID, QuestionModel> unified = new java.util.LinkedHashMap<>();
+    questionsMap.forEach(
+        (lang, list) -> {
+          list.forEach(
+              q -> {
+                var model = unified.computeIfAbsent(q.getId(), id -> new QuestionModel(q));
+                model.getTitle().put(lang.name().toUpperCase(), q.getTitle());
+                if (q.getOptions() != null) {
+                  q.getOptions()
+                      .forEach(
+                          opt -> {
+                            var optModel =
+                                model.getOptions().stream()
+                                    .filter(o -> o.getId().equals(opt.getId().toString()))
+                                    .findFirst()
+                                    .orElseGet(
+                                        () -> {
+                                          var o = new OptionModel(opt);
+                                          model.getOptions().add(o);
+                                          return o;
+                                        });
+                            optModel.getText().put(lang.name().toUpperCase(), opt.getText());
+                          });
+                }
+              });
+        });
+    return new java.util.ArrayList<>(unified.values());
   }
 
   private static Map<String, String> convertMap(Map<Language, String> map) {
@@ -83,6 +117,76 @@ public class ItemModel {
 
   public List<TagModel> getTags() {
     return tags;
+  }
+
+  public List<QuestionModel> getQuestions() {
+    return questions;
+  }
+
+  public static class QuestionModel {
+    private final String id;
+    private final Map<String, String> title;
+    private final String type;
+    private final int min;
+    private final int max;
+    private final List<OptionModel> options;
+
+    public QuestionModel(dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion q) {
+      this.id = q.getId().toString();
+      this.title = new java.util.HashMap<>();
+      this.type = q.getType().name();
+      this.min = q.getMinSelections();
+      this.max = q.getMaxSelections();
+      this.options = new java.util.ArrayList<>();
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public Map<String, String> getTitle() {
+      return title;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public int getMin() {
+      return min;
+    }
+
+    public int getMax() {
+      return max;
+    }
+
+    public List<OptionModel> getOptions() {
+      return options;
+    }
+  }
+
+  public static class OptionModel {
+    private final String id;
+    private final Map<String, String> text;
+    private final BigDecimal extraPrice;
+
+    public OptionModel(dev.thiagooliveira.tablesplit.domain.menu.ItemOption opt) {
+      this.id = opt.getId().toString();
+      this.text = new java.util.HashMap<>();
+      this.extraPrice = opt.getExtraPrice();
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public Map<String, String> getText() {
+      return text;
+    }
+
+    public BigDecimal getExtraPrice() {
+      return extraPrice;
+    }
   }
 
   public static class PromotionInfo {

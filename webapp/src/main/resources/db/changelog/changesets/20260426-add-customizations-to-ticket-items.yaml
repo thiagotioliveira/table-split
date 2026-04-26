@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260426-add-customizations-to-ticket-items
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: ticket_items
+            columns:
+              - column:
+                  name: customizations
+                  type: text
+                  remarks: "JSON snapshot of customer customizations (questions and selected options)"

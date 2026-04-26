@@ -360,7 +360,8 @@ public class CustomerTableController {
       String customerId,
       String customerName,
       java.time.ZonedDateTime createdAt,
-      Integer rating) {
+      Integer rating,
+      String customizations) {
     public static SimpleTicketItem fromDomain(
         dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
         String customerName,
@@ -377,7 +378,8 @@ public class CustomerTableController {
           item.getCustomerId().toString(),
           customerName,
           createdAt,
-          item.getRating());
+          item.getRating(),
+          item.getCustomizations());
     }
   }
 

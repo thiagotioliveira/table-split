@@ -22,6 +22,7 @@ public class PlaceOrder {
   private final ItemRepository itemRepository;
   private final EventPublisher eventPublisher;
   private final SyncTableStatus syncTableStatus;
+  private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
   public PlaceOrder(
       OpenTable openTable,
@@ -29,13 +30,15 @@ public class PlaceOrder {
       OrderRepository orderRepository,
       ItemRepository itemRepository,
       EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus) {
+      SyncTableStatus syncTableStatus,
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
     this.openTable = openTable;
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
     this.itemRepository = itemRepository;
     this.eventPublisher = eventPublisher;
     this.syncTableStatus = syncTableStatus;
+    this.objectMapper = objectMapper;
   }
 
   public Order execute(PlaceOrderRequest request) {
@@ -120,7 +123,19 @@ public class PlaceOrder {
           }
 
           TicketItem ticketItem =
-              new TicketItem(item, itemRequest.getQuantity(), customerId, itemRequest.getNote());
+              new TicketItem(
+                  item,
+                  itemRequest.getQuantity(),
+                  customerId,
+                  itemRequest.getNote(),
+                  itemRequest.getCustomizations());
+
+          // Handle extra prices from customizations
+          if (itemRequest.getCustomizations() != null
+              && !itemRequest.getCustomizations().isEmpty()) {
+            java.math.BigDecimal extra = calculateExtraPrice(itemRequest.getCustomizations());
+            ticketItem.setUnitPrice(ticketItem.getUnitPrice().add(extra));
+          }
 
           if (itemRequest.getPromotionId() != null) {
             ticketItem.setPromotionSnapshot(
@@ -166,5 +181,28 @@ public class PlaceOrder {
     tableRepository.save(table);
     eventPublisher.publishEvent(new TableCreatedEvent(table));
     return table;
+  }
+
+  private java.math.BigDecimal calculateExtraPrice(String customizationsJson) {
+    java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
+    try {
+      var root = objectMapper.readTree(customizationsJson);
+      if (root.isArray()) {
+        for (var question : root) {
+          var options = question.get("options");
+          if (options != null && options.isArray()) {
+            for (var option : options) {
+              var extraPrice = option.get("extraPrice");
+              if (extraPrice != null && !extraPrice.isNull()) {
+                extra = extra.add(new java.math.BigDecimal(extraPrice.asText()));
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      // Ignore errors in customizations parsing
+    }
+    return extra;
   }
 }

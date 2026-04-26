@@ -1455,6 +1455,132 @@
         .item-modal-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .item-modal-tag { font-size: 0.75rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--accent-light); color: var(--accent); font-weight: 500; }
         .item-modal-tag.popular { background: var(--primary-light); color: var(--primary); }
+
+        /* Item Customizations */
+        .item-customizations {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border);
+        }
+        .question-group {
+            margin-bottom: 2rem;
+        }
+        .question-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        .question-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+        .question-subtitle {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .question-badge {
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            background: var(--background);
+            color: var(--muted);
+        }
+        .question-badge.required {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .option-item:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .option-item.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        .option-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+        .option-text {
+            /*font-weight: 600;*/
+            font-size: 0.9375rem;
+        }
+        .option-price {
+            font-size: 0.8125rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .option-check {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .option-item.selected .option-check {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .option-check svg {
+            width: 0.875rem;
+            height: 0.875rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s;
+        }
+        .option-item.selected .option-check svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Multiple Choice Specific */
+        .option-item.multiple .option-check {
+            border-radius: 4px;
+        }
+
+        .error-message {
+            color: var(--destructive);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        .question-group.invalid .error-message {
+            display: block;
+        }
+        .question-group.invalid .option-item {
+            border-color: var(--destructive);
+        }
         .item-modal-footer { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--border); }
         .item-modal-footer-actions { display: flex; align-items: center; gap: 1rem; }
         .modal-qty-selector { display: flex; align-items: center; gap: 0.75rem; background: var(--background); padding: 0.5rem; border-radius: var(--radius); }
@@ -2484,6 +2610,7 @@
             </div>
             <p class="item-modal-desc" id="itemModalDesc" th:text="#{page.customer.menu.item.detail.desc}">Descrição</p>
             <div class="item-modal-tags" id="itemModalTags"></div>
+            <div id="itemQuestions" class="item-customizations" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}"></div>
         </div>
         <div class="item-modal-footer" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}">
             <div class="client-selector" th:if="${customerMenu.hasTable() and (showEntryModal == null or !showEntryModal)}" id="modalClientSelector">
@@ -2707,7 +2834,10 @@
         timeAgoHour: [[#{page.customer.menu.time.ago.hour}]],
         errorEntryTable: [[#{page.customer.menu.entry.error.fail}]],
         errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]],
-        badgeClient: [[#{page.customer.menu.badge.client}]]
+        badgeClient: [[#{page.customer.menu.badge.client}]],
+        customizationSingle: [[#{page.customer.menu.customization.single}]],
+        customizationMultiple: [[#{page.customer.menu.customization.multiple}]],
+        customizationError: [[#{page.customer.menu.customization.error}]]
     };
 
     const paymentMethods = {
@@ -2976,16 +3106,16 @@
         updateCartUI();
     }
     */
-    function removeFromCart(itemId) {
-        cart = cart.filter(c => String(c.id) !== String(itemId));
+    function removeFromCart(cartKey) {
+        cart = cart.filter(c => c.cartKey !== cartKey);
         updateCartUI();
     }
 
-    function updateQty(itemId, delta) {
-        const item = cart.find(c => String(c.id) === String(itemId));
+    function updateQty(cartKey, delta) {
+        const item = cart.find(c => c.cartKey === cartKey);
         if (item) {
             item.qty += delta;
-            if (item.qty <= 0) removeFromCart(itemId);
+            if (item.qty <= 0) removeFromCart(cartKey);
             else updateCartUI();
         }
     }
@@ -3004,14 +3134,25 @@
         }).format(value).replace(/\s/g, ' ');
     }
 
+    function renderCustomizationSnapshot(json) {
+        if (!json) return '';
+        try {
+            const data = typeof json === 'string' ? JSON.parse(json) : json;
+            const items = data.flatMap(q => q.options.map(o => o.text));
+            if (items.length === 0) return '';
+            return `<div class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">${items.join(', ')}</div>`;
+        } catch (e) {
+            return '';
+        }
+    }
+
     function updateCartUI() {
         const cartFloat = document.getElementById('cartFloat');
         if (!cartFloat) return;
 
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const subtotal = cart.reduce((sum, item) => {
-            const effectivePrice = item.promotion ? item.promotion.promotionalPrice : item.price;
-            return sum + (effectivePrice * item.qty);
+            return sum + (item.totalUnitPrice * item.qty);
         }, 0);
         const total = subtotal + (subtotal * SERVICE_FEE);
 
@@ -3053,19 +3194,17 @@
                     <div class="cart-item-image">${item.images && item.images[0] ? `<img src="${item.images[0].url}" alt="">` : ''}</div>
                     <div class="cart-item-info">
                       <div class="cart-item-name">${getItemText(item, 'name')}</div>
+                      ${renderCustomizationSnapshot(item.customizations)}
                       <div class="cart-item-price">
-                        ${item.promotion ? `
-                            <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">${formatPrice(item.price * item.qty)}</div>
-                            <div style="color: var(--green); font-weight: 700;">${formatPrice(item.promotion.promotionalPrice * item.qty)}</div>
-                        ` : formatPrice(item.price * item.qty)}
+                        <div style="color: var(--green); font-weight: 700;">${formatPrice(item.totalUnitPrice * item.qty)}</div>
                       </div>
                     </div>
                     <div class="cart-item-actions">
-                      <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                      <button class="cart-item-remove" onclick="removeFromCart('${item.cartKey}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                       <div class="cart-item-qty">
-                        <button onclick="updateQty('${item.id}', -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                        <button onclick="updateQty('${item.cartKey}', -1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
                         <span>${item.qty}</span>
-                        <button onclick="updateQty('${item.id}', 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                        <button onclick="updateQty('${item.cartKey}', 1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                       </div>
                     </div>
                   </div>`;
@@ -3105,7 +3244,8 @@
                     note: '',
                     promotionId: item.promotion ? item.promotion.promotionId : null,
                     discountType: item.promotion ? item.promotion.discountType : null,
-                    discountValue: item.promotion ? item.promotion.discountValue : null
+                    discountValue: item.promotion ? item.promotion.discountValue : null,
+                    customizations: item.customizations ? JSON.stringify(item.customizations) : null
                 }))
             }]
         };
@@ -3178,6 +3318,7 @@
               <div class="order-item-header">
                 <div class="order-item-info">
                   <h4>${getItemText(order, 'name')}</h4>
+                  ${renderCustomizationSnapshot(order.customizations)}
                   <p>
                     <span class="order-time" style="font-weight: 500; color: var(--foreground);">${order.time ? formatHour(order.time) : ''}</span>
                     <span style="margin: 0 4px; opacity: 0.5;">•</span>
@@ -3553,6 +3694,7 @@
                 <div class="person-item ${String(o.status).toLowerCase() === 'cancelled' ? 'cancelled' : ''}">
                     <span class="person-item-name">
                         <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
+                        ${renderCustomizationSnapshot(o.customizations)}
                     </span>
                     <span class="order-status ${String(o.status).toLowerCase()}">
                         ${statusIcons[String(o.status).toLowerCase()] || ''}${o.statusLabel || ''}
@@ -3581,6 +3723,7 @@
                 <div class="person-item ${String(o.status).toLowerCase() === 'cancelled' ? 'cancelled' : ''}">
                     <span class="person-item-name">
                         <span class="person-item-qty">${o.quantity}x</span> ${getItemText(o, 'name')}
+                        ${renderCustomizationSnapshot(o.customizations)}
                     </span>
                     <span class="order-status ${String(o.status).toLowerCase()}">
                         ${statusIcons[String(o.status).toLowerCase()] || ''}${o.statusLabel || ''}
@@ -3772,6 +3915,10 @@
 
         document.getElementById('itemModalOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
+
+        if (hasTable && !showEntryModal) {
+            renderItemQuestions(item);
+        }
     }
 
     function closeItemModal() {
@@ -3796,6 +3943,97 @@
         goToSlide((currentSlide - 1 + currentModalItem.images.length) % currentModalItem.images.length);
     }
 
+    function renderItemQuestions(item) {
+        const container = document.getElementById('itemQuestions');
+        if (!container) return;
+        if (!item.questions || item.questions.length === 0) {
+            container.innerHTML = '';
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'block';
+        const lang = currentLang.toUpperCase();
+        
+        container.innerHTML = item.questions.map(q => {
+            const title = q.title[lang] || '';
+            const isRequired = q.min > 0;
+            const badgeText = q.type === 'SINGLE' ? i18n.customizationSingle : i18n.customizationMultiple;
+            
+            return `
+                <div class="question-group" data-question-id="${q.id}" data-type="${q.type}" data-min="${q.min}" data-max="${q.max}" data-title="${title}">
+                    <div class="question-header">
+                        <div class="question-title">${title}</div>
+                        <div class="question-subtitle">
+                            <span class="question-badge ${isRequired ? 'required' : ''}">${badgeText}</span>
+                            ${isRequired ? '<span style="color: var(--destructive); font-weight: 700;">*</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="options-list">
+                        ${q.options.map(opt => {
+                            const optText = opt.text[lang] || '';
+                            const extraPriceText = opt.extraPrice > 0 ? `+ ${formatPrice(opt.extraPrice)}` : '';
+                            return `
+                                <div class="option-item ${q.type.toLowerCase()}" 
+                                     onclick="toggleOption(this)" 
+                                     data-option-id="${opt.id}" 
+                                     data-text="${optText}" 
+                                     data-extra-price="${opt.extraPrice}">
+                                    <div class="option-info">
+                                        <div class="option-text">${optText}</div>
+                                        ${extraPriceText ? `<div class="option-price">${extraPriceText}</div>` : ''}
+                                    </div>
+                                    <div class="option-check">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="error-message">${i18n.customizationError}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function toggleOption(el) {
+        const group = el.closest('.question-group');
+        const type = group.dataset.type;
+        const max = parseInt(group.dataset.max || '1');
+
+        if (type === 'SINGLE') {
+            const alreadySelected = el.classList.contains('selected');
+            group.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
+            if (!alreadySelected) {
+                el.classList.add('selected');
+            }
+        } else {
+            const selectedCount = group.querySelectorAll('.option-item.selected').length;
+            if (!el.classList.contains('selected') && selectedCount >= max && max > 0) {
+                // Shake or show error?
+                return;
+            }
+            el.classList.toggle('selected');
+        }
+        
+        group.classList.remove('invalid');
+        updateModalPrice();
+    }
+
+    function updateModalPrice() {
+        if (!currentModalItem) return;
+        
+        let extra = 0;
+        document.querySelectorAll('.option-item.selected').forEach(opt => {
+            extra += parseFloat(opt.dataset.extraPrice || '0');
+        });
+
+        const basePrice = currentModalItem.promotion ? currentModalItem.promotion.promotionalPrice : currentModalItem.price;
+        const totalPrice = (basePrice + extra) * modalQty;
+        
+        document.getElementById('modalTotalPrice').textContent = formatPrice(totalPrice);
+    }
+
     function increaseModalQty() { modalQty++; updateModalQty(); }
     function decreaseModalQty() { if (modalQty > 1) { modalQty--; updateModalQty(); } }
     function updateModalQty() {
@@ -3812,9 +4050,61 @@
 
     function addFromModal() {
         if (!currentModalItem) return;
-        // Key by item id + client id so same item for different clients are separate entries
-        const cartKey = currentModalItem.id + '_' + selectedClient.id;
+
+        // Collect selected options
+        const customizations = [];
+        const questionGroups = document.querySelectorAll('.question-group');
+        let allRequiredSatisfied = true;
+
+        questionGroups.forEach(group => {
+            const questionId = group.dataset.questionId;
+            const title = group.dataset.title;
+            const requiredCount = parseInt(group.dataset.min || '0');
+            const selectedOptions = [];
+
+            group.querySelectorAll('.option-item.selected').forEach(opt => {
+                selectedOptions.push({
+                    optionId: opt.dataset.optionId,
+                    text: opt.dataset.text,
+                    extraPrice: parseFloat(opt.dataset.extraPrice || '0')
+                });
+            });
+
+            if (selectedOptions.length < requiredCount) {
+                group.classList.add('invalid');
+                allRequiredSatisfied = false;
+            } else {
+                group.classList.remove('invalid');
+                if (selectedOptions.length > 0) {
+                    customizations.push({
+                        questionId,
+                        title,
+                        options: selectedOptions
+                    });
+                }
+            }
+        });
+
+        if (!allRequiredSatisfied) {
+            // Scroll to the first invalid group
+            const firstInvalid = document.querySelector('.question-group.invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        // Key by item id + client id + customizations so variations are separate entries
+        const customizationKey = customizations.length > 0 ? JSON.stringify(customizations) : '';
+        const cartKey = currentModalItem.id + '_' + selectedClient.id + '_' + customizationKey;
+        
         const existing = cart.find(c => c.cartKey === cartKey);
+        
+        // Calculate extra price from customizations
+        const extraPrice = customizations.reduce((acc, q) => {
+            return acc + q.options.reduce((oAcc, o) => oAcc + o.extraPrice, 0);
+        }, 0);
+
         if (existing) {
             existing.qty += modalQty;
         } else {
@@ -3823,7 +4113,9 @@
                 qty: modalQty,
                 cartKey,
                 clientId: selectedClient.id,
-                clientName: selectedClient.name
+                clientName: selectedClient.name,
+                customizations: customizationKey ? customizations : null,
+                totalUnitPrice: (currentModalItem.promotion ? currentModalItem.promotion.promotionalPrice : currentModalItem.price) + extraPrice
             });
         }
         updateCartUI();

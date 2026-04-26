@@ -11,6 +11,7 @@ public class TicketItemRequest {
   private java.math.BigDecimal originalPrice;
   private String discountType;
   private java.math.BigDecimal discountValue;
+  private String customizations;
 
   public TicketItemRequest() {}
 
@@ -87,5 +88,13 @@ public class TicketItemRequest {
 
   public void setDiscountValue(java.math.BigDecimal discountValue) {
     this.discountValue = discountValue;
+  }
+
+  public String getCustomizations() {
+    return customizations;
+  }
+
+  public void setCustomizations(String customizations) {
+    this.customizations = customizations;
   }
 }

@@ -44,7 +44,8 @@ class PlaceOrderTest {
             orderRepository,
             itemRepository,
             eventPublisher,
-            syncTableStatus);
+            syncTableStatus,
+            new com.fasterxml.jackson.databind.ObjectMapper());
   }
 
   @Test

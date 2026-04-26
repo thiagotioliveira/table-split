@@ -22,6 +22,7 @@ public class TicketItemModel {
   private final ZonedDateTime createdAt;
 
   private final PromotionSnapshotModel promotionSnapshot;
+  private final String customizations;
 
   public TicketItemModel(TicketItem item, String customerName, ZonedDateTime createdAt) {
     this.id = item.getId().toString();
@@ -41,6 +42,7 @@ public class TicketItemModel {
         item.getPromotionSnapshot() != null
             ? new PromotionSnapshotModel(item.getPromotionSnapshot())
             : null;
+    this.customizations = item.getCustomizations();
   }
 
   public String getId() {
@@ -105,6 +107,10 @@ public class TicketItemModel {
 
   public PromotionSnapshotModel getPromotionSnapshot() {
     return promotionSnapshot;
+  }
+
+  public String getCustomizations() {
+    return customizations;
   }
 
   public static class PromotionSnapshotModel {
