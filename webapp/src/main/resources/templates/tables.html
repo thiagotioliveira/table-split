@@ -3301,6 +3301,7 @@
                                             <span class="order-qty" th:text="${item.quantity}">1</span>
                                             <div>
                                                 <span class="order-item-name" th:text="${item.name}">Item</span>
+                                                <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
                                                 <span class="order-item-note" th:if="${item.note != null && !item.note.empty}" th:text="${item.note}">Nota</span>
                                             </div>
                                         </div>
@@ -4049,6 +4050,7 @@
                             <span class="order-qty">${item.quantity}</span>
                             <div>
                                 <span class="order-item-name">${item.name}</span>
+                                ${item.customizationSummary ? `<div class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;">${item.customizationSummary}</div>` : ''}
                                 ${item.note ? `<span class="order-item-note">${item.note}</span>` : ''}
                             </div>
                         </div>
@@ -4359,7 +4361,7 @@
                     <div>
                         <div style="font-weight: 600;" th:text="${client.key.name}">Cliente</div>
                         <div style="font-size: 0.8rem; color: var(--muted);" 
-                             th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name ], ', ')}">Itens</div>
+                             th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name + (customizationSummary != null ? ' (' + customizationSummary + ')' : '') ], ', ')}">Itens</div>
                     </div>
                     <div style="font-weight: 600;" 
                          th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
