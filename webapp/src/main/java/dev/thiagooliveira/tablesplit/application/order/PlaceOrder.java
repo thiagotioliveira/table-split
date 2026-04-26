@@ -130,12 +130,7 @@ public class PlaceOrder {
                   itemRequest.getNote(),
                   itemRequest.getCustomizations());
 
-          // Handle extra prices from customizations
-          if (itemRequest.getCustomizations() != null
-              && !itemRequest.getCustomizations().isEmpty()) {
-            java.math.BigDecimal extra = calculateExtraPrice(itemRequest.getCustomizations());
-            ticketItem.setUnitPrice(ticketItem.getUnitPrice().add(extra));
-          }
+          java.math.BigDecimal finalUnitPrice = item.getPrice();
 
           if (itemRequest.getPromotionId() != null) {
             ticketItem.setPromotionSnapshot(
@@ -153,15 +148,24 @@ public class PlaceOrder {
                         .multiply(itemRequest.getDiscountValue())
                         .divide(
                             java.math.BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
-                ticketItem.setUnitPrice(originalPrice.subtract(discount));
+                finalUnitPrice = originalPrice.subtract(discount);
               } else if (DiscountType.FIXED_VALUE.name().equals(itemRequest.getDiscountType())) {
-                ticketItem.setUnitPrice(
+                finalUnitPrice =
                     originalPrice
                         .subtract(itemRequest.getDiscountValue())
-                        .max(java.math.BigDecimal.ZERO));
+                        .max(java.math.BigDecimal.ZERO);
               }
             }
           }
+
+          // Handle extra prices from customizations
+          if (itemRequest.getCustomizations() != null
+              && !itemRequest.getCustomizations().isEmpty()) {
+            java.math.BigDecimal extra = calculateExtraPrice(itemRequest.getCustomizations());
+            finalUnitPrice = finalUnitPrice.add(extra);
+          }
+
+          ticketItem.setUnitPrice(finalUnitPrice);
 
           ticket.getItems().add(ticketItem);
         }

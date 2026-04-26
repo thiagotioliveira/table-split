@@ -14,7 +14,10 @@ public record ItemModel(
     List<QuestionModel> questions) {
 
   public record PromotionModel(
-      UUID promotionId, BigDecimal promotionalPrice, String discountType, BigDecimal discountValue) {}
+      UUID promotionId,
+      BigDecimal promotionalPrice,
+      String discountType,
+      BigDecimal discountValue) {}
 
   public record QuestionModel(
       UUID id,
