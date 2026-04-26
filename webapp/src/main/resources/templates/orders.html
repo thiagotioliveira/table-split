@@ -1603,19 +1603,27 @@
 
     function updateCounts(status, delta) {
         // Update column badge
-        const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
-            const h3 = c.querySelector('h3');
-            return h3 && h3.textContent.trim().includes('Novos');
-        });
+        const column = document.querySelector(`.kanban-column[data-status="${status}"]`);
         const columnBadge = column?.querySelector('.kanban-count');
-        if (columnBadge) columnBadge.textContent = parseInt(columnBadge.textContent) + delta;
+        if (columnBadge) {
+            const currentCount = parseInt(columnBadge.textContent) || 0;
+            columnBadge.textContent = currentCount + delta;
+        }
 
         // Update top filter badges
         const allBadge = document.querySelector('button[onclick*="\'all\'"] .filter-badge');
-        if (allBadge) allBadge.textContent = parseInt(allBadge.textContent) + delta;
+        if (allBadge) {
+            const currentAll = parseInt(allBadge.textContent) || 0;
+            allBadge.textContent = currentAll + delta;
+        }
 
-        const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
-        if (newBadge) newBadge.textContent = parseInt(newBadge.textContent) + delta;
+        if (status === 'PENDING') {
+            const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
+            if (newBadge) {
+                const currentNew = parseInt(newBadge.textContent) || 0;
+                newBadge.textContent = currentNew + delta;
+            }
+        }
     }
 
     function toIsoWithTimeZone(date) {
