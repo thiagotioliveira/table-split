@@ -213,7 +213,9 @@ public class TicketEventListener {
                       item.getStatus().getCssClass(),
                       item.getRating(),
                       ticket.getCreatedAt(),
-                      getItemPromotionInfo(item));
+                      getItemPromotionInfo(item),
+                      item.getCustomizations(),
+                      TicketItemModel.getCustomizationSummary(item.getCustomizations()));
                 })
             .toList();
 

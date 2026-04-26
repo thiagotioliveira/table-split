@@ -4057,14 +4057,12 @@
         let allRequiredSatisfied = true;
 
         questionGroups.forEach(group => {
-            const questionId = group.dataset.questionId;
             const title = group.dataset.title;
             const requiredCount = parseInt(group.dataset.min || '0');
             const selectedOptions = [];
 
             group.querySelectorAll('.option-item.selected').forEach(opt => {
                 selectedOptions.push({
-                    optionId: opt.dataset.optionId,
                     text: opt.dataset.text,
                     extraPrice: parseFloat(opt.dataset.extraPrice || '0')
                 });
@@ -4077,7 +4075,6 @@
                 group.classList.remove('invalid');
                 if (selectedOptions.length > 0) {
                     customizations.push({
-                        questionId,
                         title,
                         options: selectedOptions
                     });

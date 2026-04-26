@@ -18,6 +18,8 @@ public class TicketItemModel {
   private final String statusClass;
   private final Integer rating;
   private final PromotionInfo promotionSnapshot;
+  private final String customizations;
+  private final String customizationSummary;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private final ZonedDateTime createdAt;
@@ -47,6 +49,8 @@ public class TicketItemModel {
         statusClass,
         null,
         createdAt,
+        null,
+        null,
         null);
   }
 
@@ -64,6 +68,73 @@ public class TicketItemModel {
       Integer rating,
       ZonedDateTime createdAt,
       PromotionInfo promotionSnapshot) {
+    this(
+        id,
+        customerId,
+        customerName,
+        name,
+        quantity,
+        unitPrice,
+        totalPrice,
+        note,
+        status,
+        statusClass,
+        rating,
+        createdAt,
+        promotionSnapshot,
+        null,
+        null);
+  }
+
+  public TicketItemModel(
+      UUID id,
+      UUID customerId,
+      String customerName,
+      String name,
+      int quantity,
+      BigDecimal unitPrice,
+      BigDecimal totalPrice,
+      String note,
+      String status,
+      String statusClass,
+      Integer rating,
+      ZonedDateTime createdAt,
+      PromotionInfo promotionSnapshot,
+      String customizations) {
+    this(
+        id,
+        customerId,
+        customerName,
+        name,
+        quantity,
+        unitPrice,
+        totalPrice,
+        note,
+        status,
+        statusClass,
+        rating,
+        createdAt,
+        promotionSnapshot,
+        customizations,
+        formatCustomizations(customizations));
+  }
+
+  public TicketItemModel(
+      UUID id,
+      UUID customerId,
+      String customerName,
+      String name,
+      int quantity,
+      BigDecimal unitPrice,
+      BigDecimal totalPrice,
+      String note,
+      String status,
+      String statusClass,
+      Integer rating,
+      ZonedDateTime createdAt,
+      PromotionInfo promotionSnapshot,
+      String customizations,
+      String customizationSummary) {
     this.id = id;
     this.customerId = customerId;
     this.customerName = customerName;
@@ -77,6 +148,8 @@ public class TicketItemModel {
     this.rating = rating;
     this.createdAt = createdAt;
     this.promotionSnapshot = promotionSnapshot;
+    this.customizations = customizations;
+    this.customizationSummary = customizationSummary;
   }
 
   public static TicketItemModel fromDomain(
@@ -111,7 +184,40 @@ public class TicketItemModel {
         item.getStatus().getCssClass(),
         item.getRating(),
         createdAt,
-        promotionInfo);
+        promotionInfo,
+        item.getCustomizations(),
+        getCustomizationSummary(item.getCustomizations()));
+  }
+
+  public static String getCustomizationSummary(String json) {
+    return formatCustomizations(json);
+  }
+
+  private static String formatCustomizations(String json) {
+    if (json == null || json.isEmpty()) return null;
+    try {
+      var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+      var root = mapper.readTree(json);
+      if (root.isArray()) {
+        java.util.List<String> questions = new java.util.ArrayList<>();
+        for (var q : root) {
+          String title = q.has("title") ? q.get("title").asText() : "";
+          var optionsNode = q.get("options");
+          if (optionsNode != null && optionsNode.isArray()) {
+            java.util.List<String> options = new java.util.ArrayList<>();
+            for (var o : optionsNode) {
+              options.add(o.get("text").asText());
+            }
+            String optionsText = String.join(", ", options);
+            questions.add(title.isEmpty() ? optionsText : title + " " + optionsText);
+          }
+        }
+        return String.join(" | ", questions);
+      }
+    } catch (Exception e) {
+      return null;
+    }
+    return null;
   }
 
   public UUID getId() {
@@ -164,6 +270,14 @@ public class TicketItemModel {
 
   public PromotionInfo getPromotionSnapshot() {
     return promotionSnapshot;
+  }
+
+  public String getCustomizations() {
+    return customizations;
+  }
+
+  public String getCustomizationSummary() {
+    return customizationSummary;
   }
 
   public record PromotionInfo(

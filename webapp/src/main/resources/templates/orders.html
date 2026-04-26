@@ -932,9 +932,11 @@
                             <div class="order-items">
                                 <div th:each="item : ${ticket.items}" class="order-item">
                                     <span class="order-item-qty" th:text="${item.quantity + 'x'}">1x</span>
-                                    <span class="order-item-name" th:text="${item.name}">Item Name</span>
-                                    <span th:class="|item-status-badge ${item.statusClass}|" th:text="${item.status}" th:if="${false}">Status</span>
-                                    <p th:if="${false && item.note != null && !item.note.isEmpty()}" class="order-item-note" th:text="${item.note}">Note</p>
+                                    <div style="flex: 1;">
+                                        <div class="order-item-name" th:text="${item.name}">Item Name</div>
+                                        <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
+                                        <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.note}">Note</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="order-total" th:if="${false}">
@@ -1373,18 +1375,35 @@
                         <span class="order-detail-item-qty">${item.quantity}x</span>
                         <span class="order-detail-item-name">${item.name}</span>
                     </div>
-                    ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                    <div style="margin-left: 2rem;">
+                        ${renderCustomizationSnapshot(item.customizations)}
+                        ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                    </div>
                 </div>
                 <div class="order-detail-item-right" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
-                    <span class="order-detail-item-price">${formatCurrency(item.totalPrice)}</span>`+
-                    //<span class="item-status-badge ${item.statusClass}">${item.status}</span>
-                `</div>
+                    <span class="order-detail-item-price">${formatCurrency(item.totalPrice)}</span>
+                </div>
             </div>
         `).join('');
     }
 
     function formatCurrency(value) {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: currencyCode }).format(value);
+    }
+
+    function renderCustomizationSnapshot(json) {
+        if (!json) return '';
+        try {
+            const data = typeof json === 'string' ? JSON.parse(json) : json;
+            const items = data.map(q => {
+                const optionsText = q.options.map(o => o.text).join(', ');
+                return q.title ? `${q.title} ${optionsText}` : optionsText;
+            });
+            if (items.length === 0) return '';
+            return `<div class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;">${items.join(' | ')}</div>`;
+        } catch (e) {
+            return '';
+        }
     }
 
 
@@ -1535,9 +1554,11 @@
         const itemsHtml = ticket.items.map(item => `
             <div class="order-item">
                 <span class="order-item-qty">${item.quantity}x</span>
-                <span class="order-item-name">${item.name}</span>`+
-                //<span class="item-status-badge ${item.statusClass}">${item.status}</span>
-                `${item.note ? `<p class="order-item-note">${item.note}</p>` : ''}
+                <div style="flex: 1;">
+                    <div class="order-item-name">${item.name}</div>
+                    ${renderCustomizationSnapshot(item.customizations)}
+                    ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                </div>
             </div>
         `).join('');
 
