@@ -39,6 +39,9 @@ public class RegisterController {
   private final CreateAccount createAccount;
   private final boolean registerEnabled;
 
+  @Value("${app.version}")
+  private String appVersion;
+
   public RegisterController(
       AuthenticationManager authenticationManager,
       PasswordEncoder passwordEncoder,
@@ -80,6 +83,11 @@ public class RegisterController {
   @ModelAttribute("averagePriceCodes")
   public AveragePrice[] averagePriceCodes() {
     return AveragePrice.values();
+  }
+
+  @ModelAttribute("appVersion")
+  public String appVersion() {
+    return appVersion;
   }
 
   @GetMapping

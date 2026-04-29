@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.web;
 import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantFilter;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
+import jakarta.servlet.DispatcherType;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,6 +128,8 @@ public class SecurityConfig {
                       "/api/print-agent/**",
                       "/api/notifications/sse/subscribe/**",
                       "/api/notifications/push/public-key")
+                  .permitAll()
+                  .dispatcherTypeMatchers(DispatcherType.ERROR)
                   .permitAll();
 
               if (env.acceptsProfiles(Profiles.of("h2"))) {

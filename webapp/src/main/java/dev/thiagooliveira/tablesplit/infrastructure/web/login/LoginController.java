@@ -18,8 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping
 public class LoginController {
 
+  @org.springframework.beans.factory.annotation.Value("${app.version}")
+  private String appVersion;
+
+  @org.springframework.web.bind.annotation.ModelAttribute("appVersion")
+  public String appVersion() {
+    return appVersion;
+  }
+
   @GetMapping("/login")
   public String login(Authentication auth, HttpServletRequest request, Model model) {
+    request.getSession(true);
+
     if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
       return "redirect:/dashboard";
     }
@@ -42,7 +52,8 @@ public class LoginController {
   }
 
   @GetMapping("/forgot-password")
-  public String forgotPassword() {
+  public String forgotPassword(HttpServletRequest request, Model model) {
+    request.getSession(true);
     return "forgot-password";
   }
 }

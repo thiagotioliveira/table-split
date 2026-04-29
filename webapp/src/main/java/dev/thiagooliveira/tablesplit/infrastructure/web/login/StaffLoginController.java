@@ -18,8 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login-staff")
 public class StaffLoginController {
 
+  @org.springframework.beans.factory.annotation.Value("${app.version}")
+  private String appVersion;
+
+  @org.springframework.web.bind.annotation.ModelAttribute("appVersion")
+  public String appVersion() {
+    return appVersion;
+  }
+
   @GetMapping
   public String login(Authentication auth, HttpServletRequest request, Model model) {
+    request.getSession(true);
+
     if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
       return "redirect:/dashboard";
     }
