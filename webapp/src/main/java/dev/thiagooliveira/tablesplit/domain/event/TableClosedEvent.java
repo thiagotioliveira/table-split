@@ -11,7 +11,7 @@ public class TableClosedEvent implements DomainEvent {
   private final UUID orderId;
 
   public TableClosedEvent(Order order, Table table) {
-    this.accountId = null;
+    this.accountId = order.getAccountId();
     this.restaurantId = order.getRestaurantId();
     this.tableId = table.getId();
     this.orderId = order.getId();

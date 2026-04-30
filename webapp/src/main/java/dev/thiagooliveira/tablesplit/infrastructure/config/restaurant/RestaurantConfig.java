@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.restaurant.*;
 import org.springframework.context.annotation.Bean;
@@ -15,15 +14,13 @@ public class RestaurantConfig {
   }
 
   @Bean
-  public UpdateRestaurant updateRestaurant(
-      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
-    return new UpdateRestaurant(eventPublisher, restaurantRepository);
+  public UpdateRestaurant updateRestaurant(RestaurantRepository restaurantRepository) {
+    return new UpdateRestaurant(restaurantRepository);
   }
 
   @Bean
-  public CreateRestaurant createRestaurant(
-      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
-    return new CreateRestaurant(eventPublisher, restaurantRepository);
+  public CreateRestaurant createRestaurant(RestaurantRepository restaurantRepository) {
+    return new CreateRestaurant(restaurantRepository);
   }
 
   @Bean

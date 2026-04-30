@@ -39,6 +39,8 @@ public class MenuLanguageListener {
     String tenantId = TenantContext.generateTenantIdentifier(restaurantId);
     String originalTenant = TenantContext.getCurrentTenant();
     TenantContext.setCurrentTenant(tenantId);
+    dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.setAccountId(
+        restaurantId, event.getAccountId());
 
     try {
       this.tenantOperationService.runInNewTransaction(
@@ -103,6 +105,7 @@ public class MenuLanguageListener {
           e);
       throw e;
     } finally {
+      dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.clear();
       if (originalTenant != null) {
         TenantContext.setCurrentTenant(originalTenant);
       } else {

@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.account;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.GetUser;
 import dev.thiagooliveira.tablesplit.application.account.UpdatePassword;
 import dev.thiagooliveira.tablesplit.application.account.UpdateUser;
@@ -17,13 +16,12 @@ public class UserConfig {
   }
 
   @Bean
-  public UpdateUser updateUser(EventPublisher eventPublisher, UserRepository userRepository) {
-    return new UpdateUser(eventPublisher, userRepository);
+  public UpdateUser updateUser(UserRepository userRepository) {
+    return new UpdateUser(userRepository);
   }
 
   @Bean
-  public UpdatePassword updatePassword(
-      EventPublisher eventPublisher, UserRepository userRepository) {
-    return new UpdatePassword(eventPublisher, userRepository);
+  public UpdatePassword updatePassword(UserRepository userRepository) {
+    return new UpdatePassword(userRepository);
   }
 }

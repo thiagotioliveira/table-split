@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
@@ -21,18 +21,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CreateTableTest {
 
   @Mock private TableRepository tableRepository;
-  @Mock private EventPublisher eventPublisher;
   @Mock private PlanLimitValidator planLimitValidator;
 
   private CreateTable createTable;
 
   @BeforeEach
   void setUp() {
-    createTable = new CreateTable(tableRepository, eventPublisher, planLimitValidator);
+    createTable = new CreateTable(tableRepository, planLimitValidator);
   }
 
   @Test
   void shouldCreateTableSuccessfully() {
+    UUID accountId = UUID.randomUUID();
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
 
@@ -41,11 +41,11 @@ class CreateTableTest {
     when(tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, cod))
         .thenReturn(Optional.empty());
 
-    createTable.execute(restaurantId, cod);
+    createTable.execute(accountId, restaurantId, cod);
 
     ArgumentCaptor<Table> tableCaptor = ArgumentCaptor.forClass(Table.class);
     verify(tableRepository).save(tableCaptor.capture());
-    verify(planLimitValidator).validateByRestaurantId(eq(restaurantId), any(), eq(5L));
+    verify(planLimitValidator).validate(eq(accountId), eq(PlanLimitType.TABLES), eq(5L));
 
     Table savedTable = tableCaptor.getValue();
     assertEquals(cod, savedTable.getCod());
@@ -55,6 +55,7 @@ class CreateTableTest {
 
   @Test
   void shouldThrowExceptionWhenTableAlreadyExists() {
+    UUID accountId = UUID.randomUUID();
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
 
@@ -64,26 +65,29 @@ class CreateTableTest {
     when(tableRepository.findByRestaurantIdAndCod(restaurantId, cod))
         .thenReturn(Optional.of(existingTable));
 
-    assertThrows(TableAlreadyExists.class, () -> createTable.execute(restaurantId, cod));
+    assertThrows(TableAlreadyExists.class, () -> createTable.execute(accountId, restaurantId, cod));
     verify(tableRepository, never()).save(any());
   }
 
   @Test
   void shouldThrowExceptionWhenLimitReached() {
+    UUID accountId = UUID.randomUUID();
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
 
     when(tableRepository.count(restaurantId)).thenReturn(20L);
     doThrow(new PlanLimitExceededException("error.plan.limit.tables"))
         .when(planLimitValidator)
-        .validateByRestaurantId(eq(restaurantId), any(), eq(20L));
+        .validate(eq(accountId), eq(PlanLimitType.TABLES), eq(20L));
 
-    assertThrows(PlanLimitExceededException.class, () -> createTable.execute(restaurantId, cod));
+    assertThrows(
+        PlanLimitExceededException.class, () -> createTable.execute(accountId, restaurantId, cod));
     verify(tableRepository, never()).save(any());
   }
 
   @Test
   void shouldResurrectTableWhenUnderLimit() {
+    UUID accountId = UUID.randomUUID();
     UUID restaurantId = UUID.randomUUID();
     String cod = "01";
     Table deletedTable = new Table(UUID.randomUUID(), restaurantId, cod);
@@ -94,24 +98,10 @@ class CreateTableTest {
     when(tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, cod))
         .thenReturn(Optional.of(deletedTable));
 
-    createTable.execute(restaurantId, cod);
+    createTable.execute(accountId, restaurantId, cod);
 
     assertFalse(deletedTable.isDeleted());
     verify(tableRepository).save(deletedTable);
-    verify(planLimitValidator).validateByRestaurantId(eq(restaurantId), any(), eq(5L));
-  }
-
-  @Test
-  void shouldNotResurrectTableWhenLimitReached() {
-    UUID restaurantId = UUID.randomUUID();
-    String cod = "01";
-
-    when(tableRepository.count(restaurantId)).thenReturn(20L);
-    doThrow(new PlanLimitExceededException("error.plan.limit.tables"))
-        .when(planLimitValidator)
-        .validateByRestaurantId(eq(restaurantId), any(), eq(20L));
-
-    assertThrows(PlanLimitExceededException.class, () -> createTable.execute(restaurantId, cod));
-    verify(tableRepository, never()).findByRestaurantIdAndCodIncludingDeleted(any(), any());
+    verify(planLimitValidator).validate(eq(accountId), eq(PlanLimitType.TABLES), eq(5L));
   }
 }

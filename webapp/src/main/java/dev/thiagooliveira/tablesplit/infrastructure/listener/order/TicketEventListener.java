@@ -50,8 +50,7 @@ public class TicketEventListener {
     this.messageSource = messageSource;
   }
 
-  @org.springframework.transaction.event.TransactionalEventListener(
-      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
+  @EventListener
   public void handleTicketCreated(TicketCreatedEvent event) {
     logger.debug("Handling TicketCreatedEvent for restaurant: {}", event.getRestaurantId());
     TicketModel model =
@@ -74,8 +73,7 @@ public class TicketEventListener {
     }
   }
 
-  @org.springframework.transaction.event.TransactionalEventListener(
-      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
+  @EventListener
   public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
     logger.debug(
         "Handling TicketStatusChangedEvent for restaurant: {}. New status: {}",
@@ -88,8 +86,7 @@ public class TicketEventListener {
             "ticketId", event.getTicketId().toString(), "status", event.getNewStatus()));
   }
 
-  @org.springframework.transaction.event.TransactionalEventListener(
-      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
+  @EventListener
   public void handleTicketItemStatusChanged(TicketItemStatusChangedEvent event) {
     logger.debug(
         "Handling TicketItemStatusChangedEvent for restaurant: {}. Item: {}, New status: {}",
@@ -116,6 +113,7 @@ public class TicketEventListener {
     long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();
     WaiterCalledEvent eventWithData =
         new WaiterCalledEvent(
+            event.getAccountId(),
             event.getRestaurantId(),
             event.getTableCod(),
             count,
@@ -131,13 +129,12 @@ public class TicketEventListener {
     long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();
     dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent eventWithCount =
         new dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent(
-            event.getRestaurantId(), event.getCallId(), count);
+            event.getAccountId(), event.getRestaurantId(), event.getCallId(), count);
 
     broadcast(event.getRestaurantId(), "WAITER_CALL_DISMISSED", eventWithCount);
   }
 
-  @org.springframework.transaction.event.TransactionalEventListener(
-      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
+  @EventListener
   public void handleTableStatusChanged(TableStatusChangedEvent event) {
     logger.debug("Handling TableStatusChangedEvent for restaurant: {}", event.getRestaurantId());
     broadcast(

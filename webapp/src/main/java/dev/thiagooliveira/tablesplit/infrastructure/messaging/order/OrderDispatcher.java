@@ -8,8 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.context.event.EventListener;
 
 public class OrderDispatcher {
 
@@ -21,7 +20,7 @@ public class OrderDispatcher {
     log.info("OrderDispatcher: Service initialized and ready to dispatch orders.");
   }
 
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @EventListener
   public void handleTicketCreated(TicketCreatedEvent event) {
     log.info("Dispatching ticket {} to POS integration queue", event.getTicket().getId());
 

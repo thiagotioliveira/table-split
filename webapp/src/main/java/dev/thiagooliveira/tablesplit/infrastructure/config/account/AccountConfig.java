@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.account;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +17,8 @@ public class AccountConfig {
 
   @Bean
   public CreateAccount createAccount(
-      EventPublisher eventPublisher,
-      AccountRepository accountRepository,
-      UserRepository userRepository) {
-    return new CreateAccount(eventPublisher, accountRepository, userRepository);
+      AccountRepository accountRepository, UserRepository userRepository) {
+    return new CreateAccount(accountRepository, userRepository);
   }
 
   @Bean
@@ -36,13 +33,8 @@ public class AccountConfig {
   }
 
   @Bean
-  public UpdateStaff editStaff(
-      StaffRepository staffRepository,
-      UserRepository userRepository,
-      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
-          restaurantRepository,
-      EventPublisher eventPublisher) {
-    return new UpdateStaff(staffRepository, userRepository, restaurantRepository, eventPublisher);
+  public UpdateStaff editStaff(StaffRepository staffRepository, UserRepository userRepository) {
+    return new UpdateStaff(staffRepository, userRepository);
   }
 
   @Bean

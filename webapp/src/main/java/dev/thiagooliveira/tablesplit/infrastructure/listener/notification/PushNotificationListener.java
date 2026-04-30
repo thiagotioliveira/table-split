@@ -17,7 +17,7 @@ public class PushNotificationListener {
 
   @EventListener
   public void onStaffUpdated(StaffUpdatedEvent event) {
-    var removed = event.removedModules();
+    var removed = event.getRemovedModules();
     if (removed == null || removed.isEmpty()) {
       return;
     }
@@ -28,7 +28,7 @@ public class PushNotificationListener {
     if (removeOrders || removeTables) {
       var subscriptions =
           pushSubscriptionRepository.findAllByStaffIdAndRestaurantId(
-              event.staffId(), event.restaurantId());
+              event.getStaffId(), event.getRestaurantId());
       for (var sub : subscriptions) {
         boolean changed = false;
         if (removeOrders && sub.isNotifyNewOrders()) {

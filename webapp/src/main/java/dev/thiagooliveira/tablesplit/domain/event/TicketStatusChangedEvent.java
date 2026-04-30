@@ -24,7 +24,7 @@ public class TicketStatusChangedEvent implements DomainEvent {
 
   @Override
   public UUID getAccountId() {
-    return null;
+    return order != null ? order.getAccountId() : null;
   }
 
   public UUID getRestaurantId() {

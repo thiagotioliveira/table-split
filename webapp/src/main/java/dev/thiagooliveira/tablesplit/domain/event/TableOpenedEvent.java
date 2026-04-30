@@ -11,7 +11,7 @@ public class TableOpenedEvent implements DomainEvent {
   private final UUID orderId;
 
   public TableOpenedEvent(Order order, Table table) {
-    this.accountId = null; // We might need to pass accountId if relevant
+    this.accountId = order.getAccountId();
     this.restaurantId = order.getRestaurantId();
     this.tableId = table.getId();
     this.orderId = order.getId();

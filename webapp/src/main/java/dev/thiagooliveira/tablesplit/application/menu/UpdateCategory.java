@@ -1,26 +1,28 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateCategoryCommand;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import java.util.UUID;
 
 public class UpdateCategory {
 
-  private final EventPublisher eventPublisher;
   private final CategoryRepository categoryRepository;
 
-  public UpdateCategory(EventPublisher eventPublisher, CategoryRepository categoryRepository) {
-    this.eventPublisher = eventPublisher;
+  public UpdateCategory(CategoryRepository categoryRepository) {
     this.categoryRepository = categoryRepository;
   }
 
-  public void execute(
+  public Category execute(
       UUID accountId, UUID restaurantId, UUID categoryId, UpdateCategoryCommand command) {
     var category = this.categoryRepository.findById(categoryId).orElseThrow();
-    category.setOrder(command.order());
+    if (!category.getAccountId().equals(accountId)
+        || !category.getRestaurantId().equals(restaurantId)) {
+      throw new IllegalArgumentException("Access denied");
+    }
     category.setName(command.name());
+    category.setOrder(command.order());
     this.categoryRepository.save(category);
-    this.eventPublisher.publishEvent(new CategoryUpdatedEvent(accountId, categoryId));
+
+    return category;
   }
 }

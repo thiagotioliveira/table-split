@@ -11,7 +11,7 @@ public class PaymentProcessedEvent implements DomainEvent {
   private final UUID paymentId;
 
   public PaymentProcessedEvent(Order order, Payment payment) {
-    this.accountId = null;
+    this.accountId = order.getAccountId();
     this.restaurantId = order.getRestaurantId();
     this.orderId = order.getId();
     this.paymentId = payment.getId();

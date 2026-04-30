@@ -29,9 +29,14 @@ public interface ItemJpaRepository extends JpaRepository<ItemEntity, UUID> {
   List<ItemProjection> findAllByCategoryRestaurantIdAndLanguages(
       @Param("restaurantId") UUID restaurantId, @Param("languages") List<Language> languages);
 
-  List<ItemEntity> findByCategoryRestaurantIdAndDeletedAtIsNull(UUID restaurantId);
+  @Query(
+      "SELECT i FROM ItemEntity i JOIN FETCH i.category c JOIN FETCH c.restaurant WHERE c.restaurantId = :restaurantId AND i.deletedAt IS NULL")
+  List<ItemEntity> findByCategoryRestaurantIdAndDeletedAtIsNull(
+      @Param("restaurantId") UUID restaurantId);
 
-  Optional<ItemEntity> findByIdAndDeletedAtIsNull(UUID id);
+  @Query(
+      "SELECT i FROM ItemEntity i JOIN FETCH i.category c JOIN FETCH c.restaurant WHERE i.id = :id AND i.deletedAt IS NULL")
+  Optional<ItemEntity> findByIdAndDeletedAtIsNull(@Param("id") UUID id);
 
   @Query(
       "SELECT COUNT(i) FROM ItemEntity i WHERE i.category.restaurantId = :restaurantId AND i.deletedAt IS NULL")

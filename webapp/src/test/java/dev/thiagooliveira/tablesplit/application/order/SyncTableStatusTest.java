@@ -1,15 +1,12 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
-import dev.thiagooliveira.tablesplit.domain.order.Ticket;
-import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,41 +19,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SyncTableStatusTest {
 
   @Mock private TableRepository tableRepository;
-  @Mock private EventPublisher eventPublisher;
 
   private SyncTableStatus syncTableStatus;
 
   @BeforeEach
   void setUp() {
-    syncTableStatus = new SyncTableStatus(tableRepository, eventPublisher);
+    syncTableStatus = new SyncTableStatus(tableRepository);
   }
 
   @Test
-  void shouldNotUpdateTableStatusWhenOrderIsClosed() {
+  void shouldSetTableToAvailableWhenOrderIsClosed() {
     // Given
+    UUID restaurantId = UUID.randomUUID();
     UUID tableId = UUID.randomUUID();
-    Order order = new Order(UUID.randomUUID(), UUID.randomUUID(), tableId, 10);
+    Table table = new Table(tableId, restaurantId, "1");
+    table.occupy();
+
+    Order order = new Order(UUID.randomUUID(), restaurantId, tableId, 10);
     order.setStatus(OrderStatus.CLOSED);
-
-    // When
-    syncTableStatus.execute(order);
-
-    // Then
-    verifyNoInteractions(tableRepository);
-    verifyNoInteractions(eventPublisher);
-  }
-
-  @Test
-  void shouldSetTableToWaitingWhenOrderHasWaitingTickets() {
-    // Given
-    UUID tableId = UUID.randomUUID();
-    Table table = new Table(tableId, UUID.randomUUID(), "1");
-    table.setStatus(TableStatus.AVAILABLE);
-
-    Order order = new Order(UUID.randomUUID(), UUID.randomUUID(), tableId, 10);
-    Ticket ticket = new Ticket();
-    ticket.setStatus(TicketStatus.PENDING);
-    order.setTickets(List.of(ticket));
 
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
@@ -65,6 +45,48 @@ class SyncTableStatusTest {
 
     // Then
     verify(tableRepository).save(table);
-    assert (table.getStatus() == TableStatus.WAITING);
+    assertEquals(TableStatus.AVAILABLE, table.getStatus());
+  }
+
+  @Test
+  void shouldSetTableToWaitingWhenOrderIsWaiting() {
+    // Given
+    UUID restaurantId = UUID.randomUUID();
+    UUID tableId = UUID.randomUUID();
+    Table table = new Table(tableId, restaurantId, "1");
+    table.setStatus(TableStatus.AVAILABLE);
+
+    Order order = new Order(UUID.randomUUID(), restaurantId, tableId, 10);
+    order.setStatus(OrderStatus.WAITING);
+
+    when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
+
+    // When
+    syncTableStatus.execute(order);
+
+    // Then
+    verify(tableRepository).save(table);
+    assertEquals(TableStatus.WAITING, table.getStatus());
+  }
+
+  @Test
+  void shouldSetTableToOccupiedWhenOrderIsOpen() {
+    // Given
+    UUID restaurantId = UUID.randomUUID();
+    UUID tableId = UUID.randomUUID();
+    Table table = new Table(tableId, restaurantId, "1");
+    table.setStatus(TableStatus.AVAILABLE);
+
+    Order order = new Order(UUID.randomUUID(), restaurantId, tableId, 10);
+    order.setStatus(OrderStatus.OPEN);
+
+    when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
+
+    // When
+    syncTableStatus.execute(order);
+
+    // Then
+    verify(tableRepository).save(table);
+    assertEquals(TableStatus.OCCUPIED, table.getStatus());
   }
 }

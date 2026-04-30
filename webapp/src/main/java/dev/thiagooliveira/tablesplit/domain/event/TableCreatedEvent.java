@@ -9,7 +9,7 @@ public class TableCreatedEvent implements DomainEvent {
   private final UUID tableId;
 
   public TableCreatedEvent(Table table) {
-    this.accountId = null;
+    this.accountId = table.getAccountId();
     this.restaurantId = table.getRestaurantId();
     this.tableId = table.getId();
   }

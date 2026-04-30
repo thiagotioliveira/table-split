@@ -21,6 +21,8 @@ public class Order extends AggregateRoot {
   private Set<OrderCustomer> customers = new HashSet<>();
   private ZonedDateTime openedAt;
   private ZonedDateTime closedAt;
+  // Transient accountId used for event publishing
+  private transient UUID accountId;
 
   public Order() {}
 
@@ -115,6 +117,17 @@ public class Order extends AggregateRoot {
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = Time.now();
+  }
+
+  public void close(Table table) {
+    if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
+      return;
+    }
+    this.status = OrderStatus.CLOSED;
+    this.closedAt = Time.now();
+    table.release();
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TableClosedEvent(this, table));
   }
 
   public void addCustomer(UUID id, String name) {
@@ -289,8 +302,126 @@ public class Order extends AggregateRoot {
         new dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent(this, ticket, tableCod));
   }
 
+  public void updateTicketItemStatus(UUID ticketId, UUID itemId, TicketStatus newStatus) {
+    Ticket ticket =
+        this.tickets.stream()
+            .filter(t -> t.getId().equals(ticketId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+    TicketItem item =
+        ticket.getItems().stream()
+            .filter(i -> i.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+
+    TicketStatus oldTicketStatus = ticket.getStatus();
+    item.setStatus(newStatus);
+    ticket.recalculateStatus();
+
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
+            this, ticket, item, newStatus));
+
+    if (ticket.getStatus() != oldTicketStatus) {
+      this.registerEvent(
+          new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
+              this, ticket, ticket.getStatus()));
+    }
+  }
+
+  public void cancelTicketItem(UUID ticketId, UUID itemId, int quantityToCancel, String reason) {
+    Ticket ticket =
+        this.tickets.stream()
+            .filter(t -> t.getId().equals(ticketId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+    TicketItem item =
+        ticket.getItems().stream()
+            .filter(i -> i.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+
+    TicketStatus oldTicketStatus = ticket.getStatus();
+
+    if (quantityToCancel >= item.getQuantity()) {
+      item.setStatus(TicketStatus.CANCELLED);
+      if (reason != null && !reason.isBlank()) {
+        String note = item.getNote() != null ? item.getNote() : "";
+        item.setNote(note + " (Cancelado: " + reason + ")");
+      }
+      this.registerEvent(
+          new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
+              this, ticket, item, TicketStatus.CANCELLED));
+    } else {
+      // Partial cancellation
+      int remainingQty = item.getQuantity() - quantityToCancel;
+      item.setQuantity(remainingQty);
+
+      TicketItem cancelledItem = new TicketItem();
+      cancelledItem.setId(UUID.randomUUID());
+      cancelledItem.setItemId(item.getItemId());
+      cancelledItem.setName(item.getName());
+      cancelledItem.setCustomerId(item.getCustomerId());
+      cancelledItem.setQuantity(quantityToCancel);
+      cancelledItem.setUnitPrice(item.getUnitPrice());
+      cancelledItem.setStatus(TicketStatus.CANCELLED);
+
+      ticket.getItems().add(cancelledItem);
+      this.registerEvent(
+          new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
+              this, ticket, cancelledItem, TicketStatus.CANCELLED));
+    }
+
+    ticket.recalculateStatus();
+    if (ticket.getStatus() != oldTicketStatus) {
+      this.registerEvent(
+          new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
+              this, ticket, ticket.getStatus()));
+    }
+  }
+
+  public void moveTicket(UUID ticketId, TicketStatus newStatus) {
+    Ticket ticket =
+        this.tickets.stream()
+            .filter(t -> t.getId().equals(ticketId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+
+    ticket.setStatus(newStatus);
+    ticket
+        .getItems()
+        .forEach(
+            item -> {
+              if (item.getStatus() != TicketStatus.CANCELLED) {
+                item.setStatus(newStatus);
+              }
+            });
+
+    if (newStatus == TicketStatus.READY) {
+      ticket.setReadyAt(Time.now());
+    }
+
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
+            this, ticket, newStatus));
+  }
+
+  public void processPayment(Payment payment) {
+    this.addPayment(payment);
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.PaymentProcessedEvent(this, payment));
+  }
+
   public boolean hasParticipant(UUID customerId) {
     if (customerId == null) return false;
     return this.customers.stream().anyMatch(c -> c.getId().equals(customerId));
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 }

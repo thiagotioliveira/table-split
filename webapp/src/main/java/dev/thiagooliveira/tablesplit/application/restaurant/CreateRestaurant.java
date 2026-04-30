@@ -1,20 +1,15 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
-import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import java.util.UUID;
 
 public class CreateRestaurant {
 
-  private final EventPublisher eventPublisher;
   private final RestaurantRepository restaurantRepository;
 
-  public CreateRestaurant(
-      EventPublisher eventPublisher, RestaurantRepository restaurantRepository) {
-    this.eventPublisher = eventPublisher;
+  public CreateRestaurant(RestaurantRepository restaurantRepository) {
     this.restaurantRepository = restaurantRepository;
   }
 
@@ -22,11 +17,14 @@ public class CreateRestaurant {
     if (this.restaurantRepository.findBySlug(command.slug()).isPresent()) {
       throw new SlugAlreadyExist();
     }
-    var restaurant = new Restaurant();
-    restaurant.setId(UUID.randomUUID());
-    restaurant.setAccountId(accountId);
-    restaurant.setName(command.name());
-    restaurant.setSlug(command.slug().toLowerCase().trim());
+    var restaurant =
+        Restaurant.create(
+            UUID.randomUUID(),
+            accountId,
+            command.name(),
+            command.slug().toLowerCase().trim(),
+            command.numberOfTables());
+
     restaurant.setDescription(command.description());
     restaurant.setWebsite(command.website());
     restaurant.setPhone(command.phone());
@@ -42,9 +40,8 @@ public class CreateRestaurant {
     restaurant.setHashPrimaryColor(command.hashPrimaryColor());
     restaurant.setHashAccentColor(command.hashAccentColor());
     restaurant.setDefaultLanguage(command.defaultLanguage());
+
     restaurantRepository.save(restaurant);
-    this.eventPublisher.publishEvent(
-        new RestaurantCreatedEvent(restaurant, command.numberOfTables()));
     return restaurant;
   }
 }

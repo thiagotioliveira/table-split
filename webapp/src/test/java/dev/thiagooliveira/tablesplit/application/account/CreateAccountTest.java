@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateAccountCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
@@ -25,13 +24,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CreateAccountTest {
-
-  @Mock private EventPublisher eventPublisher;
 
   @Mock private AccountRepository accountRepository;
 
@@ -41,7 +39,7 @@ class CreateAccountTest {
 
   @BeforeEach
   void setUp() {
-    createAccount = new CreateAccount(eventPublisher, accountRepository, userRepository);
+    createAccount = new CreateAccount(accountRepository, userRepository);
   }
 
   @Test
@@ -79,10 +77,18 @@ class CreateAccountTest {
     assertEquals(userCommand.email(), result.getEmail());
     assertEquals(Role.RESTAURANT_ADMIN, result.getRole());
 
-    verify(accountRepository, times(1)).save(any(Account.class));
+    ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+    verify(accountRepository, times(1)).save(accountCaptor.capture());
+
+    Account savedAccount = accountCaptor.getValue();
+    assertFalse(savedAccount.getDomainEvents().isEmpty());
+    assertTrue(
+        savedAccount.getDomainEvents().stream().anyMatch(e -> e instanceof AccountCreatedEvent));
+
     verify(userRepository, times(1)).save(any(User.class));
-    verify(eventPublisher, times(1)).publishEvent(any(UserCreatedEvent.class));
-    verify(eventPublisher, times(1)).publishEvent(any(AccountCreatedEvent.class));
+    // User also has events
+    assertFalse(result.getDomainEvents().isEmpty());
+    assertTrue(result.getDomainEvents().stream().anyMatch(e -> e instanceof UserCreatedEvent));
   }
 
   @Test
@@ -101,6 +107,5 @@ class CreateAccountTest {
 
     verify(accountRepository, never()).save(any());
     verify(userRepository, never()).save(any());
-    verify(eventPublisher, never()).publishEvent(any());
   }
 }

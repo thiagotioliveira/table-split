@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
@@ -18,22 +17,18 @@ public class MenuConfig {
 
   @Bean
   public CreateCategory createCategory(
-      EventPublisher eventPublisher,
-      CategoryRepository categoryRepository,
-      PlanLimitValidator planLimitValidator) {
-    return new CreateCategory(eventPublisher, categoryRepository, planLimitValidator);
+      CategoryRepository categoryRepository, PlanLimitValidator planLimitValidator) {
+    return new CreateCategory(categoryRepository, planLimitValidator);
   }
 
   @Bean
-  public UpdateCategory updateCategory(
-      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
-    return new UpdateCategory(eventPublisher, categoryRepository);
+  public UpdateCategory updateCategory(CategoryRepository categoryRepository) {
+    return new UpdateCategory(categoryRepository);
   }
 
   @Bean
-  public DeleteCategory deleteCategory(
-      EventPublisher eventPublisher, CategoryRepository categoryRepository) {
-    return new DeleteCategory(eventPublisher, categoryRepository);
+  public DeleteCategory deleteCategory(CategoryRepository categoryRepository) {
+    return new DeleteCategory(categoryRepository);
   }
 
   @Bean
@@ -43,27 +38,23 @@ public class MenuConfig {
 
   @Bean
   public UpdateItem updateItem(
-      EventPublisher eventPublisher,
       ImageStorage imageStorage,
       ItemRepository itemRepository,
       @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
-    return new UpdateItem(eventPublisher, imageStorage, itemRepository, maxImageSize);
+    return new UpdateItem(imageStorage, itemRepository, maxImageSize);
   }
 
   @Bean
   public CreateItem createItem(
-      EventPublisher eventPublisher,
       ImageStorage imageStorage,
       ItemRepository itemRepository,
       PlanLimitValidator planLimitValidator,
       @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
-    return new CreateItem(
-        eventPublisher, imageStorage, itemRepository, planLimitValidator, maxImageSize);
+    return new CreateItem(imageStorage, itemRepository, planLimitValidator, maxImageSize);
   }
 
   @Bean
-  public DeleteItem deleteItem(
-      EventPublisher eventPublisher, ItemRepository itemRepository, ImageStorage imageStorage) {
-    return new DeleteItem(eventPublisher, itemRepository, imageStorage);
+  public DeleteItem deleteItem(ItemRepository itemRepository, ImageStorage imageStorage) {
+    return new DeleteItem(itemRepository, imageStorage);
   }
 }

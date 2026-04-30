@@ -13,34 +13,55 @@ public class TableRepositoryAdapter implements TableRepository {
 
   private final TableJpaRepository tableJpaRepository;
   private final OrderJpaRepository orderJpaRepository;
+  private final dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant
+          .RestaurantJpaRepository
+      restaurantJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public TableRepositoryAdapter(
       TableJpaRepository tableJpaRepository,
       OrderJpaRepository orderJpaRepository,
+      dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository
+          restaurantJpaRepository,
       org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.tableJpaRepository = tableJpaRepository;
     this.orderJpaRepository = orderJpaRepository;
+    this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
   }
 
   @Override
   public Optional<Table> findById(UUID id) {
-    return tableJpaRepository.findById(id).map(TableEntity::toDomain);
+    return tableJpaRepository.findById(id).map(this::toDomainWithAccount);
+  }
+
+  private Table toDomainWithAccount(TableEntity entity) {
+    Table table = entity.toDomain();
+    UUID cachedAccountId =
+        dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+            table.getRestaurantId());
+    if (cachedAccountId != null) {
+      table.setAccountId(cachedAccountId);
+    } else {
+      this.restaurantJpaRepository
+          .findById(table.getRestaurantId())
+          .ifPresent(r -> table.setAccountId(r.getAccountId()));
+    }
+    return table;
   }
 
   @Override
   public Optional<Table> findByRestaurantIdAndCod(UUID restaurantId, String cod) {
     return tableJpaRepository
         .findByRestaurantIdAndCodAndDeletedAtIsNull(restaurantId, cod)
-        .map(TableEntity::toDomain);
+        .map(this::toDomainWithAccount);
   }
 
   @Override
   public Optional<Table> findByRestaurantIdAndCodIncludingDeleted(UUID restaurantId, String cod) {
     return tableJpaRepository
         .findByRestaurantIdAndCod(restaurantId, cod)
-        .map(TableEntity::toDomain);
+        .map(this::toDomainWithAccount);
   }
 
   @Override
@@ -48,7 +69,7 @@ public class TableRepositoryAdapter implements TableRepository {
     return tableJpaRepository
         .findAllByRestaurantIdAndDeletedAtIsNullOrderByCod(restaurantId)
         .stream()
-        .map(TableEntity::toDomain)
+        .map(this::toDomainWithAccount)
         .collect(Collectors.toList());
   }
 
@@ -61,8 +82,16 @@ public class TableRepositoryAdapter implements TableRepository {
   public void save(Table table) {
     tableJpaRepository.save(TableEntity.fromDomain(table));
 
+    // Ensure accountId is populated for events if it's not already
+    if (table.getAccountId() == null) {
+      UUID cachedAccountId =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+              table.getRestaurantId());
+      table.setAccountId(cachedAccountId);
+    }
+
     // Publish Domain Events
-    table.getEvents().forEach(eventPublisher::publishEvent);
+    table.getDomainEvents().forEach(eventPublisher::publishEvent);
     table.clearEvents();
   }
 

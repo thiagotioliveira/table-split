@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.application.restaurant;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
@@ -18,19 +17,16 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class UpdateRestaurantTest {
 
-  private EventPublisher eventPublisher;
   private RestaurantRepository restaurantRepository;
   private UpdateRestaurant updateRestaurant;
 
   @BeforeEach
   void setUp() {
-    eventPublisher = mock(EventPublisher.class);
     restaurantRepository = mock(RestaurantRepository.class);
-    updateRestaurant = new UpdateRestaurant(eventPublisher, restaurantRepository);
+    updateRestaurant = new UpdateRestaurant(restaurantRepository);
   }
 
   @Test
@@ -51,7 +47,9 @@ class UpdateRestaurantTest {
     assertEquals("Updated Name", result.getName());
     assertEquals("original-slug", result.getSlug());
     verify(restaurantRepository).save(existingRestaurant);
-    verify(eventPublisher).publishEvent(any(RestaurantUpdatedEvent.class));
+    assertFalse(result.getDomainEvents().isEmpty());
+    assertTrue(
+        result.getDomainEvents().stream().anyMatch(e -> e instanceof RestaurantUpdatedEvent));
     verify(restaurantRepository, never()).findBySlug(anyString());
   }
 
@@ -72,7 +70,9 @@ class UpdateRestaurantTest {
 
     assertEquals("new-slug", result.getSlug());
     verify(restaurantRepository).save(existingRestaurant);
-    verify(eventPublisher).publishEvent(any(RestaurantUpdatedEvent.class));
+    assertFalse(result.getDomainEvents().isEmpty());
+    assertTrue(
+        result.getDomainEvents().stream().anyMatch(e -> e instanceof RestaurantUpdatedEvent));
   }
 
   @Test
@@ -91,7 +91,6 @@ class UpdateRestaurantTest {
     assertThrows(SlugAlreadyExist.class, () -> updateRestaurant.execute(restaurantId, command));
 
     verify(restaurantRepository, never()).save(any());
-    verify(eventPublisher, never()).publishEvent(any());
   }
 
   @Test
@@ -106,7 +105,7 @@ class UpdateRestaurantTest {
   }
 
   @Test
-  void shouldPublishCorrectEventOnSuccess() {
+  void shouldRegisterCorrectEventOnSuccess() {
     UUID restaurantId = UUID.randomUUID();
     Restaurant existingRestaurant = new Restaurant();
     existingRestaurant.setId(restaurantId);
@@ -117,12 +116,16 @@ class UpdateRestaurantTest {
 
     when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(existingRestaurant));
 
-    updateRestaurant.execute(restaurantId, command);
+    Restaurant result = updateRestaurant.execute(restaurantId, command);
 
-    ArgumentCaptor<RestaurantUpdatedEvent> eventCaptor =
-        ArgumentCaptor.forClass(RestaurantUpdatedEvent.class);
-    verify(eventPublisher).publishEvent(eventCaptor.capture());
-    assertEquals(restaurantId, eventCaptor.getValue().getRestaurantId());
+    var event =
+        result.getDomainEvents().stream()
+            .filter(e -> e instanceof RestaurantUpdatedEvent)
+            .map(e -> (RestaurantUpdatedEvent) e)
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(restaurantId, event.getRestaurantId());
   }
 
   private UpdateRestaurantCommand createCommand(String slug) {

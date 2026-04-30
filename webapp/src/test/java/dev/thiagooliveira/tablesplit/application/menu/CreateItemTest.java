@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.application.menu;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
@@ -22,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CreateItemTest {
 
-  @Mock private EventPublisher eventPublisher;
   @Mock private ImageStorage imageStorage;
   @Mock private ItemRepository itemRepository;
   @Mock private PlanLimitValidator planLimitValidator;
@@ -32,9 +31,7 @@ class CreateItemTest {
 
   @BeforeEach
   void setUp() {
-    createItem =
-        new CreateItem(
-            eventPublisher, imageStorage, itemRepository, planLimitValidator, MAX_IMAGE_SIZE);
+    createItem = new CreateItem(imageStorage, itemRepository, planLimitValidator, MAX_IMAGE_SIZE);
   }
 
   @Test
@@ -51,11 +48,12 @@ class CreateItemTest {
             Map.of(Language.PT, "Deliciosas"),
             BigDecimal.TEN,
             List.of(),
-            true);
+            true,
+            Map.of());
 
     doThrow(new PlanLimitExceededException("error.plan.limit.menu_items"))
         .when(planLimitValidator)
-        .validate(eq(accountId), any(), anyLong());
+        .validate(eq(accountId), eq(PlanLimitType.MENU_ITEMS), eq(40L));
     when(itemRepository.count(restaurantId)).thenReturn(40L);
 
     assertThrows(
@@ -79,7 +77,8 @@ class CreateItemTest {
             Map.of(Language.PT, "Deliciosas"),
             BigDecimal.TEN,
             List.of(),
-            true);
+            true,
+            Map.of());
 
     when(itemRepository.count(restaurantId)).thenReturn(39L);
     when(itemRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -87,6 +86,6 @@ class CreateItemTest {
     createItem.execute(accountId, restaurantId, command);
 
     verify(itemRepository).save(any());
-    verify(planLimitValidator).validate(eq(accountId), any(), eq(39L));
+    verify(planLimitValidator).validate(eq(accountId), eq(PlanLimitType.MENU_ITEMS), eq(39L));
   }
 }

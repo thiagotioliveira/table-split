@@ -13,16 +13,33 @@ import org.springframework.stereotype.Component;
 public class CategoryRepositoryAdapter implements CategoryRepository {
 
   private final CategoryJpaRepository categoryJpaRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
-  public CategoryRepositoryAdapter(CategoryJpaRepository categoryJpaRepository) {
+  public CategoryRepositoryAdapter(
+      CategoryJpaRepository categoryJpaRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.categoryJpaRepository = categoryJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
   public List<Category> findByRestaurantId(UUID restaurantId) {
     return this.categoryJpaRepository.findByRestaurantId(restaurantId).stream()
-        .map(CategoryEntity::toDomain)
+        .map(this::toDomainWithAccount)
         .toList();
+  }
+
+  private Category toDomainWithAccount(CategoryEntity entity) {
+    Category domain = entity.toDomain();
+    UUID cachedAccountId =
+        dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+            domain.getRestaurantId());
+    if (cachedAccountId != null) {
+      domain.setAccountId(cachedAccountId);
+    } else if (entity.getRestaurant() != null) {
+      domain.setAccountId(entity.getRestaurant().getAccountId());
+    }
+    return domain;
   }
 
   @Override
@@ -45,12 +62,25 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
               });
       domain.getName().put(dto.language(), dto.nameTranslation());
     }
+    UUID cachedAccountId =
+        dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+            restaurantId);
+
+    categoryMap
+        .values()
+        .forEach(
+            c -> {
+              if (cachedAccountId != null) {
+                c.setAccountId(cachedAccountId);
+              }
+            });
+
     return new java.util.ArrayList<>(categoryMap.values());
   }
 
   @Override
   public Optional<Category> findById(UUID categoryId) {
-    return this.categoryJpaRepository.findById(categoryId).map(CategoryEntity::toDomain);
+    return this.categoryJpaRepository.findById(categoryId).map(this::toDomainWithAccount);
   }
 
   @Override
@@ -69,11 +99,28 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
     entity.setName(LocalizedTextEntity.fromMap(category.getName()));
     entity.setActive(true);
     this.categoryJpaRepository.save(entity);
+
+    // Ensure accountId is populated for events
+    if (category.getAccountId() == null) {
+      UUID cachedAccountId =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+              category.getRestaurantId());
+      category.setAccountId(cachedAccountId);
+    }
+
+    category.getDomainEvents().forEach(eventPublisher::publishEvent);
+    category.clearEvents();
   }
 
   @Override
   public void delete(UUID categoryId) {
+    var category = findById(categoryId).orElseThrow();
+    category.delete();
+
     this.categoryJpaRepository.deleteById(categoryId);
+
+    category.getDomainEvents().forEach(eventPublisher::publishEvent);
+    category.clearEvents();
   }
 
   @Override

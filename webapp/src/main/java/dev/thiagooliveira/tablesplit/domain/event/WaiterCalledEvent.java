@@ -9,11 +9,15 @@ public class WaiterCalledEvent implements DomainEvent {
 
   private final UUID id;
 
-  public WaiterCalledEvent(UUID restaurantId, String tableCod) {
-    this(restaurantId, tableCod, 0, null);
+  private final UUID accountId;
+
+  public WaiterCalledEvent(UUID accountId, UUID restaurantId, String tableCod) {
+    this(accountId, restaurantId, tableCod, 0, null);
   }
 
-  public WaiterCalledEvent(UUID restaurantId, String tableCod, long totalCount, UUID id) {
+  public WaiterCalledEvent(
+      UUID accountId, UUID restaurantId, String tableCod, long totalCount, UUID id) {
+    this.accountId = accountId;
     this.restaurantId = restaurantId;
     this.tableCod = tableCod;
     this.totalCount = totalCount;
@@ -26,7 +30,7 @@ public class WaiterCalledEvent implements DomainEvent {
 
   @Override
   public UUID getAccountId() {
-    return restaurantId;
+    return accountId;
   }
 
   public String getTableCod() {

@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.application.menu;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
+import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateCategoryCommand;
@@ -19,14 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CreateCategoryTest {
 
   @Mock private CategoryRepository categoryRepository;
-  @Mock private EventPublisher eventPublisher;
   @Mock private PlanLimitValidator planLimitValidator;
 
   private CreateCategory createCategory;
 
   @BeforeEach
   void setUp() {
-    createCategory = new CreateCategory(eventPublisher, categoryRepository, planLimitValidator);
+    createCategory = new CreateCategory(categoryRepository, planLimitValidator);
   }
 
   @Test
@@ -38,7 +37,7 @@ class CreateCategoryTest {
     when(categoryRepository.count(restaurantId)).thenReturn(10L);
     doThrow(new PlanLimitExceededException("error.plan.limit.categories"))
         .when(planLimitValidator)
-        .validate(eq(accountId), any(), eq(10L));
+        .validate(eq(accountId), eq(PlanLimitType.CATEGORIES), eq(10L));
 
     assertThrows(
         PlanLimitExceededException.class,
@@ -57,6 +56,6 @@ class CreateCategoryTest {
     createCategory.execute(accountId, restaurantId, command);
 
     verify(categoryRepository).save(any());
-    verify(planLimitValidator).validate(eq(accountId), any(), eq(9L));
+    verify(planLimitValidator).validate(eq(accountId), eq(PlanLimitType.CATEGORIES), eq(9L));
   }
 }

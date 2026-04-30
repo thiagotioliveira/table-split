@@ -8,16 +8,18 @@ public class TableStatusChangedEvent implements DomainEvent {
   private final UUID restaurantId;
   private final UUID tableId;
   private final TableStatus status;
+  private final UUID accountId;
 
   public TableStatusChangedEvent(Table table) {
     this.restaurantId = table.getRestaurantId();
     this.tableId = table.getId();
     this.status = table.getStatus();
+    this.accountId = table.getAccountId();
   }
 
   @Override
   public UUID getAccountId() {
-    return null;
+    return accountId;
   }
 
   public UUID getRestaurantId() {

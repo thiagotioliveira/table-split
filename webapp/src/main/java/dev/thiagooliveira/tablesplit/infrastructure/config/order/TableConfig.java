@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.*;
@@ -16,10 +15,8 @@ public class TableConfig {
 
   @Bean
   public CreateTable createTable(
-      TableRepository tableRepository,
-      EventPublisher eventPublisher,
-      PlanLimitValidator planLimitValidator) {
-    return new CreateTable(tableRepository, eventPublisher, planLimitValidator);
+      TableRepository tableRepository, PlanLimitValidator planLimitValidator) {
+    return new CreateTable(tableRepository, planLimitValidator);
   }
 
   @Bean
@@ -31,16 +28,12 @@ public class TableConfig {
   }
 
   @Bean
-  public CloseTable closeTable(
-      TableRepository tableRepository,
-      OrderRepository orderRepository,
-      EventPublisher eventPublisher) {
-    return new CloseTable(tableRepository, orderRepository, eventPublisher);
+  public CloseTable closeTable(TableRepository tableRepository, OrderRepository orderRepository) {
+    return new CloseTable(tableRepository, orderRepository);
   }
 
   @Bean
-  public SyncTableStatus syncTableStatus(
-      TableRepository tableRepository, EventPublisher eventPublisher) {
-    return new SyncTableStatus(tableRepository, eventPublisher);
+  public SyncTableStatus syncTableStatus(TableRepository tableRepository) {
+    return new SyncTableStatus(tableRepository);
   }
 }

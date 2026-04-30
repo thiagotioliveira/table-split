@@ -1,9 +1,13 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.event.PasswordUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.UserCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.event.UserUpdatedEvent;
 import java.util.UUID;
 
-public class User {
+public class User extends AggregateRoot {
   private UUID id;
   private UUID accountId;
   private String firstName;
@@ -13,6 +17,45 @@ public class User {
   private Language language;
   private String password;
   private Role role;
+
+  public static User create(
+      UUID id,
+      UUID accountId,
+      String firstName,
+      String lastName,
+      String email,
+      String phone,
+      Language language,
+      String password,
+      Role role) {
+    User user = new User();
+    user.setId(id);
+    user.setAccountId(accountId);
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
+    user.setEmail(email);
+    user.setPhone(phone);
+    user.setLanguage(language);
+    user.setPassword(password);
+    user.setRole(role);
+    user.registerEvent(new UserCreatedEvent(accountId, user));
+    return user;
+  }
+
+  public void update(
+      String firstName, String lastName, String email, String phone, Language language) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.phone = phone;
+    this.language = language;
+    this.registerEvent(new UserUpdatedEvent(this.accountId, this));
+  }
+
+  public void updatePassword(String password) {
+    this.password = password;
+    this.registerEvent(new PasswordUpdatedEvent(this.accountId, this.id));
+  }
 
   public UUID getId() {
     return id;

@@ -1,41 +1,28 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
-import dev.thiagooliveira.tablesplit.domain.event.ItemDeletedEvent;
-import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.util.UUID;
 
 public class DeleteItem {
 
-  private final EventPublisher eventPublisher;
-  public final ItemRepository itemRepository;
+  private final ItemRepository itemRepository;
   private final ImageStorage imageStorage;
 
-  public DeleteItem(
-      EventPublisher eventPublisher, ItemRepository itemRepository, ImageStorage imageStorage) {
-    this.eventPublisher = eventPublisher;
+  public DeleteItem(ItemRepository itemRepository, ImageStorage imageStorage) {
     this.itemRepository = itemRepository;
     this.imageStorage = imageStorage;
   }
 
-  public void execute(UUID accountId, UUID itemId) {
-    Item item = this.itemRepository.findById(itemId).orElseThrow();
-
-    boolean hasTicketItems = this.itemRepository.existsInTicketItems(itemId);
-
-    if (hasTicketItems) {
-      // Exclusão lógica - deletar imagens do storage
-      if (item.getImages() != null) {
-        item.getImages()
-            .forEach(
-                image ->
-                    this.imageStorage.deleteItem(
-                        accountId, item.getRestaurantId(), itemId, image.getId()));
-      }
+  public void execute(UUID accountId, UUID restaurantId, UUID itemId) {
+    var item = this.itemRepository.findById(itemId).orElseThrow();
+    if (!item.getAccountId().equals(accountId) || !item.getRestaurantId().equals(restaurantId)) {
+      throw new IllegalArgumentException("Access denied");
     }
+    item.delete();
+    this.itemRepository.save(item);
 
-    this.itemRepository.delete(itemId);
-    this.eventPublisher.publishEvent(new ItemDeletedEvent(accountId, itemId));
+    for (var img : item.getImages()) {
+      this.imageStorage.deleteItem(accountId, restaurantId, itemId, img.getId());
+    }
   }
 }

@@ -1,17 +1,13 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent;
 import java.util.UUID;
 
 public class CallWaiter {
 
   private final TableRepository tableRepository;
-  private final EventPublisher eventPublisher;
 
-  public CallWaiter(TableRepository tableRepository, EventPublisher eventPublisher) {
+  public CallWaiter(TableRepository tableRepository) {
     this.tableRepository = tableRepository;
-    this.eventPublisher = eventPublisher;
   }
 
   public void execute(UUID restaurantId, String tableCod) {
@@ -19,10 +15,12 @@ public class CallWaiter {
   }
 
   public void execute(UUID restaurantId, String tableCod, UUID customerId) {
-    if (!tableRepository.findByRestaurantIdAndCod(restaurantId, tableCod).isPresent()) {
-      throw new IllegalArgumentException("Table not found: " + tableCod);
-    }
+    var table =
+        this.tableRepository
+            .findByRestaurantIdAndCod(restaurantId, tableCod)
+            .orElseThrow(() -> new IllegalArgumentException("Table not found: " + tableCod));
 
-    eventPublisher.publishEvent(new WaiterCalledEvent(restaurantId, tableCod));
+    table.callWaiter();
+    this.tableRepository.save(table);
   }
 }

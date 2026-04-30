@@ -7,7 +7,10 @@ public class WaiterCallDismissedEvent implements DomainEvent {
   private final UUID callId;
   private final long totalCount;
 
-  public WaiterCallDismissedEvent(UUID restaurantId, UUID callId, long totalCount) {
+  private final UUID accountId;
+
+  public WaiterCallDismissedEvent(UUID accountId, UUID restaurantId, UUID callId, long totalCount) {
+    this.accountId = accountId;
     this.restaurantId = restaurantId;
     this.callId = callId;
     this.totalCount = totalCount;
@@ -19,7 +22,7 @@ public class WaiterCallDismissedEvent implements DomainEvent {
 
   @Override
   public UUID getAccountId() {
-    return restaurantId;
+    return accountId;
   }
 
   public UUID getCallId() {

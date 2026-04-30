@@ -1,8 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.notification;
 
 import dev.thiagooliveira.tablesplit.application.notification.*;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.notification.WaiterCallJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.notification.WaiterCallRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,11 +33,6 @@ public class NotificationConfig {
   }
 
   @Bean
-  public WaiterCallRepository waiterCallRepository(WaiterCallJpaRepository jpaRepository) {
-    return new WaiterCallRepositoryAdapter(jpaRepository);
-  }
-
-  @Bean
   public RegisterWaiterCall registerWaiterCall(
       WaiterCallRepository repository, Broadcaster broadcaster) {
     return new RegisterWaiterCall(repository, broadcaster);
@@ -51,9 +44,7 @@ public class NotificationConfig {
   }
 
   @Bean
-  public DismissWaiterCall dismissWaiterCall(
-      WaiterCallRepository repository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
-    return new DismissWaiterCall(repository, eventPublisher);
+  public DismissWaiterCall dismissWaiterCall(WaiterCallRepository repository) {
+    return new DismissWaiterCall(repository);
   }
 }

@@ -8,7 +8,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantProvisioningSer
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -33,7 +32,6 @@ public class RestaurantCreatedEventListener {
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  @EventListener
   public void on(RestaurantCreatedEvent event) {
     UUID restaurantId = event.getRestaurantId();
     String tenantId = TenantContext.generateTenantIdentifier(restaurantId);
@@ -58,7 +56,8 @@ public class RestaurantCreatedEventListener {
                   event.getNumberOfTables(),
                   tenantId);
               for (int i = 0; i < event.getNumberOfTables(); i++) {
-                this.createTable.execute(restaurantId, String.format("%02d", i + 1));
+                this.createTable.execute(
+                    event.getAccountId(), restaurantId, String.format("%02d", i + 1));
               }
             } else {
               logger.debug("[Listener] No tables to create (num=0)");

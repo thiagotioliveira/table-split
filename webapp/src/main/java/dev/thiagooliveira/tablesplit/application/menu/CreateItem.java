@@ -1,33 +1,24 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
-import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
-import dev.thiagooliveira.tablesplit.domain.event.ItemCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class CreateItem {
 
-  private final EventPublisher eventPublisher;
   private final ImageStorage imageStorage;
   private final ItemRepository itemRepository;
   private final PlanLimitValidator planLimitValidator;
   private final long maxImageSize;
 
   public CreateItem(
-      EventPublisher eventPublisher,
       ImageStorage imageStorage,
       ItemRepository itemRepository,
       PlanLimitValidator planLimitValidator,
       long maxImageSize) {
-    this.eventPublisher = eventPublisher;
     this.imageStorage = imageStorage;
     this.itemRepository = itemRepository;
     this.planLimitValidator = planLimitValidator;
@@ -38,39 +29,29 @@ public class CreateItem {
     this.planLimitValidator.validate(
         accountId, PlanLimitType.MENU_ITEMS, this.itemRepository.count(restaurantId));
 
-    var item = new Item();
-    item.setId(UUID.randomUUID());
+    var item = Item.create(accountId, restaurantId);
     item.setName(command.name());
-    item.setRestaurantId(restaurantId);
     item.setDescription(command.description());
-    item.setCategory(new Category());
-    item.getCategory().setId(command.categoryId());
     item.setPrice(command.price());
+    item.setCategoryId(command.categoryId());
     item.setAvailable(command.available());
     item.setTags(command.tags());
     item.setQuestions(command.questions());
-    item.setImages(new ArrayList<>());
 
     if (command.images() != null && command.images().newImages() != null) {
-      for (ImageData i : command.images().newImages()) {
-        if (i.content() != null && i.content().length > this.maxImageSize) {
-          throw new dev.thiagooliveira.tablesplit.application.exception.ImageSizeExceededException(
-              "error.menu.item.image.size");
+      for (var imageData : command.images().newImages()) {
+        if (imageData.content().length > maxImageSize) {
+          throw new IllegalArgumentException("error.image.too_large");
         }
-        var image = new ItemImage();
-        image.setId(UUID.randomUUID());
-        image.setMain(false);
-        image.setItemId(item.getId());
-        image.setName(
-            imageStorage.uploadItem(
-                i, accountId, item.getRestaurantId(), item.getId(), image.getId()));
-        item.getImages().add(image);
+        UUID imageId = UUID.randomUUID();
+        String imagePath =
+            imageStorage.uploadItem(imageData, accountId, restaurantId, item.getId(), imageId);
+        item.addImage(imageId, imagePath, item.getImages().isEmpty());
       }
     }
 
-    item = this.itemRepository.save(item);
+    this.itemRepository.save(item);
 
-    this.eventPublisher.publishEvent(new ItemCreatedEvent(accountId, item.getId()));
     return item;
   }
 }

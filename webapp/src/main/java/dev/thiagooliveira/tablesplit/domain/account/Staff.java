@@ -1,10 +1,13 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.event.StaffUpdatedEvent;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class Staff {
+public class Staff extends AggregateRoot {
   private UUID id;
   private UUID restaurantId;
   private String firstName;
@@ -16,6 +19,55 @@ public class Staff {
   private Role role;
   private boolean enabled;
   private Set<Module> modules;
+
+  // Transient accountId used for event publishing
+  private transient UUID accountId;
+
+  public void update(
+      String firstName,
+      String lastName,
+      String email,
+      String phone,
+      boolean enabled,
+      Set<Module> modules,
+      String password) {
+
+    var oldModules = this.modules;
+    var newModules = modules;
+
+    var addedModules =
+        newModules.stream().filter(m -> !oldModules.contains(m)).collect(Collectors.toSet());
+
+    var removedModules =
+        oldModules.stream().filter(m -> !newModules.contains(m)).collect(Collectors.toSet());
+
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.phone = phone;
+    this.enabled = enabled;
+    this.modules = modules;
+
+    if (password != null && !password.isBlank()) {
+      this.password = password;
+    }
+
+    this.registerEvent(
+        new StaffUpdatedEvent(this.id, this.restaurantId, null, addedModules, removedModules));
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
+    // Update existing events if any
+    this.getDomainEvents().stream()
+        .filter(e -> e instanceof StaffUpdatedEvent)
+        .map(e -> (StaffUpdatedEvent) e)
+        .forEach(e -> e.setAccountId(accountId));
+  }
 
   public UUID getId() {
     return id;

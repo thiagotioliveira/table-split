@@ -1,7 +1,5 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.domain.event.PaymentProcessedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
@@ -11,13 +9,10 @@ import java.util.UUID;
 public class ProcessPayment {
 
   private final OrderRepository orderRepository;
-  private final EventPublisher eventPublisher;
   private final CloseTable closeTable;
 
-  public ProcessPayment(
-      OrderRepository orderRepository, EventPublisher eventPublisher, CloseTable closeTable) {
+  public ProcessPayment(OrderRepository orderRepository, CloseTable closeTable) {
     this.orderRepository = orderRepository;
-    this.eventPublisher = eventPublisher;
     this.closeTable = closeTable;
   }
 
@@ -35,10 +30,9 @@ public class ProcessPayment {
 
     Payment payment =
         new Payment(UUID.randomUUID(), order.getId(), customerId, amount, method, note);
-    order.addPayment(payment);
+    order.processPayment(payment);
 
     orderRepository.save(order);
-    eventPublisher.publishEvent(new PaymentProcessedEvent(order, payment));
 
     if (order.getStatus() == dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
       closeTable.execute(order.getId());

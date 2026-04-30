@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import java.time.LocalTime;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Restaurant {
+public class Restaurant extends AggregateRoot {
   private UUID id;
   private UUID accountId;
   private String name;
@@ -29,6 +30,66 @@ public class Restaurant {
   private String hashAccentColor;
   private List<RestaurantImage> images;
   private Language defaultLanguage;
+
+  public static Restaurant create(
+      UUID id, UUID accountId, String name, String slug, int numberOfTables) {
+    Restaurant restaurant = new Restaurant();
+    restaurant.setId(id);
+    restaurant.setAccountId(accountId);
+    restaurant.setName(name);
+    restaurant.setSlug(slug);
+    restaurant.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent(
+            restaurant, numberOfTables));
+    return restaurant;
+  }
+
+  public void update(
+      String name,
+      String slug,
+      String description,
+      String website,
+      String phone,
+      String email,
+      String address,
+      CuisineType cuisineType,
+      List<Language> customerLanguages,
+      List<Tag> tags,
+      Currency currency,
+      int serviceFee,
+      AveragePrice averagePrice,
+      List<BusinessHours> days,
+      String hashPrimaryColor,
+      String hashAccentColor) {
+
+    var oldLanguages =
+        this.customerLanguages != null ? this.customerLanguages : List.<Language>of();
+    var newLanguages = customerLanguages != null ? customerLanguages : List.<Language>of();
+
+    List<Language> added = newLanguages.stream().filter(l -> !oldLanguages.contains(l)).toList();
+    List<Language> removed = oldLanguages.stream().filter(l -> !newLanguages.contains(l)).toList();
+
+    this.name = name;
+    this.slug = slug;
+    this.description = description;
+    this.website = website;
+    this.phone = phone;
+    this.email = email;
+    this.address = address;
+    this.cuisineType = cuisineType;
+    this.customerLanguages = customerLanguages;
+    this.tags = tags;
+    this.currency = currency;
+    this.serviceFee = serviceFee;
+    this.averagePrice = averagePrice;
+    this.days = days;
+    this.hashPrimaryColor = hashPrimaryColor;
+    this.hashAccentColor = hashAccentColor;
+
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent(
+            this, added, removed));
+  }
 
   public Language getDefaultLanguage() {
     return defaultLanguage;

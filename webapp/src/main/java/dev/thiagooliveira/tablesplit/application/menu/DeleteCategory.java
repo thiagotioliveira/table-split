@@ -1,21 +1,22 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryDeletedEvent;
 import java.util.UUID;
 
 public class DeleteCategory {
 
-  private final EventPublisher eventPublisher;
-  public final CategoryRepository categoryRepository;
+  private final CategoryRepository categoryRepository;
 
-  public DeleteCategory(EventPublisher eventPublisher, CategoryRepository categoryRepository) {
-    this.eventPublisher = eventPublisher;
+  public DeleteCategory(CategoryRepository categoryRepository) {
     this.categoryRepository = categoryRepository;
   }
 
   public void execute(UUID accountId, UUID restaurantId, UUID categoryId) {
-    this.categoryRepository.delete(categoryId);
-    this.eventPublisher.publishEvent(new CategoryDeletedEvent(accountId, categoryId));
+    var category = this.categoryRepository.findById(categoryId).orElseThrow();
+    if (!category.getAccountId().equals(accountId)
+        || !category.getRestaurantId().equals(restaurantId)) {
+      throw new IllegalArgumentException("Access denied");
+    }
+    category.delete();
+    this.categoryRepository.save(category);
   }
 }

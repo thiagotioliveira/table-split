@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +15,8 @@ public class TicketConfig {
 
   @Bean
   public UpdateTicketItemStatus updateTicketItemStatus(
-      OrderRepository orderRepository,
-      EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus) {
-    return new UpdateTicketItemStatus(orderRepository, eventPublisher, syncTableStatus);
+      OrderRepository orderRepository, SyncTableStatus syncTableStatus) {
+    return new UpdateTicketItemStatus(orderRepository, syncTableStatus);
   }
 
   @Bean
@@ -34,21 +31,17 @@ public class TicketConfig {
   }
 
   @Bean
-  public MoveTicket moveTicket(
-      OrderRepository orderRepository,
-      EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus) {
-    return new MoveTicket(orderRepository, eventPublisher, syncTableStatus);
+  public MoveTicket moveTicket(OrderRepository orderRepository, SyncTableStatus syncTableStatus) {
+    return new MoveTicket(orderRepository, syncTableStatus);
   }
 
   @Bean
-  public CancelTicketItem cancelTicketItem(
-      OrderRepository orderRepository, EventPublisher eventPublisher) {
-    return new CancelTicketItem(orderRepository, eventPublisher);
+  public CancelTicketItem cancelTicketItem(OrderRepository orderRepository) {
+    return new CancelTicketItem(orderRepository);
   }
 
   @Bean
-  public CallWaiter callWaiter(TableRepository tableRepository, EventPublisher eventPublisher) {
-    return new CallWaiter(tableRepository, eventPublisher);
+  public CallWaiter callWaiter(TableRepository tableRepository) {
+    return new CallWaiter(tableRepository);
   }
 }

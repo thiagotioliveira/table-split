@@ -1,31 +1,32 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
-import dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent;
-import dev.thiagooliveira.tablesplit.domain.notification.WaiterCall;
-import java.util.Optional;
 import java.util.UUID;
-import org.springframework.context.ApplicationEventPublisher;
 
 public class DismissWaiterCall {
-  private final WaiterCallRepository repository;
-  private final ApplicationEventPublisher eventPublisher;
 
-  public DismissWaiterCall(
-      WaiterCallRepository repository, ApplicationEventPublisher eventPublisher) {
+  private final WaiterCallRepository repository;
+
+  public DismissWaiterCall(WaiterCallRepository repository) {
     this.repository = repository;
-    this.eventPublisher = eventPublisher;
   }
 
   public void execute(UUID id) {
-    Optional<WaiterCall> waiterCallOptional = repository.findById(id);
+    var waiterCallOptional = repository.findById(id);
     waiterCallOptional.ifPresent(
         waiterCall -> {
-          waiterCall.dismiss();
-          repository.save(waiterCall);
           long totalActive =
               repository.findAllActiveByRestaurantId(waiterCall.getRestaurantId()).size();
-          eventPublisher.publishEvent(
-              new WaiterCallDismissedEvent(waiterCall.getRestaurantId(), id, totalActive));
+          // Decrement by 1 if we consider the current one as about to be dismissed
+          // But the original code was calculating BEFORE saving, so let's check
+          // Wait, the original code calculated totalActive BEFORE saving.
+          // So it includes the one that is about to be dismissed?
+          // Line 25-26 in previous version:
+          // long totalActive =
+          // repository.findAllActiveByRestaurantId(waiterCall.getRestaurantId()).size();
+          // Then it published event with this value.
+
+          waiterCall.dismiss(totalActive - 1); // We subtract 1 because this one is now dismissed
+          repository.save(waiterCall);
         });
   }
 }

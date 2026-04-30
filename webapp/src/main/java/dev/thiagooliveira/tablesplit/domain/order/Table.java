@@ -12,6 +12,9 @@ public class Table extends AggregateRoot {
   private TableStatus status;
   private OffsetDateTime deletedAt;
 
+  // Transient accountId used for event publishing
+  private transient UUID accountId;
+
   public Table() {}
 
   public Table(UUID id, UUID restaurantId, String cod) {
@@ -19,6 +22,10 @@ public class Table extends AggregateRoot {
     this.restaurantId = restaurantId;
     this.cod = cod;
     this.status = TableStatus.AVAILABLE;
+  }
+
+  public static Table create(UUID restaurantId, String cod) {
+    return create(UUID.randomUUID(), restaurantId, cod);
   }
 
   public static Table create(UUID id, UUID restaurantId, String cod) {
@@ -79,6 +86,13 @@ public class Table extends AggregateRoot {
   public void restore() {
     this.deletedAt = null;
     this.status = TableStatus.AVAILABLE;
+    this.registerEvent(new dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent(this));
+  }
+
+  public void callWaiter() {
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent(
+            this.accountId, this.restaurantId, this.cod));
   }
 
   public void occupy() {
@@ -99,7 +113,25 @@ public class Table extends AggregateRoot {
         new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
   }
 
+  public void syncStatus(OrderStatus orderStatus) {
+    if (orderStatus == OrderStatus.CLOSED || orderStatus == OrderStatus.CANCELLED) {
+      release();
+    } else if (orderStatus == OrderStatus.WAITING) {
+      waiting();
+    } else {
+      occupy();
+    }
+  }
+
   public boolean isAvailable() {
     return this.status == TableStatus.AVAILABLE;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 }

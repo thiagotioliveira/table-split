@@ -1,16 +1,21 @@
 package dev.thiagooliveira.tablesplit.domain.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
+import dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-public class WaiterCall {
+public class WaiterCall extends AggregateRoot {
   private final UUID id;
   private final UUID restaurantId;
   private final String tableCod;
   private final ZonedDateTime createdAt;
   private ZonedDateTime dismissedAt;
   private int callCount;
+
+  // Transient accountId used for event publishing
+  private transient UUID accountId;
 
   public WaiterCall(UUID id, UUID restaurantId, String tableCod, ZonedDateTime createdAt) {
     this(id, restaurantId, tableCod, createdAt, null, 1);
@@ -46,8 +51,10 @@ public class WaiterCall {
     }
   }
 
-  public void dismiss() {
+  public void dismiss(long totalActive) {
     this.dismissedAt = Time.now();
+    this.registerEvent(
+        new WaiterCallDismissedEvent(this.accountId, this.restaurantId, this.id, totalActive));
   }
 
   public UUID getId() {
@@ -76,5 +83,13 @@ public class WaiterCall {
 
   public int getCallCount() {
     return callCount;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 }

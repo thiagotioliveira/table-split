@@ -439,7 +439,7 @@ public class TableController {
 
     var context = (AccountContext) auth.getPrincipal();
     transactionalContext.execute(
-        () -> createTable.execute(context.getRestaurant().getId(), form.getCod()));
+        () -> createTable.execute(context.getId(), context.getRestaurant().getId(), form.getCod()));
 
     return org.springframework.http.ResponseEntity.ok().build();
   }

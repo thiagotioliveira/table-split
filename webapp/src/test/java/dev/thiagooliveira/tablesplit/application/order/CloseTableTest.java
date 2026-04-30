@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
@@ -18,15 +17,13 @@ class CloseTableTest {
 
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
-  private EventPublisher eventPublisher;
   private CloseTable closeTable;
 
   @BeforeEach
   void setUp() {
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
-    eventPublisher = mock(EventPublisher.class);
-    closeTable = new CloseTable(tableRepository, orderRepository, eventPublisher);
+    closeTable = new CloseTable(tableRepository, orderRepository);
   }
 
   @Test

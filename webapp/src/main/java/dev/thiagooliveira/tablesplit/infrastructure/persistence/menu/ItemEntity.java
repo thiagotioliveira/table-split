@@ -102,8 +102,13 @@ public class ItemEntity {
   public static ItemEntity fromDomain(Item domain) {
     var entity = new ItemEntity();
     entity.setId(domain.getId());
-    entity.setCategory(new CategoryEntity());
-    entity.getCategory().setId(domain.getCategory().getId());
+    if (domain.getCategory() != null) {
+      entity.setCategory(new CategoryEntity());
+      entity.getCategory().setId(domain.getCategory().getId());
+    } else if (domain.getCategoryId() != null) {
+      entity.setCategory(new CategoryEntity());
+      entity.getCategory().setId(domain.getCategoryId());
+    }
     entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
     entity.setDescription(LocalizedTextEntity.fromMap(domain.getDescription()));
     entity.setPrice(domain.getPrice());

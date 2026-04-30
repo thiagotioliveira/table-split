@@ -11,8 +11,13 @@ public class CategoryEntity {
 
   @Id private UUID id;
 
-  @Column(nullable = false)
+  @Column(name = "restaurant_id", nullable = false)
   private UUID restaurantId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "restaurant_id", insertable = false, updatable = false)
+  private dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity
+      restaurant;
 
   private Integer numOrder;
 
@@ -95,5 +100,10 @@ public class CategoryEntity {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity
+      getRestaurant() {
+    return restaurant;
   }
 }

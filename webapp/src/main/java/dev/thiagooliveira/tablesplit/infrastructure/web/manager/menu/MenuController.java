@@ -166,7 +166,8 @@ public class MenuController {
   public String deleteItem(
       Authentication auth, @RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
-    this.transactionalContext.execute(() -> this.deleteItem.execute(context.getId(), itemId));
+    this.transactionalContext.execute(
+        () -> this.deleteItem.execute(context.getId(), context.getRestaurant().getId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
     return "redirect:/menu";
   }

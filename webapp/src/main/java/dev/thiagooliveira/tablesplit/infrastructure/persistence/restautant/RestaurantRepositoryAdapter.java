@@ -13,12 +13,15 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
 
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final RestauranteImageJpaRepository restauranteImageJpaRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public RestaurantRepositoryAdapter(
       RestaurantJpaRepository restaurantJpaRepository,
-      RestauranteImageJpaRepository restauranteImageJpaRepository) {
+      RestauranteImageJpaRepository restauranteImageJpaRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.restauranteImageJpaRepository = restauranteImageJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -60,6 +63,8 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   @Override
   public void save(Restaurant restaurant) {
     this.restaurantJpaRepository.save(RestaurantEntity.fromDomain(restaurant));
+    restaurant.getDomainEvents().forEach(eventPublisher::publishEvent);
+    restaurant.clearEvents();
   }
 
   @Override

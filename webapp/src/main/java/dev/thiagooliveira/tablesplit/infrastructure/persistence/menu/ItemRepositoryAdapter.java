@@ -13,21 +13,38 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
   private final ItemJpaRepository itemJpaRepository;
   private final ItemQuestionJpaRepository itemQuestionJpaRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public ItemRepositoryAdapter(
-      ItemJpaRepository itemJpaRepository, ItemQuestionJpaRepository itemQuestionJpaRepository) {
+      ItemJpaRepository itemJpaRepository,
+      ItemQuestionJpaRepository itemQuestionJpaRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.itemJpaRepository = itemJpaRepository;
     this.itemQuestionJpaRepository = itemQuestionJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
   public Optional<Item> findById(UUID id) {
-    return this.itemJpaRepository.findByIdAndDeletedAtIsNull(id).map(ItemEntity::toDomain);
+    return this.itemJpaRepository.findByIdAndDeletedAtIsNull(id).map(this::toDomainWithAccount);
   }
 
   @Override
   public Optional<Item> findByIdIncludingDeleted(UUID id) {
-    return this.itemJpaRepository.findById(id).map(ItemEntity::toDomain);
+    return this.itemJpaRepository.findById(id).map(this::toDomainWithAccount);
+  }
+
+  private Item toDomainWithAccount(ItemEntity entity) {
+    Item item = entity.toDomain();
+    UUID cachedAccountId =
+        dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+            item.getRestaurantId());
+    if (cachedAccountId != null) {
+      item.setAccountId(cachedAccountId);
+    } else if (entity.getCategory() != null && entity.getCategory().getRestaurant() != null) {
+      item.setAccountId(entity.getCategory().getRestaurant().getAccountId());
+    }
+    return item;
   }
 
   @Override
@@ -35,7 +52,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
     return this.itemJpaRepository
         .findByCategoryRestaurantIdAndDeletedAtIsNull(restaurantId)
         .stream()
-        .map(ItemEntity::toDomain)
+        .map(this::toDomainWithAccount)
         .toList();
   }
 
@@ -64,6 +81,19 @@ public class ItemRepositoryAdapter implements ItemRepository {
     }
 
     if (!itemMap.isEmpty()) {
+      UUID cachedAccountId =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+              restaurantId);
+
+      itemMap
+          .values()
+          .forEach(
+              i -> {
+                if (cachedAccountId != null) {
+                  i.setAccountId(cachedAccountId);
+                }
+              });
+
       var questions =
           this.itemQuestionJpaRepository.findByItemIdInAndLanguageIn(itemMap.keySet(), languages);
       questions.forEach(
@@ -82,15 +112,29 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
   @Override
   public Item save(Item item) {
-    return this.itemJpaRepository.save(ItemEntity.fromDomain(item)).toDomain();
+    Item savedItem = this.itemJpaRepository.save(ItemEntity.fromDomain(item)).toDomain();
+
+    // Ensure accountId is populated for events
+    if (item.getAccountId() == null) {
+      UUID cachedAccountId =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
+              item.getRestaurantId());
+      item.setAccountId(cachedAccountId);
+    }
+
+    item.getDomainEvents().forEach(eventPublisher::publishEvent);
+    item.clearEvents();
+    return savedItem;
   }
 
   @Override
   public void delete(UUID itemId) {
-    var itemEntity = this.itemJpaRepository.findById(itemId).orElseThrow();
+    var item = findByIdIncludingDeleted(itemId).orElseThrow();
+    item.delete();
 
     if (this.itemJpaRepository.existsInTicketItems(itemId)) {
       // Exclusão lógica
+      var itemEntity = this.itemJpaRepository.findById(itemId).orElseThrow();
       itemEntity.setDeletedAt(dev.thiagooliveira.tablesplit.domain.common.Time.nowOffset());
       itemEntity.setActive(false);
       this.itemJpaRepository.save(itemEntity);
@@ -98,6 +142,9 @@ public class ItemRepositoryAdapter implements ItemRepository {
       // Exclusão física
       this.itemJpaRepository.deleteById(itemId);
     }
+
+    item.getDomainEvents().forEach(eventPublisher::publishEvent);
+    item.clearEvents();
   }
 
   @Override

@@ -1,16 +1,31 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
+import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public class Account {
+public class Account extends AggregateRoot {
   private UUID id;
   private OffsetDateTime createdAt;
   private Plan plan;
   private AccountStatus status = AccountStatus.ACTIVE;
   private OffsetDateTime trialStartedAt;
   private OffsetDateTime trialEndsAt;
+
+  public static Account create(
+      UUID id,
+      Plan plan,
+      OffsetDateTime createdAt,
+      AccountCreatedEvent.AccountCreatedEventDetails details) {
+    Account account = new Account();
+    account.setId(id);
+    account.setPlan(plan);
+    account.setCreatedAt(createdAt);
+    account.registerEvent(new AccountCreatedEvent(id, details));
+    return account;
+  }
 
   public void startTrial() {
     if (trialStartedAt != null) {
@@ -88,5 +103,9 @@ public class Account {
       return Plan.PROFESSIONAL;
     }
     return plan;
+  }
+
+  public UUID getAccountId() {
+    return id;
   }
 }

@@ -4,15 +4,19 @@ import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AccountRepositoryAdapter implements AccountRepository {
 
   private final AccountJpaRepository accountJpaRepository;
+  private final ApplicationEventPublisher eventPublisher;
 
-  public AccountRepositoryAdapter(AccountJpaRepository accountJpaRepository) {
+  public AccountRepositoryAdapter(
+      AccountJpaRepository accountJpaRepository, ApplicationEventPublisher eventPublisher) {
     this.accountJpaRepository = accountJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -23,5 +27,7 @@ public class AccountRepositoryAdapter implements AccountRepository {
   @Override
   public void save(Account account) {
     this.accountJpaRepository.save(AccountEntity.fromDomain(account));
+    account.getDomainEvents().forEach(eventPublisher::publishEvent);
+    account.clearEvents();
   }
 }
