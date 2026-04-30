@@ -5608,14 +5608,14 @@
                     originalPrice: item.originalPrice || null,
                     discountType: item.discountType || null,
                     discountValue: item.discountValue || null,
-                    customizations: item.customizations ? JSON.stringify(item.customizations.map(c => ({
+                    customizations: item.customizations ? item.customizations.map(c => ({
                         title: c.title,
                         options: c.options.map(o => ({
                             optionId: o.id,
                             text: o.text,
                             extraPrice: o.extraPrice
                         }))
-                    }))) : null
+                    })) : null
                 });
             });
         });

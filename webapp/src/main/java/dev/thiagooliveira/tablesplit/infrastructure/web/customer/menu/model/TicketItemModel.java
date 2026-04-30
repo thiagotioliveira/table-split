@@ -22,7 +22,7 @@ public class TicketItemModel {
   private final ZonedDateTime createdAt;
 
   private final PromotionSnapshotModel promotionSnapshot;
-  private final String customizations;
+  private final java.util.List<CustomizationModel> customizations;
 
   public TicketItemModel(TicketItem item, String customerName, ZonedDateTime createdAt) {
     this.id = item.getId().toString();
@@ -42,7 +42,10 @@ public class TicketItemModel {
         item.getPromotionSnapshot() != null
             ? new PromotionSnapshotModel(item.getPromotionSnapshot())
             : null;
-    this.customizations = item.getCustomizations();
+    this.customizations =
+        item.getCustomizations() != null
+            ? item.getCustomizations().stream().map(CustomizationModel::new).toList()
+            : java.util.List.of();
   }
 
   public String getId() {
@@ -109,8 +112,45 @@ public class TicketItemModel {
     return promotionSnapshot;
   }
 
-  public String getCustomizations() {
+  public java.util.List<CustomizationModel> getCustomizations() {
     return customizations;
+  }
+
+  public static class CustomizationModel {
+    private final String title;
+    private final java.util.List<OptionModel> options;
+
+    public CustomizationModel(
+        dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization customization) {
+      this.title = customization.title();
+      this.options = customization.options().stream().map(OptionModel::new).toList();
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public java.util.List<OptionModel> getOptions() {
+      return options;
+    }
+  }
+
+  public static class OptionModel {
+    private final String text;
+    private final BigDecimal extraPrice;
+
+    public OptionModel(dev.thiagooliveira.tablesplit.domain.order.TicketItemOption option) {
+      this.text = option.text();
+      this.extraPrice = option.extraPrice();
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    public BigDecimal getExtraPrice() {
+      return extraPrice;
+    }
   }
 
   public static class PromotionSnapshotModel {

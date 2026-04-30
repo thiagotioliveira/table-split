@@ -3245,7 +3245,7 @@
                     promotionId: item.promotion ? item.promotion.promotionId : null,
                     discountType: item.promotion ? item.promotion.discountType : null,
                     discountValue: item.promotion ? item.promotion.discountValue : null,
-                    customizations: item.customizations ? JSON.stringify(item.customizations) : null
+                    customizations: item.customizations || null
                 }))
             }]
         };

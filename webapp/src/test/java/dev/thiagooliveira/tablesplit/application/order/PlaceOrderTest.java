@@ -5,9 +5,7 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
-import dev.thiagooliveira.tablesplit.application.order.model.CustomerRequest;
-import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
-import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
+import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
@@ -66,8 +64,20 @@ class PlaceOrderTest {
   @Test
   void shouldApplyCustomizationExtraPrice() {
     TicketItemRequest ticketItemRequest = createDefaultTicketItemRequest(1);
-    ticketItemRequest.setCustomizations(
-        "[{\"title\":\"Question?\",\"options\":[{\"text\":\"Vodka\",\"extraPrice\":2}]}]");
+
+    dev.thiagooliveira.tablesplit.application.order.model.TicketItemOptionRequest option =
+        new dev.thiagooliveira.tablesplit.application.order.model.TicketItemOptionRequest();
+    option.setText("Vodka");
+    option.setExtraPrice(new BigDecimal("2"));
+
+    dev.thiagooliveira.tablesplit.application.order.model.TicketItemCustomizationRequest
+        customization =
+            new dev.thiagooliveira.tablesplit.application.order.model
+                .TicketItemCustomizationRequest();
+    customization.setTitle("Question?");
+    customization.setOptions(List.of(option));
+
+    ticketItemRequest.setCustomizations(List.of(customization));
 
     setupCommonMocks();
 

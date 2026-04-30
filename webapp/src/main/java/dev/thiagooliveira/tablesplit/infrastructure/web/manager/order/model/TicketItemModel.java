@@ -19,7 +19,8 @@ public class TicketItemModel {
   private final String statusClass;
   private final Integer rating;
   private final PromotionInfo promotionSnapshot;
-  private final String customizations;
+  private final java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+      customizations;
   private final String customizationSummary;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -103,7 +104,8 @@ public class TicketItemModel {
       Integer rating,
       ZonedDateTime createdAt,
       PromotionInfo promotionSnapshot,
-      String customizations) {
+      java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+          customizations) {
     this(
         id,
         customerId,
@@ -120,7 +122,7 @@ public class TicketItemModel {
         createdAt,
         promotionSnapshot,
         customizations,
-        formatCustomizations(customizations));
+        getCustomizationSummary(customizations));
   }
 
   public TicketItemModel(
@@ -138,7 +140,8 @@ public class TicketItemModel {
       Integer rating,
       ZonedDateTime createdAt,
       PromotionInfo promotionSnapshot,
-      String customizations,
+      java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+          customizations,
       String customizationSummary) {
     this.id = id;
     this.customerId = customerId;
@@ -210,35 +213,21 @@ public class TicketItemModel {
         getCustomizationSummary(item.getCustomizations()));
   }
 
-  public static String getCustomizationSummary(String json) {
-    return formatCustomizations(json);
-  }
+  public static String getCustomizationSummary(
+      java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+          customizations) {
+    if (customizations == null || customizations.isEmpty()) return null;
 
-  private static String formatCustomizations(String json) {
-    if (json == null || json.isEmpty()) return null;
-    try {
-      var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-      var root = mapper.readTree(json);
-      if (root.isArray()) {
-        java.util.List<String> questions = new java.util.ArrayList<>();
-        for (var q : root) {
-          String title = q.has("title") ? q.get("title").asText() : "";
-          var optionsNode = q.get("options");
-          if (optionsNode != null && optionsNode.isArray()) {
-            java.util.List<String> options = new java.util.ArrayList<>();
-            for (var o : optionsNode) {
-              options.add(o.get("text").asText());
-            }
-            String optionsText = String.join(", ", options);
-            questions.add(title.isEmpty() ? optionsText : title + " " + optionsText);
-          }
-        }
-        return String.join(" | ", questions);
-      }
-    } catch (Exception e) {
-      return null;
-    }
-    return null;
+    return customizations.stream()
+        .map(
+            q -> {
+              String optionsText =
+                  q.options().stream()
+                      .map(dev.thiagooliveira.tablesplit.domain.order.TicketItemOption::text)
+                      .collect(java.util.stream.Collectors.joining(", "));
+              return q.title().isEmpty() ? optionsText : q.title() + ": " + optionsText;
+            })
+        .collect(java.util.stream.Collectors.joining(" | "));
   }
 
   public UUID getId() {
@@ -297,7 +286,8 @@ public class TicketItemModel {
     return promotionSnapshot;
   }
 
-  public String getCustomizations() {
+  public java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+      getCustomizations() {
     return customizations;
   }
 

@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.order.model;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TicketItemRequest {
@@ -11,7 +12,7 @@ public class TicketItemRequest {
   private java.math.BigDecimal originalPrice;
   private String discountType;
   private java.math.BigDecimal discountValue;
-  private String customizations;
+  private List<TicketItemCustomizationRequest> customizations;
 
   public TicketItemRequest() {}
 
@@ -90,11 +91,11 @@ public class TicketItemRequest {
     this.discountValue = discountValue;
   }
 
-  public String getCustomizations() {
+  public List<TicketItemCustomizationRequest> getCustomizations() {
     return customizations;
   }
 
-  public void setCustomizations(String customizations) {
+  public void setCustomizations(List<TicketItemCustomizationRequest> customizations) {
     this.customizations = customizations;
   }
 }

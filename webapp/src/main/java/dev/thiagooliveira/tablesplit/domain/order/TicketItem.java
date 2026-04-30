@@ -1,15 +1,14 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class TicketItem {
-  private ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
   private UUID id;
   private UUID itemId;
@@ -21,7 +20,7 @@ public class TicketItem {
   private Integer rating;
   private TicketStatus status = TicketStatus.PENDING;
   private PromotionSnapshot promotionSnapshot;
-  private String customizations;
+  private List<TicketItemCustomization> customizations;
 
   public TicketItem() {}
 
@@ -34,7 +33,7 @@ public class TicketItem {
       int quantity,
       UUID customerId,
       String note,
-      String customizations,
+      List<TicketItemCustomization> customizations,
       UUID promotionId,
       String discountType,
       BigDecimal discountValue) {
@@ -77,25 +76,14 @@ public class TicketItem {
     this.unitPrice = finalUnitPrice;
   }
 
-  private java.math.BigDecimal calculateExtraPrice(String customizationsJson) {
+  private java.math.BigDecimal calculateExtraPrice(List<TicketItemCustomization> customizations) {
     java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
-    try {
-      var root = objectMapper.readTree(customizationsJson);
-      if (root.isArray()) {
-        for (var question : root) {
-          var options = question.get("options");
-          if (options != null && options.isArray()) {
-            for (var option : options) {
-              var extraPrice = option.get("extraPrice");
-              if (extraPrice != null && !extraPrice.isNull()) {
-                extra = extra.add(new java.math.BigDecimal(extraPrice.asText()));
-              }
-            }
-          }
+    for (TicketItemCustomization customization : customizations) {
+      if (customization.options() != null) {
+        for (TicketItemOption option : customization.options()) {
+          extra = extra.add(option.extraPrice());
         }
       }
-    } catch (Exception e) {
-      // Ignore errors in customizations parsing
     }
     return extra;
   }
@@ -149,16 +137,7 @@ public class TicketItem {
   }
 
   public BigDecimal getTotalPrice() {
-    BigDecimal customizationsExtra = BigDecimal.ZERO;
-    if (customizations != null && !customizations.isEmpty()) {
-      try {
-        // Simple manual parsing to avoid heavy dependencies if possible,
-        // but since we have Jackson in the project, we might use it.
-        // For now, let's assume the unitPrice is already updated by the caller or we'll update it.
-      } catch (Exception e) {
-      }
-    }
-    return unitPrice.add(customizationsExtra).multiply(BigDecimal.valueOf(quantity));
+    return unitPrice.multiply(BigDecimal.valueOf(quantity));
   }
 
   public String getNote() {
@@ -193,11 +172,11 @@ public class TicketItem {
     this.promotionSnapshot = promotionSnapshot;
   }
 
-  public String getCustomizations() {
+  public List<TicketItemCustomization> getCustomizations() {
     return customizations;
   }
 
-  public void setCustomizations(String customizations) {
+  public void setCustomizations(List<TicketItemCustomization> customizations) {
     this.customizations = customizations;
   }
 

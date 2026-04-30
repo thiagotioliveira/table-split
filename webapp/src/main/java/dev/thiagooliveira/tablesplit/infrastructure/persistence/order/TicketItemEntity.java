@@ -47,7 +47,11 @@ public class TicketItemEntity {
   private BigDecimal discountValue;
 
   @Column private Integer rating;
-  @Column private String customizations;
+
+  @Column(columnDefinition = "TEXT")
+  @Convert(converter = TicketItemCustomizationConverter.class)
+  private java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+      customizations;
 
   public TicketItemEntity() {}
 
@@ -203,11 +207,14 @@ public class TicketItemEntity {
     this.rating = rating;
   }
 
-  public String getCustomizations() {
+  public java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+      getCustomizations() {
     return customizations;
   }
 
-  public void setCustomizations(String customizations) {
+  public void setCustomizations(
+      java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+          customizations) {
     this.customizations = customizations;
   }
 }

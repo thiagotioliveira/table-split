@@ -7,10 +7,7 @@ import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
-import dev.thiagooliveira.tablesplit.domain.order.Order;
-import dev.thiagooliveira.tablesplit.domain.order.Table;
-import dev.thiagooliveira.tablesplit.domain.order.Ticket;
-import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
+import dev.thiagooliveira.tablesplit.domain.order.*;
 import java.util.UUID;
 
 public class PlaceOrder {
@@ -124,7 +121,20 @@ public class PlaceOrder {
                   itemRequest.getQuantity(),
                   customerId,
                   itemRequest.getNote(),
-                  itemRequest.getCustomizations(),
+                  itemRequest.getCustomizations() != null
+                      ? itemRequest.getCustomizations().stream()
+                          .map(
+                              c ->
+                                  new TicketItemCustomization(
+                                      c.getTitle(),
+                                      c.getOptions().stream()
+                                          .map(
+                                              o ->
+                                                  new TicketItemOption(
+                                                      o.getText(), o.getExtraPrice()))
+                                          .toList()))
+                          .toList()
+                      : java.util.List.of(),
                   itemRequest.getPromotionId(),
                   itemRequest.getDiscountType(),
                   itemRequest.getDiscountValue());

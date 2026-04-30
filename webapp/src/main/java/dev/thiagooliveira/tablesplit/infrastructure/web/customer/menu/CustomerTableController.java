@@ -361,7 +361,7 @@ public class CustomerTableController {
       String customerName,
       java.time.ZonedDateTime createdAt,
       Integer rating,
-      String customizations) {
+      java.util.List<TicketItemModel.CustomizationModel> customizations) {
     public static SimpleTicketItem fromDomain(
         dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
         String customerName,
@@ -379,7 +379,11 @@ public class CustomerTableController {
           customerName,
           createdAt,
           item.getRating(),
-          item.getCustomizations());
+          item.getCustomizations() != null
+              ? item.getCustomizations().stream()
+                  .map(TicketItemModel.CustomizationModel::new)
+                  .toList()
+              : java.util.List.of());
     }
   }
 
