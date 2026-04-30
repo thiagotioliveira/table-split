@@ -79,11 +79,7 @@ public class TicketItem {
   private java.math.BigDecimal calculateExtraPrice(List<TicketItemCustomization> customizations) {
     java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
     for (TicketItemCustomization customization : customizations) {
-      if (customization.options() != null) {
-        for (TicketItemOption option : customization.options()) {
-          extra = extra.add(option.extraPrice());
-        }
-      }
+      extra = extra.add(customization.calculateTotalExtra());
     }
     return extra;
   }
