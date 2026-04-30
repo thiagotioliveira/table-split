@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import java.util.Map;
 import java.util.Optional;
 

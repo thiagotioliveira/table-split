@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
 import java.util.List;
 import java.util.UUID;
 

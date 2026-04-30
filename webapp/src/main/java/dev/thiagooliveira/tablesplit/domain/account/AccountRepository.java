@@ -1,6 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.account;
+package dev.thiagooliveira.tablesplit.domain.account;
 
-import dev.thiagooliveira.tablesplit.domain.account.Account;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

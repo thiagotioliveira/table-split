@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.PromotionRepository;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
+import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

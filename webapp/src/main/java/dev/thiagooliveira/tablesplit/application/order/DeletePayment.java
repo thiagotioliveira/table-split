@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import java.util.UUID;
 
 public class DeletePayment {

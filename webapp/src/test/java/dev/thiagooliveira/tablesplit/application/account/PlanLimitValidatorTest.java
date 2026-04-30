@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

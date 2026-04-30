@@ -1,6 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.restaurant;
+package dev.thiagooliveira.tablesplit.domain.restaurant;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
 import java.util.Optional;
 import java.util.UUID;
 

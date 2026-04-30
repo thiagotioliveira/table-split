@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.notification;
 
-import dev.thiagooliveira.tablesplit.application.notification.PushSubscriptionRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Module;
 import dev.thiagooliveira.tablesplit.domain.event.StaffUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

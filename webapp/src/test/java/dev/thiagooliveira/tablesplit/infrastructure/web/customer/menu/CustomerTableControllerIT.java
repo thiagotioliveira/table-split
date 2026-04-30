@@ -5,17 +5,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
-import dev.thiagooliveira.tablesplit.application.order.TableRepository;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantProvisioningService;
 import dev.thiagooliveira.tablesplit.infrastructure.web.H2IT;

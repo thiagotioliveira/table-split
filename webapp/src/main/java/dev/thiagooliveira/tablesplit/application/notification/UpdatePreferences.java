@@ -1,5 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
+
 public class UpdatePreferences {
 
   private final PushSubscriptionRepository repository;

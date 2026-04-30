@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateCategoryCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
 import java.util.UUID;
 
 public class CreateCategory {

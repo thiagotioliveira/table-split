@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.application.account.command.UpdateUserCommand;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import java.util.UUID;
 
 public class UpdateUser {

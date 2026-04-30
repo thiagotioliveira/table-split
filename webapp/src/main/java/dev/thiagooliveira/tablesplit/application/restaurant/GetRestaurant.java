@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.Optional;
 import java.util.UUID;
 

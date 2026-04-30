@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.Table;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

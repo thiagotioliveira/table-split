@@ -1,6 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.order;
+package dev.thiagooliveira.tablesplit.domain.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.OrderFeedback;
 import java.util.UUID;
 
 public interface FeedbackRepository {

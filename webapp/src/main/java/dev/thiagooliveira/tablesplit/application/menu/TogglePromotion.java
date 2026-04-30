@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
+import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import java.util.UUID;
 
 public class TogglePromotion {

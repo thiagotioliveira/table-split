@@ -8,6 +8,7 @@ import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededExce
 import dev.thiagooliveira.tablesplit.application.menu.command.CreatePromotionCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.ApplyType;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
+import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.UUID;
 
 public class DeleteRestaurantImage {

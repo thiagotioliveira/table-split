@@ -1,6 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.menu;
+package dev.thiagooliveira.tablesplit.domain.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import java.util.UUID;
 
 public interface ItemImageRepository {

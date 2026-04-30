@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.*;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

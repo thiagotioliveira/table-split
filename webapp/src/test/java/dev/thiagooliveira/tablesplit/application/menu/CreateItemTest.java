@@ -9,6 +9,7 @@ import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededExce
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;

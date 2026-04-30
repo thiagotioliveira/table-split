@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
+import dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository;
 import java.util.UUID;
 
 public class RateItem {

@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.application.order.FeedbackRepository;
+import dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderFeedback;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

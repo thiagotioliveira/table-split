@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.util.UUID;
 
 public class DeleteItem {

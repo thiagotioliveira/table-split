@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.notification;
 
-import dev.thiagooliveira.tablesplit.application.notification.PushSubscriptionRepository;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

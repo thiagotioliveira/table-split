@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentTokenRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.UUID;
 
 public class GetOrCreateToken {

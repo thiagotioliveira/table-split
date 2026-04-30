@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
-import dev.thiagooliveira.tablesplit.application.account.StaffRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
 import java.util.List;
 import java.util.Optional;

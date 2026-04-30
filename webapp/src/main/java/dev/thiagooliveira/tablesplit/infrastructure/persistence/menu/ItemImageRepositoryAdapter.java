@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.ItemImageRepository;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 

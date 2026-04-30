@@ -1,11 +1,12 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
-import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand;
 import dev.thiagooliveira.tablesplit.application.order.command.TicketItemCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import java.util.UUID;
 
 public class PlaceOrder {

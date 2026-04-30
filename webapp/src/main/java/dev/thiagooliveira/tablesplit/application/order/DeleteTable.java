@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.DomainException;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import java.util.UUID;
 
 public class DeleteTable {

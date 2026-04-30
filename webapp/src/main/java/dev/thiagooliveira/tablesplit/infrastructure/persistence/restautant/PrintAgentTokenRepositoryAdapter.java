@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import dev.thiagooliveira.tablesplit.application.restaurant.PrintAgentTokenRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentTokenRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

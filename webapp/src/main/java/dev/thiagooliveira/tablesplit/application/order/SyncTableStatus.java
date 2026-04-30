@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 
 public class SyncTableStatus {
 

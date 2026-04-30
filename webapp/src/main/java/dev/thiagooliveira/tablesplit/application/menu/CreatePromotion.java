@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreatePromotionCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
+import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import java.util.UUID;
 
 public class CreatePromotion {

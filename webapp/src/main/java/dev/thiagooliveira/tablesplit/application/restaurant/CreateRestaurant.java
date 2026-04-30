@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.restaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.UUID;
 
 public class CreateRestaurant {

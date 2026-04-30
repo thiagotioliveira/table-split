@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.notification;
 
 import dev.thiagooliveira.tablesplit.application.notification.*;
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
+import dev.thiagooliveira.tablesplit.domain.notification.WaiterCallRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

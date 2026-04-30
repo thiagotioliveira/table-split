@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Coupon;
+import dev.thiagooliveira.tablesplit.domain.menu.CouponRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

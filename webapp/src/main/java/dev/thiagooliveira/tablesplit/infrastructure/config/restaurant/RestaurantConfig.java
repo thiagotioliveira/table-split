@@ -2,6 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.restaurant.*;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentTokenRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

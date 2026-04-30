@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

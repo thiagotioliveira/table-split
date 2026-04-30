@@ -2,9 +2,11 @@ package dev.thiagooliveira.tablesplit.application.account;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateStaffCommand;
 import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.Staff;
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.UUID;
 
 public class CreateStaff {

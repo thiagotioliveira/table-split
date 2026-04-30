@@ -3,8 +3,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 import dev.thiagooliveira.tablesplit.application.order.CloseTable;
 import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
-import dev.thiagooliveira.tablesplit.application.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
+import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

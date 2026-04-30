@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateComboCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Combo;
+import dev.thiagooliveira.tablesplit.domain.menu.ComboRepository;
 import java.util.UUID;
 
 public class CreateCombo {

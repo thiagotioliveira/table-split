@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
 import java.util.UUID;
 
 public class DeleteStaff {

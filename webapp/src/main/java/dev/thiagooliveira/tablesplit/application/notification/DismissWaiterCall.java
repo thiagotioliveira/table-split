@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
+import dev.thiagooliveira.tablesplit.domain.notification.WaiterCallRepository;
 import java.util.UUID;
 
 public class DismissWaiterCall {

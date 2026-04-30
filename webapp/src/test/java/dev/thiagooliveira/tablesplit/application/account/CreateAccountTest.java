@@ -9,9 +9,11 @@ import dev.thiagooliveira.tablesplit.application.account.command.CreateRestauran
 import dev.thiagooliveira.tablesplit.application.account.command.CreateUserCommand;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.User;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;

@@ -1,6 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.account;
 
 import dev.thiagooliveira.tablesplit.application.account.*;
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,8 +13,7 @@ public class AccountConfig {
   @Bean
   public PlanLimitValidator planLimitValidator(
       AccountRepository accountRepository,
-      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
-          restaurantRepository) {
+      dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository restaurantRepository) {
     return new PlanLimitValidator(accountRepository, restaurantRepository);
   }
 
@@ -25,8 +27,7 @@ public class AccountConfig {
   public CreateStaff createStaff(
       StaffRepository staffRepository,
       UserRepository userRepository,
-      dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository
-          restaurantRepository,
+      dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository restaurantRepository,
       PlanLimitValidator planLimitValidator) {
     return new CreateStaff(
         staffRepository, userRepository, restaurantRepository, planLimitValidator);

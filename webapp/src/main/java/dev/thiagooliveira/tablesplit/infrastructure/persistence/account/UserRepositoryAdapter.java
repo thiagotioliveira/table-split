@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
-import dev.thiagooliveira.tablesplit.application.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.account.User;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

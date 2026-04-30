@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.notification;
 
-import dev.thiagooliveira.tablesplit.application.notification.WaiterCallRepository;
 import dev.thiagooliveira.tablesplit.domain.notification.WaiterCall;
+import dev.thiagooliveira.tablesplit.domain.notification.WaiterCallRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

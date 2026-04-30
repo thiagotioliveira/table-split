@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdatePromotionCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
+import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import java.util.UUID;
 
 public class UpdatePromotion {

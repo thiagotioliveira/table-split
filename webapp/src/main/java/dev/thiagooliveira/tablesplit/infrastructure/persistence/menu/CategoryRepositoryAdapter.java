@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.CategoryRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.Category;
+import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import java.util.List;
 import java.util.Optional;

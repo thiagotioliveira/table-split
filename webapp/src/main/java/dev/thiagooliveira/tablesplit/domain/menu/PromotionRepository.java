@@ -1,6 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.menu;
+package dev.thiagooliveira.tablesplit.domain.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

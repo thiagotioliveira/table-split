@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.menu;
 
-import dev.thiagooliveira.tablesplit.application.menu.CategoryRepository;
-import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantOperationService;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.security;
 
-import dev.thiagooliveira.tablesplit.application.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.application.account.GetStaff;
-import dev.thiagooliveira.tablesplit.application.account.UserRepository;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import org.springframework.beans.factory.annotation.Value;

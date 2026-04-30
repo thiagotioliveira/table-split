@@ -1,7 +1,5 @@
-package dev.thiagooliveira.tablesplit.application.restaurant;
+package dev.thiagooliveira.tablesplit.domain.restaurant;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

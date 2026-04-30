@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
 import dev.thiagooliveira.tablesplit.application.menu.*;
+import dev.thiagooliveira.tablesplit.domain.menu.ComboRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

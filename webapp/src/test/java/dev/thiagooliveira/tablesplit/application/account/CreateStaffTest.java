@@ -5,8 +5,10 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.account.command.CreateStaffCommand;
 import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
-import dev.thiagooliveira.tablesplit.application.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.account.StaffRepository;
+import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

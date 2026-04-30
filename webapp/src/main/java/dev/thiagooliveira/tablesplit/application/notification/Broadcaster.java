@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
