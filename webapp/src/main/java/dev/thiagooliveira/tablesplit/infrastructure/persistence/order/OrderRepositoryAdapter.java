@@ -14,13 +14,16 @@ public class OrderRepositoryAdapter implements OrderRepository {
   private final OrderJpaRepository orderJpaRepository;
   private final dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemJpaRepository
       itemJpaRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public OrderRepositoryAdapter(
       OrderJpaRepository orderJpaRepository,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.menu.ItemJpaRepository
-          itemJpaRepository) {
+          itemJpaRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.orderJpaRepository = orderJpaRepository;
     this.itemJpaRepository = itemJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -59,6 +62,10 @@ public class OrderRepositoryAdapter implements OrderRepository {
   @Override
   public void save(Order order) {
     orderJpaRepository.save(OrderEntity.fromDomain(order));
+
+    // Publish Domain Events
+    order.getEvents().forEach(eventPublisher::publishEvent);
+    order.clearEvents();
   }
 
   @Override

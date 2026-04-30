@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.*;
@@ -21,17 +20,10 @@ public class OrderConfig {
       TableRepository tableRepository,
       OrderRepository orderRepository,
       ItemRepository itemRepository,
-      EventPublisher eventPublisher,
       SyncTableStatus syncTableStatus,
       OrderService orderService) {
     return new PlaceOrder(
-        openTable,
-        tableRepository,
-        orderRepository,
-        itemRepository,
-        eventPublisher,
-        syncTableStatus,
-        orderService);
+        openTable, tableRepository, orderRepository, itemRepository, syncTableStatus, orderService);
   }
 
   @Bean

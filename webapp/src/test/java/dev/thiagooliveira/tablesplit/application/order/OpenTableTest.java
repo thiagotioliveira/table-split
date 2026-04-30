@@ -3,9 +3,6 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-// import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
-import dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
@@ -20,7 +17,6 @@ class OpenTableTest {
 
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
-  private EventPublisher eventPublisher;
   private SyncTableStatus syncTableStatus;
   private OpenTable openTable;
 
@@ -28,9 +24,8 @@ class OpenTableTest {
   void setUp() {
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
-    eventPublisher = mock(EventPublisher.class);
     syncTableStatus = mock(SyncTableStatus.class);
-    openTable = new OpenTable(tableRepository, orderRepository, eventPublisher, syncTableStatus);
+    openTable = new OpenTable(tableRepository, orderRepository, syncTableStatus);
   }
 
   @Test
@@ -51,7 +46,6 @@ class OpenTableTest {
 
     verify(tableRepository, atLeastOnce()).save(table);
     verify(orderRepository).save(any(Order.class));
-    verify(eventPublisher).publishEvent(any(TableOpenedEvent.class));
   }
 
   @Test

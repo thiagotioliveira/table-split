@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
@@ -33,7 +32,6 @@ class PlaceOrderTest {
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
   private ItemRepository itemRepository;
-  private EventPublisher eventPublisher;
   private SyncTableStatus syncTableStatus;
   private OrderService orderService;
   private PlaceOrder placeOrder;
@@ -48,7 +46,6 @@ class PlaceOrderTest {
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
     itemRepository = mock(ItemRepository.class);
-    eventPublisher = mock(EventPublisher.class);
     syncTableStatus = mock(SyncTableStatus.class);
     orderService = mock(OrderService.class);
     placeOrder =
@@ -57,7 +54,6 @@ class PlaceOrderTest {
             tableRepository,
             orderRepository,
             itemRepository,
-            eventPublisher,
             syncTableStatus,
             orderService);
 

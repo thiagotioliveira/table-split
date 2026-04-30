@@ -1,8 +1,5 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
@@ -13,17 +10,14 @@ public class OpenTable {
 
   private final TableRepository tableRepository;
   private final OrderRepository orderRepository;
-  private final EventPublisher eventPublisher;
   private final SyncTableStatus syncTableStatus;
 
   public OpenTable(
       TableRepository tableRepository,
       OrderRepository orderRepository,
-      EventPublisher eventPublisher,
       SyncTableStatus syncTableStatus) {
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
-    this.eventPublisher = eventPublisher;
     this.syncTableStatus = syncTableStatus;
   }
 
@@ -50,14 +44,11 @@ public class OpenTable {
     table.occupy();
     tableRepository.save(table);
 
-    Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId(), serviceFee);
+    Order order = Order.open(table, serviceFee);
     if (customerId != null) {
       order.addCustomer(customerId, customerName);
     }
     orderRepository.save(order);
-
-    eventPublisher.publishEvent(new TableStatusChangedEvent(table));
-    eventPublisher.publishEvent(new TableOpenedEvent(order, table));
 
     return order;
   }

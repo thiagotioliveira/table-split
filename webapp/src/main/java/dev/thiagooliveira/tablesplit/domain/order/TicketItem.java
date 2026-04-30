@@ -45,7 +45,9 @@ public class TicketItem {
     this.note = note;
     this.customizations = customizations;
 
-    BigDecimal finalUnitPrice = item.getPrice();
+    BigDecimal extra = calculateExtraPrice(customizations);
+    BigDecimal basePriceWithExtra = item.getPrice().add(extra);
+    BigDecimal finalUnitPrice;
 
     if (promotionId == null && item.getPromotion() != null) {
       promotionId = item.getPromotion().promotionId();
@@ -54,29 +56,28 @@ public class TicketItem {
     }
 
     if (promotionId != null) {
-      this.promotionSnapshot =
-          new PromotionSnapshot(promotionId, item.getPrice(), discountType, discountValue);
-
+      BigDecimal promotionalPrice = BigDecimal.ZERO;
       if (DiscountType.PERCENTAGE.name().equals(discountType)) {
         BigDecimal discount =
             item.getPrice()
                 .multiply(discountValue)
                 .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
-        finalUnitPrice = item.getPrice().subtract(discount);
+        promotionalPrice = item.getPrice().subtract(discount).add(extra);
       } else if (DiscountType.FIXED_VALUE.name().equals(discountType)) {
-        finalUnitPrice = item.getPrice().subtract(discountValue).max(BigDecimal.ZERO);
+        promotionalPrice = item.getPrice().subtract(discountValue).max(BigDecimal.ZERO).add(extra);
       }
-    }
 
-    // Handle extra prices from customizations
-    if (this.customizations != null && !this.customizations.isEmpty()) {
-      BigDecimal extra = calculateExtraPrice(customizations);
-      finalUnitPrice = finalUnitPrice.add(extra);
+      finalUnitPrice = promotionalPrice;
+      this.promotionSnapshot =
+          new PromotionSnapshot(promotionId, basePriceWithExtra, discountType, discountValue);
+    } else {
+      finalUnitPrice = item.getPrice().add(extra);
     }
     this.unitPrice = finalUnitPrice;
   }
 
   private java.math.BigDecimal calculateExtraPrice(List<TicketItemCustomization> customizations) {
+    if (customizations == null) return java.math.BigDecimal.ZERO;
     java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
     for (TicketItemCustomization customization : customizations) {
       extra = extra.add(customization.calculateTotalExtra());
@@ -199,17 +200,8 @@ public class TicketItem {
   public record PromotionSnapshot(
       UUID promotionId, BigDecimal originalPrice, String discountType, BigDecimal discountValue) {
 
-    public BigDecimal calculatePromotionalPrice() {
-      if (DiscountType.PERCENTAGE.name().equals(discountType)) {
-        BigDecimal discount =
-            originalPrice
-                .multiply(discountValue)
-                .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
-        return originalPrice.subtract(discount);
-      } else if (DiscountType.FIXED_VALUE.name().equals(discountType)) {
-        return originalPrice.subtract(discountValue).max(BigDecimal.ZERO);
-      }
-      return originalPrice;
+    public BigDecimal calculatePromotionalPrice(BigDecimal unitPrice) {
+      return unitPrice;
     }
   }
 }

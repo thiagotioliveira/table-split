@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class Order {
+public class Order extends AggregateRoot {
   private UUID id;
   private UUID restaurantId;
   private UUID tableId;
@@ -30,6 +31,13 @@ public class Order {
     this.status = OrderStatus.OPEN;
     this.openedAt = Time.now();
     this.serviceFee = serviceFee;
+  }
+
+  public static Order open(Table table, int serviceFee) {
+    Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId(), serviceFee);
+    order.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent(order, table));
+    return order;
   }
 
   public void addPayment(Payment payment) {
@@ -253,7 +261,7 @@ public class Order {
                         .allMatch(item -> item.getStatus() == TicketStatus.CANCELLED));
   }
 
-  public void addTicketWithItems(List<TicketItem> items, String note) {
+  public void addTicketWithItems(List<TicketItem> items, String note, String tableCod) {
     if (this.status != OrderStatus.OPEN) {
       throw new IllegalOrderStatusException(
           this.tableId, IllegalOrderStatusException.Reason.TICKET_NOT_ALLOWED);
@@ -275,6 +283,10 @@ public class Order {
         });
 
     this.tickets.add(ticket);
+
+    // Register Domain Event
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent(this, ticket, tableCod));
   }
 
   public boolean hasParticipant(UUID customerId) {

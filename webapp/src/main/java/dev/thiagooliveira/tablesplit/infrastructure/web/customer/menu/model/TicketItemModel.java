@@ -40,7 +40,7 @@ public class TicketItemModel {
     this.createdAt = createdAt;
     this.promotionSnapshot =
         item.getPromotionSnapshot() != null
-            ? new PromotionSnapshotModel(item.getPromotionSnapshot())
+            ? new PromotionSnapshotModel(item.getPromotionSnapshot(), item.getUnitPrice())
             : null;
     this.customizations =
         item.getCustomizations() != null
@@ -160,12 +160,13 @@ public class TicketItemModel {
     private final BigDecimal discountValue;
     private final BigDecimal promotionalPrice;
 
-    public PromotionSnapshotModel(TicketItem.PromotionSnapshot snapshot) {
+    public PromotionSnapshotModel(
+        TicketItem.PromotionSnapshot snapshot, BigDecimal promotionalPrice) {
       this.promotionId = snapshot.promotionId() != null ? snapshot.promotionId().toString() : null;
       this.originalPrice = snapshot.originalPrice();
       this.discountType = snapshot.discountType();
       this.discountValue = snapshot.discountValue();
-      this.promotionalPrice = snapshot.calculatePromotionalPrice();
+      this.promotionalPrice = promotionalPrice;
     }
 
     @JsonProperty("promotionId")

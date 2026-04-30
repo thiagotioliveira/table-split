@@ -13,11 +13,15 @@ public class TableRepositoryAdapter implements TableRepository {
 
   private final TableJpaRepository tableJpaRepository;
   private final OrderJpaRepository orderJpaRepository;
+  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   public TableRepositoryAdapter(
-      TableJpaRepository tableJpaRepository, OrderJpaRepository orderJpaRepository) {
+      TableJpaRepository tableJpaRepository,
+      OrderJpaRepository orderJpaRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
     this.tableJpaRepository = tableJpaRepository;
     this.orderJpaRepository = orderJpaRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -56,6 +60,10 @@ public class TableRepositoryAdapter implements TableRepository {
   @Override
   public void save(Table table) {
     tableJpaRepository.save(TableEntity.fromDomain(table));
+
+    // Publish Domain Events
+    table.getEvents().forEach(eventPublisher::publishEvent);
+    table.clearEvents();
   }
 
   @Override

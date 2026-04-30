@@ -1,11 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
-import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
@@ -17,7 +14,6 @@ public class PlaceOrder {
   private final TableRepository tableRepository;
   private final OrderRepository orderRepository;
   private final ItemRepository itemRepository;
-  private final EventPublisher eventPublisher;
   private final SyncTableStatus syncTableStatus;
   private final OrderService orderService;
 
@@ -26,14 +22,12 @@ public class PlaceOrder {
       TableRepository tableRepository,
       OrderRepository orderRepository,
       ItemRepository itemRepository,
-      EventPublisher eventPublisher,
       SyncTableStatus syncTableStatus,
       OrderService orderService) {
     this.openTable = openTable;
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
     this.itemRepository = itemRepository;
-    this.eventPublisher = eventPublisher;
     this.syncTableStatus = syncTableStatus;
     this.orderService = orderService;
   }
@@ -61,9 +55,8 @@ public class PlaceOrder {
         .orElseGet(
             () -> {
               Table table =
-                  new Table(UUID.randomUUID(), request.getRestaurantId(), request.getTableCod());
+                  Table.create(UUID.randomUUID(), request.getRestaurantId(), request.getTableCod());
               tableRepository.save(table);
-              eventPublisher.publishEvent(new TableCreatedEvent(table));
               return table;
             });
   }
@@ -96,12 +89,7 @@ public class PlaceOrder {
       java.util.List<TicketItem> items =
           ticketRequest.getItems().stream().map(this::mapToTicketItem).toList();
 
-      order.addTicketWithItems(items, ticketRequest.getNote());
-
-      // We need to find the ticket we just added to publish the event
-      // This is slightly awkward but better than manual creation here
-      Ticket ticket = order.getTickets().get(order.getTickets().size() - 1);
-      eventPublisher.publishEvent(new TicketCreatedEvent(order, ticket, tableCod));
+      order.addTicketWithItems(items, ticketRequest.getNote(), tableCod);
     }
   }
 

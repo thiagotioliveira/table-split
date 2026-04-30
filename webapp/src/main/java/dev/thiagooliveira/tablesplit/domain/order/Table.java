@@ -1,10 +1,11 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public class Table {
+public class Table extends AggregateRoot {
   private UUID id;
   private UUID restaurantId;
   private String cod;
@@ -18,6 +19,12 @@ public class Table {
     this.restaurantId = restaurantId;
     this.cod = cod;
     this.status = TableStatus.AVAILABLE;
+  }
+
+  public static Table create(UUID id, UUID restaurantId, String cod) {
+    Table table = new Table(id, restaurantId, cod);
+    table.registerEvent(new dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent(table));
+    return table;
   }
 
   public UUID getId() {
@@ -76,14 +83,20 @@ public class Table {
 
   public void occupy() {
     this.status = TableStatus.OCCUPIED;
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
   }
 
   public void waiting() {
     this.status = TableStatus.WAITING;
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
   }
 
   public void release() {
     this.status = TableStatus.AVAILABLE;
+    this.registerEvent(
+        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
   }
 
   public boolean isAvailable() {
