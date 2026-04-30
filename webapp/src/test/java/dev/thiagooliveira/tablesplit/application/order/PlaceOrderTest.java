@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
-import dev.thiagooliveira.tablesplit.application.order.model.*;
+import dev.thiagooliveira.tablesplit.application.order.command.*;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
@@ -64,25 +64,18 @@ class PlaceOrderTest {
 
   @Test
   void shouldApplyCustomizationExtraPrice() {
-    TicketItemRequest ticketItemRequest = createDefaultTicketItemRequest(1);
+    TicketItemOptionCommand option = new TicketItemOptionCommand("Vodka", new BigDecimal("2"));
 
-    dev.thiagooliveira.tablesplit.application.order.model.TicketItemOptionRequest option =
-        new dev.thiagooliveira.tablesplit.application.order.model.TicketItemOptionRequest();
-    option.setText("Vodka");
-    option.setExtraPrice(new BigDecimal("2"));
+    TicketItemCustomizationCommand customization =
+        new TicketItemCustomizationCommand("Question?", List.of(option));
 
-    dev.thiagooliveira.tablesplit.application.order.model.TicketItemCustomizationRequest
-        customization =
-            new dev.thiagooliveira.tablesplit.application.order.model
-                .TicketItemCustomizationRequest();
-    customization.setTitle("Question?");
-    customization.setOptions(List.of(option));
-
-    ticketItemRequest.setCustomizations(List.of(customization));
+    TicketItemCommand ticketItemCommand =
+        new TicketItemCommand(
+            ITEM_ID, CUSTOMER_ID, 1, null, null, null, null, null, List.of(customization));
 
     setupCommonMocks();
 
-    Order result = placeOrder.execute(createPlaceOrderRequest(ticketItemRequest));
+    Order result = placeOrder.execute(createPlaceOrderCommand(ticketItemCommand));
 
     assertNotNull(result);
     assertEquals(new BigDecimal("102"), result.getItems().get(0).getTotalPrice());
@@ -101,14 +94,21 @@ class PlaceOrderTest {
             discountType,
             discountValue));
 
-    TicketItemRequest ticketItemRequest = createDefaultTicketItemRequest(1);
-    ticketItemRequest.setPromotionId(promotionId);
-    ticketItemRequest.setDiscountType(discountType.name());
-    ticketItemRequest.setDiscountValue(discountValue);
+    TicketItemCommand ticketItemCommand =
+        new TicketItemCommand(
+            ITEM_ID,
+            CUSTOMER_ID,
+            1,
+            null,
+            promotionId,
+            null,
+            discountType.name(),
+            discountValue,
+            null);
 
     setupCommonMocks();
 
-    Order result = placeOrder.execute(createPlaceOrderRequest(ticketItemRequest));
+    Order result = placeOrder.execute(createPlaceOrderCommand(ticketItemCommand));
 
     assertNotNull(result);
     assertEquals(new BigDecimal("85"), result.getItems().get(0).getTotalPrice());
@@ -131,14 +131,21 @@ class PlaceOrderTest {
             discountType,
             discountValue));
 
-    TicketItemRequest ticketItemRequest = createDefaultTicketItemRequest(1);
-    ticketItemRequest.setPromotionId(promotionId);
-    ticketItemRequest.setDiscountType(discountType.name());
-    ticketItemRequest.setDiscountValue(discountValue);
+    TicketItemCommand ticketItemCommand =
+        new TicketItemCommand(
+            ITEM_ID,
+            CUSTOMER_ID,
+            1,
+            null,
+            promotionId,
+            null,
+            discountType.name(),
+            discountValue,
+            null);
 
     setupCommonMocks();
 
-    Order result = placeOrder.execute(createPlaceOrderRequest(ticketItemRequest));
+    Order result = placeOrder.execute(createPlaceOrderCommand(ticketItemCommand));
 
     assertNotNull(result);
     assertEquals(new BigDecimal("90.00"), result.getItems().get(0).getTotalPrice());
@@ -148,7 +155,7 @@ class PlaceOrderTest {
   void shouldPlaceOrderSuccessfully_whenTableIsAvailable() {
     setupCommonMocks();
 
-    Order result = placeOrder.execute(createPlaceOrderRequest(createDefaultTicketItemRequest(2)));
+    Order result = placeOrder.execute(createPlaceOrderCommand(createDefaultTicketItemCommand(2)));
 
     assertNotNull(result);
     assertEquals(CUSTOMER_ID, result.getItems().get(0).getCustomerId());
@@ -164,7 +171,7 @@ class PlaceOrderTest {
     when(openTable.execute(table.getId(), 10, null, null)).thenReturn(order);
     when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
-    Order result = placeOrder.execute(createPlaceOrderRequest(createDefaultTicketItemRequest(1)));
+    Order result = placeOrder.execute(createPlaceOrderCommand(createDefaultTicketItemCommand(1)));
 
     assertNotNull(result);
     verify(openTable).execute(table.getId(), 10, null, null);
@@ -181,19 +188,18 @@ class PlaceOrderTest {
     return item;
   }
 
-  private TicketItemRequest createDefaultTicketItemRequest(int quantity) {
-    return new TicketItemRequest(ITEM_ID, CUSTOMER_ID, quantity, null);
+  private TicketItemCommand createDefaultTicketItemCommand(int quantity) {
+    return new TicketItemCommand(
+        ITEM_ID, CUSTOMER_ID, quantity, null, null, null, null, null, null);
   }
 
-  private PlaceOrderRequest createPlaceOrderRequest(TicketItemRequest... items) {
-    return new PlaceOrderRequest(
+  private PlaceOrderCommand createPlaceOrderCommand(TicketItemCommand... items) {
+    return new PlaceOrderCommand(
         RESTAURANT_ID,
         TABLE_COD,
-        List.of(
-            new dev.thiagooliveira.tablesplit.application.order.model.TicketRequest(
-                null, List.of(items))),
+        List.of(new TicketCommand(null, List.of(items))),
         10,
-        List.of(new CustomerRequest(CUSTOMER_ID, CUSTOMER_NAME)));
+        List.of(new CustomerCommand(CUSTOMER_ID, CUSTOMER_NAME)));
   }
 
   private void setupCommonMocks() {

@@ -4,7 +4,8 @@ import dev.thiagooliveira.tablesplit.application.account.GetAccount;
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.*;
-import dev.thiagooliveira.tablesplit.application.order.model.*;
+import dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand;
+import dev.thiagooliveira.tablesplit.application.order.command.UpdateCustomerNameCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
@@ -81,7 +82,7 @@ public class CustomerTableController {
   public ResponseEntity<Void> updateCustomerName(
       @PathVariable String slug,
       @PathVariable String tableCode,
-      @RequestBody UpdateCustomerNameRequest request) {
+      @RequestBody UpdateCustomerNameCommand request) {
     var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
     var table = getTable(restaurant, tableCode);
@@ -423,14 +424,19 @@ public class CustomerTableController {
   public ResponseEntity<Void> placeOrder(
       @PathVariable String slug,
       @PathVariable String tableCode,
-      @RequestBody PlaceOrderRequest request) {
+      @RequestBody PlaceOrderCommand request) {
     var restaurant = getRestaurantBySlug(slug);
     checkPlan(restaurant);
-    request.setRestaurantId(restaurant.getId());
-    request.setTableCod(tableCode);
-    request.setServiceFee(restaurant.getServiceFee());
 
-    transactionalContext.execute(() -> placeOrder.execute(request));
+    var command =
+        new PlaceOrderCommand(
+            restaurant.getId(),
+            tableCode,
+            request.tickets(),
+            restaurant.getServiceFee(),
+            request.customers());
+
+    transactionalContext.execute(() -> placeOrder.execute(command));
 
     return ResponseEntity.ok().build();
   }

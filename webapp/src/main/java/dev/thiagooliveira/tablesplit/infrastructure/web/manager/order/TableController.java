@@ -12,9 +12,9 @@ import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
+import dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
-import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.domain.common.DomainException;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
@@ -474,17 +474,22 @@ public class TableController {
   @PostMapping("/{tableId}/order")
   @ResponseBody
   public org.springframework.http.ResponseEntity<Void> placeOrder(
-      Authentication auth, @PathVariable UUID tableId, @RequestBody PlaceOrderRequest request) {
+      Authentication auth, @PathVariable UUID tableId, @RequestBody PlaceOrderCommand request) {
     var account = (AccountContext) auth.getPrincipal();
     var table =
         getTables
             .findById(tableId)
             .orElseThrow(() -> new NotFoundException("error.table.not.found"));
-    request.setRestaurantId(table.getRestaurantId());
-    request.setTableCod(table.getCod());
-    request.setServiceFee(account.getRestaurant().getServiceFee());
 
-    transactionalContext.execute(() -> placeOrder.execute(request));
+    var command =
+        new PlaceOrderCommand(
+            table.getRestaurantId(),
+            table.getCod(),
+            request.tickets(),
+            account.getRestaurant().getServiceFee(),
+            request.customers());
+
+    transactionalContext.execute(() -> placeOrder.execute(command));
 
     return org.springframework.http.ResponseEntity.ok().build();
   }

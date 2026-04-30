@@ -50,7 +50,8 @@ public class TicketEventListener {
     this.messageSource = messageSource;
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketCreated(TicketCreatedEvent event) {
     logger.debug("Handling TicketCreatedEvent for restaurant: {}", event.getRestaurantId());
     TicketModel model =
@@ -73,7 +74,8 @@ public class TicketEventListener {
     }
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
     logger.debug(
         "Handling TicketStatusChangedEvent for restaurant: {}. New status: {}",
@@ -86,7 +88,8 @@ public class TicketEventListener {
             "ticketId", event.getTicketId().toString(), "status", event.getNewStatus()));
   }
 
-  @EventListener
+  @org.springframework.transaction.event.TransactionalEventListener(
+      phase = org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT)
   public void handleTicketItemStatusChanged(TicketItemStatusChangedEvent event) {
     logger.debug(
         "Handling TicketItemStatusChangedEvent for restaurant: {}. Item: {}, New status: {}",
@@ -123,7 +126,7 @@ public class TicketEventListener {
     broadcast(event.getRestaurantId(), "WAITER_CALL", eventWithData);
   }
 
-  @org.springframework.context.event.EventListener
+  @EventListener
   public void handleWaiterCallDismissed(
       dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent event) {
     long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();

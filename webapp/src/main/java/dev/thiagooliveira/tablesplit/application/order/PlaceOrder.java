@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
-import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
-import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
+import dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand;
+import dev.thiagooliveira.tablesplit.application.order.command.TicketItemCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
@@ -32,16 +32,16 @@ public class PlaceOrder {
     this.orderService = orderService;
   }
 
-  public Order execute(PlaceOrderRequest request) {
-    Table table = getOrCreateTable(request);
+  public Order execute(PlaceOrderCommand command) {
+    Table table = getOrCreateTable(command);
 
     Order order =
         orderRepository
             .findActiveOrderByTableId(table.getId())
-            .orElseGet(() -> openNewSession(table, request));
+            .orElseGet(() -> openNewSession(table, command));
 
-    registerParticipants(order, request);
-    processTickets(order, request, table.getCod());
+    registerParticipants(order, command);
+    processTickets(order, command, table.getCod());
 
     orderRepository.save(order);
     syncTableStatus.execute(order);
@@ -49,78 +49,78 @@ public class PlaceOrder {
     return order;
   }
 
-  private Table getOrCreateTable(PlaceOrderRequest request) {
+  private Table getOrCreateTable(PlaceOrderCommand command) {
     return tableRepository
-        .findByRestaurantIdAndCod(request.getRestaurantId(), request.getTableCod())
+        .findByRestaurantIdAndCod(command.restaurantId(), command.tableCod())
         .orElseGet(
             () -> {
               Table table =
-                  Table.create(UUID.randomUUID(), request.getRestaurantId(), request.getTableCod());
+                  Table.create(UUID.randomUUID(), command.restaurantId(), command.tableCod());
               tableRepository.save(table);
               return table;
             });
   }
 
-  private Order openNewSession(Table table, PlaceOrderRequest request) {
-    // Validate session for participants in the request
-    if (request.getTickets() != null) {
-      request.getTickets().stream()
-          .flatMap(t -> t.getItems().stream())
-          .map(TicketItemRequest::getCustomerId)
+  private Order openNewSession(Table table, PlaceOrderCommand command) {
+    // Validate session for participants in the command
+    if (command.tickets() != null) {
+      command.tickets().stream()
+          .flatMap(t -> t.items().stream())
+          .map(TicketItemCommand::customerId)
           .filter(java.util.Objects::nonNull)
           .distinct()
           .forEach(customerId -> orderService.validateCustomerSession(table.getId(), customerId));
     }
 
     return openTable.execute(
-        table.getId(), request.getServiceFee() != null ? request.getServiceFee() : 0, null, null);
+        table.getId(), command.serviceFee() != null ? command.serviceFee() : 0, null, null);
   }
 
-  private void registerParticipants(Order order, PlaceOrderRequest request) {
-    if (request.getCustomers() != null) {
-      request.getCustomers().forEach(c -> order.addCustomer(c.getId(), c.getName()));
+  private void registerParticipants(Order order, PlaceOrderCommand command) {
+    if (command.customers() != null) {
+      command.customers().forEach(c -> order.addCustomer(c.id(), c.name()));
     }
   }
 
-  private void processTickets(Order order, PlaceOrderRequest request, String tableCod) {
-    if (request.getTickets() == null) return;
+  private void processTickets(Order order, PlaceOrderCommand command, String tableCod) {
+    if (command.tickets() == null) return;
 
-    for (var ticketRequest : request.getTickets()) {
+    for (var ticketCommand : command.tickets()) {
       java.util.List<TicketItem> items =
-          ticketRequest.getItems().stream().map(this::mapToTicketItem).toList();
+          ticketCommand.items().stream().map(this::mapToTicketItem).toList();
 
-      order.addTicketWithItems(items, ticketRequest.getNote(), tableCod);
+      order.addTicketWithItems(items, ticketCommand.note(), tableCod);
     }
   }
 
-  private TicketItem mapToTicketItem(TicketItemRequest itemRequest) {
+  private TicketItem mapToTicketItem(TicketItemCommand itemCommand) {
     Item item =
         itemRepository
-            .findById(itemRequest.getItemId())
+            .findById(itemCommand.itemId())
             .orElseThrow(
-                () -> new IllegalArgumentException("Item not found: " + itemRequest.getItemId()));
+                () -> new IllegalArgumentException("Item not found: " + itemCommand.itemId()));
 
     return new TicketItem(
         item,
-        itemRequest.getQuantity(),
-        itemRequest.getCustomerId(),
-        itemRequest.getNote(),
-        mapCustomizations(itemRequest),
-        itemRequest.getPromotionId(),
-        itemRequest.getDiscountType(),
-        itemRequest.getDiscountValue());
+        itemCommand.quantity(),
+        itemCommand.customerId(),
+        itemCommand.note(),
+        mapCustomizations(itemCommand),
+        itemCommand.promotionId(),
+        itemCommand.discountType(),
+        itemCommand.discountValue());
   }
 
-  private java.util.List<TicketItemCustomization> mapCustomizations(TicketItemRequest itemRequest) {
-    if (itemRequest.getCustomizations() == null) return java.util.List.of();
+  private java.util.List<TicketItemCustomization> mapCustomizations(TicketItemCommand itemCommand) {
+    if (itemCommand.customizations() == null) return java.util.List.of();
 
-    return itemRequest.getCustomizations().stream()
+    return itemCommand.customizations().stream()
         .map(
             c ->
                 new TicketItemCustomization(
-                    c.getTitle(),
-                    c.getOptions().stream()
-                        .map(o -> new TicketItemOption(o.getText(), o.getExtraPrice()))
+                    c.title(),
+                    c.options().stream()
+                        .map(o -> new TicketItemOption(o.text(), o.extraPrice()))
                         .toList()))
         .toList();
   }
