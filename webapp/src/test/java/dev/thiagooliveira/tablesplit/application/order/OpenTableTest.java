@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.EventPublisher;
 // import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;

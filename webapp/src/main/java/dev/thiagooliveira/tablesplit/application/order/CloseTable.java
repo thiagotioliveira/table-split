@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.event.TableClosedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.util.UUID;
 

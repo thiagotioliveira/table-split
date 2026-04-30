@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.event.PaymentProcessedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import java.math.BigDecimal;
 import java.util.UUID;

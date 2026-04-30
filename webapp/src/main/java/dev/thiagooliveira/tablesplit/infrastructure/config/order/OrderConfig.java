@@ -3,11 +3,17 @@ package dev.thiagooliveira.tablesplit.infrastructure.config.order;
 import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.application.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.application.order.*;
+import dev.thiagooliveira.tablesplit.domain.order.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OrderConfig {
+
+  @Bean
+  public OrderService orderService(OrderRepository orderRepository) {
+    return new OrderService(orderRepository);
+  }
 
   @Bean
   public PlaceOrder placeOrder(
@@ -16,14 +22,16 @@ public class OrderConfig {
       OrderRepository orderRepository,
       ItemRepository itemRepository,
       EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus) {
+      SyncTableStatus syncTableStatus,
+      OrderService orderService) {
     return new PlaceOrder(
         openTable,
         tableRepository,
         orderRepository,
         itemRepository,
         eventPublisher,
-        syncTableStatus);
+        syncTableStatus,
+        orderService);
   }
 
   @Bean

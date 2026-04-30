@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.order;
+package dev.thiagooliveira.tablesplit.domain.order;
 
 public class TableSessionClosedException extends RuntimeException {
   public TableSessionClosedException(String message) {

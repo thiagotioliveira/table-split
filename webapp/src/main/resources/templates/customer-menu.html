@@ -3440,7 +3440,12 @@
                     'X-Requested-With': 'XMLHttpRequest',
                     ...getCsrfHeaders()
                 },
-                body: JSON.stringify({ rating: selectedExpRating, comment })
+                body: JSON.stringify({ 
+                    orderId: activeOrderId,
+                    customerId: myCustomerId,
+                    rating: selectedExpRating, 
+                    comment 
+                })
             });
 
             if (response.ok) {

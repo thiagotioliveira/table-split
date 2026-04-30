@@ -252,4 +252,33 @@ public class Order {
                     t.getItems().stream()
                         .allMatch(item -> item.getStatus() == TicketStatus.CANCELLED));
   }
+
+  public void addTicketWithItems(List<TicketItem> items, String note) {
+    if (this.status != OrderStatus.OPEN) {
+      throw new IllegalOrderStatusException(
+          this.tableId, IllegalOrderStatusException.Reason.TICKET_NOT_ALLOWED);
+    }
+
+    Ticket ticket = new Ticket();
+    ticket.setNote(note);
+    items.forEach(
+        item -> {
+          // Business Rule: Ensure all items have a customer.
+          // If not assigned, assign to the first customer or a default one.
+          if (item.getCustomerId() == null) {
+            if (this.customers.isEmpty()) {
+              this.addCustomer(UUID.randomUUID(), "Atendimento Mesa " + this.tableId);
+            }
+            item.setCustomerId(this.customers.iterator().next().getId());
+          }
+          ticket.getItems().add(item);
+        });
+
+    this.tickets.add(ticket);
+  }
+
+  public boolean hasParticipant(UUID customerId) {
+    if (customerId == null) return false;
+    return this.customers.stream().anyMatch(c -> c.getId().equals(customerId));
+  }
 }

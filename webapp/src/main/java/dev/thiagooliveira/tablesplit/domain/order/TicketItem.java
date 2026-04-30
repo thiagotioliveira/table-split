@@ -197,5 +197,19 @@ public class TicketItem {
   }
 
   public record PromotionSnapshot(
-      UUID promotionId, BigDecimal originalPrice, String discountType, BigDecimal discountValue) {}
+      UUID promotionId, BigDecimal originalPrice, String discountType, BigDecimal discountValue) {
+
+    public BigDecimal calculatePromotionalPrice() {
+      if (DiscountType.PERCENTAGE.name().equals(discountType)) {
+        BigDecimal discount =
+            originalPrice
+                .multiply(discountValue)
+                .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+        return originalPrice.subtract(discount);
+      } else if (DiscountType.FIXED_VALUE.name().equals(discountType)) {
+        return originalPrice.subtract(discountValue).max(BigDecimal.ZERO);
+      }
+      return originalPrice;
+    }
+  }
 }

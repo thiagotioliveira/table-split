@@ -520,10 +520,9 @@ public class CustomerTableController {
 
   public record OpenTableRequest(java.util.UUID customerId, String customerName) {}
 
-  @ExceptionHandler(
-      dev.thiagooliveira.tablesplit.application.order.TableSessionClosedException.class)
+  @ExceptionHandler(dev.thiagooliveira.tablesplit.domain.order.TableSessionClosedException.class)
   public ResponseEntity<String> handleSessionClosed(
-      dev.thiagooliveira.tablesplit.application.order.TableSessionClosedException ex) {
+      dev.thiagooliveira.tablesplit.domain.order.TableSessionClosedException ex) {
     return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
         .body(ex.getMessage());
   }

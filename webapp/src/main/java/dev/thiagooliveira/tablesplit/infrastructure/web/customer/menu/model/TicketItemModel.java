@@ -158,12 +158,14 @@ public class TicketItemModel {
     private final BigDecimal originalPrice;
     private final String discountType;
     private final BigDecimal discountValue;
+    private final BigDecimal promotionalPrice;
 
     public PromotionSnapshotModel(TicketItem.PromotionSnapshot snapshot) {
       this.promotionId = snapshot.promotionId() != null ? snapshot.promotionId().toString() : null;
       this.originalPrice = snapshot.originalPrice();
       this.discountType = snapshot.discountType();
       this.discountValue = snapshot.discountValue();
+      this.promotionalPrice = snapshot.calculatePromotionalPrice();
     }
 
     @JsonProperty("promotionId")
@@ -184,6 +186,11 @@ public class TicketItemModel {
     @JsonProperty("discountValue")
     public BigDecimal getDiscountValue() {
       return discountValue;
+    }
+
+    @JsonProperty("promotionalPrice")
+    public BigDecimal getPromotionalPrice() {
+      return promotionalPrice;
     }
   }
 }

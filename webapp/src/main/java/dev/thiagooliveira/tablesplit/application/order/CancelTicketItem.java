@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.EventPublisher;
 import dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import java.util.UUID;

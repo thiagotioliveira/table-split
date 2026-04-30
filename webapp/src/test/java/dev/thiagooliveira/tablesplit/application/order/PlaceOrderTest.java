@@ -9,6 +9,8 @@ import dev.thiagooliveira.tablesplit.application.order.model.*;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
+import dev.thiagooliveira.tablesplit.domain.order.OrderService;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,6 +35,7 @@ class PlaceOrderTest {
   private ItemRepository itemRepository;
   private EventPublisher eventPublisher;
   private SyncTableStatus syncTableStatus;
+  private OrderService orderService;
   private PlaceOrder placeOrder;
 
   private Table table;
@@ -47,6 +50,7 @@ class PlaceOrderTest {
     itemRepository = mock(ItemRepository.class);
     eventPublisher = mock(EventPublisher.class);
     syncTableStatus = mock(SyncTableStatus.class);
+    orderService = mock(OrderService.class);
     placeOrder =
         new PlaceOrder(
             openTable,
@@ -54,7 +58,8 @@ class PlaceOrderTest {
             orderRepository,
             itemRepository,
             eventPublisher,
-            syncTableStatus);
+            syncTableStatus,
+            orderService);
 
     table = new Table(UUID.randomUUID(), RESTAURANT_ID, TABLE_COD);
     order = new Order(UUID.randomUUID(), RESTAURANT_ID, table.getId(), 10);

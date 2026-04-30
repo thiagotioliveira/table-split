@@ -43,8 +43,6 @@ public class OrderFeedbackEntity {
   public static OrderFeedbackEntity fromDomain(OrderFeedback domain) {
     OrderFeedbackEntity entity = new OrderFeedbackEntity();
     entity.setId(domain.getId());
-    entity.setOrder(new OrderEntity());
-    entity.getOrder().setId(domain.getOrderId());
     entity.setCustomerId(domain.getCustomerId());
     entity.setRating(domain.getRating());
     entity.setComment(domain.getComment());
