@@ -1,12 +1,16 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
 public class TicketItem {
+  private ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
   private UUID id;
   private UUID itemId;
   private Map<Language, String> name = new java.util.HashMap<>();
@@ -22,28 +26,78 @@ public class TicketItem {
   public TicketItem() {}
 
   public TicketItem(Item item, int quantity, UUID customerId, String note) {
-    this(item, quantity, customerId, note, null);
+    this(item, quantity, customerId, note, null, null, null, null);
   }
 
-  public TicketItem(Item item, int quantity, UUID customerId, String note, String customizations) {
+  public TicketItem(
+      Item item,
+      int quantity,
+      UUID customerId,
+      String note,
+      String customizations,
+      UUID promotionId,
+      String discountType,
+      BigDecimal discountValue) {
     this.id = UUID.randomUUID();
     this.itemId = item.getId();
     this.name = item.getName();
     this.customerId = customerId;
     this.quantity = quantity;
-    this.unitPrice = item.getEffectivePrice();
     this.note = note;
     this.customizations = customizations;
 
-    // Capture promotion snapshot if item has promotion
-    if (item.getPromotion() != null) {
-      this.promotionSnapshot =
-          new PromotionSnapshot(
-              item.getPromotion().promotionId(),
-              item.getPrice(), // original price
-              item.getPromotion().discountType().name(),
-              item.getPromotion().discountValue());
+    BigDecimal finalUnitPrice = item.getPrice();
+
+    if (promotionId == null && item.getPromotion() != null) {
+      promotionId = item.getPromotion().promotionId();
+      discountType = item.getPromotion().discountType().name();
+      discountValue = item.getPromotion().discountValue();
     }
+
+    if (promotionId != null) {
+      this.promotionSnapshot =
+          new PromotionSnapshot(promotionId, item.getPrice(), discountType, discountValue);
+
+      if (DiscountType.PERCENTAGE.name().equals(discountType)) {
+        BigDecimal discount =
+            item.getPrice()
+                .multiply(discountValue)
+                .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+        finalUnitPrice = item.getPrice().subtract(discount);
+      } else if (DiscountType.FIXED_VALUE.name().equals(discountType)) {
+        finalUnitPrice = item.getPrice().subtract(discountValue).max(BigDecimal.ZERO);
+      }
+    }
+
+    // Handle extra prices from customizations
+    if (this.customizations != null && !this.customizations.isEmpty()) {
+      BigDecimal extra = calculateExtraPrice(customizations);
+      finalUnitPrice = finalUnitPrice.add(extra);
+    }
+    this.unitPrice = finalUnitPrice;
+  }
+
+  private java.math.BigDecimal calculateExtraPrice(String customizationsJson) {
+    java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
+    try {
+      var root = objectMapper.readTree(customizationsJson);
+      if (root.isArray()) {
+        for (var question : root) {
+          var options = question.get("options");
+          if (options != null && options.isArray()) {
+            for (var option : options) {
+              var extraPrice = option.get("extraPrice");
+              if (extraPrice != null && !extraPrice.isNull()) {
+                extra = extra.add(new java.math.BigDecimal(extraPrice.asText()));
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      // Ignore errors in customizations parsing
+    }
+    return extra;
   }
 
   public UUID getId() {

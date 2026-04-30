@@ -6,7 +6,6 @@ import dev.thiagooliveira.tablesplit.application.order.model.PlaceOrderRequest;
 import dev.thiagooliveira.tablesplit.application.order.model.TicketItemRequest;
 import dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
@@ -22,7 +21,6 @@ public class PlaceOrder {
   private final ItemRepository itemRepository;
   private final EventPublisher eventPublisher;
   private final SyncTableStatus syncTableStatus;
-  private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
   public PlaceOrder(
       OpenTable openTable,
@@ -30,15 +28,13 @@ public class PlaceOrder {
       OrderRepository orderRepository,
       ItemRepository itemRepository,
       EventPublisher eventPublisher,
-      SyncTableStatus syncTableStatus,
-      com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+      SyncTableStatus syncTableStatus) {
     this.openTable = openTable;
     this.tableRepository = tableRepository;
     this.orderRepository = orderRepository;
     this.itemRepository = itemRepository;
     this.eventPublisher = eventPublisher;
     this.syncTableStatus = syncTableStatus;
-    this.objectMapper = objectMapper;
   }
 
   public Order execute(PlaceOrderRequest request) {
@@ -128,45 +124,10 @@ public class PlaceOrder {
                   itemRequest.getQuantity(),
                   customerId,
                   itemRequest.getNote(),
-                  itemRequest.getCustomizations());
-
-          java.math.BigDecimal finalUnitPrice = item.getPrice();
-
-          if (itemRequest.getPromotionId() != null) {
-            ticketItem.setPromotionSnapshot(
-                new TicketItem.PromotionSnapshot(
-                    itemRequest.getPromotionId(),
-                    item.getPrice(),
-                    itemRequest.getDiscountType(),
-                    itemRequest.getDiscountValue()));
-
-            java.math.BigDecimal originalPrice = item.getPrice();
-            if (originalPrice != null) {
-              if (DiscountType.PERCENTAGE.name().equals(itemRequest.getDiscountType())) {
-                java.math.BigDecimal discount =
-                    originalPrice
-                        .multiply(itemRequest.getDiscountValue())
-                        .divide(
-                            java.math.BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
-                finalUnitPrice = originalPrice.subtract(discount);
-              } else if (DiscountType.FIXED_VALUE.name().equals(itemRequest.getDiscountType())) {
-                finalUnitPrice =
-                    originalPrice
-                        .subtract(itemRequest.getDiscountValue())
-                        .max(java.math.BigDecimal.ZERO);
-              }
-            }
-          }
-
-          // Handle extra prices from customizations
-          if (itemRequest.getCustomizations() != null
-              && !itemRequest.getCustomizations().isEmpty()) {
-            java.math.BigDecimal extra = calculateExtraPrice(itemRequest.getCustomizations());
-            finalUnitPrice = finalUnitPrice.add(extra);
-          }
-
-          ticketItem.setUnitPrice(finalUnitPrice);
-
+                  itemRequest.getCustomizations(),
+                  itemRequest.getPromotionId(),
+                  itemRequest.getDiscountType(),
+                  itemRequest.getDiscountValue());
           ticket.getItems().add(ticketItem);
         }
         order.addTicket(ticket);
@@ -185,28 +146,5 @@ public class PlaceOrder {
     tableRepository.save(table);
     eventPublisher.publishEvent(new TableCreatedEvent(table));
     return table;
-  }
-
-  private java.math.BigDecimal calculateExtraPrice(String customizationsJson) {
-    java.math.BigDecimal extra = java.math.BigDecimal.ZERO;
-    try {
-      var root = objectMapper.readTree(customizationsJson);
-      if (root.isArray()) {
-        for (var question : root) {
-          var options = question.get("options");
-          if (options != null && options.isArray()) {
-            for (var option : options) {
-              var extraPrice = option.get("extraPrice");
-              if (extraPrice != null && !extraPrice.isNull()) {
-                extra = extra.add(new java.math.BigDecimal(extraPrice.asText()));
-              }
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      // Ignore errors in customizations parsing
-    }
-    return extra;
   }
 }
