@@ -192,7 +192,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "thiago@thiagoti.com",
                               "+351 963 927 988",
                               passwordEncoder.encode("Test#123"),
-                              Language.EN),
+                              Language.PT),
                           new CreateRestaurantCommand(
                               "Cantina Brasileira",
                               "cantinabrasileira",

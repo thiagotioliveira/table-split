@@ -14,10 +14,18 @@
 
 
     <script th:inline="javascript">
-        const userLanguage = /*[[${userLanguage}]]*/ 'pt';
-        const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
-        const currencyCode = /*[[${currencyCode}]]*/ 'BRL';
+        const restaurantId = /*[[${restaurantId}]]*/ '';
+        const currencySymbol = /*[[${currency.symbol}]]*/ 'R$';
+        const currencyCode = /*[[${currency.name()}]]*/ 'BRL';
+        const userLanguage = /*[[${userLanguage.name().toLowerCase()}]]*/ 'pt';
+        const userLanguageLabel = /*[[${userLanguage.label}]]*/ 'pt-BR';
         const zoneId = /*[[${zoneId}]]*/ 'Europe/Lisbon';
+        
+        const STATUS_PENDING = /*[[${STATUS_PENDING}]]*/ 'PENDING';
+        const STATUS_PREPARING = /*[[${STATUS_PREPARING}]]*/ 'PREPARING';
+        const STATUS_READY = /*[[${STATUS_READY}]]*/ 'READY';
+        const STATUS_DELIVERED = /*[[${STATUS_DELIVERED}]]*/ 'DELIVERED';
+        const STATUS_CANCELLED = /*[[${STATUS_CANCELLED}]]*/ 'CANCELLED';
     </script>
     <style>
         /* Orders specific styles */
@@ -903,7 +911,7 @@
         <!-- Kanban Board -->
         <div class="kanban-container">
             <!-- PENDING -->
-            <div class="kanban-column" data-status="PENDING">
+            <div class="kanban-column" th:data-status="${STATUS_PENDING}">
                 <div class="kanban-header">
                     <div class="kanban-title">
                         <div class="kanban-title-icon new">
@@ -914,7 +922,7 @@
                     <span class="kanban-count" th:text="${pendingCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus['PENDING']}" class="order-card" th:classappend="${ticket.urgent ? 'urgent' : ''}">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PENDING)}" class="order-card" th:classappend="${ticket.urgent ? 'urgent' : ''}">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -938,11 +946,11 @@
                             </div>
                             <div class="order-total" th:if="${false}">
                                 <span class="order-total-label">Total</span>
-                                <span class="order-total-value" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">${currencySymbol} 0,00</span>
+                                <span class="order-total-value" th:text="${currency.symbol + ' ' + #numbers.formatDecimal(ticket.total, 1, 2, 'POINT')}">${currencySymbol} 0,00</span>
                             </div>
                         </div>
                         <div class="order-footer">
-                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" th:data-status="${STATUS_PREPARING}" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
                                 <span th:text="#{page.orders.order_card.actions.prepare}">Preparar</span>
                             </button>
@@ -955,7 +963,7 @@
             </div>
 
             <!-- PREPARING -->
-            <div class="kanban-column" data-status="PREPARING">
+            <div class="kanban-column" th:data-status="${STATUS_PREPARING}">
                 <div class="kanban-header">
                     <div class="kanban-title">
                         <div class="kanban-title-icon preparing">
@@ -966,7 +974,7 @@
                     <span class="kanban-count" th:text="${preparingCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus['PREPARING']}" class="order-card">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PREPARING)}" class="order-card">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -990,7 +998,7 @@
                             </div>
                         </div>
                         <div class="order-footer">
-                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="READY" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" th:data-status="${STATUS_READY}" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                 <span th:text="#{page.orders.order_card.actions.ready}">Pronto</span>
                             </button>
@@ -1003,7 +1011,7 @@
             </div>
 
             <!-- READY -->
-            <div class="kanban-column" data-status="READY">
+            <div class="kanban-column" th:data-status="${STATUS_READY}">
                 <div class="kanban-header">
                     <div class="kanban-title">
                         <div class="kanban-title-icon ready">
@@ -1014,7 +1022,7 @@
                     <span class="kanban-count" th:text="${readyCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus['READY']}" class="order-card">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_READY)}" class="order-card">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">1</div>
@@ -1038,7 +1046,7 @@
                             </div>
                         </div>
                         <div class="order-footer">
-                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" data-status="DELIVERED" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                            <button class="btn btn-primary btn-sm" th:data-ticket-id="${ticket.id}" th:data-status="${STATUS_DELIVERED}" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span th:text="#{page.orders.order_card.actions.delivered}">Entregue</span>
                             </button>
@@ -1051,7 +1059,7 @@
             </div>
 
             <!-- Entregues -->
-            <div class="kanban-column" data-status="DELIVERED">
+            <div class="kanban-column" th:data-status="${STATUS_DELIVERED}">
                 <div class="kanban-header">
                     <div class="kanban-title">
                         <div class="kanban-title-icon delivered">
@@ -1062,7 +1070,7 @@
                     <span class="kanban-count" th:text="${deliveredCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus['DELIVERED']}" class="order-card" style="opacity: 0.7;">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_DELIVERED)}" class="order-card" style="opacity: 0.7;">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -1361,7 +1369,7 @@
             statusBadge.textContent = ticket.statusLabel;
             statusBadge.className = 'status-badge status-' + ticket.statusClass;
 
-            renderModalItems(ticket.items, readOnly || ticket.status === 'CANCELLED' || ticket.status === 'DELIVERED');
+            renderModalItems(ticket.items, readOnly || ticket.status === STATUS_CANCELLED || ticket.status === STATUS_DELIVERED);
             
             const subtotal = ticket.total;
             const serviceFee = subtotal * (RESTAURANT_SERVICE_FEE / 100);
@@ -1381,7 +1389,7 @@
     function renderModalItems(items, readOnly = false) {
         const container = document.getElementById('modalOrderItems');
         container.innerHTML = items.map(item => `
-            <div class="order-detail-item ${item.status === 'CANCELLED' ? 'cancelled' : ''}" data-item-id="${item.id}">
+            <div class="order-detail-item ${item.status === STATUS_CANCELLED ? 'cancelled' : ''}" data-item-id="${item.id}">
                 <div class="order-detail-item-left">
                     <div class="order-detail-item-info">
                         <span class="order-detail-item-qty">${item.quantity}x</span>
@@ -1400,7 +1408,7 @@
     }
 
     function formatCurrency(value) {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: currencyCode }).format(value);
+        return new Intl.NumberFormat(userLanguageLabel, { style: 'currency', currency: currencyCode }).format(value);
     }
 
     function renderCustomizationSnapshot(json) {
@@ -1536,7 +1544,7 @@
         }
 
         const column = Array.from(document.querySelectorAll('.kanban-column')).find(c => {
-            return c.dataset.status === 'PENDING';
+            return c.dataset.status === STATUS_PENDING;
         })?.querySelector('.kanban-body');
         
         console.log('Target column:', column);
@@ -1549,7 +1557,7 @@
         column.insertAdjacentHTML('afterbegin', cardHtml);
 
         // Update counts
-        updateCounts('PENDING', 1);
+        updateCounts(STATUS_PENDING, 1);
     }
 
     function handleStatusChange(event) {
@@ -1580,7 +1588,7 @@
         const totalFormatted = formatCurrency(ticket.total);
 
         return `
-            <div class="order-card ${ticket.urgent ? 'urgent' : ''}" data-ticket-id="${ticket.id}">
+            <div class="order-card ${ticket.urgent ? 'urgent' : ''}" data-ticket-id="${ticket.id}" data-status="${ticket.status}">
                 <div class="order-header">
                     <div class="order-table">
                         <div class="order-table-number">${ticket.tableCod}</div>
@@ -1600,7 +1608,7 @@
                     </div>
                 </div>
                 <div class="order-footer">
-                    <button class="btn btn-primary btn-sm" data-ticket-id="${ticket.id}" data-status="PREPARING" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
+                    <button class="btn btn-primary btn-sm" data-ticket-id="${ticket.id}" data-status="${STATUS_PREPARING}" onclick="moveOrder(this.getAttribute('data-ticket-id'), this.getAttribute('data-status'))">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/></svg>
                         ${i18n.prepare}
                     </button>
@@ -1628,7 +1636,7 @@
             allBadge.textContent = currentAll + delta;
         }
 
-        if (status === 'PENDING') {
+        if (status === STATUS_PENDING) {
             const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
             if (newBadge) {
                 const currentNew = parseInt(newBadge.textContent) || 0;
@@ -1713,7 +1721,7 @@
               <span class="order-type-badge ${order.tableCod ? 'dine-in' : 'delivery'}" style="font-size: 0.6875rem; padding: 0.125rem 0.375rem;">
                 ${order.tableCod ? 'Mesa ' + order.tableCod : 'Delivery'}
               </span>
-              ${order.status === 'CANCELLED' ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.6875rem; padding: 0.125rem 0.375rem;">Cancelado</span>' : ''}
+              ${order.status === STATUS_CANCELLED ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.6875rem; padding: 0.125rem 0.375rem;">Cancelado</span>' : ''}
             </div>
             <div class="history-order-meta">
               <span>
