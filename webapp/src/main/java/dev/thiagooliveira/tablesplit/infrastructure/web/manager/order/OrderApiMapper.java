@@ -11,68 +11,39 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.mo
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
 
-@Component
-public class OrderApiMapper {
+@Mapper(
+    componentModel = "spring",
+    imports = {
+      java.util.UUID.class,
+      dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.TicketResponse
+          .StatusEnum.class
+    })
+public abstract class OrderApiMapper {
 
-  private final MessageSource messageSource;
+  @Autowired protected MessageSource messageSource;
 
-  public OrderApiMapper(MessageSource messageSource) {
-    this.messageSource = messageSource;
-  }
-
-  public dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model
+  @Mapping(target = "totalRevenue", expression = "java(history.totalRevenue().doubleValue())")
+  @Mapping(target = "avgTicket", expression = "java(history.avgTicket().doubleValue())")
+  public abstract dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model
           .HistoryResponse
-      mapToHistoryResponse(HistoryData history) {
-    return new dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model
-            .HistoryResponse()
-        .orders(
-            history.orders().stream().map(this::mapToTicketResponse).collect(Collectors.toList()))
-        .totalOrders(history.totalOrders())
-        .totalRevenue(history.totalRevenue().doubleValue())
-        .avgTicket(history.avgTicket().doubleValue());
-  }
+      mapToHistoryResponse(HistoryData history);
 
-  public TicketResponse mapToTicketResponse(TicketModel model) {
-    return new TicketResponse()
-        .restaurantId(java.util.UUID.fromString(model.getRestaurantId()))
-        .id(java.util.UUID.fromString(model.getId()))
-        .shortId(model.getShortId())
-        .tableCod(model.getTableCod())
-        .customerName(model.getCustomerName())
-        .status(TicketResponse.StatusEnum.fromValue(model.getStatus().name()))
-        .statusClass(model.getStatusClass())
-        .statusLabel(model.getStatusLabel())
-        .createdAt(model.getCreatedAt().toOffsetDateTime())
-        .timeAgo(model.getTimeAgo())
-        .items(
-            model.getItems().stream()
-                .map(this::mapToTicketItemResponse)
-                .collect(Collectors.toList()))
-        .total(model.getTotal().doubleValue())
-        .urgent(model.isUrgent())
-        .note(model.getNote());
-  }
+  @Mapping(target = "restaurantId", expression = "java(UUID.fromString(model.getRestaurantId()))")
+  @Mapping(target = "id", expression = "java(UUID.fromString(model.getId()))")
+  @Mapping(target = "status", expression = "java(StatusEnum.fromValue(model.getStatus().name()))")
+  @Mapping(target = "createdAt", expression = "java(model.getCreatedAt().toOffsetDateTime())")
+  @Mapping(target = "total", expression = "java(model.getTotal().doubleValue())")
+  public abstract TicketResponse mapToTicketResponse(TicketModel model);
 
-  public TicketItemResponse mapToTicketItemResponse(TicketItemModel model) {
-    return new TicketItemResponse()
-        .id(model.getId())
-        .customerId(model.getCustomerId())
-        .customerName(model.getCustomerName())
-        .name(model.getName())
-        .names(model.getNames())
-        .quantity(model.getQuantity())
-        .unitPrice(model.getUnitPrice().doubleValue())
-        .totalPrice(model.getTotalPrice().doubleValue())
-        .note(model.getNote())
-        .status(model.getStatus())
-        .statusClass(model.getStatusClass())
-        .rating(model.getRating())
-        .createdAt(model.getCreatedAt().toOffsetDateTime())
-        .customizationSummary(model.getCustomizationSummary());
-  }
+  @Mapping(target = "unitPrice", expression = "java(model.getUnitPrice().doubleValue())")
+  @Mapping(target = "totalPrice", expression = "java(model.getTotalPrice().doubleValue())")
+  @Mapping(target = "createdAt", expression = "java(model.getCreatedAt().toOffsetDateTime())")
+  public abstract TicketItemResponse mapToTicketItemResponse(TicketItemModel model);
 
   public TicketModel mapToModel(
       Ticket ticket,
