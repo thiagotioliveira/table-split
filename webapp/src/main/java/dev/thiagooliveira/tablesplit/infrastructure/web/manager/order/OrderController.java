@@ -97,5 +97,6 @@ public class OrderController {
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("zoneId", Time.getZoneId().getId());
     model.addAttribute("userLanguage", context.getUser().getLanguage().name().toLowerCase());
+    model.addAttribute("serviceFee", context.getRestaurant().getServiceFee());
   }
 }

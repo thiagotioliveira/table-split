@@ -1199,7 +1199,7 @@
                     <span id="modalSubtotal">${currencySymbol} 0,00</span>
                 </div>
                 <div class="order-detail-row">
-                    <span th:text="#{page.orders.modal.detail.service_fee(10)}">Taxa de serviço (10%)</span>
+                    <span th:text="#{page.orders.modal.detail.service_fee(${serviceFee})}">Taxa de serviço</span>
                     <span id="modalServiceFee">${currencySymbol} 0,00</span>
                 </div>
                 <div class="order-detail-row total">
@@ -1223,6 +1223,8 @@
 
 <script type="module" th:inline="javascript">
     import { ordersApi } from '/js/api-order-bridge.js';
+    
+    const RESTAURANT_SERVICE_FEE = /*[[${serviceFee}]]*/ 10;
 
     const i18n = {
         orderIdPrefix: /*[[#{page.orders.modal.detail.order_id_prefix}]]*/ 'Pedido #',
@@ -1362,7 +1364,7 @@
             renderModalItems(ticket.items, readOnly || ticket.status === 'CANCELLED' || ticket.status === 'DELIVERED');
             
             const subtotal = ticket.total;
-            const serviceFee = subtotal * 0.1;
+            const serviceFee = subtotal * (RESTAURANT_SERVICE_FEE / 100);
             const total = subtotal + serviceFee;
 
             document.getElementById('modalSubtotal').textContent = formatCurrency(subtotal);
