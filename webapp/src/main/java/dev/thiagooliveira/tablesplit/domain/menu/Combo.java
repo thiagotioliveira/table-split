@@ -97,6 +97,11 @@ public class Combo {
       this.quantity = quantity;
     }
 
+    public ComboItem(String itemId, int quantity) {
+      this.itemId = itemId;
+      this.quantity = quantity;
+    }
+
     public String getItemId() {
       return itemId;
     }

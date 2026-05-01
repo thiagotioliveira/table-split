@@ -1389,11 +1389,9 @@
                             <button class="promo-action-btn" title="Editar" th:data-id="${promotion.id}" onclick="editPromotion(this.getAttribute('data-id'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
-                            <form th:action="@{/promotions/promotion/delete/{id}(id=${promotion.id})}" method="post" style="display:inline;">
-                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                </button>
-                            </form>
+                            <button type="button" class="promo-action-btn delete" title="Excluir" th:data-id="${promotion.id}" data-type="promotion" onclick="showDeleteConfirmation(event, this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1448,11 +1446,9 @@
                             <button class="promo-action-btn" title="Editar" th:data-id="${combo.id}" onclick="editCombo(this.getAttribute('data-id'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
-                            <form th:action="@{/promotions/combo/delete/{id}(id=${combo.id})}" method="post" style="display:inline;">
-                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                </button>
-                            </form>
+                            <button type="button" class="promo-action-btn delete" title="Excluir" th:data-id="${combo.id}" data-type="combo" onclick="showDeleteConfirmation(event, this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1520,11 +1516,9 @@
                             <button class="promo-action-btn" title="Editar" th:data-id="${coupon.id}" onclick="editCoupon(this.getAttribute('data-id'))">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                             </button>
-                            <form th:action="@{/promotions/coupon/delete/{id}(id=${coupon.id})}" method="post" style="display:inline;">
-                                <button type="button" class="promo-action-btn delete" title="Excluir" onclick="showDeleteConfirmation(event, this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                </button>
-                            </form>
+                            <button type="button" class="promo-action-btn delete" title="Excluir" th:data-id="${coupon.id}" data-type="coupon" onclick="showDeleteConfirmation(event, this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2001,10 +1995,14 @@
         }).format(value);
     }
 </script>
-<script th:inline="javascript">
+<script type="module" th:inline="javascript">
+    import { promotionsApi } from '/js/api/v1/manager/api-promotions-bridge.js';
+    import { combosApi } from '/js/api/v1/manager/api-combos-bridge.js';
+    import { couponsApi } from '/js/api/v1/manager/api-coupons-bridge.js';
     // ============================================
     // Sidebar Functions
     // ============================================
+
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
@@ -2101,12 +2099,11 @@
 
     async function editPromotion(id) {
         document.getElementById('promotionModalTitle').textContent = localization.promoTitleEdit;
-        const response = await fetch(`/promotions/promotion/${id}`);
-        if (!response.ok) {
+        const promo = await promotionsApi.getPromotion(id);
+        if (!promo) {
             alert(localization.errorLoad);
             return;
         }
-        const promo = await response.json();
 
         document.getElementById('promoId').value = promo.id;
         document.querySelector('#promotionModal input[name="name"]').value = promo.name;
@@ -2164,12 +2161,11 @@
 
     async function editCombo(id) {
         document.getElementById('comboModalTitle').textContent = localization.comboTitleEdit;
-        const response = await fetch(`/promotions/combo/${id}`);
-        if (!response.ok) {
+        const combo = await combosApi.getCombo(id);
+        if (!combo) {
             alert(localization.errorLoad);
             return;
         }
-        const combo = await response.json();
 
         document.getElementById('comboId').value = combo.id;
         document.querySelector('#comboModal input[name="name"]').value = combo.name;
@@ -2215,12 +2211,11 @@
 
     async function editCoupon(id) {
         document.getElementById('couponModalTitle').textContent = localization.couponTitleEdit;
-        const response = await fetch(`/promotions/coupon/${id}`);
-        if (!response.ok) {
+        const coupon = await couponsApi.getCoupon(id);
+        if (!coupon) {
             alert(localization.errorLoad);
             return;
         }
-        const coupon = await response.json();
 
         document.getElementById('couponId').value = coupon.id;
         document.querySelector('#couponModal input[name="code"]').value = coupon.code;
@@ -2303,24 +2298,40 @@
     // ============================================
     // Delete Confirmation Logic
     // ============================================
-    let deleteFormToSubmit = null;
+    let currentDeleteId = null;
+    let currentDeleteType = null;
 
     function showDeleteConfirmation(event, button) {
         event.preventDefault();
-        deleteFormToSubmit = button.closest('form');
+        currentDeleteId = button.dataset.id;
+        currentDeleteType = button.dataset.type;
         document.getElementById('confirmDeleteModal').classList.add('active');
         return false;
     }
 
     function closeConfirmDeleteModal() {
         document.getElementById('confirmDeleteModal').classList.remove('active');
-        deleteFormToSubmit = null;
+        currentDeleteId = null;
+        currentDeleteType = null;
     }
 
     function executeDelete() {
-        if (deleteFormToSubmit) {
-            deleteFormToSubmit.submit();
+        if (!currentDeleteId || !currentDeleteType) return;
+        
+        const successCallback = () => {
+            const tabMap = { 'promotion': 'promotions', 'combo': 'combos', 'coupon': 'coupons' };
+            window.location.href = '?tab=' + (tabMap[currentDeleteType] || 'promotions');
+        };
+
+        if (currentDeleteType === 'promotion') {
+            promotionsApi.deletePromotion(currentDeleteId).then(successCallback);
+        } else if (currentDeleteType === 'combo') {
+            combosApi.deleteCombo(currentDeleteId).then(successCallback);
+        } else if (currentDeleteType === 'coupon') {
+            couponsApi.deleteCoupon(currentDeleteId).then(successCallback);
         }
+        
+        closeConfirmDeleteModal();
     }
 
     // ============================================
@@ -2616,52 +2627,28 @@
     });
 
     async function togglePromotion(id) {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-        const response = await fetch(`/promotions/promotion/toggle/${id}`, { 
-            method: 'POST',
-            headers: {
-                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
-            }
-        });
-        if (response.ok) {
+        try {
+            await promotionsApi.togglePromotion(id);
             window.location.href = '?tab=promotions';
-        } else {
+        } catch (e) {
             alert(localization.errorStatus);
         }
     }
 
     async function toggleCombo(id) {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-        const response = await fetch(`/promotions/combo/toggle/${id}`, { 
-            method: 'POST',
-            headers: {
-                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
-            }
-        });
-        if (response.ok) {
+        try {
+            await combosApi.toggleCombo(id);
             window.location.href = '?tab=combos';
-        } else {
+        } catch (e) {
             alert(localization.errorStatus);
         }
     }
 
     async function toggleCoupon(id) {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-        const response = await fetch(`/promotions/coupon/toggle/${id}`, { 
-            method: 'POST',
-            headers: {
-                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
-            }
-        });
-        if (response.ok) {
+        try {
+            await couponsApi.toggleCoupon(id);
             window.location.href = '?tab=coupons';
-        } else {
+        } catch (e) {
             alert(localization.errorStatus);
         }
     }
@@ -2686,36 +2673,84 @@
             if (tabBtn) tabBtn.click();
         }
 
-        // Form Validation for Promotion
+        // Form Submission for Promotion
         const promoForm = document.querySelector('#promotionModal form');
         if (promoForm) {
-            promoForm.addEventListener('submit', function(e) {
+            promoForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 const applyType = document.getElementById('promoApplyType').value;
                 if (applyType === 'CATEGORY') {
                     const checkedCategories = document.querySelectorAll('.category-checkbox:checked');
                     if (checkedCategories.length === 0) {
-                        e.preventDefault();
                         alert(localization.valMinCategory);
                         return;
                     }
                 } else if (applyType === 'ITEM') {
                     if (promoItems.length === 0) {
-                        e.preventDefault();
                         alert(localization.valMinItem);
                         return;
                     }
                 }
+
+                const formData = new FormData(this);
+                const data = {
+                    id: formData.get('id') || null,
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                    discountType: formData.get('discountType'),
+                    discountValue: parseFloat(formData.get('discountValue')),
+                    minOrderValue: formData.get('minOrderValue') ? parseFloat(formData.get('minOrderValue')) : null,
+                    startDate: formData.get('startDate') ? formData.get('startDate') + 'T00:00:00Z' : null,
+                    endDate: formData.get('endDate') ? formData.get('endDate') + 'T23:59:59Z' : null,
+                    daysOfWeek: Array.from(document.querySelectorAll('#promotionModal input[name="recurrenceDays"]:checked')).map(cb => cb.value),
+                    startTime: formData.get('startTime') || null,
+                    endTime: formData.get('endTime') || null,
+                    applyType: applyType,
+                    applicableIds: applyType === 'ALL_MENU' ? [] : 
+                                   (applyType === 'CATEGORY' ? 
+                                       Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value) : 
+                                       promoItems.map(i => i.id)),
+                    active: document.querySelector('#promotionModal input[name="active"]').checked
+                };
+
+                try {
+                    await promotionsApi.savePromotion(data);
+                    window.location.href = '?tab=promotions';
+                } catch (error) {
+                    console.error('Error saving promotion:', error);
+                    alert(localization.errorLoad);
+                }
             });
         }
 
-        // Form Validation for Combo
+        // Form Submission for Combo
         const comboForm = document.querySelector('#comboModal form');
         if (comboForm) {
-            comboForm.addEventListener('submit', function(e) {
+            comboForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 if (comboItems.length < 2) {
-                    e.preventDefault();
                     alert(localization.valMinCombo);
                     return;
+                }
+
+                const formData = new FormData(this);
+                const data = {
+                    id: formData.get('id') || null,
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                    comboPrice: parseFloat(formData.get('comboPrice')),
+                    startDate: formData.get('startDate') ? formData.get('startDate') + 'T00:00:00Z' : null,
+                    endDate: formData.get('endDate') ? formData.get('endDate') + 'T23:59:59Z' : null,
+                    active: document.querySelector('#comboModal input[name="active"]').checked,
+                    items: comboItems.map(i => ({ itemId: i.id, quantity: i.quantity || 1 }))
+                };
+
+                try {
+                    await combosApi.saveCombo(data);
+                    window.location.href = '?tab=combos';
+                } catch (error) {
+                    console.error('Error saving combo:', error);
+                    alert(localization.errorLoad);
                 }
             });
         }
@@ -2732,7 +2767,92 @@
                 }
             }
         });
+        // Form Submission for Coupon
+        const couponForm = document.querySelector('#couponModal form');
+        if (couponForm) {
+            couponForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                const ruleTypes = formData.getAll('ruleTypes');
+                const ruleValues = formData.getAll('ruleValues');
+                const rules = [];
+                for (let i = 0; i < ruleTypes.length; i++) {
+                    if (ruleTypes[i]) {
+                        rules.push({ type: ruleTypes[i], value: ruleValues[i] || "" });
+                    }
+                }
+
+                const data = {
+                    id: formData.get('id') || null,
+                    code: formData.get('code').toUpperCase(),
+                    name: formData.get('name'),
+                    discountType: formData.get('discountType'),
+                    discountValue: formData.get('discountValue') ? parseFloat(formData.get('discountValue')) : null,
+                    freeItemId: formData.get('freeItemId') || null,
+                    minOrderValue: formData.get('minOrderValue') ? parseFloat(formData.get('minOrderValue')) : null,
+                    validDate: formData.get('validDate') || null,
+                    usageLimit: formData.get('usageLimit') ? parseInt(formData.get('usageLimit')) : null,
+                    active: document.querySelector('#couponModal input[name="active"]').checked,
+                    rules: rules
+                };
+
+                try {
+                    await couponsApi.saveCoupon(data);
+                    window.location.href = '?tab=coupons';
+                } catch (error) {
+                    console.error('Error saving coupon:', error);
+                    alert(localization.errorLoad);
+                }
+            });
+        }
     });
+
+    // Expose all functions to the global scope since this is a module script
+    window.openSidebar = openSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleSidebar = toggleSidebar;
+    window.initSidebarState = initSidebarState;
+    window.toggleUserMenu = toggleUserMenu;
+    window.setDiscountType = setDiscountType;
+    window.setRecurrence = setRecurrence;
+    window.setPromoApplyType = setPromoApplyType;
+    window.editPromotion = editPromotion;
+    window.editCombo = editCombo;
+    window.setCouponDiscountType = setCouponDiscountType;
+    window.addCouponRuleRow = addCouponRuleRow;
+    window.editCoupon = editCoupon;
+    window.openPromotionModal = openPromotionModal;
+    window.closePromotionModal = closePromotionModal;
+    window.openComboModal = openComboModal;
+    window.closeComboModal = closeComboModal;
+    window.openCouponModal = openCouponModal;
+    window.closeCouponModal = closeCouponModal;
+    window.showDeleteConfirmation = showDeleteConfirmation;
+    window.closeConfirmDeleteModal = closeConfirmDeleteModal;
+    window.executeDelete = executeDelete;
+    window.filterGrid = filterGrid;
+    window.openItemSelector = openItemSelector;
+    window.closeItemSelector = closeItemSelector;
+    window.renderSelectableItems = renderSelectableItems;
+    window.toggleItemSelection = toggleItemSelection;
+    window.filterByCategory = filterByCategory;
+    window.filterSelectableItems = filterSelectableItems;
+    window.confirmItemSelection = confirmItemSelection;
+    window.renderComboItems = renderComboItems;
+    window.updateItemQuantity = updateItemQuantity;
+    window.removeComboItem = removeComboItem;
+    window.updateComboPrice = updateComboPrice;
+    window.renderPromoItems = renderPromoItems;
+    window.removePromoItem = removePromoItem;
+    window.updatePromoHiddenInputs = updatePromoHiddenInputs;
+    window.setFreeItemType = setFreeItemType;
+    window.renderFreeItemDisplay = renderFreeItemDisplay;
+    window.removeFreeItem = removeFreeItem;
+    window.togglePromotion = togglePromotion;
+    window.toggleCombo = toggleCombo;
+    window.toggleCoupon = toggleCoupon;
+    window.copyCoupon = copyCoupon;
 </script>
 </body>
 </html>

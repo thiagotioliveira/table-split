@@ -244,6 +244,27 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>generate-manager-promotions-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/api-docs/manager/promotions-v1.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<library>spring-boot</library>
+							<apiPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.spec.v1.api</apiPackage>
+							<modelPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.spec.v1.model</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useRequestMappingOnInterface>true</useRequestMappingOnInterface>
+								<openApiNullable>false</openApiNullable>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
 						<id>generate-customer-menu-api</id>
 						<goals>
 							<goal>generate</goal>
@@ -301,6 +322,30 @@
 									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/public/api-customer-bridge.js"/>
 									<arg value="customerApi"/>
 									<arg value="CustomerMenu"/>
+								</exec>
+								<exec executable="python3" failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/promotions-v1.yaml"/>
+									<arg value="/api/v1/manager/promotions"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-promotions-bridge.js"/>
+									<arg value="promotionsApi"/>
+									<arg value="Promotions"/>
+								</exec>
+								<exec executable="python3" failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/promotions-v1.yaml"/>
+									<arg value="/api/v1/manager/promotions"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-combos-bridge.js"/>
+									<arg value="combosApi"/>
+									<arg value="Combos"/>
+								</exec>
+								<exec executable="python3" failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/promotions-v1.yaml"/>
+									<arg value="/api/v1/manager/promotions"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-coupons-bridge.js"/>
+									<arg value="couponsApi"/>
+									<arg value="Coupons"/>
 								</exec>
 							</target>
 						</configuration>
