@@ -32,6 +32,12 @@ spring:
     basename: messages
     encoding: UTF-8
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 cloudinary:
   cloud-name:
   api-key:

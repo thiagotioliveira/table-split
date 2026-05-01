@@ -169,7 +169,7 @@
                 return;
             }
             
-            fetch('/orders/count/pending', {
+            fetch('/api/v1/manager/orders/count/pending', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(res => {

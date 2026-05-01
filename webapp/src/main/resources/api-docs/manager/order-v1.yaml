@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: Manager Order API
+  description: API for managing orders in the TableSplit Manager module.
+  version: 1.0.0
+servers:
+  - url: /api/v1/manager/orders
+    description: v1 API for Manager Orders
+tags:
+  - name: Orders
+    description: Order management operations
+
+paths:
+  /history:
+    get:
+      tags:
+        - Orders
+      summary: Get order history
+      operationId: getOrderHistory
+      parameters:
+        - name: start
+          in: query
+          description: Start date time (ISO-8601)
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          description: End date time (ISO-8601)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful history retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+  /move:
+    post:
+      tags:
+        - Orders
+      summary: Move ticket to another table/status
+      operationId: moveTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveTicketRequest'
+      responses:
+        '204':
+          description: Ticket moved successfully
+
+  /{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get ticket by ID
+      operationId: getTicketById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful ticket retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+
+  /count/pending:
+    get:
+      tags:
+        - Orders
+      summary: Get pending tickets count
+      operationId: getPendingCount
+      responses:
+        '200':
+          description: Successful count retrieval
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+
+  /item/cancel:
+    post:
+      tags:
+        - Orders
+      summary: Cancel a ticket item
+      operationId: cancelTicketItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelItemRequest'
+      responses:
+        '204':
+          description: Item cancelled successfully
+
+  /tables/{tableId}/place:
+    post:
+      tags:
+        - Orders
+      summary: Place a new order for a table
+      operationId: placeOrder
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+      responses:
+        '204':
+          description: Order placed successfully
+
+  /items/{itemId}/status:
+    post:
+      tags:
+        - Orders
+      summary: Update ticket item status
+      operationId: updateItemStatus
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItemStatusRequest'
+      responses:
+        '204':
+          description: Status updated successfully
+
+components:
+  schemas:
+    UpdateItemStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [PENDING, PREPARING, READY, DELIVERED, CANCELLED]
+
+    PlaceOrderRequest:
+      type: object
+      required:
+        - tickets
+      properties:
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRequest'
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerRequest'
+        serviceFee:
+          type: integer
+
+    TicketRequest:
+      type: object
+      required:
+        - items
+      properties:
+        note:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketItemRequest'
+
+    TicketItemRequest:
+      type: object
+      required:
+        - itemId
+        - quantity
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        note:
+          type: string
+        promotionId:
+          type: string
+          format: uuid
+        originalPrice:
+          type: number
+          format: double
+        discountType:
+          type: string
+        discountValue:
+          type: number
+          format: double
+        customizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomizationRequest'
+
+    CustomizationRequest:
+      type: object
+      required:
+        - title
+        - options
+      properties:
+        title:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionRequest'
+
+    OptionRequest:
+      type: object
+      required:
+        - text
+      properties:
+        optionId:
+          type: string
+          format: uuid
+        text:
+          type: string
+        extraPrice:
+          type: number
+          format: double
+
+    CustomerRequest:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    HistoryResponse:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketResponse'
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+          format: double
+        avgTicket:
+          type: number
+          format: double
+
+    TicketResponse:
+      type: object
+      properties:
+        restaurantId:
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        shortId:
+          type: string
+        tableCod:
+          type: string
+        customerName:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, PREPARING, READY, DELIVERED, CANCELLED]
+        statusClass:
+          type: string
+        statusLabel:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        timeAgo:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketItemResponse'
+        total:
+          type: number
+          format: double
+        urgent:
+          type: boolean
+        note:
+          type: string
+
+    TicketItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+        name:
+          type: string
+        names:
+          type: object
+          additionalProperties:
+            type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+        totalPrice:
+          type: number
+          format: double
+        note:
+          type: string
+        status:
+          type: string
+        statusClass:
+          type: string
+        rating:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        customizationSummary:
+          type: string
+
+    MoveTicketRequest:
+      type: object
+      required:
+        - ticketId
+        - status
+      properties:
+        ticketId:
+          type: string
+          format: uuid
+        status:
+          type: string
+
+    CancelItemRequest:
+      type: object
+      required:
+        - itemId
+        - quantity
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        reason:
+          type: string

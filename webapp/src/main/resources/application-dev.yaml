@@ -1,0 +1,9 @@
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    displayRequestDuration: true
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true

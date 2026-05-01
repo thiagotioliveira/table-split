@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
 
+
     <script th:inline="javascript">
         const userLanguage = /*[[${userLanguage}]]*/ 'pt';
         const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
@@ -1220,7 +1221,9 @@
 <!-- Cancel Item Modal -->
 
 
-<script th:inline="javascript">
+<script type="module" th:inline="javascript">
+    import { ordersApi } from '/js/api-order-bridge.js';
+
     const i18n = {
         orderIdPrefix: /*[[#{page.orders.modal.detail.order_id_prefix}]]*/ 'Pedido #',
         mesa: /*[[#{page.orders.modal.detail.type.dine_in}]]*/ 'Mesa',
@@ -1231,6 +1234,21 @@
         soundActive: /*[[#{page.orders.header.sound.active}]]*/ 'Som ativo',
         soundMuted: /*[[#{page.orders.header.sound.muted}]]*/ 'Som mudo'
     };
+
+    window.openSidebar = openSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleSidebar = toggleSidebar;
+    window.filterByType = filterByType;
+    window.filterOrders = filterOrders;
+    window.moveOrder = moveOrder;
+    window.viewHistoryOrder = viewHistoryOrder;
+    window.viewOrder = viewOrder;
+    window.closeOrderModal = closeOrderModal;
+    window.printOrder = printOrder;
+    window.toggleSound = toggleSound;
+    window.openHistoryModal = openHistoryModal;
+    window.closeHistoryModal = closeHistoryModal;
+    window.filterHistory = filterHistory;
     // Sidebar functions
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -1290,34 +1308,28 @@
         });
     }
 
-    // Move order to next status
-    function moveOrder(ticketId, status) {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-        fetch('/orders/move', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                ...(csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {})
-            },
-            body: JSON.stringify({ ticketId: ticketId, status: status })
-        })
-        .then(response => {
+    async function moveOrder(ticketId, status) {
+        try {
+            await ordersApi.moveTicket({ ticketId, status });
+            // Refresh kanban board without full page reload
+            const response = await fetch('/orders');
             if (response.ok) {
-                return response.text();
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newDashboard = doc.querySelector('.dashboard-body');
+                const currentDashboard = document.querySelector('.dashboard-body');
+                if (newDashboard && currentDashboard) {
+                    currentDashboard.innerHTML = newDashboard.innerHTML;
+                    applyFilters(); // Re-apply current filters
+                    return;
+                }
             }
-            throw new Error('Erro ao mover pedido');
-        })
-        .then(html => {
-            document.querySelector('.dashboard-body').outerHTML = html;
-            // No need for innerHTML if I return the div itself in the fragment
-        })
-        .catch(error => {
-            console.error(error);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error moving order:', error);
             alert(/*[[#{page.orders.js.error.move_order}]]*/ 'Erro ao mover pedido');
-        });
+        }
     }
 
     // View order details
@@ -1325,45 +1337,43 @@
         viewOrder(id, true);
     }
 
-    function viewOrder(id, readOnly = false) {
+    async function viewOrder(id, readOnly = false) {
         document.getElementById('orderModal').dataset.ticketId = id;
-        fetch('/orders/' + id)
-            .then(res => res.json())
-            .then(ticket => {
-                document.getElementById('modalOrderId').textContent = i18n.orderIdPrefix + ticket.shortId;
-                document.getElementById('modalTypeText').textContent = ticket.tableCod ? i18n.mesa : i18n.delivery;
-                document.getElementById('modalTableOrDelivery').textContent = ticket.tableCod ? i18n.mesa + ' ' + ticket.tableCod : i18n.delivery;
-                document.getElementById('modalCustomerName').textContent = ticket.customerName;
-                document.getElementById('modalOrderTime').textContent = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                const noteContainer = document.getElementById('modalOrderNoteContainer');
-                if (ticket.note && ticket.note.trim() !== '') {
-                    document.getElementById('modalOrderNote').textContent = ticket.note;
-                    noteContainer.style.display = 'block';
-                } else {
-                    noteContainer.style.display = 'none';
-                }
-                
-                const statusBadge = document.getElementById('modalOrderStatus');
-                statusBadge.textContent = ticket.statusLabel;
-                statusBadge.className = 'status-badge status-' + ticket.statusClass;
+        try {
+            const ticket = await ordersApi.getTicketById(id);
+            document.getElementById('modalOrderId').textContent = i18n.orderIdPrefix + ticket.shortId;
+            document.getElementById('modalTypeText').textContent = ticket.tableCod ? i18n.mesa : i18n.delivery;
+            document.getElementById('modalTableOrDelivery').textContent = ticket.tableCod ? i18n.mesa + ' ' + ticket.tableCod : i18n.delivery;
+            document.getElementById('modalCustomerName').textContent = ticket.customerName;
+            document.getElementById('modalOrderTime').textContent = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const noteContainer = document.getElementById('modalOrderNoteContainer');
+            if (ticket.note && ticket.note.trim() !== '') {
+                document.getElementById('modalOrderNote').textContent = ticket.note;
+                noteContainer.style.display = 'block';
+            } else {
+                noteContainer.style.display = 'none';
+            }
+            
+            const statusBadge = document.getElementById('modalOrderStatus');
+            statusBadge.textContent = ticket.statusLabel;
+            statusBadge.className = 'status-badge status-' + ticket.statusClass;
 
-                renderModalItems(ticket.items, readOnly || ticket.status === 'CANCELLED' || ticket.status === 'DELIVERED');
-                
-                const subtotal = ticket.total;
-                const serviceFee = subtotal * 0.1;
-                const total = subtotal + serviceFee;
+            renderModalItems(ticket.items, readOnly || ticket.status === 'CANCELLED' || ticket.status === 'DELIVERED');
+            
+            const subtotal = ticket.total;
+            const serviceFee = subtotal * 0.1;
+            const total = subtotal + serviceFee;
 
-                document.getElementById('modalSubtotal').textContent = formatCurrency(subtotal);
-                document.getElementById('modalServiceFee').textContent = formatCurrency(serviceFee);
-                document.getElementById('modalTotal').textContent = formatCurrency(total);
+            document.getElementById('modalSubtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('modalServiceFee').textContent = formatCurrency(serviceFee);
+            document.getElementById('modalTotal').textContent = formatCurrency(total);
 
-                document.getElementById('orderModal').classList.add('active');
-            })
-            .catch(err => {
-                console.error('Error loading order data:', err);
-                alert(i18n.errorLoadDetails);
-            });
+            document.getElementById('orderModal').classList.add('active');
+        } catch (err) {
+            console.error('Error loading order data:', err);
+            alert(i18n.errorLoadDetails);
+        }
     }
 
     function renderModalItems(items, readOnly = false) {
@@ -1662,32 +1672,21 @@
         fetchHistory();
     }
 
-    function fetchHistory() {
-        const start = document.getElementById('historyDateStart').value;
-        const end = document.getElementById('historyDateEnd').value;
+    async function fetchHistory() {
+        const startStr = document.getElementById('historyDateStart').value;
+        const endStr = document.getElementById('historyDateEnd').value;
 
-        let url = '/orders/history';
-        const params = new URLSearchParams();
-        if (start) params.append('start', toIsoWithTimeZone(new Date(start)));
-        if (end) params.append('end', toIsoWithTimeZone(new Date(end)));
+        try {
+            const start = startStr ? new Date(startStr).toISOString() : null;
+            const end = endStr ? new Date(endStr).toISOString() : null;
 
-        if (params.toString()) {
-            url += '?' + params.toString();
+            const data = await ordersApi.getOrderHistory(start, end);
+            renderHistoryList(data.orders || []);
+            updateHistorySummary(data);
+        } catch (err) {
+            console.error('Error fetching history:', err);
+            renderHistoryList([]);
         }
-
-        fetch(url)
-            .then(res => {
-                if (!res.ok) throw new Error('Erro ao buscar histórico');
-                return res.json();
-            })
-            .then(data => {
-                renderHistoryList(data.orders || []);
-                updateHistorySummary(data);
-            })
-            .catch(err => {
-                console.error(err);
-                renderHistoryList([]);
-            });
     }
 
     function renderHistoryList(orders) {

@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>table-split-webapp</artifactId>
-	<version>0.24.1-SNAPSHOT</version>
+	<version>0.25.0-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>
@@ -126,6 +126,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-testcontainers</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc-openapi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -172,6 +182,58 @@
 						<goals>
 							<goal>apply</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>${openapi-generator-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>generate-manager-order-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<library>spring-boot</library>
+							<apiPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.api</apiPackage>
+							<modelPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useRequestMappingOnInterface>true</useRequestMappingOnInterface>
+								<openApiNullable>false</openApiNullable>
+							</configOptions>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-api-order-bridge-js</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<exec executable="python3" failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-order-bridge.py"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
+									<arg value="/api/v1/manager/orders"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api-order-bridge.js"/>
+								</exec>
+							</target>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

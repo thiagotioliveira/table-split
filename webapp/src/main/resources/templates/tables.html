@@ -4933,7 +4933,39 @@
 </div>
 </div>
 
-<script>
+<script type="module">
+    import { ordersApi } from '/js/api-order-bridge.js';
+
+    // Expose functions to window for onclick handlers
+    window.closeCancelItemModal = closeCancelItemModal;
+    window.closeDeliverItemModal = closeDeliverItemModal;
+    window.closeResetItemModal = closeResetItemModal;
+    window.openCancelItemModal = openCancelItemModal;
+    window.adjustCancelQty = adjustCancelQty;
+    window.confirmCancelItem = confirmCancelItem;
+    window.deliverOrderItem = deliverOrderItem;
+    window.confirmDeliverItem = confirmDeliverItem;
+    window.resetToPending = resetToPending;
+    window.confirmResetToPending = confirmResetToPending;
+    window.openOrderModal = openOrderModal;
+    window.closeOrderModal = closeOrderModal;
+    window.switchClientTab = switchClientTab;
+    window.addNewClientTab = addNewClientTab;
+    window.filterMenuItems = filterMenuItems;
+    window.toggleMenuItem = toggleMenuItem;
+    window.updateItemQty = updateItemQty;
+    window.updateItemNote = updateItemNote;
+    window.submitOrder = submitOrder;
+    window.toggleQuestionOption = toggleQuestionOption;
+    window.closeItemQuestionsModal = closeItemQuestionsModal;
+    window.confirmItemQuestions = confirmItemQuestions;
+    window.printQrCode = printQrCode;
+    window.closeQrModal = closeQrModal;
+    window.refreshContent = refreshContent;
+    window.performAction = performAction;
+    window.dismissWaiterCall = dismissWaiterCall;
+    window.removeItem = removeItem;
+
     // Initialize menu items grid when order modal opens
     /*
     document.getElementById('newOrderModal').addEventListener('transitionend', function(e) {
@@ -5004,9 +5036,13 @@
         const btn = document.getElementById('confirmCancelBtn');
         btn.disabled = true;
 
-        if (await performAction('/orders/item/cancel', params, 'POST', true)) {
+        try {
+            await ordersApi.cancelTicketItem(params);
+            await refreshContent();
             closeCancelItemModal();
-        } else {
+        } catch (error) {
+            console.error('Cancel item failed:', error);
+            alert(i18n.alertFetchError);
             btn.disabled = false;
         }
     }
@@ -5034,12 +5070,14 @@
     }
 
     async function submitItemStatus(itemId, status) {
-        const params = new URLSearchParams();
-        params.append('status', status);
-        
-        if (await performAction(`/tables/${selectedTable}/items/${itemId}/status`, Object.fromEntries(params), 'POST', true)) {
+        try {
+            await ordersApi.updateItemStatus(itemId, { status: status });
+            await refreshContent();
             closeDeliverItemModal();
             closeResetItemModal();
+        } catch (error) {
+            console.error('Update item status failed:', error);
+            alert(i18n.alertFetchError);
         }
     }
 
@@ -5630,8 +5668,13 @@
             tickets: tickets
         };
 
-        if (await performAction(`/tables/${currentTableId}/order`, params, 'POST', true)) {
+        try {
+            await ordersApi.placeOrder(currentTableId, params);
+            await refreshContent();
             closeOrderModal();
+        } catch (error) {
+            console.error('Order submission failed:', error);
+            alert(i18n.alertFetchError);
         }
     }
     // SSE connection
