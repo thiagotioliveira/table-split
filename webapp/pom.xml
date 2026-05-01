@@ -246,7 +246,7 @@
 									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
 									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
 									<arg value="/api/v1/manager"/>
-									<arg value="${project.basedir}/src/main/resources/static/js/api/api-order-bridge.js"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/manager/api-order-bridge.js"/>
 									<arg value="ordersApi"/>
 									<arg value="Orders"/>
 								</exec>
@@ -254,7 +254,7 @@
 									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
 									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
 									<arg value="/api/v1/manager"/>
-									<arg value="${project.basedir}/src/main/resources/static/js/api/api-table-bridge.js"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/manager/api-table-bridge.js"/>
 									<arg value="tablesApi"/>
 									<arg value="Tables"/>
 								</exec>
