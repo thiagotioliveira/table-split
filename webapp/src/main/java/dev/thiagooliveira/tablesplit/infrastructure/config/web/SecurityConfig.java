@@ -132,6 +132,8 @@ public class SecurityConfig {
                   .dispatcherTypeMatchers(DispatcherType.ERROR)
                   .permitAll();
 
+              auth.requestMatchers("/api/v1/manager/**").authenticated();
+
               if (env.acceptsProfiles(Profiles.of("h2"))) {
                 auth.requestMatchers("/h2-console/**").permitAll();
               }

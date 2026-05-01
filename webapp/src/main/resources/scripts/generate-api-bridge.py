@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Generates static/js/api-order-bridge.js from an OpenAPI YAML spec.
+Generates static/js/api-bridge.js from an OpenAPI YAML spec.
 
 The output is a native browser ES6 module using fetch — no Node.js dependencies.
 It mirrors the OpenAPI contract exactly: one JS method per operation.
 
 Usage:
-  python3 generate-api-order-bridge.py <spec.yaml> <base-path> <output.js>
+  python3 generate-api-bridge.py <spec.yaml> <base-path> <output.js> <var-name>
 
 Example:
-  python3 generate-api-order-bridge.py order-v1.yaml /api/v1/manager/orders api-bridge.js
+  python3 generate-api-bridge.py order-v1.yaml /api/v1/manager/orders api-bridge.js ordersApi
 """
 
 import sys
@@ -27,7 +27,7 @@ def _load_yaml_module():
         return yaml
     except ImportError:
         import subprocess
-        print("[generate-api-order-bridge] Installing PyYAML…", file=sys.stderr)
+        print("[generate-api-bridge] Installing PyYAML…", file=sys.stderr)
         subprocess.check_call(
             [sys.executable, "-m", "pip", "install", "pyyaml", "--quiet"]
         )
@@ -45,7 +45,7 @@ def _path_to_template_literal(path: str) -> str:
 
 
 def _render_method(operation_id: str, http_method: str, path: str,
-                   path_params: list, query_params: list, has_body: bool) -> str:
+                   path_params: list, query_params: list, has_body: bool, var_name: str) -> str:
 
     js_path = _path_to_template_literal(path)
     http_upper = http_method.upper()
@@ -65,12 +65,12 @@ def _render_method(operation_id: str, http_method: str, path: str,
             )
         qs_lines.append("const _qs = _p.toString() ? '?' + _p.toString() : '';")
         body_arg = ", body" if has_body else ""
-        qs_lines.append(f"return request('{http_upper}', `{js_path}` + _qs{body_arg});")
+        qs_lines.append(f"return request('{http_upper}', `{js_path}` + _qs{body_arg}, '{var_name}');")
         indented = "\n        ".join(qs_lines)
         body_block = f"        {indented}"
     else:
         body_arg = ", body" if has_body else ""
-        body_block = f"        return request('{http_upper}', `{js_path}`{body_arg});"
+        body_block = f"        return request('{http_upper}', `{js_path}`{body_arg}, '{var_name}');"
 
     return (
         f"\n    /** {http_upper} {path} */\n"
@@ -86,7 +86,7 @@ def _render_method(operation_id: str, http_method: str, path: str,
 
 _PREAMBLE = '''\
 /**
- * Orders API Bridge
+ * {var_name} Bridge
  *
  * AUTO-GENERATED — do NOT edit manually.
  * Source: {spec_path}
@@ -111,31 +111,31 @@ function _headers() {{
     }};
 }}
 
-async function request(method, path, body) {{
+async function request(method, path, body, varName) {{
     const opts = {{ method, headers: _headers() }};
     if (body !== undefined) opts.body = JSON.stringify(body);
     const res = await fetch(BASE_PATH + path, opts);
     if (!res.ok) {{
         const text = await res.text().catch(() => res.statusText);
-        throw new Error(`[OrdersApi] ${{method}} ${{path}} → ${{res.status}}: ${{text}}`);
+        throw new Error(`[${{varName}}] ${{method}} ${{path}} → ${{res.status}}: ${{text}}`);
     }}
     const ct = res.headers.get('content-type') || '';
     if (ct.includes('application/json') && res.status !== 204) return res.json();
     return null;
 }}
 
-const ordersApi = {{'''
+const {var_name} = {{'''
 
 _POSTAMBLE = '''
-};
+}};
 
-export { ordersApi };
+export {{ {var_name} }};
 '''
 
 HTTP_VERBS = {"get", "post", "put", "patch", "delete", "head", "options"}
 
 
-def generate(spec_path: str, base_path: str, output_path: str) -> None:
+def generate(spec_path: str, base_path: str, output_path: str, var_name: str) -> None:
     yaml = _load_yaml_module()
 
     with open(spec_path, encoding="utf-8") as fh:
@@ -164,22 +164,23 @@ def generate(spec_path: str, base_path: str, output_path: str) -> None:
             methods.append(
                 _render_method(
                     operation_id, http_method, path,
-                    path_params, query_params, has_body,
+                    path_params, query_params, has_body, var_name
                 )
             )
 
     preamble = _PREAMBLE.format(
         spec_path=os.path.basename(spec_path),
         base_path=base_path,
+        var_name=var_name
     )
 
-    content = preamble + "".join(methods) + _POSTAMBLE
+    content = preamble + "".join(methods) + _POSTAMBLE.format(var_name=var_name)
 
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as fh:
         fh.write(content)
 
-    print(f"[generate-api-order-bridge] Generated {output_path} ({len(methods)} operations)")
+    print(f"[generate-api-bridge] Generated {output_path} ({len(methods)} operations)")
 
 
 # ---------------------------------------------------------------------------
@@ -187,8 +188,8 @@ def generate(spec_path: str, base_path: str, output_path: str) -> None:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <spec.yaml> <base-path> <output.js>",
+    if len(sys.argv) != 5:
+        print(f"Usage: {sys.argv[0]} <spec.yaml> <base-path> <output.js> <var-name>",
               file=sys.stderr)
         sys.exit(1)
-    generate(sys.argv[1], sys.argv[2], sys.argv[3])
+    generate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

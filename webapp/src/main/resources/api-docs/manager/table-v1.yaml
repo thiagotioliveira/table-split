@@ -1,0 +1,283 @@
+openapi: 3.0.3
+info:
+  title: Manager Table API
+  description: API for managing tables in the TableSplit Manager module.
+  version: 1.0.0
+servers:
+  - url: /api/v1/manager/tables
+    description: v1 API for Manager Tables
+tags:
+  - name: Tables
+    description: Table management operations
+
+paths:
+  /:
+    post:
+      tags:
+        - Tables
+      summary: Create a new table
+      operationId: createTable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableRequest'
+      responses:
+        '200':
+          description: Table created successfully
+
+  /{tableId}:
+    delete:
+      tags:
+        - Tables
+      summary: Delete a table
+      operationId: deleteTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table deleted successfully
+
+  /{tableId}/open:
+    post:
+      tags:
+        - Tables
+      summary: Open a table
+      operationId: openTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table opened successfully
+
+  /orders/{orderId}/close:
+    post:
+      tags:
+        - Tables
+      summary: Close an order
+      operationId: closeOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order closed successfully
+
+  /{tableId}/history:
+    get:
+      tags:
+        - Tables
+      summary: Get table order history
+      operationId: getTableHistory
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, CLOSED]
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful history retrieval
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TableOrderHistoryResponse'
+
+  /{tableId}/payment:
+    post:
+      tags:
+        - Tables
+      summary: Process a payment for a table
+      operationId: processPayment
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+
+  /{tableId}/payment/{paymentId}:
+    delete:
+      tags:
+        - Tables
+      summary: Delete a payment
+      operationId: deletePayment
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment deleted successfully
+
+components:
+  schemas:
+    CreateTableRequest:
+      type: object
+      required:
+        - cod
+      properties:
+        cod:
+          type: string
+          pattern: '^[0-9]{2}$'
+
+    PaymentRequest:
+      type: object
+      required:
+        - amount
+        - method
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        method:
+          type: string
+          enum: [CASH, MBWAY, TERMINAL_CARD, ONLINE_CARD, SYSTEM_DISCOUNT]
+        note:
+          type: string
+
+    TableOrderHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        tableId:
+          type: string
+        serviceFee:
+          type: integer
+        status:
+          type: string
+        openedAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketItemResponse'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryPaymentResponse'
+        customerNames:
+          type: object
+          additionalProperties:
+            type: string
+        total:
+          type: number
+          format: double
+
+    HistoryPaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        paidAt:
+          type: string
+          format: date-time
+        method:
+          type: string
+        note:
+          type: string
+
+    TicketItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+        name:
+          type: string
+        names:
+          type: object
+          additionalProperties:
+            type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+        totalPrice:
+          type: number
+          format: double
+        note:
+          type: string
+        status:
+          type: string
+        statusClass:
+          type: string
+        rating:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        customizationSummary:
+          type: string

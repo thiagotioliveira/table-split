@@ -3525,6 +3525,7 @@
     let orderHistory = /*[[${orderHistory}]]*/ [];
     let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
+    window.restaurantId = restaurantId;
 
     const i18n = {
         cardTable: /*[[#{page.tables.card.table('{0}')}]]*/ 'Table {0}',
@@ -3575,6 +3576,7 @@
         customizationMultiple: /*[[#{page.customer.menu.customization.multiple}]]*/ 'Escolha várias',
         customizationError: /*[[#{page.customer.menu.customization.error}]]*/ 'Selecione as opções obrigatórias'
     };
+    window.i18n = i18n;
 
     const itemQuestionsMap = /*[[${menuItems}]]*/ [];
     const questionsByItemId = {};
@@ -3584,52 +3586,9 @@
         }
     });
 
-    async function confirmCloseTable() {
-        if (typeof selectedTable === 'undefined' || !selectedTable) {
-            alert(i18n.errorNoTableSelectedBody);
-            return;
-        }
 
-        const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
-        const note = document.getElementById('closeTableNote')?.value || '';
 
-        const params = {
-            amount: orderRemainingAmount,
-            method: method,
-            note: note
-        };
 
-        if (await performAction(`/tables/${selectedTable}/payment`, params, 'POST', true)) {
-            closeCloseTableModal();
-            // After successful payment, close the order
-            const orderId = document.getElementById('jsData').dataset.orderId || ''; // We might need to add orderId to jsData
-            // Actually, TableController settled the payment, but did it close the table automatically? 
-            // In the original code, it just redirected to /tables?selectedTableId=... which kept it open if balance > 0
-            // But usually closing modal follows payment of the full balance.
-            
-            // If the user then clicks "Fechar Mesa", it calls confirmCloseTable... wait.
-            // The original code was actually submitting to /payment.
-            
-            // Let's check how "Fechar Mesa" button is used.
-            // Original confirmCloseTable submitted to /payment. 
-            // After payment is processed, if balance reaches 0, the user might want to close it.
-            
-            // Actually, I'll just follow the original logic but with AJAX.
-            closeCloseTableModal();
-        }
-    }
-
-    async function handleNewTableSubmit(event) {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
-        const params = Object.fromEntries(formData.entries());
-        
-        if (await performAction('/tables/create', params)) {
-            closeNewTableModal();
-            form.reset();
-        }
-    }
 </script>
 
 <script>
@@ -3810,7 +3769,13 @@
             return;
         }
         console.log('Abrindo mesa:', selectedTable);
-        await performAction(`/tables/${selectedTable}/open`);
+        try {
+            await tablesApi.openTable(selectedTable);
+            await refreshContent();
+        } catch (e) {
+            console.error(e);
+            alert(i18n.alertFetchError);
+        }
     }
 
     function openDeleteTableModal() {
@@ -3825,11 +3790,7 @@
         document.getElementById('deleteTableModal').classList.remove('active');
     }
 
-    async function confirmDeleteTable() {
-        if (!selectedTable) return;
-        await performAction(`/tables/${selectedTable}/delete`);
-        closeDeleteTableModal();
-    }
+
 
     function openBillModal() {
         document.getElementById('billModal').classList.add('active');
@@ -3883,9 +3844,14 @@
         
         const confirmBtn = document.getElementById('btnConfirmDeletePayment');
         confirmBtn.onclick = async () => {
-             if (await performAction(`/tables/${tableId}/payment/${paymentId}/delete`)) {
-                 closeDeletePaymentModal();
-             }
+            try {
+                await tablesApi.deletePayment(tableId, paymentId);
+                await refreshContent();
+                modal.classList.remove('active');
+            } catch (e) {
+                console.error(e);
+                alert(i18n.alertFetchError);
+            }
         };
 
         modal.classList.add('active');
@@ -3960,49 +3926,7 @@
         document.getElementById('historyModal').classList.remove('active');
     }
 
-    function filterOrderHistory() {
-        const start = document.getElementById('historyStartDate').value;
-        const end = document.getElementById('historyEndDate').value;
-        const status = document.getElementById('historyStatusFilter').value;
 
-        if (start && end) {
-            const startDate = new Date(start);
-            const endDate = new Date(end);
-            const diffTime = Math.abs(endDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays > 31) {
-                alert('O intervalo máximo permitido é de 1 mês.');
-                return;
-            }
-        }
-
-        let url = `/tables/${selectedTable}/history`;
-        const params = new URLSearchParams();
-        if (start) params.append('start', new Date(start).toISOString());
-        if (end) params.append('end', new Date(end).toISOString());
-        if (status && status !== 'all') params.append('status', status);
-
-        if (params.toString()) {
-            url += '?' + params.toString();
-        }
-
-        fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Erro ao buscar histórico');
-                return res.json();
-            })
-            .then(data => {
-                orderHistory = data;
-                renderOrderHistory(data);
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Erro ao buscar histórico');
-            });
-    }
 
     function renderOrderHistory(orders) {
         const ordersToRender = orders !== undefined ? orders : orderHistory;
@@ -4935,8 +4859,111 @@
 
 <script type="module">
     import { ordersApi } from '/js/api-order-bridge.js';
+    import { tablesApi } from '/js/api-table-bridge.js';
 
-    // Expose functions to window for onclick handlers
+    window.tablesApi = tablesApi;
+    window.ordersApi = ordersApi;
+
+    window.confirmCloseTable = confirmCloseTable;
+    window.handleNewTableSubmit = handleNewTableSubmit;
+    window.openTable = openTable;
+    window.confirmDeleteTable = confirmDeleteTable;
+    window.filterOrderHistory = filterOrderHistory;
+
+    async function confirmCloseTable() {
+        if (typeof selectedTable === 'undefined' || !selectedTable) {
+            alert(i18n.errorNoTableSelectedBody);
+            return;
+        }
+
+        const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
+        const note = document.getElementById('closeTableNote')?.value || '';
+
+        const params = {
+            amount: orderRemainingAmount,
+            method: method,
+            note: note
+        };
+
+        try {
+            await tablesApi.processPayment(selectedTable, params);
+            await refreshContent();
+            closeCloseTableModal();
+        } catch (e) {
+            console.error(e);
+            alert(i18n.alertFetchError);
+        }
+    }
+
+    async function handleNewTableSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const params = Object.fromEntries(formData.entries());
+        
+        try {
+            await tablesApi.createTable(params);
+            await refreshContent();
+            closeNewTableModal();
+            form.reset();
+        } catch (e) {
+            console.error(e);
+            alert(i18n.alertFetchError);
+        }
+    }
+
+    async function openTable() {
+        if (!selectedTable) return;
+        try {
+            await tablesApi.openTable(selectedTable);
+            await refreshContent();
+        } catch (e) {
+            console.error(e);
+            alert(i18n.alertFetchError);
+        }
+    }
+
+    async function confirmDeleteTable() {
+        if (!selectedTable) return;
+        try {
+            await tablesApi.deleteTable(selectedTable);
+            await refreshContent();
+            closeDeleteTableModal();
+        } catch (e) {
+            console.error(e);
+            alert(i18n.alertFetchError);
+        }
+    }
+
+    function filterOrderHistory() {
+        const start = document.getElementById('historyStartDate').value;
+        const end = document.getElementById('historyEndDate').value;
+        const status = document.getElementById('historyStatusFilter').value;
+
+        if (start && end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            if (Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24)) > 31) {
+                alert('O intervalo máximo permitido é de 1 mês.');
+                return;
+            }
+        }
+
+        const startISO = start ? new Date(start).toISOString() : null;
+        const endISO = end ? new Date(end).toISOString() : null;
+        const statusFilter = status && status !== 'all' ? status : null;
+
+        tablesApi.getTableHistory(selectedTable, statusFilter, startISO, endISO)
+            .then(data => {
+                orderHistory = data;
+                renderOrderHistory(data);
+            })
+            .catch(err => {
+                console.error('Erro ao buscar histórico:', err);
+                alert('Erro ao buscar histórico');
+            });
+    }
+
     window.closeCancelItemModal = closeCancelItemModal;
     window.closeDeliverItemModal = closeDeliverItemModal;
     window.closeResetItemModal = closeResetItemModal;

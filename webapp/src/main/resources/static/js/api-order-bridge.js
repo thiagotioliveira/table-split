@@ -1,5 +1,5 @@
 /**
- * Orders API Bridge
+ * ordersApi Bridge
  *
  * AUTO-GENERATED — do NOT edit manually.
  * Source: order-v1.yaml
@@ -24,13 +24,13 @@ function _headers() {
     };
 }
 
-async function request(method, path, body) {
+async function request(method, path, body, varName) {
     const opts = { method, headers: _headers() };
     if (body !== undefined) opts.body = JSON.stringify(body);
     const res = await fetch(BASE_PATH + path, opts);
     if (!res.ok) {
         const text = await res.text().catch(() => res.statusText);
-        throw new Error(`[OrdersApi] ${method} ${path} → ${res.status}: ${text}`);
+        throw new Error(`[${varName}] ${method} ${path} → ${res.status}: ${text}`);
     }
     const ct = res.headers.get('content-type') || '';
     if (ct.includes('application/json') && res.status !== 204) return res.json();
@@ -44,31 +44,31 @@ const ordersApi = {
         if (start !== undefined && start !== null) _p.append('start', start);
         if (end !== undefined && end !== null) _p.append('end', end);
         const _qs = _p.toString() ? '?' + _p.toString() : '';
-        return request('GET', `/history` + _qs);
+        return request('GET', `/history` + _qs, 'ordersApi');
     },
     /** POST /move */
     moveTicket(body) {
-        return request('POST', `/move`, body);
+        return request('POST', `/move`, body, 'ordersApi');
     },
     /** GET /{id} */
     getTicketById(id) {
-        return request('GET', `/${id}`);
+        return request('GET', `/${id}`, 'ordersApi');
     },
     /** GET /count/pending */
     getPendingCount() {
-        return request('GET', `/count/pending`);
+        return request('GET', `/count/pending`, 'ordersApi');
     },
     /** POST /item/cancel */
     cancelTicketItem(body) {
-        return request('POST', `/item/cancel`, body);
+        return request('POST', `/item/cancel`, body, 'ordersApi');
     },
     /** POST /tables/{tableId}/place */
     placeOrder(tableId, body) {
-        return request('POST', `/tables/${tableId}/place`, body);
+        return request('POST', `/tables/${tableId}/place`, body, 'ordersApi');
     },
     /** POST /items/{itemId}/status */
     updateItemStatus(itemId, body) {
-        return request('POST', `/items/${itemId}/status`, body);
+        return request('POST', `/items/${itemId}/status`, body, 'ordersApi');
     },
 };
 

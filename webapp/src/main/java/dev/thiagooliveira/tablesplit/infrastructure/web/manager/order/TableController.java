@@ -12,16 +12,13 @@ import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
-import dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.common.DomainException;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
-import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
-import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -29,17 +26,12 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CategoryModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CustomerModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.ItemModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.OrderHistoryPaymentModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TableModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +40,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -348,193 +339,10 @@ public class TableController {
       model.addAttribute("orderHistory", java.util.Collections.emptyList());
     }
 
-    model.addAttribute("createTableForm", new CreateTableForm());
+    model.addAttribute(
+        "createTableForm",
+        new dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.CreateTableForm());
   }
-
-  @GetMapping("/{tableId}/history")
-  @ResponseBody
-  public List<OrderHistoryModel> tableHistory(
-      @PathVariable UUID tableId,
-      @RequestParam(required = false) dev.thiagooliveira.tablesplit.domain.order.OrderStatus status,
-      @RequestParam(required = false)
-          @org.springframework.format.annotation.DateTimeFormat(
-              iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-          java.time.ZonedDateTime start,
-      @RequestParam(required = false)
-          @org.springframework.format.annotation.DateTimeFormat(
-              iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
-          java.time.ZonedDateTime end,
-      Authentication auth) {
-    var context = (AccountContext) auth.getPrincipal();
-
-    if (start != null && end != null) {
-      if (java.time.Duration.between(start, end).toDays() > 31) {
-        throw new IllegalArgumentException("Interval maximum is 1 month");
-      }
-    }
-
-    return getOrder.findAllFiltered(tableId, status, start, end).stream()
-        .map(h -> this.mapToOrderHistoryModel(h, context.getUser().getLanguage()))
-        .toList();
-  }
-
-  private OrderHistoryModel mapToOrderHistoryModel(
-      dev.thiagooliveira.tablesplit.domain.order.Order hist, Language userLanguage) {
-    Map<UUID, String> customerNames =
-        hist.getCustomers().stream()
-            .collect(
-                Collectors.toMap(
-                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getId,
-                    dev.thiagooliveira.tablesplit.domain.order.OrderCustomer::getName,
-                    (v1, v2) -> v1,
-                    java.util.HashMap::new));
-    customerNames.put(null, "Mesa");
-
-    return new OrderHistoryModel(
-        hist.getId().toString(),
-        hist.getTableId().toString(),
-        hist.getServiceFee(),
-        hist.getStatus().name(),
-        hist.getOpenedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-        hist.getClosedAt() != null
-            ? hist.getClosedAt().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            : null,
-        hist.getTickets().stream()
-            .flatMap(
-                t ->
-                    t.getItems().stream()
-                        .map(
-                            item ->
-                                TicketItemModel.fromDomain(
-                                    item,
-                                    hist.getCustomerName(item.getCustomerId()),
-                                    t.getCreatedAt(),
-                                    userLanguage)))
-            .toList(),
-        hist.getPayments().stream()
-            .map(
-                pay ->
-                    new OrderHistoryPaymentModel(
-                        pay.getId().toString(),
-                        pay.getCustomerId(),
-                        pay.getAmount(),
-                        pay.getPaidAt(),
-                        pay.getMethod().name(),
-                        pay.getNote()))
-            .toList(),
-        customerNames,
-        hist.calculateTotal());
-  }
-
-  @PostMapping("/create")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> createTable(
-      Authentication auth,
-      @Valid @ModelAttribute("createTableForm") CreateTableForm form,
-      BindingResult bindingResult) {
-
-    if (bindingResult.hasErrors()) {
-      return org.springframework.http.ResponseEntity.badRequest().build();
-    }
-
-    var context = (AccountContext) auth.getPrincipal();
-    transactionalContext.execute(
-        () -> createTable.execute(context.getId(), context.getRestaurant().getId(), form.getCod()));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/delete")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> deleteTable(@PathVariable UUID tableId) {
-    transactionalContext.execute(() -> deleteTable.execute(tableId));
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/open")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> openTable(
-      Authentication auth, @PathVariable UUID tableId) {
-    var context = (AccountContext) auth.getPrincipal();
-    transactionalContext.execute(
-        () -> openTable.execute(tableId, context.getRestaurant().getServiceFee(), null, null));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{orderId}/close")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> closeTable(@PathVariable UUID orderId) {
-
-    transactionalContext.execute(() -> closeTable.execute(orderId));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/order")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> placeOrder(
-      Authentication auth, @PathVariable UUID tableId, @RequestBody PlaceOrderCommand request) {
-    var account = (AccountContext) auth.getPrincipal();
-    var table =
-        getTables
-            .findById(tableId)
-            .orElseThrow(() -> new NotFoundException("error.table.not.found"));
-
-    var command =
-        new PlaceOrderCommand(
-            table.getRestaurantId(),
-            table.getCod(),
-            request.tickets(),
-            account.getRestaurant().getServiceFee(),
-            request.customers());
-
-    transactionalContext.execute(() -> placeOrder.execute(command));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/payment")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> processPayment(
-      @PathVariable UUID tableId, @RequestBody PaymentRequest request) {
-
-    transactionalContext.execute(
-        () ->
-            processPayment.execute(
-                tableId,
-                request.customerId(),
-                request.amount(),
-                request.method() != null ? request.method() : PaymentMethod.CASH,
-                request.note()));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/payment/{paymentId}/delete")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> deletePayment(
-      @PathVariable UUID tableId, @PathVariable UUID paymentId) {
-
-    transactionalContext.execute(() -> deletePayment.execute(tableId, paymentId));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/{tableId}/items/{itemId}/status")
-  @ResponseBody
-  public org.springframework.http.ResponseEntity<Void> updateTicketItemStatus(
-      @PathVariable UUID tableId, @PathVariable UUID itemId, @RequestBody StatusRequest request) {
-
-    transactionalContext.execute(() -> updateTicketItemStatus.execute(itemId, request.status()));
-
-    return org.springframework.http.ResponseEntity.ok().build();
-  }
-
-  public record PaymentRequest(
-      UUID customerId, BigDecimal amount, PaymentMethod method, String note) {}
-
-  public record StatusRequest(TicketStatus status) {}
 
   @ExceptionHandler(TableAlreadyOccupied.class)
   public String handleTableAlreadyOccupied(RedirectAttributes redirectAttributes) {
@@ -652,4 +460,12 @@ public class TableController {
         .collect(
             Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
   }
+
+  public record OrderHistoryPaymentModel(
+      String id,
+      UUID customerId,
+      java.math.BigDecimal amount,
+      java.time.ZonedDateTime paidAt,
+      String method,
+      String note) {}
 }
