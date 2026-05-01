@@ -12,25 +12,27 @@ import org.springframework.stereotype.Component;
 public class ComboRepositoryAdapter implements ComboRepository {
 
   private final ComboJpaRepository repository;
+  private final ComboEntityMapper mapper;
 
-  public ComboRepositoryAdapter(ComboJpaRepository repository) {
+  public ComboRepositoryAdapter(ComboJpaRepository repository, ComboEntityMapper mapper) {
     this.repository = repository;
+    this.mapper = mapper;
   }
 
   @Override
   public Combo save(Combo combo) {
-    return repository.save(ComboEntity.fromDomain(combo)).toDomain();
+    return mapper.toDomain(repository.save(mapper.toEntity(combo)));
   }
 
   @Override
   public Optional<Combo> findById(UUID id) {
-    return repository.findById(id).map(ComboEntity::toDomain);
+    return repository.findById(id).map(mapper::toDomain);
   }
 
   @Override
   public List<Combo> findByRestaurantId(UUID restaurantId) {
     return repository.findByRestaurantId(restaurantId).stream()
-        .map(ComboEntity::toDomain)
+        .map(mapper::toDomain)
         .collect(Collectors.toList());
   }
 

@@ -7,12 +7,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ComboEntityMapper {
-
-  ComboEntityMapper INSTANCE = Mappers.getMapper(ComboEntityMapper.class);
 
   Combo toDomain(ComboEntity entity);
 

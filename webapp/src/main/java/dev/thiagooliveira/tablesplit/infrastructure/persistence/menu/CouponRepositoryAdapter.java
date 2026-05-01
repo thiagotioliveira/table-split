@@ -12,31 +12,33 @@ import org.springframework.stereotype.Component;
 public class CouponRepositoryAdapter implements CouponRepository {
 
   private final CouponJpaRepository repository;
+  private final CouponEntityMapper mapper;
 
-  public CouponRepositoryAdapter(CouponJpaRepository repository) {
+  public CouponRepositoryAdapter(CouponJpaRepository repository, CouponEntityMapper mapper) {
     this.repository = repository;
+    this.mapper = mapper;
   }
 
   @Override
   public Coupon save(Coupon coupon) {
-    return repository.save(CouponEntity.fromDomain(coupon)).toDomain();
+    return mapper.toDomain(repository.save(mapper.toEntity(coupon)));
   }
 
   @Override
   public Optional<Coupon> findById(UUID id) {
-    return repository.findById(id).map(CouponEntity::toDomain);
+    return repository.findById(id).map(mapper::toDomain);
   }
 
   @Override
   public List<Coupon> findByRestaurantId(UUID restaurantId) {
     return repository.findByRestaurantId(restaurantId).stream()
-        .map(CouponEntity::toDomain)
+        .map(mapper::toDomain)
         .collect(Collectors.toList());
   }
 
   @Override
   public Optional<Coupon> findByCodeAndRestaurantId(String code, UUID restaurantId) {
-    return repository.findByCodeAndRestaurantId(code, restaurantId).map(CouponEntity::toDomain);
+    return repository.findByCodeAndRestaurantId(code, restaurantId).map(mapper::toDomain);
   }
 
   @Override

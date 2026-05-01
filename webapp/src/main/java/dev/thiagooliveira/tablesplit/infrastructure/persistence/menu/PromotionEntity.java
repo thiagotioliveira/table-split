@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
 import dev.thiagooliveira.tablesplit.domain.menu.ApplyType;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
-import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
@@ -69,14 +68,6 @@ public class PromotionEntity {
       joinColumns = @JoinColumn(name = "promotion_id"))
   @Column(name = "applicable_id")
   private Set<String> applicableIds = new HashSet<>();
-
-  public Promotion toDomain() {
-    return PromotionEntityMapper.INSTANCE.toDomain(this);
-  }
-
-  public static PromotionEntity fromDomain(Promotion domain) {
-    return PromotionEntityMapper.INSTANCE.toEntity(domain);
-  }
 
   // Getters/Setters (omitted for brevity in thinking, will implement full ones)
   public UUID getId() {

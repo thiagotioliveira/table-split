@@ -1,13 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Combo;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "combos")
@@ -37,14 +35,6 @@ public class ComboEntity {
 
   @OneToMany(mappedBy = "comboId", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ComboItemEntity> items = new ArrayList<>();
-
-  public Combo toDomain() {
-    return ComboEntityMapper.INSTANCE.toDomain(this);
-  }
-
-  public static ComboEntity fromDomain(Combo domain) {
-    return ComboEntityMapper.INSTANCE.toEntity(domain);
-  }
 
   public UUID getId() {
     return id;

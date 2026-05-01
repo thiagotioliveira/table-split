@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Coupon;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -8,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "coupons")
@@ -52,14 +50,6 @@ public class CouponEntity {
 
   @OneToMany(mappedBy = "couponId", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<CouponRuleEntity> rules = new ArrayList<>();
-
-  public Coupon toDomain() {
-    return CouponEntityMapper.INSTANCE.toDomain(this);
-  }
-
-  public static CouponEntity fromDomain(Coupon domain) {
-    return CouponEntityMapper.INSTANCE.toEntity(domain);
-  }
 
   public UUID getId() {
     return id;

@@ -12,25 +12,28 @@ import org.springframework.stereotype.Component;
 public class PromotionRepositoryAdapter implements PromotionRepository {
 
   private final PromotionJpaRepository repository;
+  private final PromotionEntityMapper mapper;
 
-  public PromotionRepositoryAdapter(PromotionJpaRepository repository) {
+  public PromotionRepositoryAdapter(
+      PromotionJpaRepository repository, PromotionEntityMapper mapper) {
     this.repository = repository;
+    this.mapper = mapper;
   }
 
   @Override
   public Promotion save(Promotion promotion) {
-    return repository.save(PromotionEntity.fromDomain(promotion)).toDomain();
+    return mapper.toDomain(repository.save(mapper.toEntity(promotion)));
   }
 
   @Override
   public Optional<Promotion> findById(UUID id) {
-    return repository.findById(id).map(PromotionEntity::toDomain);
+    return repository.findById(id).map(mapper::toDomain);
   }
 
   @Override
   public List<Promotion> findByRestaurantId(UUID restaurantId) {
     return repository.findByRestaurantId(restaurantId).stream()
-        .map(PromotionEntity::toDomain)
+        .map(mapper::toDomain)
         .collect(Collectors.toList());
   }
 
