@@ -13,7 +13,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountCont
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.HistoryData;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.api.OrdersApi;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.CancelItemRequest;
@@ -113,8 +112,16 @@ public class OrderApiController implements OrdersApi {
             ? BigDecimal.ZERO
             : totalRevenue.divide(BigDecimal.valueOf(orders.size()), 2, RoundingMode.HALF_UP);
 
-    HistoryData internalResponse = new HistoryData(orders, orders.size(), totalRevenue, avgTicket);
-    return ResponseEntity.ok(mapper.mapToHistoryResponse(internalResponse));
+    dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.HistoryResponse
+        response =
+            new dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model
+                    .HistoryResponse()
+                .orders(orders.stream().map(mapper::mapToTicketResponse).toList())
+                .totalOrders(orders.size())
+                .totalRevenue(totalRevenue.doubleValue())
+                .avgTicket(avgTicket.doubleValue());
+
+    return ResponseEntity.ok(response);
   }
 
   @Override

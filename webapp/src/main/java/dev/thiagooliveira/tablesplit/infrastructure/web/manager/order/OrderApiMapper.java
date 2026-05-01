@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.HistoryData;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.TicketItemResponse;
@@ -26,12 +25,6 @@ import org.springframework.context.MessageSource;
 public abstract class OrderApiMapper {
 
   @Autowired protected MessageSource messageSource;
-
-  @Mapping(target = "totalRevenue", expression = "java(history.totalRevenue().doubleValue())")
-  @Mapping(target = "avgTicket", expression = "java(history.avgTicket().doubleValue())")
-  public abstract dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model
-          .HistoryResponse
-      mapToHistoryResponse(HistoryData history);
 
   @Mapping(target = "restaurantId", expression = "java(UUID.fromString(model.getRestaurantId()))")
   @Mapping(target = "id", expression = "java(UUID.fromString(model.getId()))")
