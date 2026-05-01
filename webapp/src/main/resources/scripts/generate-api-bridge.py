@@ -113,13 +113,22 @@ function _headers() {{
     }};
 }}
 
+class ApiError extends Error {{
+    constructor(message, status, text) {{
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.text = text;
+    }}
+}}
+
 async function request(method, path, body, varName) {{
     const opts = {{ method, headers: _headers() }};
     if (body !== undefined) opts.body = JSON.stringify(body);
     const res = await fetch(BASE_PATH + path, opts);
     if (!res.ok) {{
         const text = await res.text().catch(() => res.statusText);
-        throw new Error(`[${{varName}}] ${{method}} ${{path}} → ${{res.status}}: ${{text}}`);
+        throw new ApiError(`[${{varName}}] ${{method}} ${{path}} → ${{res.status}}: ${{text}}`, res.status, text);
     }}
     const ct = res.headers.get('content-type') || '';
     if (ct.includes('application/json') && res.status !== 204) return res.json();

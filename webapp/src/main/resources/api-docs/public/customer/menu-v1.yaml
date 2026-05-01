@@ -1,0 +1,450 @@
+openapi: 3.0.3
+info:
+  title: Customer Menu API
+  description: API for customer interactions with the restaurant menu and table.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1/customer
+    description: Customer API base path
+
+tags:
+  - name: CustomerMenu
+    description: Operations related to the customer menu and table session.
+
+paths:
+  /{slug}/table/{tableCode}/customer-name:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Update customer name
+      operationId: updateCustomerName
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerNameRequest'
+      responses:
+        '200':
+          description: Name updated successfully
+        '404':
+          description: Restaurant or table not found
+        '409':
+          description: Conflict (e.g. session closed)
+
+  /{slug}/table/{tableCode}/menu/data:
+    get:
+      tags:
+        - CustomerMenu
+      summary: Get table and order data
+      operationId: getTableData
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lastOrderId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful data retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableDataResponse'
+
+  /{slug}/table/{tableCode}/open:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Open a new table session
+      operationId: openTable
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerOpenTableRequest'
+      responses:
+        '200':
+          description: Table opened successfully
+
+  /{slug}/table/{tableCode}/menu/order:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Place an order
+      operationId: placeOrder
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerPlaceOrderRequest'
+      responses:
+        '200':
+          description: Order placed successfully
+
+  /{slug}/table/{tableCode}/waiter/call:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Call a waiter
+      operationId: callWaiter
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Waiter called successfully
+
+  /{slug}/table/{tableCode}/feedback/item:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Rate a specific item
+      operationId: rateItem
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateItemRequest'
+      responses:
+        '200':
+          description: Item rated successfully
+
+  /{slug}/table/{tableCode}/feedback/general:
+    post:
+      tags:
+        - CustomerMenu
+      summary: Submit general feedback for the order
+      operationId: submitGeneralFeedback
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tableCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralFeedbackRequest'
+      responses:
+        '200':
+          description: Feedback submitted successfully
+
+components:
+  schemas:
+    UpdateCustomerNameRequest:
+      type: object
+      required:
+        - customerId
+        - name
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CustomerOpenTableRequest:
+      type: object
+      required:
+        - customerId
+        - customerName
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+
+    CustomerPlaceOrderRequest:
+      type: object
+      properties:
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerTicketRequest'
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerRequest'
+
+    CustomerTicketRequest:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerItemRequest'
+
+    CustomerItemRequest:
+      type: object
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        note:
+          type: string
+        customizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerCustomizationRequest'
+
+    CustomerCustomizationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOptionRequest'
+
+    CustomerOptionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        extraPrice:
+          type: number
+          format: double
+
+    CustomerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    RateItemRequest:
+      type: object
+      required:
+        - itemId
+        - rating
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    GeneralFeedbackRequest:
+      type: object
+      required:
+        - orderId
+        - customerId
+        - rating
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+
+    TableDataResponse:
+      type: object
+      properties:
+        ticketItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleTicketItem'
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderCustomerModel'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentModel'
+        orderId:
+          type: string
+          format: uuid
+        reviewMode:
+          type: boolean
+        hasSentFeedback:
+          type: boolean
+        tableSummary:
+          $ref: '#/components/schemas/TableSummaryModel'
+
+    SimpleTicketItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+          format: double
+        status:
+          type: string
+        statusLabel:
+          type: string
+        customerId:
+          type: string
+        customerName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        rating:
+          type: integer
+        customizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketItemCustomizationResponse'
+
+    TicketItemCustomizationResponse:
+      type: object
+      properties:
+        question:
+          type: string
+        option:
+          type: string
+
+    OrderCustomerModel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        subtotal:
+          type: number
+          format: double
+
+    PaymentModel:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+          format: double
+        method:
+          type: string
+        paidAt:
+          type: string
+          format: date-time
+        note:
+          type: string
+
+    TableSummaryModel:
+      type: object
+      properties:
+        subtotal:
+          type: number
+          format: double
+        serviceFee:
+          type: number
+          format: double
+        total:
+          type: number
+          format: double
+        paidAmount:
+          type: number
+          format: double
+        remainingAmount:
+          type: number
+          format: double

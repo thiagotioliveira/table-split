@@ -2766,90 +2766,110 @@
 
 
 <script th:inline="javascript">
-    const menuItems = /*[[${customerMenu.items}]]*/[];
-    const tagLabels = {
-        /*[# th:each="tag : ${itemTags}"]*/
-        "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
-        /*[/]*/
-    };
-    // Current language
-    let currentLang = /*[[${#locale.language}]]*/'pt';
-    const SERVICE_FEE = /*[[${customerMenu.restaurant.serviceFee}]]*/0.10;
-    const allTableItems = /*[[${customerMenu.ticketItems}]]*/[];
-    const hasTable = /*[[${customerMenu.hasTable()}]]*/false;
-    // Customers already at the table — comes from activeOrder.customers (backend)
-    const tableCustomersFromBackend = /*[[${customerMenu.customers}]]*/[];
-    const currencySymbol = /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$';
-    const currencyCode = /*[[${customerMenu.restaurant.currency.name()}]]*/'BRL';
-    const hasImage = /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false;
-    const totalSlides = /*[[${customerMenu.restaurant.coverImages.size()}]]*/0;
-    const restaurantSlug = /*[[${customerMenu.restaurant.slug}]]*/'';
-    const tableCode = /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'';
-
-    function getCsrfHeaders() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-        return (csrfToken && csrfHeader) ? { [csrfHeader]: csrfToken } : {};
-    }
-
-    const activePayments = /*[[${customerMenu.payments}]]*/[];
-    const tableCustomersNames = /*[[${customerMenu.customers}]]*/ [];
-    const isReviewMode = /*[[${customerMenu.reviewMode}]]*/ false;
-    const activeOrderId = /*[[${customerMenu.orderId?.toString()}]]*/ '';
-    let tableSummary = /*[[${customerMenu.tableSummary}]]*/ null;
-    const hasSentFeedback = /*[[${customerMenu.hasSentFeedback}]]*/false;
-    const showEntryModal = /*[[${showEntryModal != null and showEntryModal}]]*/false;
-    const entryTablePath = /*[[${(showEntryModal != null and showEntryModal) ? ('/@' + customerMenu.restaurant.slug + '/table/' + customerMenu.tableModel.cod + '/open') : ''}]]*/'';
-    const restaurantId = /*[[${customerMenu.getRestaurant().getId()}]]*/ null;
+    // Attach variables to window for module script access
+    Object.assign(window, {
+        menuItems: /*[[${customerMenu.items}]]*/[],
+        tagLabels: {
+            /*[# th:each="tag : ${itemTags}"]*/
+            "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
+            /*[/]*/
+        },
+        currentLang: /*[[${#locale.language}]]*/'pt',
+        SERVICE_FEE: /*[[${customerMenu.restaurant.serviceFee}]]*/0.10,
+        allTableItems: /*[[${customerMenu.ticketItems}]]*/[],
+        hasTable: /*[[${customerMenu.hasTable()}]]*/false,
+        tableCustomersFromBackend: /*[[${customerMenu.customers}]]*/[],
+        currencySymbol: /*[[${customerMenu.restaurant.currency.getSymbol()}]]*/'$',
+        currencyCode: /*[[${customerMenu.restaurant.currency.name()}]]*/'BRL',
+        hasImage: /*[[${!#lists.isEmpty(customerMenu.restaurant.coverImages)}]]*/false,
+        totalSlides: /*[[${customerMenu.restaurant.coverImages.size()}]]*/0,
+        restaurantSlug: /*[[${customerMenu.restaurant.slug}]]*/'',
+        tableCode: /*[[${customerMenu.hasTable() ? customerMenu.tableModel.cod : ''}]]*/'',
+        activePayments: /*[[${customerMenu.payments}]]*/[],
+        tableCustomersNames: /*[[${customerMenu.customers}]]*/ [],
+        isReviewMode: /*[[${customerMenu.reviewMode}]]*/ false,
+        activeOrderId: /*[[${customerMenu.orderId?.toString()}]]*/ '',
+        tableSummary: /*[[${customerMenu.tableSummary}]]*/ null,
+        hasSentFeedback: /*[[${customerMenu.hasSentFeedback}]]*/false,
+        showEntryModal: /*[[${showEntryModal != null and showEntryModal}]]*/false,
+        entryTablePath: /*[[${(showEntryModal != null and showEntryModal) ? ('/@' + customerMenu.restaurant.slug + '/table/' + customerMenu.tableModel.cod + '/open') : ''}]]*/'',
+        restaurantId: /*[[${customerMenu.getRestaurant().getId()}]]*/ null
+    });
 
 
     const i18n = {
-        item: [[#{page.customer.menu.cart.item}]],
-        items: [[#{page.customer.menu.cart.items}]],
-        waiterCallNow: [[#{page.customer.menu.waiter.modal.call.now}]],
-        waiterWait: [[#{page.customer.menu.waiter.modal.wait}]],
-        errorWaiterCall: [[#{page.customer.menu.waiter.error.call}]],
-        errorWaiterConnection: [[#{page.customer.menu.waiter.error.connection}]],
-        errorOrderSubmit: [[#{page.customer.menu.orders.error.submit}]],
-        errorOrderConnection: [[#{page.customer.menu.orders.error.connection}]],
-        errorReviewSubmit: [[#{page.customer.menu.review.error.submit}]],
-        errorReviewConnection: [[#{page.customer.menu.review.error.connection}]],
-        errorUserSync: [[#{page.customer.menu.user.error.sync}]],
-        thanksVisit: [[#{page.customer.menu.review.thanks}]],
-        feedbackSuccessText: [[#{page.customer.menu.review.success.text}]],
-        tableBillEmpty: [[#{page.customer.menu.table.bill.empty}]],
-        tableBillYou: [[#{page.customer.menu.table.bill.you}]],
-        tableBillOthers: [[#{page.customer.menu.table.bill.others}]],
-        tableBillPaymentsTitle: [[#{page.customer.menu.table.bill.payments.title}]],
-        clientAddOther: [[#{page.customer.menu.client.add.other}]],
-        searchPlaceholder: [[#{page.customer.menu.search.placeholder}]],
-        experienceTitle: [[#{page.customer.menu.review.experience.title}]],
-        experienceSubtitle: [[#{page.customer.menu.review.experience.subtitle}]],
-        experienceCommentPlaceholder: [[#{page.customer.menu.review.experience.comment.placeholder}]],
-        experienceSubmit: [[#{page.customer.menu.review.experience.submit}]],
-        experienceThanks: [[#{page.customer.menu.review.experience.thanks}]],
-        redirectNow: [[#{page.customer.menu.review.success.go.now}]],
-        timeAgoNow: [[#{page.customer.menu.time.ago.now}]],
-        timeAgoMin: [[#{page.customer.menu.time.ago.min}]],
-        timeAgoHour: [[#{page.customer.menu.time.ago.hour}]],
-        errorEntryTable: [[#{page.customer.menu.entry.error.fail}]],
-        errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]],
-        badgeClient: [[#{page.customer.menu.badge.client}]],
-        customizationSingle: [[#{page.customer.menu.customization.single}]],
-        customizationMultiple: [[#{page.customer.menu.customization.multiple}]],
-        customizationError: [[#{page.customer.menu.customization.error}]]
+        item: '[[#{page.customer.menu.cart.item}]]',
+        items: '[[#{page.customer.menu.cart.items}]]',
+        waiterCallNow: '[[#{page.customer.menu.waiter.modal.call.now}]]',
+        waiterWait: '[[#{page.customer.menu.waiter.modal.wait}]]',
+        errorWaiterCall: '[[#{page.customer.menu.waiter.error.call}]]',
+        errorWaiterConnection: '[[#{page.customer.menu.waiter.error.connection}]]',
+        errorOrderSubmit: '[[#{page.customer.menu.orders.error.submit}]]',
+        errorOrderConnection: '[[#{page.customer.menu.orders.error.connection}]]',
+        errorReviewSubmit: '[[#{page.customer.menu.review.error.submit}]]',
+        errorReviewConnection: '[[#{page.customer.menu.review.error.connection}]]',
+        errorUserSync: '[[#{page.customer.menu.user.error.sync}]]',
+        thanksVisit: '[[#{page.customer.menu.review.thanks}]]',
+        feedbackSuccessText: '[[#{page.customer.menu.review.success.text}]]',
+        tableBillEmpty: '[[#{page.customer.menu.table.bill.empty}]]',
+        tableBillYou: '[[#{page.customer.menu.table.bill.you}]]',
+        tableBillOthers: '[[#{page.customer.menu.table.bill.others}]]',
+        tableBillPaymentsTitle: '[[#{page.customer.menu.table.bill.payments.title}]]',
+        clientAddOther: '[[#{page.customer.menu.client.add.other}]]',
+        searchPlaceholder: '[[#{page.customer.menu.search.placeholder}]]',
+        experienceTitle: '[[#{page.customer.menu.review.experience.title}]]',
+        experienceSubtitle: '[[#{page.customer.menu.review.experience.subtitle}]]',
+        experienceCommentPlaceholder: '[[#{page.customer.menu.review.experience.comment.placeholder}]]',
+        experienceSubmit: '[[#{page.customer.menu.review.experience.submit}]]',
+        experienceThanks: '[[#{page.customer.menu.review.experience.thanks}]]',
+        redirectNow: '[[#{page.customer.menu.review.success.go.now}]]',
+        timeAgoNow: '[[#{page.customer.menu.time.ago.now}]]',
+        timeAgoMin: '[[#{page.customer.menu.time.ago.min}]]',
+        timeAgoHour: '[[#{page.customer.menu.time.ago.hour}]]',
+        errorEntryTable: '[[#{page.customer.menu.entry.error.fail}]]',
+        errorEntryTableRegister: '[[#{page.customer.menu.entry.error.register}]]',
+        badgeClient: '[[#{page.customer.menu.badge.client}]]',
+        customizationSingle: '[[#{page.customer.menu.customization.single}]]',
+        customizationMultiple: '[[#{page.customer.menu.customization.multiple}]]',
+        customizationError: '[[#{page.customer.menu.customization.error}]]'
     };
 
     const paymentMethods = {
         /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
         "[(${method.name()})]": {
-            label: [[#{${method.getLabel()}}]],
+            label: '[[#{${method.getLabel()}}]]',
             icon: `[(${method.getIcon()})]`
         },
         /*[/]*/
     };
 </script>
-<script th:inline="javascript">
+
+<script type="module">
+    import { customerApi } from '/js/api/public/api-customer-bridge.js';
+
+    // Helper to get cookies
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    };
+
+    // Fallback for crypto.randomUUID
+    const getUUID = () => {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    // Destructure globals from window
+    const { 
+        restaurantSlug, tableCode, hasTable, showEntryModal, 
+        allTableItems, restaurantId, currencyCode, SERVICE_FEE 
+    } = window;
+
     let entrySelectedClientId = null;
     let cart = [];
     let currentModalItem = null;
@@ -2862,13 +2882,25 @@
     // Customer identity from localStorage
     const _restaurantCustomer = JSON.parse(localStorage.getItem('restaurantCustomer') || '{}');
     const myCustomerId = _restaurantCustomer.id || null;
-    let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || [[#{page.customer.menu.badge.client}]];
+    let myCustomerName = _restaurantCustomer.name || localStorage.getItem('customerName') || '[[#{page.customer.menu.badge.client}]]';
 
     // Guard: if at a table session (menu view) but no customer id, redirect back to table entry page
     // In entry mode (showEntryModal=true), this is expected — don't redirect
     if (hasTable && !myCustomerId && !showEntryModal) {
         const entryPath = window.location.pathname.replace(/\/menu$/, '');
         window.location.replace(entryPath);
+    }
+
+    // Auto-join fallback: if server asks for entry but we have local identity
+    if (showEntryModal && myCustomerId && restaurantSlug && tableCode && !sessionStorage.getItem('ts_autojoin_tried')) {
+        console.log('Auto-joining with existing identity:', myCustomerId);
+        sessionStorage.setItem('ts_autojoin_tried', 'true');
+        customerApi.openTable(restaurantSlug, tableCode, { customerId: myCustomerId, customerName: myCustomerName })
+            .then(() => {
+                document.cookie = `ts_customer_id=${myCustomerId}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+                window.location.reload();
+            })
+            .catch(err => console.error('Auto-join failed:', err));
     }
 
     const safeMyCustomerId = String(myCustomerId || '').toLowerCase();
@@ -3029,35 +3061,28 @@
 
     async function callWaiter() {
         if (isReviewMode) return;
+        if (!hasTable || !restaurantSlug || !tableCode) return;
+
         const now = Date.now();
         const lastCall = localStorage.getItem('lastWaiterCallTime');
         const COOLDOWN = 60000; // 1 minute
 
         if (lastCall && (now - lastCall < COOLDOWN)) {
+            alert(i18n.waiterWait);
             return;
         }
 
-        if (hasTable && restaurantSlug && tableCode) {
-            try {
-                const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/waiter/call`, {
-                    method: 'POST',
-                    headers: { 
-                        'X-Requested-With': 'XMLHttpRequest',
-                        ...getCsrfHeaders()
-                    }
-                });
-                if (response.ok) {
-                    localStorage.setItem('lastWaiterCallTime', now);
-                    updateWaiterCallButton();
-                    // Close the request modal and show the "called" confirmation modal
-                    closeWaiterModal();
-                    document.getElementById('waiterCalledModal').classList.add('active');
-                } else if (response.status === 409) {
-                    refreshTableData();
-                } else {
-                    alert(i18n.errorWaiterCall);
-                }
-            } catch (error) {
+        try {
+            await customerApi.callWaiter(restaurantSlug, tableCode, myCustomerId);
+            localStorage.setItem('lastWaiterCallTime', now);
+            updateWaiterCallButton();
+            // Close the request modal and show the "called" confirmation modal
+            closeWaiterModal();
+            document.getElementById('waiterCalledModal').classList.add('active');
+        } catch (error) {
+            if (error.status === 409) {
+                refreshTableData();
+            } else {
                 console.error('Error calling waiter:', error);
                 alert(i18n.errorWaiterConnection);
             }
@@ -3251,29 +3276,19 @@
         };
 
         try {
-            const response = await fetch(window.location.pathname + '/order', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    ...getCsrfHeaders()
-                },
-                body: JSON.stringify(orderRequest)
-            });
-
-            if (response.ok) {
-                cart = [];
-                updateCartUI();
-                await refreshTableData(true);
-                closeCart();
-                document.getElementById('orderSentModal').classList.add('active');
-            } else if (response.status === 409) {
+            await customerApi.placeOrder(restaurantSlug, tableCode, orderRequest);
+            cart = [];
+            updateCartUI();
+            await refreshTableData(true);
+            closeCart();
+            document.getElementById('orderSentModal').classList.add('active');
+        } catch (error) {
+            if (error.status === 409) {
                 refreshTableData();
             } else {
-                alert(i18n.errorOrderSubmit);
+                console.error('Error submitting order:', error);
+                alert(i18n.errorOrderConnection);
             }
-        } catch (error) {
-            console.error('Error submitting order:', error);
-            alert(i18n.errorOrderConnection);
         }
     }
 
@@ -3401,19 +3416,7 @@
         updateOrdersUI();
 
         try {
-            const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/item`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    ...getCsrfHeaders()
-                },
-                body: JSON.stringify({ itemId, rating })
-            });
-            
-            if (!response.ok) {
-                console.error('Falha ao enviar rating do item', response.status);
-            }
+            await customerApi.rateItem(restaurantSlug, tableCode, { itemId, rating });
         } catch (e) {
             console.error('Erro na chamada de rating do item', e);
         }
@@ -3433,30 +3436,20 @@
 
         
         try {
-            const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/feedback/general`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    ...getCsrfHeaders()
-                },
-                body: JSON.stringify({ 
-                    orderId: activeOrderId,
-                    customerId: myCustomerId,
-                    rating: selectedExpRating, 
-                    comment 
-                })
+            await customerApi.submitGeneralFeedback(restaurantSlug, tableCode, { 
+                orderId: activeOrderId,
+                customerId: myCustomerId,
+                rating: selectedExpRating, 
+                comment 
             });
-
-            if (response.ok) {
-                showFeedbackSuccessAndRedirect();
-            } else {
-                const errorText = await response.text();
-                alert(i18n.errorReviewSubmit.replace('{0}', response.status).replace('{1}', errorText));
-            }
+            showFeedbackSuccessAndRedirect();
         } catch (e) {
             console.error('Falha ao enviar feedback geral', e);
-            alert(i18n.errorReviewConnection);
+            if (e.status) {
+                alert(i18n.errorReviewSubmit.replace('{0}', e.status).replace('{1}', e.text || ''));
+            } else {
+                alert(i18n.errorReviewConnection);
+            }
         }
     }
 
@@ -3602,20 +3595,7 @@
             // Sync with backend if at a table
             if (hasTable && restaurantSlug && tableCode) {
                 try {
-                    const response = await fetch(`/@${restaurantSlug}/table/${tableCode}/customer-name`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            ...getCsrfHeaders()
-                        },
-                        body: JSON.stringify({ customerId: myCustomerId, name: newName })
-                    });
-                    if (response.status === 409) {
-                        refreshTableData();
-                        closeUserEditModal();
-                        return;
-                    }
-                    if (!response.ok) throw new Error(i18n.errorUserSync);
+                    await customerApi.updateCustomerName(restaurantSlug, tableCode, { customerId: myCustomerId, name: newName });
 
                     myCustomerName = newName;
                     
@@ -3640,13 +3620,17 @@
                         order.customerName = newName;
                     });
 
-                    // Refresh UI
-                    document.getElementById('userBadgeName').textContent = newName;
+                    updateCustomerBadge();
                     updateCartUI();
                     updateOrdersUI();
                     renderClientOptions();
                 } catch (error) {
-                    console.error('Error syncing name:', error);
+                    if (error.status === 409) {
+                        refreshTableData();
+                        closeUserEditModal();
+                    } else {
+                        console.error('Error syncing name:', error);
+                    }
                 }
             } else {
                 myCustomerName = newName;
@@ -4128,15 +4112,9 @@
 
         
         try {
-            const response = await fetch(`${window.location.pathname}/data?t=${Date.now()}`, {
-                headers: { 
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                }
-            });
-            if (!response.ok) throw new Error('API Error');
-            const data = await response.json();
+            const lastOrderId = getCookie('ts_last_order_id');
+            const customerId = getCookie('ts_customer_id');
+            const data = await customerApi.getTableData(restaurantSlug, tableCode, lastOrderId, customerId);
 
 
 
@@ -4389,28 +4367,21 @@
         if (entrySelectedClientId) {
             customer.id = entrySelectedClientId;
         } else if (!customer.id) {
-            customer.id = crypto.randomUUID();
+            customer.id = getUUID();
         }
         customer.name = name;
 
         // Loading state
         if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
-        fetch(entryTablePath, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                ...getCsrfHeaders()
-            },
-            body: JSON.stringify({ customerId: customer.id, customerName: customer.name })
-        })
-        .then(response => {
-            if (response.ok) {
-                localStorage.setItem('restaurantCustomer', JSON.stringify(customer));
-                window.location.href = window.location.pathname.endsWith('/menu') ? window.location.pathname : window.location.pathname + '/menu';
-            } else {
-                throw new Error(i18n.errorEntryTable);
-            }
+        customerApi.openTable(restaurantSlug, tableCode, { customerId: customer.id, customerName: customer.name })
+        .then(() => {
+            // Success: save identity and set cookie for the server
+            localStorage.setItem('restaurantCustomer', JSON.stringify(customer));
+            document.cookie = `ts_customer_id=${customer.id}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+            
+            const targetUrl = window.location.pathname.endsWith('/menu') ? window.location.pathname : window.location.pathname + '/menu';
+            window.location.href = targetUrl;
         })
         .catch(error => {
             console.error('Entry error:', error);
@@ -4476,7 +4447,9 @@
                     'TICKET_STATUS_CHANGED', 
                     'TICKET_ITEM_STATUS_CHANGED',
                     'TABLE_STATUS_CHANGED',
-                    'WAITER_CALL_DISMISSED'
+                    'WAITER_CALL_DISMISSED',
+                    'ORDER_STATUS_CHANGED',
+                    'ORDER_CLOSED'
                 ];
                 
                 if (typesToRefresh.includes(payload.type)) {
@@ -4501,6 +4474,51 @@
             console.log('Tab became visible, refreshing data...');
             refreshTableData();
         }
+    });
+
+    // Expose functions to window for onclick handlers
+    Object.assign(window, {
+        openTableModal,
+        closeTableModal,
+        openEntryModal,
+        closeEntryModal,
+        openUserEditModal,
+        closeUserEditModal,
+        toggleLangDropdown,
+        prevRestaurantImageSlide,
+        nextRestaurantImageSlide,
+        goToSlide,
+        openWaiterModal,
+        closeWaiterModal,
+        callWaiter,
+        switchTab,
+        selectCategory,
+        searchItems,
+        openItemModal,
+        closeItemModal,
+        prevSlide,
+        nextSlide,
+        closeCart,
+        openCart,
+        clearCart,
+        submitOrder,
+        closeOrderSentModal,
+        decreaseModalQty,
+        increaseModalQty,
+        addFromModal,
+        toggleOption,
+        selectEntryClient,
+        handleEntrySubmit,
+        removeFromCart,
+        updateQty,
+        saveUserName,
+        selectExpRating,
+        confirmGeneralFeedback,
+        finalizeReview,
+        closeAddClientModal,
+        confirmAddClient,
+        closeWaiterCalledModal,
+        submitItemRating
     });
 
     console.log('Page initialized. hasTable:', hasTable, 'restaurantId:', restaurantId);

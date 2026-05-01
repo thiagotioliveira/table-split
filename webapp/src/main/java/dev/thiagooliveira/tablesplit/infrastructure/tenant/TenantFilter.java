@@ -35,11 +35,19 @@ public class TenantFilter extends OncePerRequestFilter {
         UUID restaurantId = context.getRestaurant().getId();
         setTenantContext(restaurantId);
       } else {
-        // Handling public routes like /@{slug}
+        // Handling public routes like /@{slug} or /api/v1/customer/{slug}
         String path = request.getRequestURI();
-        if (path != null && path.startsWith("/@")) {
-          String slug = path.substring(2).split("/")[0];
-          getRestaurant.execute(slug).ifPresent(r -> setTenantContext(r.getId()));
+        if (path != null) {
+          String slug = null;
+          if (path.startsWith("/@")) {
+            slug = path.substring(2).split("/")[0];
+          } else if (path.startsWith("/api/v1/customer/")) {
+            slug = path.substring(17).split("/")[0];
+          }
+
+          if (slug != null) {
+            getRestaurant.execute(slug).ifPresent(r -> setTenantContext(r.getId()));
+          }
         }
       }
 

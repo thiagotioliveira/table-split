@@ -127,7 +127,8 @@ public class SecurityConfig {
                       "/@**/**",
                       "/api/print-agent/**",
                       "/api/notifications/sse/subscribe/**",
-                      "/api/notifications/push/public-key")
+                      "/api/notifications/push/public-key",
+                      "/api/v1/customer/**")
                   .permitAll()
                   .dispatcherTypeMatchers(DispatcherType.ERROR)
                   .permitAll();
