@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
-import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.AccountStatus;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import jakarta.persistence.*;
@@ -28,28 +27,6 @@ public class AccountEntity {
   private OffsetDateTime trialStartedAt;
 
   private OffsetDateTime trialEndsAt;
-
-  public static AccountEntity fromDomain(Account domain) {
-    var entity = new AccountEntity();
-    entity.setId(domain.getId());
-    entity.setCreatedAt(domain.getCreatedAt());
-    entity.setPlan(domain.getPlan());
-    entity.setStatus(domain.getStatus());
-    entity.setTrialStartedAt(domain.getTrialStartedAt());
-    entity.setTrialEndsAt(domain.getTrialEndsAt());
-    return entity;
-  }
-
-  public Account toDomain() {
-    var domain = new Account();
-    domain.setId(this.id);
-    domain.setCreatedAt(this.createdAt);
-    domain.setPlan(this.plan);
-    domain.setStatus(this.status);
-    domain.setTrialStartedAt(this.trialStartedAt);
-    domain.setTrialEndsAt(this.trialEndsAt);
-    return domain;
-  }
 
   @Override
   public boolean equals(Object o) {

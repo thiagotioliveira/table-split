@@ -14,21 +14,27 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final RestauranteImageJpaRepository restauranteImageJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final RestaurantEntityMapper restaurantMapper;
+  private final RestaurantImageEntityMapper imageMapper;
 
   public RestaurantRepositoryAdapter(
       RestaurantJpaRepository restaurantJpaRepository,
       RestauranteImageJpaRepository restauranteImageJpaRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      org.springframework.context.ApplicationEventPublisher eventPublisher,
+      RestaurantEntityMapper restaurantMapper,
+      RestaurantImageEntityMapper imageMapper) {
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.restauranteImageJpaRepository = restauranteImageJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.restaurantMapper = restaurantMapper;
+    this.imageMapper = imageMapper;
   }
 
   @Override
   public Optional<Restaurant> findById(UUID restaurantId) {
     return this.restaurantJpaRepository
         .findById(restaurantId)
-        .map(RestaurantEntity::toDomain)
+        .map(restaurantMapper::toDomain)
         .map(
             r -> {
               r.setImages(findImagesByRestaurantId(r.getId()));
@@ -40,7 +46,7 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   public Optional<Restaurant> findByAccountId(UUID accountId) {
     return this.restaurantJpaRepository
         .findByAccountId(accountId)
-        .map(RestaurantEntity::toDomain)
+        .map(restaurantMapper::toDomain)
         .map(
             r -> {
               r.setImages(findImagesByRestaurantId(r.getId()));
@@ -52,7 +58,7 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   public Optional<Restaurant> findBySlug(String slug) {
     return this.restaurantJpaRepository
         .findBySlug(slug)
-        .map(RestaurantEntity::toDomain)
+        .map(restaurantMapper::toDomain)
         .map(
             r -> {
               r.setImages(findImagesByRestaurantId(r.getId()));
@@ -62,7 +68,7 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
 
   @Override
   public void save(Restaurant restaurant) {
-    this.restaurantJpaRepository.save(RestaurantEntity.fromDomain(restaurant));
+    this.restaurantJpaRepository.save(restaurantMapper.toEntity(restaurant));
     restaurant.getDomainEvents().forEach(eventPublisher::publishEvent);
     restaurant.clearEvents();
   }
@@ -70,13 +76,13 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
   @Override
   public List<RestaurantImage> findImagesByRestaurantId(UUID restaurantId) {
     return this.restauranteImageJpaRepository.findByRestaurantId(restaurantId).stream()
-        .map(RestaurantImageEntity::toDomain)
+        .map(imageMapper::toDomain)
         .toList();
   }
 
   @Override
   public void saveImage(RestaurantImage image) {
-    this.restauranteImageJpaRepository.save(RestaurantImageEntity.fromDomain(image));
+    this.restauranteImageJpaRepository.save(imageMapper.toEntity(image));
   }
 
   @Override
@@ -86,8 +92,6 @@ public class RestaurantRepositoryAdapter implements RestaurantRepository {
 
   @Override
   public Optional<RestaurantImage> findImageById(UUID imageId) {
-    return this.restauranteImageJpaRepository
-        .findById(imageId)
-        .map(RestaurantImageEntity::toDomain);
+    return this.restauranteImageJpaRepository.findById(imageId).map(imageMapper::toDomain);
   }
 }

@@ -17,17 +17,20 @@ public class TableRepositoryAdapter implements TableRepository {
           .RestaurantJpaRepository
       restaurantJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final TableEntityMapper mapper;
 
   public TableRepositoryAdapter(
       TableJpaRepository tableJpaRepository,
       OrderJpaRepository orderJpaRepository,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository
           restaurantJpaRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      org.springframework.context.ApplicationEventPublisher eventPublisher,
+      TableEntityMapper mapper) {
     this.tableJpaRepository = tableJpaRepository;
     this.orderJpaRepository = orderJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
@@ -36,7 +39,7 @@ public class TableRepositoryAdapter implements TableRepository {
   }
 
   private Table toDomainWithAccount(TableEntity entity) {
-    Table table = entity.toDomain();
+    Table table = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             table.getRestaurantId());
@@ -80,7 +83,7 @@ public class TableRepositoryAdapter implements TableRepository {
 
   @Override
   public void save(Table table) {
-    tableJpaRepository.save(TableEntity.fromDomain(table));
+    tableJpaRepository.save(mapper.toEntity(table));
 
     // Ensure accountId is populated for events if it's not already
     if (table.getAccountId() == null) {

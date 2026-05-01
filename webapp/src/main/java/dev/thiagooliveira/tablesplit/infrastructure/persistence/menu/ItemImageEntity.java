@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.ItemImage;
 import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,24 +16,6 @@ public class ItemImageEntity {
   private String name;
 
   private boolean main;
-
-  public static ItemImageEntity fromDomain(ItemImage domain) {
-    var entity = new ItemImageEntity();
-    entity.setId(domain.getId());
-    entity.setName(domain.getName());
-    entity.setMain(domain.isMain());
-    entity.setItemId(domain.getItemId());
-    return entity;
-  }
-
-  public ItemImage toDomain() {
-    var domain = new ItemImage();
-    domain.setId(this.getId());
-    domain.setName(this.getName());
-    domain.setItemId(this.getItemId());
-    domain.setMain(this.isMain());
-    return domain;
-  }
 
   @Override
   public boolean equals(Object o) {

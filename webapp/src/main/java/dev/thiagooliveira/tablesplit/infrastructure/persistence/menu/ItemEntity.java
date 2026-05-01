@@ -1,14 +1,11 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Category;
-import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "items")
@@ -58,85 +55,6 @@ public class ItemEntity {
   @Override
   public int hashCode() {
     return Objects.hashCode(id);
-  }
-
-  public Item toDomain() {
-    var domain = new Item();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.category.getRestaurantId());
-    domain.setCategory(new Category());
-    domain.getCategory().setId(this.category.getId());
-    domain
-        .getCategory()
-        .setName(
-            this.category.getName() != null
-                ? this.category.getName().getTranslations()
-                : new HashMap<>());
-    domain.getCategory().setRestaurantId(this.category.getRestaurantId());
-    domain.getCategory().setOrder(this.category.getNumOrder());
-    domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
-    domain.setDescription(
-        this.description != null ? this.description.getTranslations() : new HashMap<>());
-    domain.setPrice(this.price);
-    domain.setAvailable(this.active);
-    domain.setImages(new ArrayList<>(this.images.stream().map(ItemImageEntity::toDomain).toList()));
-    domain.setTags(new ArrayList<>(this.tags));
-
-    Map<
-            dev.thiagooliveira.tablesplit.domain.common.Language,
-            List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>>
-        questionsMap = new HashMap<>();
-    if (this.questions != null) {
-      this.questions.forEach(
-          qe -> {
-            questionsMap
-                .computeIfAbsent(qe.getLanguage(), k -> new ArrayList<>())
-                .add(qe.toDomain());
-          });
-    }
-    domain.setQuestions(questionsMap);
-
-    return domain;
-  }
-
-  public static ItemEntity fromDomain(Item domain) {
-    var entity = new ItemEntity();
-    entity.setId(domain.getId());
-    if (domain.getCategory() != null) {
-      entity.setCategory(new CategoryEntity());
-      entity.getCategory().setId(domain.getCategory().getId());
-    } else if (domain.getCategoryId() != null) {
-      entity.setCategory(new CategoryEntity());
-      entity.getCategory().setId(domain.getCategoryId());
-    }
-    entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
-    entity.setDescription(LocalizedTextEntity.fromMap(domain.getDescription()));
-    entity.setPrice(domain.getPrice());
-    entity.setActive(domain.isAvailable());
-    if (domain.getImages() != null) {
-      entity.setImages(
-          new HashSet<>(
-              domain.getImages().stream()
-                  .map(ItemImageEntity::fromDomain)
-                  .collect(Collectors.toSet())));
-    }
-    if (domain.getTags() != null) {
-      entity.setTags(new HashSet<>(domain.getTags()));
-    }
-    if (domain.getQuestions() != null) {
-      domain
-          .getQuestions()
-          .forEach(
-              (lang, list) -> {
-                if (list != null) {
-                  list.forEach(
-                      q -> {
-                        entity.getQuestions().add(ItemQuestionEntity.fromDomain(q, entity, lang));
-                      });
-                }
-              });
-    }
-    return entity;
   }
 
   public UUID getId() {

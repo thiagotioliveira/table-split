@@ -17,21 +17,23 @@ public class WaiterCallRepositoryAdapter implements WaiterCallRepository {
           .RestaurantJpaRepository
       restaurantJpaRepository;
   private final ApplicationEventPublisher eventPublisher;
+  private final WaiterCallEntityMapper mapper;
 
   public WaiterCallRepositoryAdapter(
       WaiterCallJpaRepository jpaRepository,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository
           restaurantJpaRepository,
-      ApplicationEventPublisher eventPublisher) {
+      ApplicationEventPublisher eventPublisher,
+      WaiterCallEntityMapper mapper) {
     this.jpaRepository = jpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
   public void save(WaiterCall waiterCall) {
-    WaiterCallEntity entity = toEntity(waiterCall);
-    jpaRepository.save(entity);
+    jpaRepository.save(mapper.toEntity(waiterCall));
 
     // Ensure accountId is populated for events
     if (waiterCall.getAccountId() == null) {
@@ -74,26 +76,8 @@ public class WaiterCallRepositoryAdapter implements WaiterCallRepository {
         .map(this::toDomainWithAccount);
   }
 
-  private WaiterCallEntity toEntity(WaiterCall domain) {
-    return new WaiterCallEntity(
-        domain.getId(),
-        domain.getRestaurantId(),
-        domain.getTableCod(),
-        domain.getCreatedAt(),
-        domain.getDismissedAt(),
-        domain.getCallCount());
-  }
-
   private WaiterCall toDomainWithAccount(WaiterCallEntity entity) {
-    WaiterCall domain =
-        new WaiterCall(
-            entity.getId(),
-            entity.getRestaurantId(),
-            entity.getTableCod(),
-            entity.getCreatedAt(),
-            entity.getDismissedAt(),
-            entity.getCallCount());
-
+    WaiterCall domain = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             domain.getRestaurantId());
@@ -104,7 +88,6 @@ public class WaiterCallRepositoryAdapter implements WaiterCallRepository {
           .findById(domain.getRestaurantId())
           .ifPresent(r -> domain.setAccountId(r.getAccountId()));
     }
-
     return domain;
   }
 }

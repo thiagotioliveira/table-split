@@ -9,14 +9,17 @@ import org.springframework.stereotype.Component;
 public class ItemImageRepositoryAdapter implements ItemImageRepository {
 
   private final ItemImageJpaRepository itemImageJpaRepository;
+  private final ItemImageEntityMapper mapper;
 
-  public ItemImageRepositoryAdapter(ItemImageJpaRepository itemImageJpaRepository) {
+  public ItemImageRepositoryAdapter(
+      ItemImageJpaRepository itemImageJpaRepository, ItemImageEntityMapper mapper) {
     this.itemImageJpaRepository = itemImageJpaRepository;
+    this.mapper = mapper;
   }
 
   @Override
   public void save(ItemImage itemImage) {
-    this.itemImageJpaRepository.save(ItemImageEntity.fromDomain(itemImage));
+    this.itemImageJpaRepository.save(mapper.toEntity(itemImage));
   }
 
   @Override

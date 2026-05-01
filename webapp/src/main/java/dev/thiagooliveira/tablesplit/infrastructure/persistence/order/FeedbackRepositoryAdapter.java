@@ -11,19 +11,22 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
   private final OrderFeedbackJpaRepository orderFeedbackJpaRepository;
   private final TicketItemJpaRepository ticketItemJpaRepository;
   private final OrderJpaRepository orderJpaRepository;
+  private final OrderEntityMapper mapper;
 
   public FeedbackRepositoryAdapter(
       OrderFeedbackJpaRepository orderFeedbackJpaRepository,
       TicketItemJpaRepository ticketItemJpaRepository,
-      OrderJpaRepository orderJpaRepository) {
+      OrderJpaRepository orderJpaRepository,
+      OrderEntityMapper mapper) {
     this.orderFeedbackJpaRepository = orderFeedbackJpaRepository;
     this.ticketItemJpaRepository = ticketItemJpaRepository;
     this.orderJpaRepository = orderJpaRepository;
+    this.mapper = mapper;
   }
 
   @Override
   public void save(OrderFeedback feedback) {
-    OrderFeedbackEntity entity = OrderFeedbackEntity.fromDomain(feedback);
+    OrderFeedbackEntity entity = mapper.feedbackToEntity(feedback);
     entity.setOrder(orderJpaRepository.getReferenceById(feedback.getOrderId()));
     orderFeedbackJpaRepository.save(entity);
   }

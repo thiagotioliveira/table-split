@@ -15,19 +15,22 @@ public class StaffRepositoryAdapter implements StaffRepository {
   private final StaffJpaRepository staffJpaRepository;
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final ApplicationEventPublisher eventPublisher;
+  private final StaffEntityMapper mapper;
 
   public StaffRepositoryAdapter(
       StaffJpaRepository staffJpaRepository,
       RestaurantJpaRepository restaurantJpaRepository,
-      ApplicationEventPublisher eventPublisher) {
+      ApplicationEventPublisher eventPublisher,
+      StaffEntityMapper mapper) {
     this.staffJpaRepository = staffJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
   public void save(Staff staff) {
-    this.staffJpaRepository.save(StaffEntity.fromDomain(staff));
+    this.staffJpaRepository.save(mapper.toEntity(staff));
 
     // Ensure accountId is populated for events
     if (staff.getAccountId() == null) {
@@ -54,7 +57,7 @@ public class StaffRepositoryAdapter implements StaffRepository {
   }
 
   private Staff toDomainWithAccount(StaffEntity entity) {
-    Staff domain = entity.toDomain();
+    Staff domain = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             domain.getRestaurantId());

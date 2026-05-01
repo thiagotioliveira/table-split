@@ -1,7 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
 import dev.thiagooliveira.tablesplit.domain.account.Role;
-import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import jakarta.persistence.*;
 import java.util.Objects;
@@ -37,34 +36,6 @@ public class UserEntity {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private Role role;
-
-  public static UserEntity fromDomain(User domain) {
-    var entity = new UserEntity();
-    entity.setId(domain.getId());
-    entity.setEmail(domain.getEmail());
-    entity.setAccountId(domain.getAccountId());
-    entity.setFirstName(domain.getFirstName());
-    entity.setLastName(domain.getLastName());
-    entity.setPhone(domain.getPhone());
-    entity.setLanguage(domain.getLanguage());
-    entity.setPassword(domain.getPassword());
-    entity.setRole(domain.getRole());
-    return entity;
-  }
-
-  public User toDomain() {
-    var user = new User();
-    user.setAccountId(this.accountId);
-    user.setPhone(this.phone);
-    user.setEmail(this.email);
-    user.setLastName(this.lastName);
-    user.setFirstName(this.firstName);
-    user.setId(this.id);
-    user.setPassword(this.getPassword());
-    user.setLanguage(this.getLanguage());
-    user.setRole(this.role);
-    return user;
-  }
 
   @Override
   public boolean equals(Object o) {

@@ -72,54 +72,6 @@ public class RestaurantEntity {
   @Column(name = "default_language", nullable = false)
   private Language defaultLanguage;
 
-  public Restaurant toDomain() {
-    var domain = new Restaurant();
-    domain.setId(this.id);
-    domain.setAccountId(this.accountId);
-    domain.setName(this.name);
-    domain.setSlug(this.slug);
-    domain.setDescription(this.description);
-    domain.setWebsite(this.website);
-    domain.setPhone(this.phone);
-    domain.setEmail(this.email);
-    domain.setAddress(this.address);
-    domain.setCuisineType(this.cuisineType);
-    domain.setTags(this.tags);
-    domain.setCustomerLanguages(this.customerLanguages);
-    domain.setCurrency(this.currency);
-    domain.setServiceFee(this.serviceFee);
-    domain.setAveragePrice(this.averagePrice);
-    domain.setDays(this.days);
-    domain.setHashPrimaryColor(this.hashPrimaryColor);
-    domain.setHashAccentColor(this.hashAccentColor);
-    domain.setDefaultLanguage(this.defaultLanguage);
-    return domain;
-  }
-
-  public static RestaurantEntity fromDomain(Restaurant domain) {
-    var entity = new RestaurantEntity();
-    entity.setId(domain.getId());
-    entity.setAccountId(domain.getAccountId());
-    entity.setName(domain.getName());
-    entity.setSlug(domain.getSlug());
-    entity.setDescription(domain.getDescription());
-    entity.setWebsite(domain.getWebsite());
-    entity.setPhone(domain.getPhone());
-    entity.setEmail(domain.getEmail());
-    entity.setAddress(domain.getAddress());
-    entity.setCuisineType(domain.getCuisineType());
-    entity.setTags(domain.getTags());
-    entity.setCustomerLanguages(domain.getCustomerLanguages());
-    entity.setCurrency(domain.getCurrency());
-    entity.setServiceFee(domain.getServiceFee());
-    entity.setAveragePrice(domain.getAveragePrice());
-    entity.setDays(domain.getDays());
-    entity.setHashPrimaryColor(domain.getHashPrimaryColor());
-    entity.setHashAccentColor(domain.getHashAccentColor());
-    entity.setDefaultLanguage(domain.getDefaultLanguage());
-    return entity;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;

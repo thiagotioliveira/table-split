@@ -1,10 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.UUID;
 
 @Entity
@@ -54,54 +52,6 @@ public class TicketItemEntity {
       customizations;
 
   public TicketItemEntity() {}
-
-  public TicketItem toDomain() {
-    TicketItem domain = new TicketItem();
-    domain.setId(this.id);
-    domain.setItemId(this.itemId);
-    domain.setName(new HashMap<>()); // Nome será obtido do Item quando necessário
-    domain.setCustomerId(this.customerId);
-    domain.setQuantity(this.quantity);
-    domain.setUnitPrice(this.unitPrice);
-    domain.setNote(this.note);
-    domain.setRating(this.rating);
-    domain.setStatus(this.status);
-    domain.setCustomizations(this.customizations);
-
-    // Restore promotion snapshot if exists
-    if (this.discountType != null) {
-      domain.setPromotionSnapshot(
-          new TicketItem.PromotionSnapshot(
-              this.promotionId, this.originalPrice, this.discountType, this.discountValue));
-    }
-
-    return domain;
-  }
-
-  public static TicketItemEntity fromDomain(TicketItem domain, TicketEntity ticket) {
-    TicketItemEntity entity = new TicketItemEntity();
-    entity.setId(domain.getId());
-    entity.setTicket(ticket);
-    entity.setItemId(domain.getItemId());
-    entity.setCustomerId(domain.getCustomerId());
-    entity.setQuantity(domain.getQuantity());
-    entity.setUnitPrice(domain.getUnitPrice());
-    entity.setNote(domain.getNote());
-    entity.setRating(domain.getRating());
-    entity.setStatus(domain.getStatus());
-    entity.setCustomizations(domain.getCustomizations());
-
-    // Save promotion snapshot if exists
-    if (domain.getPromotionSnapshot() != null) {
-      var snapshot = domain.getPromotionSnapshot();
-      entity.setPromotionId(snapshot.promotionId());
-      entity.setOriginalPrice(snapshot.originalPrice());
-      entity.setDiscountType(snapshot.discountType());
-      entity.setDiscountValue(snapshot.discountValue());
-    }
-
-    return entity;
-  }
 
   public UUID getId() {
     return id;

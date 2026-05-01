@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.persistence.account;
 
 import dev.thiagooliveira.tablesplit.domain.account.Module;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
-import dev.thiagooliveira.tablesplit.domain.account.Staff;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -49,38 +48,6 @@ public class StaffEntity {
   @Column(name = "module")
   @Enumerated(EnumType.STRING)
   private Set<Module> modules = new HashSet<>();
-
-  public static StaffEntity fromDomain(Staff domain) {
-    var entity = new StaffEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setFirstName(domain.getFirstName());
-    entity.setLastName(domain.getLastName());
-    entity.setEmail(domain.getEmail());
-    entity.setPhone(domain.getPhone());
-    entity.setPassword(domain.getPassword());
-    entity.setLanguage(domain.getLanguage());
-    entity.setRole(domain.getRole());
-    entity.setEnabled(domain.isEnabled());
-    entity.setModules(domain.getModules());
-    return entity;
-  }
-
-  public Staff toDomain() {
-    var staff = new Staff();
-    staff.setId(this.id);
-    staff.setRestaurantId(this.restaurantId);
-    staff.setFirstName(this.firstName);
-    staff.setLastName(this.lastName);
-    staff.setEmail(this.email);
-    staff.setPhone(this.phone);
-    staff.setPassword(this.password);
-    staff.setLanguage(this.language);
-    staff.setRole(this.role);
-    staff.setEnabled(this.enabled);
-    staff.setModules(this.modules);
-    return staff;
-  }
 
   @Override
   public boolean equals(Object o) {

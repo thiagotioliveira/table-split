@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.OrderCustomer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.UUID;
@@ -19,14 +18,6 @@ public class OrderCustomerEntity {
   public OrderCustomerEntity(UUID id, String name) {
     this.id = id;
     this.name = name;
-  }
-
-  public OrderCustomer toDomain() {
-    return new OrderCustomer(this.id, this.name);
-  }
-
-  public static OrderCustomerEntity fromDomain(OrderCustomer domain) {
-    return new OrderCustomerEntity(domain.getId(), domain.getName());
   }
 
   public UUID getId() {

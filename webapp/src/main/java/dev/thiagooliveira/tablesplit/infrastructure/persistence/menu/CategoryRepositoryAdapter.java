@@ -7,19 +7,23 @@ import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.Localized
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryRepositoryAdapter implements CategoryRepository {
 
   private final CategoryJpaRepository categoryJpaRepository;
-  private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
+  private final CategoryEntityMapper mapper;
 
   public CategoryRepositoryAdapter(
       CategoryJpaRepository categoryJpaRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      ApplicationEventPublisher eventPublisher,
+      CategoryEntityMapper mapper) {
     this.categoryJpaRepository = categoryJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
@@ -30,7 +34,7 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   private Category toDomainWithAccount(CategoryEntity entity) {
-    Category domain = entity.toDomain();
+    Category domain = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             domain.getRestaurantId());

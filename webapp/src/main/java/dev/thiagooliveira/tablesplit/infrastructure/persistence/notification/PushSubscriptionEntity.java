@@ -1,7 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.notification;
 
-import dev.thiagooliveira.tablesplit.domain.common.Time;
-import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -44,73 +42,83 @@ public class PushSubscriptionEntity {
 
   protected PushSubscriptionEntity() {}
 
-  public PushSubscription toDomain() {
-    PushSubscription domain = new PushSubscription();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setUserId(this.userId);
-    domain.setStaffId(this.staffId);
-    domain.setEndpoint(this.endpoint);
-    domain.setP256dh(this.p256dh);
-    domain.setAuth(this.auth);
-    domain.setNotifyNewOrders(this.notifyNewOrders);
-    domain.setNotifyCallWaiter(this.notifyCallWaiter);
-    domain.setCreatedAt(this.createdAt);
-    return domain;
-  }
-
-  public static PushSubscriptionEntity fromDomain(PushSubscription domain) {
-    PushSubscriptionEntity entity = new PushSubscriptionEntity();
-    entity.id = domain.getId();
-    entity.restaurantId = domain.getRestaurantId();
-    entity.userId = domain.getUserId();
-    entity.staffId = domain.getStaffId();
-    entity.endpoint = domain.getEndpoint();
-    entity.p256dh = domain.getP256dh();
-    entity.auth = domain.getAuth();
-    entity.notifyNewOrders = domain.isNotifyNewOrders();
-    entity.notifyCallWaiter = domain.isNotifyCallWaiter();
-    entity.createdAt = domain.getCreatedAt() != null ? domain.getCreatedAt() : Time.now();
-    return entity;
-  }
-
   public UUID getId() {
     return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
   }
 
   public UUID getRestaurantId() {
     return restaurantId;
   }
 
+  public void setRestaurantId(UUID restaurantId) {
+    this.restaurantId = restaurantId;
+  }
+
   public UUID getUserId() {
     return userId;
+  }
+
+  public void setUserId(UUID userId) {
+    this.userId = userId;
   }
 
   public UUID getStaffId() {
     return staffId;
   }
 
+  public void setStaffId(UUID staffId) {
+    this.staffId = staffId;
+  }
+
   public String getEndpoint() {
     return endpoint;
+  }
+
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
   }
 
   public String getP256dh() {
     return p256dh;
   }
 
+  public void setP256dh(String p256dh) {
+    this.p256dh = p256dh;
+  }
+
   public String getAuth() {
     return auth;
+  }
+
+  public void setAuth(String auth) {
+    this.auth = auth;
   }
 
   public boolean isNotifyNewOrders() {
     return notifyNewOrders;
   }
 
+  public void setNotifyNewOrders(boolean notifyNewOrders) {
+    this.notifyNewOrders = notifyNewOrders;
+  }
+
   public boolean isNotifyCallWaiter() {
     return notifyCallWaiter;
   }
 
+  public void setNotifyCallWaiter(boolean notifyCallWaiter) {
+    this.notifyCallWaiter = notifyCallWaiter;
+  }
+
   public ZonedDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public void setCreatedAt(ZonedDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

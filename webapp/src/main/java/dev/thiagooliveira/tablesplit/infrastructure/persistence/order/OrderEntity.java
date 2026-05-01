@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
@@ -9,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @jakarta.persistence.Table(name = "orders")
@@ -53,62 +51,6 @@ public class OrderEntity {
   private ZonedDateTime closedAt;
 
   public OrderEntity() {}
-
-  public Order toDomain() {
-    Order domain = new Order();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setServiceFee(this.serviceFee);
-    domain.setTableId(this.tableId);
-    domain.setStatus(this.status);
-    domain.setOpenedAt(this.openedAt);
-    domain.setClosedAt(this.closedAt);
-    if (this.tickets != null) {
-      domain.setTickets(
-          new ArrayList<>(this.tickets.stream().map(TicketEntity::toDomain).toList()));
-    }
-    if (this.payments != null) {
-      domain.setPayments(
-          new ArrayList<>(this.payments.stream().map(PaymentEntity::toDomain).toList()));
-    }
-    if (this.customers != null) {
-      domain.setCustomers(
-          this.customers.stream().map(OrderCustomerEntity::toDomain).collect(Collectors.toSet()));
-    }
-    return domain;
-  }
-
-  public static OrderEntity fromDomain(Order domain) {
-    OrderEntity entity = new OrderEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setServiceFee(domain.getServiceFee());
-    entity.setTableId(domain.getTableId());
-    entity.setStatus(domain.getStatus());
-    entity.setOpenedAt(domain.getOpenedAt());
-    entity.setClosedAt(domain.getClosedAt());
-    if (domain.getTickets() != null) {
-      entity.setTickets(
-          new ArrayList<>(
-              domain.getTickets().stream()
-                  .map(ticket -> TicketEntity.fromDomain(ticket, entity))
-                  .toList()));
-    }
-    if (domain.getPayments() != null) {
-      entity.setPayments(
-          new ArrayList<>(
-              domain.getPayments().stream()
-                  .map(payment -> PaymentEntity.fromDomain(payment, entity))
-                  .toList()));
-    }
-    if (domain.getCustomers() != null) {
-      entity.setCustomers(
-          domain.getCustomers().stream()
-              .map(OrderCustomerEntity::fromDomain)
-              .collect(Collectors.toSet()));
-    }
-    return entity;
-  }
 
   public UUID getId() {
     return id;

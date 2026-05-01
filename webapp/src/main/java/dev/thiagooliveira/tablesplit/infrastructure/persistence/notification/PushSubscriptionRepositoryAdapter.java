@@ -11,30 +11,29 @@ import org.springframework.stereotype.Component;
 public class PushSubscriptionRepositoryAdapter implements PushSubscriptionRepository {
 
   private final PushSubscriptionJpaRepository pushSubscriptionJpaRepository;
+  private final PushSubscriptionEntityMapper mapper;
 
   public PushSubscriptionRepositoryAdapter(
-      PushSubscriptionJpaRepository pushSubscriptionJpaRepository) {
+      PushSubscriptionJpaRepository pushSubscriptionJpaRepository,
+      PushSubscriptionEntityMapper mapper) {
     this.pushSubscriptionJpaRepository = pushSubscriptionJpaRepository;
+    this.mapper = mapper;
   }
 
   @Override
   public PushSubscription save(PushSubscription subscription) {
-    return this.pushSubscriptionJpaRepository
-        .save(PushSubscriptionEntity.fromDomain(subscription))
-        .toDomain();
+    return mapper.toDomain(this.pushSubscriptionJpaRepository.save(mapper.toEntity(subscription)));
   }
 
   @Override
   public Optional<PushSubscription> findByEndpoint(String endpoint) {
-    return this.pushSubscriptionJpaRepository
-        .findByEndpoint(endpoint)
-        .map(PushSubscriptionEntity::toDomain);
+    return this.pushSubscriptionJpaRepository.findByEndpoint(endpoint).map(mapper::toDomain);
   }
 
   @Override
   public List<PushSubscription> findAllByRestaurantId(UUID restaurantId) {
     return this.pushSubscriptionJpaRepository.findAllByRestaurantId(restaurantId).stream()
-        .map(PushSubscriptionEntity::toDomain)
+        .map(mapper::toDomain)
         .toList();
   }
 
@@ -43,7 +42,7 @@ public class PushSubscriptionRepositoryAdapter implements PushSubscriptionReposi
     return this.pushSubscriptionJpaRepository
         .findAllByUserIdAndRestaurantId(userId, restaurantId)
         .stream()
-        .map(PushSubscriptionEntity::toDomain)
+        .map(mapper::toDomain)
         .toList();
   }
 
@@ -52,7 +51,7 @@ public class PushSubscriptionRepositoryAdapter implements PushSubscriptionReposi
     return this.pushSubscriptionJpaRepository
         .findAllByStaffIdAndRestaurantId(staffId, restaurantId)
         .stream()
-        .map(PushSubscriptionEntity::toDomain)
+        .map(mapper::toDomain)
         .toList();
   }
 

@@ -18,6 +18,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
           .RestaurantJpaRepository
       restaurantJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final OrderEntityMapper mapper;
 
   public OrderRepositoryAdapter(
       OrderJpaRepository orderJpaRepository,
@@ -25,11 +26,13 @@ public class OrderRepositoryAdapter implements OrderRepository {
           itemJpaRepository,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository
           restaurantJpaRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      org.springframework.context.ApplicationEventPublisher eventPublisher,
+      OrderEntityMapper mapper) {
     this.orderJpaRepository = orderJpaRepository;
     this.itemJpaRepository = itemJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
@@ -38,7 +41,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
   }
 
   private Order toDomainWithAccount(OrderEntity entity) {
-    Order domain = entity.toDomain();
+    Order domain = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             domain.getRestaurantId());
@@ -79,7 +82,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
 
   @Override
   public void save(Order order) {
-    orderJpaRepository.save(OrderEntity.fromDomain(order));
+    orderJpaRepository.save(mapper.toEntity(order));
 
     // Ensure accountId is populated for events
     if (order.getAccountId() == null) {

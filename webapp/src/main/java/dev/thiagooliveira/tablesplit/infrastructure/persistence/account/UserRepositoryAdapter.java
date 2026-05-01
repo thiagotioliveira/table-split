@@ -13,34 +13,38 @@ public class UserRepositoryAdapter implements UserRepository {
 
   private final UserJpaRepository userJpaRepository;
   private final ApplicationEventPublisher eventPublisher;
+  private final UserEntityMapper mapper;
 
   public UserRepositoryAdapter(
-      UserJpaRepository userJpaRepository, ApplicationEventPublisher eventPublisher) {
+      UserJpaRepository userJpaRepository,
+      ApplicationEventPublisher eventPublisher,
+      UserEntityMapper mapper) {
     this.userJpaRepository = userJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
   public void save(User user) {
-    this.userJpaRepository.save(UserEntity.fromDomain(user));
+    this.userJpaRepository.save(mapper.toEntity(user));
     user.getDomainEvents().forEach(eventPublisher::publishEvent);
     user.clearEvents();
   }
 
   @Override
   public Optional<User> findById(UUID userId) {
-    return this.userJpaRepository.findById(userId).map(UserEntity::toDomain);
+    return this.userJpaRepository.findById(userId).map(mapper::toDomain);
   }
 
   @Override
   public Optional<User> findByEmail(String email) {
-    return this.userJpaRepository.findByEmail(email).map(UserEntity::toDomain);
+    return this.userJpaRepository.findByEmail(email).map(mapper::toDomain);
   }
 
   @Override
   public List<User> findByAccountId(UUID accountId) {
     return this.userJpaRepository.findByAccountId(accountId).stream()
-        .map(UserEntity::toDomain)
+        .map(mapper::toDomain)
         .toList();
   }
 }

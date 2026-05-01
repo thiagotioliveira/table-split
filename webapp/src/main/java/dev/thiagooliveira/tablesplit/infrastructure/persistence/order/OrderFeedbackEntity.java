@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.OrderFeedback;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -28,27 +27,6 @@ public class OrderFeedbackEntity {
   private ZonedDateTime createdAt;
 
   public OrderFeedbackEntity() {}
-
-  public OrderFeedback toDomain() {
-    OrderFeedback domain = new OrderFeedback();
-    domain.setId(this.id);
-    domain.setOrderId(this.order != null ? this.order.getId() : null);
-    domain.setCustomerId(this.customerId);
-    domain.setRating(this.rating);
-    domain.setComment(this.comment);
-    domain.setCreatedAt(this.createdAt);
-    return domain;
-  }
-
-  public static OrderFeedbackEntity fromDomain(OrderFeedback domain) {
-    OrderFeedbackEntity entity = new OrderFeedbackEntity();
-    entity.setId(domain.getId());
-    entity.setCustomerId(domain.getCustomerId());
-    entity.setRating(domain.getRating());
-    entity.setComment(domain.getComment());
-    entity.setCreatedAt(domain.getCreatedAt());
-    return entity;
-  }
 
   public UUID getId() {
     return id;

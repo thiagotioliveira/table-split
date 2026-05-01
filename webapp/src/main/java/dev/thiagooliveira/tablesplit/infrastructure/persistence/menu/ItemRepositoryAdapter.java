@@ -14,14 +14,17 @@ public class ItemRepositoryAdapter implements ItemRepository {
   private final ItemJpaRepository itemJpaRepository;
   private final ItemQuestionJpaRepository itemQuestionJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final ItemEntityMapper mapper;
 
   public ItemRepositoryAdapter(
       ItemJpaRepository itemJpaRepository,
       ItemQuestionJpaRepository itemQuestionJpaRepository,
-      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+      org.springframework.context.ApplicationEventPublisher eventPublisher,
+      ItemEntityMapper mapper) {
     this.itemJpaRepository = itemJpaRepository;
     this.itemQuestionJpaRepository = itemQuestionJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.mapper = mapper;
   }
 
   @Override
@@ -35,7 +38,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   private Item toDomainWithAccount(ItemEntity entity) {
-    Item item = entity.toDomain();
+    Item item = mapper.toDomain(entity);
     UUID cachedAccountId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
             item.getRestaurantId());
@@ -66,7 +69,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
           itemMap.computeIfAbsent(
               projection.item().getId(),
               id -> {
-                var i = projection.item().toDomain();
+                var i = mapper.toDomain(projection.item());
                 i.setName(new java.util.HashMap<>());
                 i.setDescription(new java.util.HashMap<>());
                 i.setQuestions(new java.util.HashMap<>());
@@ -112,7 +115,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
 
   @Override
   public Item save(Item item) {
-    Item savedItem = this.itemJpaRepository.save(ItemEntity.fromDomain(item)).toDomain();
+    Item savedItem = mapper.toDomain(this.itemJpaRepository.save(mapper.toEntity(item)));
 
     // Ensure accountId is populated for events
     if (item.getAccountId() == null) {

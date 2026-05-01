@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,24 +21,6 @@ public class RestaurantImageEntity {
 
   @Column(nullable = false)
   private boolean cover;
-
-  public static RestaurantImageEntity fromDomain(RestaurantImage domain) {
-    var entity = new RestaurantImageEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setName(domain.getName());
-    entity.setCover(domain.isCover());
-    return entity;
-  }
-
-  public RestaurantImage toDomain() {
-    var domain = new RestaurantImage();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setName(this.name);
-    domain.setCover(this.cover);
-    return domain;
-  }
 
   @Override
   public boolean equals(Object o) {

@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
@@ -33,38 +32,6 @@ public class TicketEntity {
   @Column private String note;
 
   public TicketEntity() {}
-
-  public Ticket toDomain() {
-    Ticket domain = new Ticket();
-    domain.setId(this.id);
-    domain.setStatus(this.status);
-    domain.setCreatedAt(this.createdAt);
-    domain.setReadyAt(this.readyAt);
-    domain.setNote(this.note);
-    if (this.items != null) {
-      domain.setItems(
-          new ArrayList<>(this.items.stream().map(TicketItemEntity::toDomain).toList()));
-    }
-    return domain;
-  }
-
-  public static TicketEntity fromDomain(Ticket domain, OrderEntity order) {
-    TicketEntity entity = new TicketEntity();
-    entity.setId(domain.getId());
-    entity.setOrder(order);
-    entity.setStatus(domain.getStatus());
-    entity.setCreatedAt(domain.getCreatedAt());
-    entity.setReadyAt(domain.getReadyAt());
-    entity.setNote(domain.getNote());
-    if (domain.getItems() != null) {
-      entity.setItems(
-          new ArrayList<>(
-              domain.getItems().stream()
-                  .map(item -> TicketItemEntity.fromDomain(item, entity))
-                  .toList()));
-    }
-    return entity;
-  }
 
   public UUID getId() {
     return id;

@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -25,26 +24,6 @@ public class TableEntity {
   @Column private OffsetDateTime deletedAt;
 
   public TableEntity() {}
-
-  public Table toDomain() {
-    Table domain = new Table();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setCod(this.cod);
-    domain.setStatus(this.status);
-    domain.setDeletedAt(this.deletedAt);
-    return domain;
-  }
-
-  public static TableEntity fromDomain(Table domain) {
-    TableEntity entity = new TableEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setCod(domain.getCod());
-    entity.setStatus(domain.getStatus());
-    entity.setDeletedAt(domain.getDeletedAt());
-    return entity;
-  }
 
   public UUID getId() {
     return id;

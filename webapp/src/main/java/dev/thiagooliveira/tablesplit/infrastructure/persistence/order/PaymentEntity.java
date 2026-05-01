@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.order;
 
-import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -33,30 +32,6 @@ public class PaymentEntity {
   @Column private String note;
 
   public PaymentEntity() {}
-
-  public static PaymentEntity fromDomain(Payment payment, OrderEntity order) {
-    PaymentEntity entity = new PaymentEntity();
-    entity.setId(payment.getId());
-    entity.setOrder(order);
-    entity.setCustomerId(payment.getCustomerId());
-    entity.setAmount(payment.getAmount());
-    entity.setPaidAt(payment.getPaidAt());
-    entity.setMethod(payment.getMethod());
-    entity.setNote(payment.getNote());
-    return entity;
-  }
-
-  public Payment toDomain() {
-    Payment payment = new Payment();
-    payment.setId(this.id);
-    payment.setOrderId(this.order != null ? this.order.getId() : null);
-    payment.setCustomerId(this.customerId);
-    payment.setAmount(this.amount);
-    payment.setPaidAt(this.paidAt);
-    payment.setMethod(this.method);
-    payment.setNote(this.note);
-    return payment;
-  }
 
   public UUID getId() {
     return id;

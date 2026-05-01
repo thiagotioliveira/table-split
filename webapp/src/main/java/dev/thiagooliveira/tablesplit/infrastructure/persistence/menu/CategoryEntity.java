@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.persistence.menu;
 
-import dev.thiagooliveira.tablesplit.domain.menu.Category;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.common.LocalizedTextEntity;
 import jakarta.persistence.*;
 import java.util.*;
@@ -30,25 +29,6 @@ public class CategoryEntity {
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemEntity> items = new ArrayList<>();
-
-  public Category toDomain() {
-    var domain = new Category();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setOrder(this.numOrder);
-    domain.setName(this.name != null ? this.name.getTranslations() : new HashMap<>());
-    return domain;
-  }
-
-  public static CategoryEntity fromDomain(Category domain) {
-    var entity = new CategoryEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setNumOrder(domain.getOrder());
-    entity.setName(LocalizedTextEntity.fromMap(domain.getName()));
-    entity.setActive(true);
-    return entity;
-  }
 
   @Override
   public boolean equals(Object o) {
