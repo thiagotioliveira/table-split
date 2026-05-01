@@ -3,6 +3,8 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache python3
+
 COPY pom.xml .
 COPY webapp/pom.xml webapp/
 COPY agent/pom.xml agent/
