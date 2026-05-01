@@ -71,48 +71,11 @@ public class PromotionEntity {
   private Set<String> applicableIds = new HashSet<>();
 
   public Promotion toDomain() {
-    var domain = new Promotion();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setName(this.name);
-    domain.setDescription(this.description);
-    domain.setDiscountType(this.discountType);
-    domain.setDiscountValue(this.discountValue);
-    domain.setMinOrderValue(this.minOrderValue);
-    domain.setStartDate(this.startDate);
-    domain.setEndDate(this.endDate);
-    domain.setActive(this.active);
-    domain.setApplyType(this.applyType);
-    domain.setApplicableIds(new HashSet<>(this.applicableIds));
-    domain.setDaysOfWeek(new HashSet<>(this.recurrenceDays));
-    domain.setStartTime(this.startTime);
-    domain.setEndTime(this.endTime);
-
-    return domain;
+    return PromotionEntityMapper.INSTANCE.toDomain(this);
   }
 
   public static PromotionEntity fromDomain(Promotion domain) {
-    var entity = new PromotionEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setName(domain.getName());
-    entity.setDescription(domain.getDescription());
-    entity.setDiscountType(domain.getDiscountType());
-    entity.setDiscountValue(domain.getDiscountValue());
-    entity.setMinOrderValue(domain.getMinOrderValue());
-    entity.setStartDate(domain.getStartDate());
-    entity.setEndDate(domain.getEndDate());
-    entity.setActive(domain.isActive());
-    entity.setApplyType(domain.getApplyType());
-    entity.setApplicableIds(
-        new HashSet<>(
-            domain.getApplicableIds() != null ? domain.getApplicableIds() : new HashSet<>()));
-    entity.setRecurrenceDays(
-        new HashSet<>(domain.getDaysOfWeek() != null ? domain.getDaysOfWeek() : new HashSet<>()));
-    entity.setStartTime(domain.getStartTime());
-    entity.setEndTime(domain.getEndTime());
-
-    return entity;
+    return PromotionEntityMapper.INSTANCE.toEntity(domain);
   }
 
   // Getters/Setters (omitted for brevity in thinking, will implement full ones)
@@ -230,5 +193,9 @@ public class PromotionEntity {
 
   public void setApplicableIds(Set<String> applicableIds) {
     this.applicableIds = applicableIds;
+  }
+
+  public boolean isActive() {
+    return active;
   }
 }

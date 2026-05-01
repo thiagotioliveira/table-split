@@ -39,46 +39,11 @@ public class ComboEntity {
   private List<ComboItemEntity> items = new ArrayList<>();
 
   public Combo toDomain() {
-    var domain = new Combo();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setName(this.name);
-    domain.setDescription(this.description);
-    domain.setComboPrice(this.comboPrice);
-    domain.setStartDate(this.startDate);
-    domain.setEndDate(this.endDate);
-    domain.setActive(this.active);
-    domain.setItems(
-        this.items.stream()
-            .map(i -> new Combo.ComboItem(i.getItemId(), i.getQuantity()))
-            .collect(Collectors.toList()));
-    return domain;
+    return ComboEntityMapper.INSTANCE.toDomain(this);
   }
 
   public static ComboEntity fromDomain(Combo domain) {
-    var entity = new ComboEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setName(domain.getName());
-    entity.setDescription(domain.getDescription());
-    entity.setComboPrice(domain.getComboPrice());
-    entity.setStartDate(domain.getStartDate());
-    entity.setEndDate(domain.getEndDate());
-    entity.setActive(domain.isActive());
-    if (domain.getItems() != null) {
-      entity.setItems(
-          domain.getItems().stream()
-              .map(
-                  i -> {
-                    var itemEntity = new ComboItemEntity();
-                    itemEntity.setComboId(domain.getId());
-                    itemEntity.setItemId(UUID.fromString(i.getItemId()));
-                    itemEntity.setQuantity(i.getQuantity());
-                    return itemEntity;
-                  })
-              .collect(Collectors.toList()));
-    }
-    return entity;
+    return ComboEntityMapper.INSTANCE.toEntity(domain);
   }
 
   public UUID getId() {

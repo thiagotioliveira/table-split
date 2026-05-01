@@ -54,54 +54,11 @@ public class CouponEntity {
   private List<CouponRuleEntity> rules = new ArrayList<>();
 
   public Coupon toDomain() {
-    var domain = new Coupon();
-    domain.setId(this.id);
-    domain.setRestaurantId(this.restaurantId);
-    domain.setCode(this.code);
-    domain.setName(this.name);
-    domain.setDiscountType(this.discountType);
-    domain.setDiscountValue(this.discountValue);
-    domain.setFreeItemId(this.freeItemId);
-    domain.setMinOrderValue(this.minOrderValue);
-    domain.setValidDate(this.validDate);
-    domain.setUsageLimit(this.usageLimit);
-    domain.setUsedCount(this.usedCount);
-    domain.setActive(this.active);
-    domain.setRules(
-        this.rules.stream()
-            .map(r -> new Coupon.CouponRule(r.getType(), r.getValue()))
-            .collect(Collectors.toList()));
-    return domain;
+    return CouponEntityMapper.INSTANCE.toDomain(this);
   }
 
   public static CouponEntity fromDomain(Coupon domain) {
-    var entity = new CouponEntity();
-    entity.setId(domain.getId());
-    entity.setRestaurantId(domain.getRestaurantId());
-    entity.setCode(domain.getCode().toUpperCase());
-    entity.setName(domain.getName());
-    entity.setDiscountType(domain.getDiscountType());
-    entity.setDiscountValue(domain.getDiscountValue());
-    entity.setFreeItemId(domain.getFreeItemId());
-    entity.setMinOrderValue(domain.getMinOrderValue());
-    entity.setValidDate(domain.getValidDate());
-    entity.setUsageLimit(domain.getUsageLimit());
-    entity.setUsedCount(domain.getUsedCount());
-    entity.setActive(domain.isActive());
-    if (domain.getRules() != null) {
-      entity.setRules(
-          domain.getRules().stream()
-              .map(
-                  r -> {
-                    var ruleEntity = new CouponRuleEntity();
-                    ruleEntity.setCouponId(domain.getId());
-                    ruleEntity.setType(r.type());
-                    ruleEntity.setValue(r.value());
-                    return ruleEntity;
-                  })
-              .collect(Collectors.toList()));
-    }
-    return entity;
+    return CouponEntityMapper.INSTANCE.toEntity(domain);
   }
 
   public UUID getId() {
