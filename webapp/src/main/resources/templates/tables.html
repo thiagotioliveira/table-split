@@ -3651,8 +3651,8 @@
     // =====================
     // Table Selection
     // =====================
-    let selectedTable = null;
-    let selectedTableCod = null;
+    let selectedTable = null; window.selectedTable = null;
+    let selectedTableCod = null; window.selectedTableCod = null;
 
     function selectTable(tableId) {
         if (selectedTable === tableId) return;
@@ -3675,6 +3675,8 @@
             selectedTable = tableId;
             const tablePrefix = i18n.cardTable.replace('{0}', '').trim();
             selectedTableCod = card.querySelector('.table-number').textContent.replace(tablePrefix, '').trim();
+            window.selectedTable = selectedTable;
+            window.selectedTableCod = selectedTableCod;
 
             // Close mobile panel
             closeTablesPanel();
@@ -4858,8 +4860,8 @@
 </div>
 
 <script type="module">
-    import { ordersApi } from '/js/api-order-bridge.js';
-    import { tablesApi } from '/js/api-table-bridge.js';
+    import { ordersApi } from '/js/api/api-order-bridge.js';
+    import { tablesApi } from '/js/api/api-table-bridge.js';
 
     window.tablesApi = tablesApi;
     window.ordersApi = ordersApi;
@@ -4927,6 +4929,10 @@
         if (!selectedTable) return;
         try {
             await tablesApi.deleteTable(selectedTable);
+            selectedTable = null;
+            window.selectedTable = null;
+            selectedTableCod = null;
+            window.selectedTableCod = null;
             await refreshContent();
             closeDeleteTableModal();
         } catch (e) {
@@ -4987,6 +4993,7 @@
     window.closeItemQuestionsModal = closeItemQuestionsModal;
     window.confirmItemQuestions = confirmItemQuestions;
     window.printQrCode = printQrCode;
+    window.openQrModal = openQrModal;
     window.closeQrModal = closeQrModal;
     window.refreshContent = refreshContent;
     window.performAction = performAction;

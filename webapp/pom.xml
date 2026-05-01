@@ -228,29 +228,6 @@
 							</configOptions>
 						</configuration>
 					</execution>
-
-					<execution>
-						<id>generate-manager-table-api</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api-docs/manager/table-v1.yaml</inputSpec>
-							<generatorName>spring</generatorName>
-							<library>spring-boot</library>
-							<apiPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.api</apiPackage>
-							<modelPackage>dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model</modelPackage>
-							<configOptions>
-								<interfaceOnly>true</interfaceOnly>
-								<useTags>true</useTags>
-								<skipDefaultInterface>true</skipDefaultInterface>
-								<useSpringBoot3>true</useSpringBoot3>
-								<useRequestMappingOnInterface>true</useRequestMappingOnInterface>
-								<openApiNullable>false</openApiNullable>
-							</configOptions>
-						</configuration>
-					</execution>
-
 				</executions>
 			</plugin>
 			<plugin>
@@ -258,7 +235,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>generate-api-order-bridge-js</id>
+						<id>generate-api-bridges-js</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>run</goal>
@@ -268,27 +245,18 @@
 								<exec executable="python3" failonerror="true">
 									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
 									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
-									<arg value="/api/v1/manager/orders"/>
-									<arg value="${project.basedir}/src/main/resources/static/js/api-order-bridge.js"/>
+									<arg value="/api/v1/manager"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/api-order-bridge.js"/>
 									<arg value="ordersApi"/>
+									<arg value="Orders"/>
 								</exec>
-							</target>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-api-table-bridge-js</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
 								<exec executable="python3" failonerror="true">
 									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
-									<arg value="${project.basedir}/src/main/resources/api-docs/manager/table-v1.yaml"/>
-									<arg value="/api/v1/manager/tables"/>
-									<arg value="${project.basedir}/src/main/resources/static/js/api-table-bridge.js"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
+									<arg value="/api/v1/manager"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/api-table-bridge.js"/>
 									<arg value="tablesApi"/>
+									<arg value="Tables"/>
 								</exec>
 							</target>
 						</configuration>

@@ -5,9 +5,9 @@ import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderCustomer;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.HistoryPaymentResponse;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.TableOrderHistoryResponse;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.TicketItemResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.HistoryPaymentResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.TableOrderHistoryResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.TicketItemResponse;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
@@ -36,7 +36,7 @@ public abstract class TableApiMapper {
       response.setClosedAt(order.getClosedAt().toOffsetDateTime());
     }
 
-    response.setTickets(
+    response.setItems(
         order.getTickets().stream()
             .flatMap(
                 t ->

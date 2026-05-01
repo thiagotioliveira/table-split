@@ -1,17 +1,21 @@
 openapi: 3.0.3
 info:
-  title: Manager Order API
-  description: API for managing orders in the TableSplit Manager module.
+  title: Manager Order & Table API
+  description: API for managing orders and tables in the TableSplit Manager module.
   version: 1.0.0
 servers:
-  - url: /api/v1/manager/orders
-    description: v1 API for Manager Orders
+  - url: /api/v1/manager
+    description: v1 API for Manager module
+
 tags:
   - name: Orders
     description: Order management operations
+  - name: Tables
+    description: Table management operations
 
 paths:
-  /history:
+  # Order Endpoints
+  /orders/history:
     get:
       tags:
         - Orders
@@ -20,13 +24,11 @@ paths:
       parameters:
         - name: start
           in: query
-          description: Start date time (ISO-8601)
           schema:
             type: string
             format: date-time
         - name: end
           in: query
-          description: End date time (ISO-8601)
           schema:
             type: string
             format: date-time
@@ -38,7 +40,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HistoryResponse'
 
-  /move:
+  /orders/move:
     post:
       tags:
         - Orders
@@ -54,7 +56,7 @@ paths:
         '204':
           description: Ticket moved successfully
 
-  /{id}:
+  /orders/{id}:
     get:
       tags:
         - Orders
@@ -75,7 +77,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TicketResponse'
 
-  /count/pending:
+  /orders/count/pending:
     get:
       tags:
         - Orders
@@ -90,7 +92,7 @@ paths:
                 type: integer
                 format: int64
 
-  /item/cancel:
+  /orders/item/cancel:
     post:
       tags:
         - Orders
@@ -106,7 +108,7 @@ paths:
         '204':
           description: Item cancelled successfully
 
-  /tables/{tableId}/place:
+  /orders/tables/{tableId}/place:
     post:
       tags:
         - Orders
@@ -129,7 +131,7 @@ paths:
         '204':
           description: Order placed successfully
 
-  /items/{itemId}/status:
+  /orders/items/{itemId}/status:
     post:
       tags:
         - Orders
@@ -151,6 +153,158 @@ paths:
       responses:
         '204':
           description: Status updated successfully
+
+  # Table Endpoints
+  /tables:
+    post:
+      tags:
+        - Tables
+      summary: Create a new table
+      operationId: createTable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableRequest'
+      responses:
+        '200':
+          description: Table created successfully
+
+  /tables/{tableId}:
+    delete:
+      tags:
+        - Tables
+      summary: Delete a table
+      operationId: deleteTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table deleted successfully
+
+  /tables/{tableId}/open:
+    post:
+      tags:
+        - Tables
+      summary: Open a table
+      operationId: openTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Table opened successfully
+
+  /tables/orders/{orderId}/close:
+    post:
+      tags:
+        - Tables
+      summary: Close an order
+      operationId: closeOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order closed successfully
+
+  /tables/{tableId}/history:
+    get:
+      tags:
+        - Tables
+      summary: Get table order history
+      operationId: getTableHistory
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, CLOSED]
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful history retrieval
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TableOrderHistoryResponse'
+
+  /tables/{tableId}/payment:
+    post:
+      tags:
+        - Tables
+      summary: Process a payment for a table
+      operationId: processPayment
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+
+  /tables/{tableId}/payment/{paymentId}:
+    delete:
+      tags:
+        - Tables
+      summary: Delete a payment
+      operationId: deletePayment
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment deleted successfully
 
 components:
   schemas:
@@ -379,4 +533,83 @@ components:
         quantity:
           type: integer
         reason:
+          type: string
+
+    CreateTableRequest:
+      type: object
+      required:
+        - cod
+      properties:
+        cod:
+          type: string
+          pattern: '^[0-9]{2}$'
+
+    PaymentRequest:
+      type: object
+      required:
+        - amount
+        - method
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        method:
+          type: string
+          enum: [CASH, CARD, MB_WAY]
+        note:
+          type: string
+
+    TableOrderHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        tableId:
+          type: string
+        serviceFee:
+          type: integer
+        status:
+          type: string
+        openedAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketItemResponse'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryPaymentResponse'
+        customerNames:
+          type: object
+          additionalProperties:
+            type: string
+        total:
+          type: number
+          format: double
+
+    HistoryPaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        paidAt:
+          type: string
+          format: date-time
+        method:
+          type: string
+        note:
           type: string

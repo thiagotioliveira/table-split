@@ -10,10 +10,10 @@ import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.api.TablesApi;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.CreateTableRequest;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.PaymentRequest;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.table.spec.v1.model.TableOrderHistoryResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.api.TablesApi;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.CreateTableRequest;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.PaymentRequest;
+import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.TableOrderHistoryResponse;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/manager/tables")
+@RequestMapping("/api/v1/manager")
 public class TableApiController implements TablesApi {
 
   private final TransactionalContext transactionalContext;

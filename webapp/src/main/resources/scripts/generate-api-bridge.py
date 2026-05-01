@@ -6,10 +6,10 @@ The output is a native browser ES6 module using fetch — no Node.js dependencie
 It mirrors the OpenAPI contract exactly: one JS method per operation.
 
 Usage:
-  python3 generate-api-bridge.py <spec.yaml> <base-path> <output.js> <var-name>
+  python3 generate-api-bridge.py <spec.yaml> <base-path> <output.js> <var-name> [tag-filter]
 
 Example:
-  python3 generate-api-bridge.py order-v1.yaml /api/v1/manager/orders api-bridge.js ordersApi
+  python3 generate-api-bridge.py order-v1.yaml /api/v1/manager/orders api-bridge.js ordersApi Orders
 """
 
 import sys
@@ -33,6 +33,9 @@ def _load_yaml_module():
         )
         import yaml
         return yaml
+    except Exception as e:
+        print(f"[generate-api-bridge] Error loading/installing PyYAML: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +60,7 @@ def _render_method(operation_id: str, http_method: str, path: str,
     args.extend(query_params)
 
     # Method body
+    body_val = "body" if has_body else "undefined"
     if query_params:
         qs_lines = ["const _p = new URLSearchParams();"]
         for qp in query_params:
@@ -64,13 +68,11 @@ def _render_method(operation_id: str, http_method: str, path: str,
                 f"if ({qp} !== undefined && {qp} !== null) _p.append('{qp}', {qp});"
             )
         qs_lines.append("const _qs = _p.toString() ? '?' + _p.toString() : '';")
-        body_arg = ", body" if has_body else ""
-        qs_lines.append(f"return request('{http_upper}', `{js_path}` + _qs{body_arg}, '{var_name}');")
+        qs_lines.append(f"return request('{http_upper}', `{js_path}` + _qs, {body_val}, '{var_name}');")
         indented = "\n        ".join(qs_lines)
         body_block = f"        {indented}"
     else:
-        body_arg = ", body" if has_body else ""
-        body_block = f"        return request('{http_upper}', `{js_path}`{body_arg}, '{var_name}');"
+        body_block = f"        return request('{http_upper}', `{js_path}`, {body_val}, '{var_name}');"
 
     return (
         f"\n    /** {http_upper} {path} */\n"
@@ -127,15 +129,14 @@ async function request(method, path, body, varName) {{
 const {var_name} = {{'''
 
 _POSTAMBLE = '''
-}};
-
+}};\n
 export {{ {var_name} }};
 '''
 
 HTTP_VERBS = {"get", "post", "put", "patch", "delete", "head", "options"}
 
 
-def generate(spec_path: str, base_path: str, output_path: str, var_name: str) -> None:
+def generate(spec_path: str, base_path: str, output_path: str, var_name: str, tag_filter: str = None) -> None:
     yaml = _load_yaml_module()
 
     with open(spec_path, encoding="utf-8") as fh:
@@ -151,6 +152,11 @@ def generate(spec_path: str, base_path: str, output_path: str, var_name: str) ->
                 continue
             if not isinstance(operation, dict):
                 continue
+            
+            if tag_filter:
+                tags = operation.get("tags", [])
+                if tag_filter not in tags:
+                    continue
 
             operation_id = operation.get("operationId", "").strip()
             if not operation_id:
@@ -180,7 +186,8 @@ def generate(spec_path: str, base_path: str, output_path: str, var_name: str) ->
     with open(output_path, "w", encoding="utf-8") as fh:
         fh.write(content)
 
-    print(f"[generate-api-bridge] Generated {output_path} ({len(methods)} operations)")
+    suffix = f" (filtered by tag: {tag_filter})" if tag_filter else ""
+    print(f"[generate-api-bridge] Generated {output_path} ({len(methods)} operations){suffix}")
 
 
 # ---------------------------------------------------------------------------
@@ -188,8 +195,10 @@ def generate(spec_path: str, base_path: str, output_path: str, var_name: str) ->
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print(f"Usage: {sys.argv[0]} <spec.yaml> <base-path> <output.js> <var-name>",
+    if len(sys.argv) < 5:
+        print(f"Usage: {sys.argv[0]} <spec.yaml> <base-path> <output.js> <var-name> [tag-filter]",
               file=sys.stderr)
         sys.exit(1)
-    generate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    
+    tag = sys.argv[5] if len(sys.argv) > 5 else None
+    generate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], tag)

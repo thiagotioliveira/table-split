@@ -2,16 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
-import dev.thiagooliveira.tablesplit.application.order.CloseTable;
-import dev.thiagooliveira.tablesplit.application.order.CreateTable;
-import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
-import dev.thiagooliveira.tablesplit.application.order.DeleteTable;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
-import dev.thiagooliveira.tablesplit.application.order.OpenTable;
-import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
-import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
-import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.common.DomainException;
@@ -20,7 +12,6 @@ import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
-import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ManagerModule;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
@@ -48,49 +39,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @ManagerModule(Module.TABLES)
 public class TableController {
 
-  private final TransactionalContext transactionalContext;
-  private final OpenTable openTable;
-  private final CloseTable closeTable;
   private final GetTables getTables;
-  private final CreateTable createTable;
   private final GetCategory getCategory;
   private final GetItem getItem;
-  private final PlaceOrder placeOrder;
   private final GetOrder getOrder;
-  private final ProcessPayment processPayment;
-  private final DeletePayment deletePayment;
-  private final DeleteTable deleteTable;
-  private final UpdateTicketItemStatus updateTicketItemStatus;
   private final MessageSource messageSource;
 
   public TableController(
-      TransactionalContext transactionalContext,
-      OpenTable openTable,
-      CloseTable closeTable,
       GetTables getTables,
-      CreateTable createTable,
       GetCategory getCategory,
       GetItem getItem,
-      PlaceOrder placeOrder,
       GetOrder getOrder,
-      ProcessPayment processPayment,
-      DeletePayment deletePayment,
-      DeleteTable deleteTable,
-      UpdateTicketItemStatus updateTicketItemStatus,
       MessageSource messageSource) {
-    this.transactionalContext = transactionalContext;
-    this.openTable = openTable;
-    this.closeTable = closeTable;
     this.getTables = getTables;
-    this.createTable = createTable;
     this.getCategory = getCategory;
     this.getItem = getItem;
-    this.placeOrder = placeOrder;
     this.getOrder = getOrder;
-    this.processPayment = processPayment;
-    this.deletePayment = deletePayment;
-    this.deleteTable = deleteTable;
-    this.updateTicketItemStatus = updateTicketItemStatus;
     this.messageSource = messageSource;
   }
 

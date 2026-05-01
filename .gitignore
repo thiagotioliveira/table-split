@@ -90,4 +90,5 @@ nb-configuration.xml
 ##############################
 *.log
 
-.gemini/webapp/src/main/resources/static/js/api-order-bridge.js
+.gemini
+webapp/src/main/resources/static/js/api/
