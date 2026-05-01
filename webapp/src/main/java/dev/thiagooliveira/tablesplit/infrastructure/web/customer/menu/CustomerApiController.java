@@ -112,6 +112,8 @@ public class CustomerApiController implements CustomerMenuApi {
                   return java.util.Optional.empty();
                 });
 
+    checkPlan(restaurant);
+
     TableDataResponse response = new TableDataResponse();
     Language lang = Language.fromLocale(Locale.getDefault());
 
@@ -141,6 +143,8 @@ public class CustomerApiController implements CustomerMenuApi {
         getTables
             .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
             .orElseThrow(() -> new NotFoundException("Table not found"));
+
+    checkPlan(restaurant);
 
     transactionalContext.execute(
         () ->
@@ -284,5 +288,19 @@ public class CustomerApiController implements CustomerMenuApi {
                 updateCustomerNameRequest.getName()));
 
     return ResponseEntity.ok().build();
+  }
+
+  private void checkPlan(Restaurant restaurant) {
+    if (isStarter(restaurant)) {
+      throw new NotFoundException("error.plan.feature.not_available");
+    }
+  }
+
+  private boolean isStarter(Restaurant restaurant) {
+    var account =
+        getAccount
+            .execute(restaurant.getAccountId())
+            .orElseThrow(() -> new NotFoundException("error.account.not.found"));
+    return account.getEffectivePlan() == dev.thiagooliveira.tablesplit.domain.account.Plan.STARTER;
   }
 }

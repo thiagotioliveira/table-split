@@ -139,6 +139,11 @@ public class SecurityConfig {
                 auth.requestMatchers("/h2-console/**").permitAll();
               }
 
+              if (env.acceptsProfiles(Profiles.of("dev"))) {
+                auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
+                    .permitAll();
+              }
+
               auth.requestMatchers(
                       Arrays.stream(Module.values())
                           .filter(Module::isActive)

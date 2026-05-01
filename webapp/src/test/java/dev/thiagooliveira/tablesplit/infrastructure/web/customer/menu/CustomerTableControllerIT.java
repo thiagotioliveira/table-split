@@ -114,7 +114,8 @@ class CustomerTableControllerIT extends H2IT {
         .andExpect(status().isOk());
 
     mockMvc
-        .perform(get("/@" + professionalRestaurant.getSlug() + "/table/01/menu/data"))
+        .perform(
+            get("/api/v1/customer/" + professionalRestaurant.getSlug() + "/table/01/menu/data"))
         .andExpect(status().isOk());
   }
 
@@ -132,7 +133,7 @@ class CustomerTableControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post("/@" + starterRestaurant.getSlug() + "/table/01/open")
+            post("/api/v1/customer/" + starterRestaurant.getSlug() + "/table/01/open")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + UUID.randomUUID() + "\", \"customerName\": \"John\"}"))
