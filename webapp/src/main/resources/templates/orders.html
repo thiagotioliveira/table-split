@@ -926,7 +926,7 @@
                     <span class="kanban-count" th:text="${pendingCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PENDING)}" class="order-card" th:classappend="${ticket.urgent ? 'urgent' : ''}">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PENDING)}" class="order-card" th:classappend="${ticket.urgent ? 'urgent' : ''}" th:data-ticket-id="${ticket.id}" th:data-status="${ticket.status}" th:data-type="${ticket.tableCod != null ? 'dine-in' : 'delivery'}">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -978,7 +978,7 @@
                     <span class="kanban-count" th:text="${preparingCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PREPARING)}" class="order-card">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_PREPARING)}" class="order-card" th:data-ticket-id="${ticket.id}" th:data-status="${ticket.status}" th:data-type="${ticket.tableCod != null ? 'dine-in' : 'delivery'}">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -1026,7 +1026,7 @@
                     <span class="kanban-count" th:text="${readyCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_READY)}" class="order-card">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_READY)}" class="order-card" th:data-ticket-id="${ticket.id}" th:data-status="${ticket.status}" th:data-type="${ticket.tableCod != null ? 'dine-in' : 'delivery'}">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">1</div>
@@ -1074,7 +1074,7 @@
                     <span class="kanban-count" th:text="${deliveredCount}">0</span>
                 </div>
                 <div class="kanban-body">
-                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_DELIVERED)}" class="order-card" style="opacity: 0.7;">
+                    <div th:each="ticket : ${ticketsByStatus.get(STATUS_DELIVERED)}" class="order-card" style="opacity: 0.7;" th:data-ticket-id="${ticket.id}" th:data-status="${ticket.status}" th:data-type="${ticket.tableCod != null ? 'dine-in' : 'delivery'}">
                         <div class="order-header">
                             <div class="order-table">
                                 <div class="order-table-number" th:text="${ticket.tableCod}">2</div>
@@ -1323,9 +1323,34 @@
     }
 
     async function moveOrder(ticketId, status) {
+        const card = document.querySelector(`.order-card[data-ticket-id="${ticketId}"]`);
+        if (!card) return;
+
+        const originalColumn = card.closest('.kanban-column');
+        const targetColumn = document.querySelector(`.kanban-column[data-status="${status}"]`);
+        
+        if (!targetColumn) {
+            console.error('Target column not found:', status);
+            return;
+        }
+
+        // Optimistic Move
+        const targetBody = targetColumn.querySelector('.kanban-body');
+        const originalStatus = originalColumn.dataset.status;
+        const originalNextSibling = card.nextElementSibling;
+
+        // Visual feedback
+        card.classList.add('syncing');
+        targetBody.prepend(card);
+
+        // Update counts optimistically
+        updateCounts(originalStatus, -1);
+        updateCounts(status, 1);
+
         try {
             await ordersApi.moveTicket({ ticketId, status });
-            // Refresh kanban board without full page reload
+            
+            // Success! Refresh in background to ensure data consistency (buttons, etc.)
             const response = await fetch('/orders');
             if (response.ok) {
                 const html = await response.text();
@@ -1335,13 +1360,26 @@
                 const currentDashboard = document.querySelector('.dashboard-body');
                 if (newDashboard && currentDashboard) {
                     currentDashboard.innerHTML = newDashboard.innerHTML;
-                    applyFilters(); // Re-apply current filters
+                    applyFilters();
                     return;
                 }
             }
-            window.location.reload();
+            // If background refresh fails but API succeeded, just remove syncing class
+            card.classList.remove('syncing');
         } catch (error) {
             console.error('Error moving order:', error);
+            
+            // Revert optimistic move
+            if (originalNextSibling) {
+                originalColumn.querySelector('.kanban-body').insertBefore(card, originalNextSibling);
+            } else {
+                originalColumn.querySelector('.kanban-body').appendChild(card);
+            }
+            
+            card.classList.remove('syncing');
+            updateCounts(originalStatus, 1);
+            updateCounts(status, -1);
+            
             alert(/*[[#{page.orders.js.error.move_order}]]*/ 'Erro ao mover pedido');
         }
     }
@@ -1630,21 +1668,32 @@
         const columnBadge = column?.querySelector('.kanban-count');
         if (columnBadge) {
             const currentCount = parseInt(columnBadge.textContent) || 0;
-            columnBadge.textContent = currentCount + delta;
+            columnBadge.textContent = Math.max(0, currentCount + delta);
         }
+
+        // Map status constants to filter button statuses
+        const statusMap = {
+            [STATUS_PENDING]: 'new',
+            [STATUS_PREPARING]: 'preparing',
+            [STATUS_READY]: 'ready',
+            [STATUS_DELIVERED]: 'delivered'
+        };
+        
+        const filterStatus = statusMap[status];
 
         // Update top filter badges
-        const allBadge = document.querySelector('button[onclick*="\'all\'"] .filter-badge');
+        const allBadge = document.querySelector('.filter-btn[onclick*="\'all\'"] .filter-badge');
         if (allBadge) {
-            const currentAll = parseInt(allBadge.textContent) || 0;
-            allBadge.textContent = currentAll + delta;
+            // Total count doesn't change when moving status, only when created/archived
+            // but I'll leave it here if we ever need it. 
+            // Actually, moving between these 4 columns doesn't change "Total" in the filters.
         }
 
-        if (status === STATUS_PENDING) {
-            const newBadge = document.querySelector('button[onclick*="\'new\'"] .filter-badge');
-            if (newBadge) {
-                const currentNew = parseInt(newBadge.textContent) || 0;
-                newBadge.textContent = currentNew + delta;
+        if (filterStatus) {
+            const filterBadge = document.querySelector(`.filter-btn[onclick*="'${filterStatus}'"] .filter-badge`);
+            if (filterBadge) {
+                const current = parseInt(filterBadge.textContent) || 0;
+                filterBadge.textContent = Math.max(0, current + delta);
             }
         }
     }

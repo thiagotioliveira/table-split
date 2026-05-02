@@ -47,6 +47,42 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Loading & Skeleton Utilities */
+.skeleton {
+  background: var(--background-secondary);
+  background: linear-gradient(110deg, var(--background-secondary) 8%, var(--border) 18%, var(--background-secondary) 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+  border-radius: var(--radius);
+  color: transparent !important;
+  border-color: transparent !important;
+  cursor: default;
+}
+
+.skeleton * {
+  visibility: hidden !important;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.syncing {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.syncing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  cursor: wait;
+}
+
 /* Reset */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -66,7 +102,6 @@ body {
   min-height: 100vh;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;

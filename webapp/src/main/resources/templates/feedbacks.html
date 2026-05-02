@@ -13,27 +13,6 @@
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
     <style>
         /* Feedbacks specific styles */
-        /* Skeleton Loading Styles */
-        .skeleton {
-            background: var(--background-secondary);
-            background: linear-gradient(110deg, var(--background-secondary) 8%, var(--border) 18%, var(--background-secondary) 33%);
-            background-size: 200% 100%;
-            animation: 1.5s shine linear infinite;
-            border-radius: var(--radius);
-            color: transparent !important;
-            border-color: transparent !important;
-            cursor: default;
-        }
-
-        .skeleton * {
-            visibility: hidden !important;
-        }
-
-        @keyframes shine {
-            to {
-                background-position-x: -200%;
-            }
-        }
 
         .feedback-stat-value.skeleton {
             height: 2.5rem;
