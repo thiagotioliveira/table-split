@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260501-add-restaurant-theme
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: restaurants
+            columns:
+              - column:
+                  name: theme_name
+                  type: varchar(50)
+                  defaultValue: 'DEFAULT'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_background_color
+                  type: varchar(7)
+              - column:
+                  name: hash_card_color
+                  type: varchar(7)
+              - column:
+                  name: hash_text_color
+                  type: varchar(7)

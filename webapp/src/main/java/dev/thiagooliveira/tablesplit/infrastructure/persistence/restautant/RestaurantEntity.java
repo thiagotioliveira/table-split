@@ -72,6 +72,20 @@ public class RestaurantEntity {
   @Column(name = "default_language", nullable = false)
   private Language defaultLanguage;
 
+  @Enumerated(EnumType.STRING)
+  @Column(name = "theme_name", nullable = false)
+  private dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName themeName =
+      dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName.DEFAULT;
+
+  @Column(name = "hash_background_color")
+  private String hashBackgroundColor;
+
+  @Column(name = "hash_card_color")
+  private String hashCardColor;
+
+  @Column(name = "hash_text_color")
+  private String hashTextColor;
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
@@ -234,5 +248,37 @@ public class RestaurantEntity {
 
   public void setDefaultLanguage(Language defaultLanguage) {
     this.defaultLanguage = defaultLanguage;
+  }
+
+  public dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName getThemeName() {
+    return themeName;
+  }
+
+  public void setThemeName(dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName themeName) {
+    this.themeName = themeName;
+  }
+
+  public String getHashBackgroundColor() {
+    return hashBackgroundColor;
+  }
+
+  public void setHashBackgroundColor(String hashBackgroundColor) {
+    this.hashBackgroundColor = hashBackgroundColor;
+  }
+
+  public String getHashCardColor() {
+    return hashCardColor;
+  }
+
+  public void setHashCardColor(String hashCardColor) {
+    this.hashCardColor = hashCardColor;
+  }
+
+  public String getHashTextColor() {
+    return hashTextColor;
+  }
+
+  public void setHashTextColor(String hashTextColor) {
+    this.hashTextColor = hashTextColor;
   }
 }

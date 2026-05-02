@@ -28,6 +28,10 @@ public class Restaurant extends AggregateRoot {
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
+  private ThemeName themeName = ThemeName.DEFAULT;
+  private String hashBackgroundColor;
+  private String hashCardColor;
+  private String hashTextColor;
   private List<RestaurantImage> images;
   private Language defaultLanguage;
 
@@ -60,7 +64,11 @@ public class Restaurant extends AggregateRoot {
       AveragePrice averagePrice,
       List<BusinessHours> days,
       String hashPrimaryColor,
-      String hashAccentColor) {
+      String hashAccentColor,
+      ThemeName themeName,
+      String hashBackgroundColor,
+      String hashCardColor,
+      String hashTextColor) {
 
     var oldLanguages =
         this.customerLanguages != null ? this.customerLanguages : List.<Language>of();
@@ -85,6 +93,10 @@ public class Restaurant extends AggregateRoot {
     this.days = days;
     this.hashPrimaryColor = hashPrimaryColor;
     this.hashAccentColor = hashAccentColor;
+    this.themeName = themeName != null ? themeName : ThemeName.DEFAULT;
+    this.hashBackgroundColor = hashBackgroundColor;
+    this.hashCardColor = hashCardColor;
+    this.hashTextColor = hashTextColor;
 
     this.registerEvent(
         new dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent(
@@ -340,5 +352,37 @@ public class Restaurant extends AggregateRoot {
 
   public void setHashAccentColor(String hashAccentColor) {
     this.hashAccentColor = hashAccentColor;
+  }
+
+  public ThemeName getThemeName() {
+    return themeName;
+  }
+
+  public void setThemeName(ThemeName themeName) {
+    this.themeName = themeName;
+  }
+
+  public String getHashBackgroundColor() {
+    return hashBackgroundColor;
+  }
+
+  public void setHashBackgroundColor(String hashBackgroundColor) {
+    this.hashBackgroundColor = hashBackgroundColor;
+  }
+
+  public String getHashCardColor() {
+    return hashCardColor;
+  }
+
+  public void setHashCardColor(String hashCardColor) {
+    this.hashCardColor = hashCardColor;
+  }
+
+  public String getHashTextColor() {
+    return hashTextColor;
+  }
+
+  public void setHashTextColor(String hashTextColor) {
+    this.hashTextColor = hashTextColor;
   }
 }

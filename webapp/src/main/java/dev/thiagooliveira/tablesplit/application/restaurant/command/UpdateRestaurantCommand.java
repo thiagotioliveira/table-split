@@ -24,4 +24,8 @@ public record UpdateRestaurantCommand(
     AveragePrice averagePrice,
     List<BusinessHours> days,
     String hashPrimaryColor,
-    String hashAccentColor) {}
+    String hashAccentColor,
+    dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName themeName,
+    String hashBackgroundColor,
+    String hashCardColor,
+    String hashTextColor) {}

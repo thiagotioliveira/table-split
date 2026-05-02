@@ -13,15 +13,15 @@
         :root {
             /* Core brand */
             --primary: #c9a050;
-            --primary-light: rgba(201, 160, 80, 0.15);
+            --primary-light: color-mix(in srgb, var(--primary) 15%, transparent);
             --primary-dark: #a88535;
 
             --accent: #2d5a47;
-            --accent-light: rgba(45, 90, 71, 0.12);
+            --accent-light: color-mix(in srgb, var(--accent) 12%, transparent);
 
             /* Status colors */
             --warning: #c9a050;
-            --warning-light: rgba(201, 160, 80, 0.15);
+            --warning-light: color-mix(in srgb, var(--primary) 15%, transparent);
 
             --info: #6b635a;
             --info-light: rgba(107, 99, 90, 0.1);
@@ -44,8 +44,8 @@
             --radius-lg: 1rem;
 
             /* Shadows */
-            --shadow: 0 1px 3px rgba(26, 23, 20, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(26, 23, 20, 0.1);
+            --shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 6%, transparent);
+            --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--foreground) 10%, transparent);
 
             --font-display: 'Cormorant Garamond', Georgia, serif;
             --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -95,10 +95,10 @@
             inset: 0;
             background: linear-gradient(
                     to bottom,
-                    rgba(26, 23, 20, 0.2) 0%,
-                    rgba(26, 23, 20, 0.1) 40%,
-                    rgba(26, 23, 20, 0.6) 80%,
-                    rgba(26, 23, 20, 0.9) 100%
+                    color-mix(in srgb, var(--foreground) 20%, transparent) 0%,
+                    color-mix(in srgb, var(--foreground) 10%, transparent) 40%,
+                    color-mix(in srgb, var(--foreground) 60%, transparent) 80%,
+                    color-mix(in srgb, var(--foreground) 90%, transparent) 100%
             );
         }
 
@@ -160,7 +160,7 @@
         .user-edit-modal {
             position: fixed;
             inset: 0;
-            background: rgba(26, 23, 20, 0.6);
+            background: color-mix(in srgb, var(--foreground) 60%, transparent);
             backdrop-filter: blur(4px);
             z-index: 300;
             opacity: 0;
@@ -343,8 +343,8 @@
             position: absolute;
             inset: 0;
             background:
-                    radial-gradient(circle at 20% 30%, rgba(201, 160, 80, 0.08) 0%, transparent 40%),
-                    radial-gradient(circle at 80% 70%, rgba(45, 90, 71, 0.06) 0%, transparent 40%);
+                    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--primary) 8%, transparent) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 40%);
         }
 
         .hero-placeholder-icon {
@@ -426,7 +426,7 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: rgba(45, 90, 71, 0.9);
+            background: color-mix(in srgb, var(--accent) 90%, transparent);
             border-radius: 9999px;
             font-size: 0.8125rem;
             font-weight: 600;
@@ -1147,7 +1147,7 @@
 
         /* Add Client Modal */
         .add-client-modal {
-            position: fixed; inset: 0; background: rgba(26, 23, 20, 0.6);
+            position: fixed; inset: 0; background: color-mix(in srgb, var(--foreground) 60%, transparent);
             backdrop-filter: blur(4px); z-index: 350;
             opacity: 0; visibility: hidden; transition: all 0.3s;
             display: flex; align-items: center; justify-content: center; padding: 1rem;
@@ -1283,7 +1283,7 @@
         .waiter-modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(26, 23, 20, 0.6);
+            background: color-mix(in srgb, var(--foreground) 60%, transparent);
             backdrop-filter: blur(4px);
             z-index: 300;
             opacity: 0;
@@ -1898,9 +1898,9 @@
             width: 200%;
             height: 200%;
             background: 
-                radial-gradient(circle at 80% 30%, rgba(201, 160, 80, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 80% 30%, color-mix(in srgb, var(--primary) 30%, transparent) 0%, transparent 45%),
                 radial-gradient(circle at 20% 80%, rgba(140, 100, 40, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 50% 0%, rgba(201, 160, 80, 0.15) 0%, transparent 60%);
+                radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 15%, transparent) 0%, transparent 60%);
             animation: heroGlowOrbit 15s linear infinite;
             z-index: 0;
             pointer-events: none;
@@ -1952,14 +1952,14 @@
             position: absolute;
             inset: -10px;
             border-radius: 50%;
-            border: 1.5px solid rgba(201,160,80,0.35);
+            border: 1.5px solid color-mix(in srgb, var(--primary) 35%, transparent);
             animation: entryRingPulse 2.4s ease-in-out infinite;
         }
         .entry-hero-icon-ring2 {
             position: absolute;
             inset: -22px;
             border-radius: 50%;
-            border: 1px solid rgba(201,160,80,0.15);
+            border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
             animation: entryRingPulse 2.4s 0.6s ease-in-out infinite;
         }
         @keyframes entryRingPulse {
@@ -1974,7 +1974,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 32px rgba(201,160,80,0.45), 0 0 0 6px rgba(201,160,80,0.12);
+            box-shadow: 0 8px 32px color-mix(in srgb, var(--primary) 45%, transparent), 0 0 0 6px color-mix(in srgb, var(--primary) 12%, transparent);
         }
         .entry-hero-icon svg { width: 2rem; height: 2rem; color: white; }
 
@@ -1982,8 +1982,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            background: rgba(201,160,80,0.18);
-            border: 1px solid rgba(201,160,80,0.35);
+            background: color-mix(in srgb, var(--primary) 18%, transparent);
+            border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
             border-radius: 9999px;
             padding: 0.3125rem 0.875rem;
             font-size: 0.6875rem;
@@ -2059,14 +2059,14 @@
         }
         .entry-client-chip:hover {
             border-color: var(--primary);
-            background: rgba(201,160,80,0.07);
+            background: color-mix(in srgb, var(--primary) 7.000000000000001%, transparent);
             transform: translateY(-1px);
         }
         .entry-client-chip.selected {
             border-color: var(--primary);
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            box-shadow: 0 4px 12px rgba(201,160,80,0.35);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent);
             transform: translateY(-1px);
         }
         .entry-client-chip svg { width: 0.875rem; height: 0.875rem; }
@@ -2126,7 +2126,7 @@
         .entry-form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(201, 160, 80, 0.12);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
             background: var(--card);
         }
         .entry-form-input:focus + svg,
@@ -2159,7 +2159,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.625rem;
-            box-shadow: 0 6px 20px rgba(201, 160, 80, 0.45);
+            box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 45%, transparent);
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
@@ -2171,7 +2171,7 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
             pointer-events: none;
         }
-        .entry-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(201, 160, 80, 0.55); }
+        .entry-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px color-mix(in srgb, var(--primary) 55.00000000000001%, transparent); }
         .entry-submit-btn:active { transform: translateY(0) scale(0.98); }
         .entry-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .entry-submit-btn svg { width: 1.125rem; height: 1.125rem; transition: transform 0.2s; }
@@ -2209,7 +2209,7 @@
             font-weight: 700;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(201,160,80,0.4);
+            box-shadow: 0 4px 20px color-mix(in srgb, var(--primary) 40%, transparent);
             white-space: nowrap;
             animation: bannerSlideDown 0.4s 0.2s cubic-bezier(0.34, 1.3, 0.64, 1) both,
                        bannerShimmer 3s 1s linear infinite;
@@ -2242,6 +2242,23 @@
         .hero.has-entry-banner .hero-nav {
             top: 4.5rem;
             transition: top 0.4s ease-out 0.2s;
+        }
+    </style>
+
+    <style th:inline="css">
+        :root {
+            --primary: [(${customerMenu.restaurant.theme.primary()})];
+            --primary-dark: color-mix(in srgb, var(--primary) 80%, black);
+            --primary-light: color-mix(in srgb, var(--primary) 15%, transparent);
+            --accent: [(${customerMenu.restaurant.theme.accent()})];
+            --accent-light: color-mix(in srgb, var(--accent) 12%, transparent);
+            --background: [(${customerMenu.restaurant.theme.background()})];
+            --card: [(${customerMenu.restaurant.theme.card()})];
+            --foreground: [(${customerMenu.restaurant.theme.text()})];
+            --muted: color-mix(in srgb, var(--foreground) 60%, transparent);
+            --border: color-mix(in srgb, var(--foreground) 10%, transparent);
+            --warning: var(--primary);
+            --warning-light: var(--primary-light);
         }
     </style>
 </head>
@@ -2771,7 +2788,7 @@
         menuItems: /*[[${customerMenu.items}]]*/[],
         tagLabels: {
             /*[# th:each="tag : ${itemTags}"]*/
-            "[(${tag.name()})]": [[#{${tag.getLabel()}}]],
+            [[${tag.name()}]]: [[#{${tag.getLabel()}}]],
             /*[/]*/
         },
         currentLang: /*[[${#locale.language}]]*/'pt',
@@ -2798,47 +2815,47 @@
 
 
     const i18n = {
-        item: '[[#{page.customer.menu.cart.item}]]',
-        items: '[[#{page.customer.menu.cart.items}]]',
-        waiterCallNow: '[[#{page.customer.menu.waiter.modal.call.now}]]',
-        waiterWait: '[[#{page.customer.menu.waiter.modal.wait}]]',
-        errorWaiterCall: '[[#{page.customer.menu.waiter.error.call}]]',
-        errorWaiterConnection: '[[#{page.customer.menu.waiter.error.connection}]]',
-        errorOrderSubmit: '[[#{page.customer.menu.orders.error.submit}]]',
-        errorOrderConnection: '[[#{page.customer.menu.orders.error.connection}]]',
-        errorReviewSubmit: '[[#{page.customer.menu.review.error.submit}]]',
-        errorReviewConnection: '[[#{page.customer.menu.review.error.connection}]]',
-        errorUserSync: '[[#{page.customer.menu.user.error.sync}]]',
-        thanksVisit: '[[#{page.customer.menu.review.thanks}]]',
-        feedbackSuccessText: '[[#{page.customer.menu.review.success.text}]]',
-        tableBillEmpty: '[[#{page.customer.menu.table.bill.empty}]]',
-        tableBillYou: '[[#{page.customer.menu.table.bill.you}]]',
-        tableBillOthers: '[[#{page.customer.menu.table.bill.others}]]',
-        tableBillPaymentsTitle: '[[#{page.customer.menu.table.bill.payments.title}]]',
-        clientAddOther: '[[#{page.customer.menu.client.add.other}]]',
-        searchPlaceholder: '[[#{page.customer.menu.search.placeholder}]]',
-        experienceTitle: '[[#{page.customer.menu.review.experience.title}]]',
-        experienceSubtitle: '[[#{page.customer.menu.review.experience.subtitle}]]',
-        experienceCommentPlaceholder: '[[#{page.customer.menu.review.experience.comment.placeholder}]]',
-        experienceSubmit: '[[#{page.customer.menu.review.experience.submit}]]',
-        experienceThanks: '[[#{page.customer.menu.review.experience.thanks}]]',
-        redirectNow: '[[#{page.customer.menu.review.success.go.now}]]',
-        timeAgoNow: '[[#{page.customer.menu.time.ago.now}]]',
-        timeAgoMin: '[[#{page.customer.menu.time.ago.min}]]',
-        timeAgoHour: '[[#{page.customer.menu.time.ago.hour}]]',
-        errorEntryTable: '[[#{page.customer.menu.entry.error.fail}]]',
-        errorEntryTableRegister: '[[#{page.customer.menu.entry.error.register}]]',
-        badgeClient: '[[#{page.customer.menu.badge.client}]]',
-        customizationSingle: '[[#{page.customer.menu.customization.single}]]',
-        customizationMultiple: '[[#{page.customer.menu.customization.multiple}]]',
-        customizationError: '[[#{page.customer.menu.customization.error}]]'
+        item: [[#{page.customer.menu.cart.item}]],
+        items: [[#{page.customer.menu.cart.items}]],
+        waiterCallNow: [[#{page.customer.menu.waiter.modal.call.now}]],
+        waiterWait: [[#{page.customer.menu.waiter.modal.wait}]],
+        errorWaiterCall: [[#{page.customer.menu.waiter.error.call}]],
+        errorWaiterConnection: [[#{page.customer.menu.waiter.error.connection}]],
+        errorOrderSubmit: [[#{page.customer.menu.orders.error.submit}]],
+        errorOrderConnection: [[#{page.customer.menu.orders.error.connection}]],
+        errorReviewSubmit: [[#{page.customer.menu.review.error.submit}]],
+        errorReviewConnection: [[#{page.customer.menu.review.error.connection}]],
+        errorUserSync: [[#{page.customer.menu.user.error.sync}]],
+        thanksVisit: [[#{page.customer.menu.review.thanks}]],
+        feedbackSuccessText: [[#{page.customer.menu.review.success.text}]],
+        tableBillEmpty: [[#{page.customer.menu.table.bill.empty}]],
+        tableBillYou: [[#{page.customer.menu.table.bill.you}]],
+        tableBillOthers: [[#{page.customer.menu.table.bill.others}]],
+        tableBillPaymentsTitle: [[#{page.customer.menu.table.bill.payments.title}]],
+        clientAddOther: [[#{page.customer.menu.client.add.other}]],
+        searchPlaceholder: [[#{page.customer.menu.search.placeholder}]],
+        experienceTitle: [[#{page.customer.menu.review.experience.title}]],
+        experienceSubtitle: [[#{page.customer.menu.review.experience.subtitle}]],
+        experienceCommentPlaceholder: [[#{page.customer.menu.review.experience.comment.placeholder}]],
+        experienceSubmit: [[#{page.customer.menu.review.experience.submit}]],
+        experienceThanks: [[#{page.customer.menu.review.experience.thanks}]],
+        redirectNow: [[#{page.customer.menu.review.success.go.now}]],
+        timeAgoNow: [[#{page.customer.menu.time.ago.now}]],
+        timeAgoMin: [[#{page.customer.menu.time.ago.min}]],
+        timeAgoHour: [[#{page.customer.menu.time.ago.hour}]],
+        errorEntryTable: [[#{page.customer.menu.entry.error.fail}]],
+        errorEntryTableRegister: [[#{page.customer.menu.entry.error.register}]],
+        badgeClient: [[#{page.customer.menu.badge.client}]],
+        customizationSingle: [[#{page.customer.menu.customization.single}]],
+        customizationMultiple: [[#{page.customer.menu.customization.multiple}]],
+        customizationError: [[#{page.customer.menu.customization.error}]]
     };
 
     const paymentMethods = {
         /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
-        "[(${method.name()})]": {
+        [[${method.name()}]]: {
             label: '[[#{${method.getLabel()}}]]',
-            icon: `[(${method.getIcon()})]`
+            icon: `[[${method.getIcon()}]]`
         },
         /*[/]*/
     };

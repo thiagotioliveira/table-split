@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -146,6 +147,10 @@ class UpdateRestaurantTest {
         AveragePrice.PRICE_20_50,
         new ArrayList<>(),
         "#FFFFFF",
+        "#000000",
+        ThemeName.DEFAULT,
+        "#000000",
+        "#000000",
         "#000000");
   }
 }

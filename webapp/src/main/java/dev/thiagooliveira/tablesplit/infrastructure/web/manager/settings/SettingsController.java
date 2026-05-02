@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.restaurant.UpdateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -67,6 +68,7 @@ public class SettingsController {
     model.addAttribute("cuisineTypeCodes", CuisineType.values());
     model.addAttribute("restaurantTags", RestaurantTag.values());
     model.addAttribute("averagePriceCodes", AveragePrice.values());
+    model.addAttribute("themeNames", ThemeName.values());
     model.addAttribute("printToken", printToken);
     return "settings";
   }
@@ -99,6 +101,7 @@ public class SettingsController {
       model.addAttribute("cuisineTypeCodes", CuisineType.values());
       model.addAttribute("restaurantTags", RestaurantTag.values());
       model.addAttribute("averagePriceCodes", AveragePrice.values());
+      model.addAttribute("themeNames", ThemeName.values());
       return "settings";
     }
     var context = (AccountContext) auth.getPrincipal();

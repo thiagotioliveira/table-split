@@ -1045,35 +1045,67 @@
               <p th:text="#{page.settings.section.appearance.description}">Customize the digital menu colors</p>
             </div>
             <div class="settings-section-body">
-              <div class="form-row-3">
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Theme</label>
+                <select class="form-select" th:field="*{themeName}" id="themeSelector" onchange="toggleCustomColors()">
+                  <option th:each="theme : ${themeNames}" th:value="${theme.name()}" th:text="${theme.displayName}"></option>
+                </select>
+              </div>
+
+              <div id="customColorsSection" class="form-row-3" style="display: none; gap: 1rem;">
                 <div class="form-group">
-                  <label class="form-label"><span th:text="#{page.settings.form.color.primary}">Primary Color</span> <span class="required">*</span></label>
+                  <label class="form-label"><span th:text="#{page.settings.form.color.primary}">Primary Color</span></label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashPrimaryColor}">
                     </label>
                     <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
-                      th:value="*{hashPrimaryColor}" name="">
+                      th:value="*{hashPrimaryColor}">
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label"><span th:text="#{page.settings.form.color.accent}">Accent Color</span> <span class="required">*</span></label>
+                  <label class="form-label"><span th:text="#{page.settings.form.color.accent}">Accent Color</span></label>
                   <div class="color-picker-group">
                     <label class="color-preview">
                       <input type="color" class="color-input" th:field="*{hashAccentColor}">
                     </label>
                     <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
-                      th:value="*{hashAccentColor}" name="">
+                      th:value="*{hashAccentColor}">
                   </div>
                 </div>
 
-                <div class="form-group" th:if="${false}">
-                  <label class="form-label">Fundo do Menu</label>
-                  <select class="form-select">
-                    <option value="light" selected>Claro</option>
-                    <option value="dark">Escuro</option>
-                  </select>
+                <div class="form-group">
+                  <label class="form-label">Background Color</label>
+                  <div class="color-picker-group">
+                    <label class="color-preview">
+                      <input type="color" class="color-input" th:field="*{hashBackgroundColor}">
+                    </label>
+                    <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
+                      th:value="*{hashBackgroundColor}">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Card Color</label>
+                  <div class="color-picker-group">
+                    <label class="color-preview">
+                      <input type="color" class="color-input" th:field="*{hashCardColor}">
+                    </label>
+                    <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
+                      th:value="*{hashCardColor}">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Text Color</label>
+                  <div class="color-picker-group">
+                    <label class="color-preview">
+                      <input type="color" class="color-input" th:field="*{hashTextColor}">
+                    </label>
+                    <input type="text" class="form-input color-text" maxlength="7" style="font-family: monospace;"
+                      th:value="*{hashTextColor}">
+                  </div>
                 </div>
               </div>
             </div>
@@ -1374,6 +1406,20 @@
       syncHiddenLanguages();
       syncHiddenCuisines();
     });
+
+    // Theme Custom Colors Toggle
+    function toggleCustomColors() {
+      const selector = document.getElementById('themeSelector');
+      const customSection = document.getElementById('customColorsSection');
+      if (selector && customSection) {
+        if (selector.value === 'CUSTOM') {
+          customSection.style.display = 'grid'; // Using grid to respect form-row-3
+        } else {
+          customSection.style.display = 'none';
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', toggleCustomColors);
 
     // Language management
     function syncHiddenLanguages() {

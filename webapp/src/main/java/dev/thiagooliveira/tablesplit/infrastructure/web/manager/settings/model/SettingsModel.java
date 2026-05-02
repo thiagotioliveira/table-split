@@ -63,6 +63,11 @@ public class SettingsModel {
   @Size(min = 7, max = 7)
   private String hashAccentColor;
 
+  private String themeName = "DEFAULT";
+  private String hashBackgroundColor;
+  private String hashCardColor;
+  private String hashTextColor;
+
   public SettingsModel() {}
 
   public SettingsModel(Restaurant restaurant) {
@@ -93,6 +98,11 @@ public class SettingsModel {
             : restaurant.getDays().stream().map(BusinessHoursModel::new).toList();
     this.hashPrimaryColor = restaurant.getHashPrimaryColor();
     this.hashAccentColor = restaurant.getHashAccentColor();
+    this.themeName =
+        restaurant.getThemeName() != null ? restaurant.getThemeName().name() : "DEFAULT";
+    this.hashBackgroundColor = restaurant.getHashBackgroundColor();
+    this.hashCardColor = restaurant.getHashCardColor();
+    this.hashTextColor = restaurant.getHashTextColor();
   }
 
   public UpdateRestaurantCommand toCommand() {
@@ -124,7 +134,11 @@ public class SettingsModel {
         this.averagePrice == null ? null : AveragePrice.valueOf(this.averagePrice),
         domainDays,
         this.hashPrimaryColor,
-        this.hashAccentColor);
+        this.hashAccentColor,
+        ThemeName.valueOf(this.themeName),
+        this.hashBackgroundColor,
+        this.hashCardColor,
+        this.hashTextColor);
   }
 
   public String getName() {
@@ -253,5 +267,37 @@ public class SettingsModel {
 
   public void setHashAccentColor(String hashAccentColor) {
     this.hashAccentColor = hashAccentColor;
+  }
+
+  public String getThemeName() {
+    return themeName;
+  }
+
+  public void setThemeName(String themeName) {
+    this.themeName = themeName;
+  }
+
+  public String getHashBackgroundColor() {
+    return hashBackgroundColor;
+  }
+
+  public void setHashBackgroundColor(String hashBackgroundColor) {
+    this.hashBackgroundColor = hashBackgroundColor;
+  }
+
+  public String getHashCardColor() {
+    return hashCardColor;
+  }
+
+  public void setHashCardColor(String hashCardColor) {
+    this.hashCardColor = hashCardColor;
+  }
+
+  public String getHashTextColor() {
+    return hashTextColor;
+  }
+
+  public void setHashTextColor(String hashTextColor) {
+    this.hashTextColor = hashTextColor;
   }
 }

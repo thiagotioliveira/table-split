@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model;
 
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.ColorUtils;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
@@ -41,7 +42,8 @@ public class ProfileModel {
 
   private final String menuLink;
 
-  private final MessageSource messageSource;
+  private final org.springframework.context.MessageSource messageSource;
+  private final ThemeConfig theme;
 
   public ProfileModel(Restaurant restaurant, ZoneId zoneId, MessageSource messageSource) {
     this.menuLink = String.format("/@%s/menu", restaurant.getSlug());
@@ -108,6 +110,7 @@ public class ProfileModel {
             : restaurant.getImages().stream().map(RestaurantImageModel::new).toList();
     this.customerLanguages =
         restaurant.getCustomerLanguages().stream().map(Language::fromDomain).toList();
+    this.theme = ThemeConfig.resolve(restaurant);
   }
 
   public String getCuisineType() {
@@ -222,5 +225,9 @@ public class ProfileModel {
 
   public List<Language> getCustomerLanguages() {
     return customerLanguages;
+  }
+
+  public ThemeConfig getTheme() {
+    return theme;
   }
 }

@@ -40,7 +40,11 @@ public class UpdateRestaurant {
         command.averagePrice(),
         command.days(),
         command.hashPrimaryColor(),
-        command.hashAccentColor());
+        command.hashAccentColor(),
+        command.themeName(),
+        command.hashBackgroundColor(),
+        command.hashCardColor(),
+        command.hashTextColor());
 
     restaurantRepository.save(restaurant);
     return restaurant;
