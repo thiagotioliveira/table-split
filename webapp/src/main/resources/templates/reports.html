@@ -11,6 +11,36 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         /* Reports specific styles */
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: var(--background-secondary);
+            background: linear-gradient(110deg, var(--background-secondary) 8%, var(--border) 18%, var(--background-secondary) 33%);
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+            border-radius: var(--radius);
+            color: transparent !important;
+            border-color: transparent !important;
+            cursor: default;
+        }
+
+        @keyframes shine {
+            to {
+                background-position-x: -200%;
+            }
+        }
+
+        .stat-value.skeleton {
+            height: 2.25rem;
+            width: 80%;
+            margin-bottom: 0.25rem;
+        }
+
+        .chart-body.skeleton {
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Reports specific styles */
         .reports-header {
             display: flex;
             align-items: flex-start;
@@ -1271,7 +1301,7 @@
               <span>0%</span>
             </span>
                 </div>
-                <div class="stat-value" id="totalRevenue">---</div>
+                <div class="stat-value skeleton" id="totalRevenue">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.revenue}">Faturamento Total</div>
             </div>
 
@@ -1288,7 +1318,7 @@
               <span>0%</span>
             </span>
                 </div>
-                <div class="stat-value" id="totalOrders">---</div>
+                <div class="stat-value skeleton" id="totalOrders">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.orders}">Total de Pedidos</div>
             </div>
 
@@ -1303,7 +1333,7 @@
                         </svg>
                     </div>
                 </div>
-                <div class="stat-value" id="totalCustomers">---</div>
+                <div class="stat-value skeleton" id="totalCustomers">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.customers}">Clientes Atendidos</div>
             </div>
 
@@ -1320,7 +1350,7 @@
                         </svg>
                     </div>
                 </div>
-                <div class="stat-value" id="avgTicket">---</div>
+                <div class="stat-value skeleton" id="avgTicket">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.avg_ticket}">Ticket Médio</div>
             </div>
 
@@ -1332,7 +1362,7 @@
                         </svg>
                     </div>
                 </div>
-                <div class="stat-value" id="avgRating">---</div>
+                <div class="stat-value skeleton" id="avgRating">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.avg_rating}">Avaliação Média</div>
             </div>
 
@@ -1348,7 +1378,7 @@
                         </svg>
                     </div>
                 </div>
-                <div class="stat-value" id="occupancyRate">---</div>
+                <div class="stat-value skeleton" id="occupancyRate">---</div>
                 <div class="stat-label" th:text="#{page.reports.stats.occupancy}">Taxa de Ocupação</div>
             </div>
         </div>
@@ -1368,7 +1398,7 @@
                         <button class="chart-action" onclick="setChartMode(this, 'clientes')" th:text="#{page.reports.stats.customers}">Clientes</button>
                     </div>
                 </div>
-                <div class="chart-body">
+                <div class="chart-body skeleton">
                     <div id="mainChart" style="min-height: 300px;"></div>
                 </div>
                    <!-- Category Pie Chart -->
@@ -1379,7 +1409,7 @@
                         <span th:text="#{page.reports.charts.category_title}">Vendas por Categoria</span>
                     </h3>
                 </div>
-                <div class="chart-body">
+                <div class="chart-body skeleton">
                     <div class="donut-chart" id="categoryChartContainer">
                         <div id="categoryChart" style="min-width: 200px;"></div>
                         <div class="donut-legend" id="categoryLegend">
@@ -1568,6 +1598,9 @@
 
     async function loadDashboard(days = 7) {
         try {
+            // Ativa Skeletons
+            document.querySelectorAll('.stat-value, .chart-body').forEach(el => el.classList.add('skeleton'));
+            
             const data = await reportsApi.getReportsOverview(days);
             currentData = data;
             renderDashboard(data);
@@ -1586,6 +1619,9 @@
         
         const occRate = data.tableOccupancy.totalTablesAvailable > 0 ? (data.tableOccupancy.peakSimultaneousTables / data.tableOccupancy.totalTablesAvailable * 100).toFixed(0) : 0;
         document.getElementById('occupancyRate').textContent = occRate + '%';
+
+        // Remove Skeletons
+        document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
 
         updateTrend('revenueTrend', data.stats.revenueTrend);
         updateTrend('ordersTrend', data.stats.ordersTrend);
