@@ -40,6 +40,15 @@
             width: 100%;
         }
 
+        .skeleton-row td {
+            padding: 0.5rem !important;
+        }
+
+        .promo-row.skeleton {
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
         /* Reports specific styles */
         .reports-header {
             display: flex;
@@ -1600,6 +1609,7 @@
         try {
             // Ativa Skeletons
             document.querySelectorAll('.stat-value, .chart-body').forEach(el => el.classList.add('skeleton'));
+            showTableSkeletons();
             
             const data = await reportsApi.getReportsOverview(days);
             currentData = data;
@@ -1607,6 +1617,20 @@
         } catch (error) {
             console.error('Error loading reports:', error);
         }
+    }
+
+    function showTableSkeletons() {
+        const tableBodies = ['topItemsBody', 'peakHoursBody'];
+        tableBodies.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = Array(5).fill(0).map(() => `<tr class="skeleton-row"><td colspan="4"><div class="skeleton" style="height: 20px; margin: 8px 0;"></div></td></tr>`).join('');
+        });
+
+        const listBodies = ['paymentMethodsBody', 'promoUsageBody'];
+        listBodies.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = Array(3).fill(0).map(() => `<div class="promo-row skeleton"></div>`).join('');
+        });
     }
 
     function renderDashboard(data) {

@@ -13,6 +13,43 @@
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
     <style>
         /* Feedbacks specific styles */
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: var(--background-secondary);
+            background: linear-gradient(110deg, var(--background-secondary) 8%, var(--border) 18%, var(--background-secondary) 33%);
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+            border-radius: var(--radius);
+            color: transparent !important;
+            border-color: transparent !important;
+            cursor: default;
+        }
+
+        .skeleton * {
+            visibility: hidden !important;
+        }
+
+        @keyframes shine {
+            to {
+                background-position-x: -200%;
+            }
+        }
+
+        .feedback-stat-value.skeleton {
+            height: 2.5rem;
+            width: 60px;
+        }
+
+        .rating-value-large.skeleton {
+            height: 3.5rem;
+            width: 80px;
+        }
+
+        .feedback-item.skeleton {
+            min-height: 120px;
+        }
+
+        /* Feedbacks specific styles */
         .page-header-section {
             display: flex;
             align-items: flex-start;
@@ -1265,7 +1302,7 @@
                     <div class="feedback-stat-icon amber">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </div>
-                    <div class="feedback-stat-value" id="avgRatingValue">0.0</div>
+                    <div class="rating-value-large skeleton" id="avgRatingValue">0.0</div>
                 </div>
                 <div class="feedback-stat-label" th:text="#{page.feedback.stat.avg_rating}">Média Geral</div>
             </div>
@@ -1276,7 +1313,7 @@
                     <div class="feedback-stat-icon blue">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <div class="feedback-stat-value" id="totalFeedbacksValue">0</div>
+                    <div class="feedback-stat-value skeleton" id="totalFeedbacksValue">0</div>
                 </div>
                 <div class="feedback-stat-label" th:text="#{page.feedback.stat.total}">Total de Feedbacks</div>
             </div>
@@ -1287,7 +1324,7 @@
                     <div class="feedback-stat-icon green">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                     </div>
-                    <div class="feedback-stat-value" id="positiveFeedbacksValue">0</div>
+                    <div class="feedback-stat-value skeleton" id="positiveFeedbacksValue">0</div>
                 </div>
                 <div class="feedback-stat-label" th:text="#{page.feedback.stat.positive}">Positivas (4-5★)</div>
             </div>
@@ -1298,7 +1335,7 @@
                     <div class="feedback-stat-icon red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
                     </div>
-                    <div class="feedback-stat-value" id="negativeFeedbacksValue">0</div>
+                    <div class="feedback-stat-value skeleton" id="negativeFeedbacksValue">0</div>
                 </div>
                 <div class="feedback-stat-label" th:text="#{page.feedback.stat.negative}">Negativas (0-2★)</div>
             </div>
@@ -1309,7 +1346,7 @@
                     <div class="feedback-stat-icon purple">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                     </div>
-                    <div class="feedback-stat-value" id="itemsRatedValue">0</div>
+                    <div class="feedback-stat-value skeleton" id="itemsRatedValue">0</div>
                 </div>
                 <div class="feedback-stat-label" th:text="#{page.feedback.stat.items_rated}">Itens Avaliados</div>
             </div>
@@ -1496,34 +1533,38 @@
 
     // Load Data
     async function loadFeedbacks() {
-        const days = document.getElementById('filterPeriod').value;
-        const listContainer = document.getElementById('feedbackList');
-        
-        // Show loading state
-        listContainer.innerHTML = `<div class="loading-state">${i18n.loading}</div>`;
+        // Ativa Skeletons
+        document.querySelectorAll('.feedback-stat-value, .rating-value-large').forEach(el => el.classList.add('skeleton'));
+        showListSkeleton();
 
+        const days = document.getElementById('filterPeriod').value;
+        
         try {
             const response = await feedbacksApi.getFeedbacks(days === 'all' ? undefined : days);
+            renderDashboard(response);
             allFeedbacks = response.feedbacks;
-            
-            updateStatsUI(response.stats);
-            updateDistributionUI(response.distribution);
-            updateTopItemsUI(response.topRatedItems);
-            updateNeedAttentionUI(response.needAttentionItems);
-            
             applyFilters();
         } catch (error) {
             console.error('Error loading feedbacks:', error);
+            const listContainer = document.getElementById('feedbackList');
             listContainer.innerHTML = `<div class="error-state">${i18n.error}</div>`;
         }
     }
 
-    function updateStatsUI(stats) {
+    function renderDashboard(response) {
+        // Remove Skeletons
+        document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+
+        const stats = response.stats;
         document.getElementById('avgRatingValue').textContent = stats.averageRating.toFixed(1);
         document.getElementById('totalFeedbacksValue').textContent = stats.totalFeedbacks;
         document.getElementById('positiveFeedbacksValue').textContent = stats.positiveCount;
         document.getElementById('negativeFeedbacksValue').textContent = stats.negativeCount;
         document.getElementById('itemsRatedValue').textContent = stats.totalItemsRated;
+
+        updateDistributionUI(response.distribution);
+        updateTopItemsUI(response.topRatedItems);
+        updateNeedAttentionUI(response.needAttentionItems);
     }
 
     function updateDistributionUI(distribution) {
@@ -1629,6 +1670,13 @@
         });
 
         renderFeedbackList(filtered);
+    }
+
+    function showListSkeleton() {
+        const container = document.getElementById('feedbackList');
+        container.innerHTML = Array(3).fill(0).map(() => `
+            <div class="feedback-item skeleton"></div>
+        `).join('');
     }
 
     function renderFeedbackList(feedbacks) {
