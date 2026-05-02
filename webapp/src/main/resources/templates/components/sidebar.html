@@ -4,6 +4,11 @@
 <th:block th:fragment="sidebar(pageTitle, extraContent, showHeaderOnLg)">
     <th:block th:with="showHeaderOnLg=${showHeaderOnLg == null ? true : showHeaderOnLg}">
     
+    <!-- Dynamic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link th:href="${'https://fonts.googleapis.com/css2?family=' + context.restaurant.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + context.restaurant.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'}" rel="stylesheet">
+
     <style th:inline="css">
         :root {
             --primary: [(${context.restaurant.theme.primary})];
@@ -18,6 +23,17 @@
             --muted: color-mix(in srgb, var(--foreground) 60%, transparent);
             --border: color-mix(in srgb, var(--foreground) 10%, transparent);
             --shadow-color: color-mix(in srgb, var(--foreground) 10%, transparent);
+            
+            --font-display: '[(${context.restaurant.theme.fontDisplay})]', sans-serif;
+            --font-body: '[(${context.restaurant.theme.fontBody})]', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body) !important;
+        }
+
+        h1, h2, h3, h4, h5, h6, .logo-text, .nav-item span {
+            font-family: var(--font-display);
         }
     </style>
 

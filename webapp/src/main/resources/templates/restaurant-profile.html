@@ -6,6 +6,9 @@
   <title th:text="${profile.name}">Restaurante Sabor & Arte</title>
   <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
   <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link th:href="${'https://fonts.googleapis.com/css2?family=' + profile.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + profile.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'}" rel="stylesheet">
 
   <style>
     :root {
@@ -1698,7 +1701,13 @@
             --muted-foreground: color-mix(in srgb, var(--foreground) 60%, transparent);
             --border: color-mix(in srgb, var(--foreground) 10%, transparent);
             --warning: var(--primary);
+            
+            --font-display: '[(${profile.theme.fontDisplay()})]', sans-serif;
+            --font-body: '[(${profile.theme.fontBody()})]', sans-serif;
         }
+
+        body { font-family: var(--font-body); }
+        h1, h2, h3, h4, .restaurant-name, .menu-category-title { font-family: var(--font-display); }
     </style>
 </head>
 <body>
