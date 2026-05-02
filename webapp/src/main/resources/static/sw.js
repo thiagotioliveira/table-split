@@ -18,7 +18,7 @@ const STATIC_ASSETS = [
 // Páginas para cache dinâmico
 // Páginas que são apenas "shells" e carregam dados via AJAX (Estratégia: Stale-While-Revalidate para load instantâneo)
 const AJAX_DRIVEN_PAGES = [
-  '/feedback',
+  '/feedbacks',
   '/reports'
 ];
 

@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>table-split-webapp</artifactId>
-	<version>0.28.2-SNAPSHOT</version>
+	<version>0.28.3-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>
