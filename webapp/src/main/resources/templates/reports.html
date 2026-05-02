@@ -168,6 +168,15 @@
             background: var(--primary-hover);
         }
 
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
         .export-btn svg {
             width: 16px;
             height: 16px;
@@ -366,7 +375,7 @@
 
         .chart-action.active {
             background: var(--foreground);
-            color: white;
+            color: var(--background);
             border-color: var(--foreground);
         }
 
@@ -1255,7 +1264,7 @@
 
             <span class="filters-divider"></span>
 
-            <div class="export-dropdown" id="exportDropdown">
+            <div class="export-dropdown" id="exportDropdown" style="display: none;">
                 <button class="export-btn" onclick="toggleExportMenu()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1740,7 +1749,7 @@
                 padding: { left: 0, right: 0 }
             },
             tooltip: {
-                theme: 'light',
+                theme: [(${context.restaurant.theme.dark ? "'dark'" : "'light'"})],
                 x: { show: true },
                 y: { formatter: (val) => currentChartMode === 'receita' ? formatCurrency(val) : val }
             },
@@ -1790,6 +1799,7 @@
             },
             legend: { show: false },
             tooltip: {
+                theme: [(${context.restaurant.theme.dark ? "'dark'" : "'light'"})],
                 y: { formatter: (val) => formatCurrency(val) }
             }
         };
