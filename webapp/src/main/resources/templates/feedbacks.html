@@ -1460,9 +1460,9 @@
         exporting: [[#{page.feedback.exporting}]]
     };
 </script>
-<script type="module">
-    import { feedbacksApi } from '/js/api/v1/manager/api-feedbacks-bridge.js';
-    import { tablesApi } from '/js/api/v1/manager/api-table-bridge.js';
+<script type="module" th:inline="javascript">
+    import { feedbacksApi } from [[@{/js/api/v1/manager/api-feedbacks-bridge.js(v=${appVersion})}]];
+    import { tablesApi } from [[@{/js/api/v1/manager/api-table-bridge.js(v=${appVersion})}]];
 
     let allFeedbacks = [];
     let currentRatingFilter = 'all';
