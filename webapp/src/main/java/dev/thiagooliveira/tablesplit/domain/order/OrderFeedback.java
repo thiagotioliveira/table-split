@@ -11,6 +11,7 @@ public class OrderFeedback {
   private Integer rating;
   private String comment;
   private ZonedDateTime createdAt;
+  private boolean read;
 
   public OrderFeedback() {}
 
@@ -21,6 +22,15 @@ public class OrderFeedback {
     this.rating = rating;
     this.comment = comment;
     this.createdAt = Time.now();
+    this.read = false;
+  }
+
+  public boolean isRead() {
+    return read;
+  }
+
+  public void setRead(boolean read) {
+    this.read = read;
   }
 
   public UUID getId() {

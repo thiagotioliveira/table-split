@@ -199,6 +199,7 @@ public class OrderEntityMapper {
     domain.setRating(entity.getRating());
     domain.setComment(entity.getComment());
     domain.setCreatedAt(entity.getCreatedAt());
+    domain.setRead(entity.isRead());
     return domain;
   }
 
@@ -209,6 +210,7 @@ public class OrderEntityMapper {
     entity.setRating(domain.getRating());
     entity.setComment(domain.getComment());
     entity.setCreatedAt(domain.getCreatedAt());
+    entity.setRead(domain.isRead());
     return entity;
   }
 }

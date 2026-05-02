@@ -16,8 +16,10 @@ public class ContextModel {
   private final dev.thiagooliveira.tablesplit.domain.account.Plan plan;
   private final long pendingOrdersCount;
   private final long waiterCallCount;
+  private final long feedbackCount;
 
-  public ContextModel(Authentication auth, long pendingOrdersCount, long waiterCallCount) {
+  public ContextModel(
+      Authentication auth, long pendingOrdersCount, long waiterCallCount, long feedbackCount) {
     var account = (AccountContext) auth.getPrincipal();
     var user = account.getUser();
     var restaurant = account.getRestaurant();
@@ -40,6 +42,7 @@ public class ContextModel {
     this.footerModules = account.getFooterModules();
     this.pendingOrdersCount = pendingOrdersCount;
     this.waiterCallCount = waiterCallCount;
+    this.feedbackCount = feedbackCount;
   }
 
   public long getPendingOrdersCount() {
@@ -48,6 +51,10 @@ public class ContextModel {
 
   public long getWaiterCallCount() {
     return waiterCallCount;
+  }
+
+  public long getFeedbackCount() {
+    return feedbackCount;
   }
 
   public UserContextModel getUser() {

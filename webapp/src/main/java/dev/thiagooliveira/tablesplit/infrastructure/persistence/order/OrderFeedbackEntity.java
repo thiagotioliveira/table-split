@@ -26,6 +26,9 @@ public class OrderFeedbackEntity {
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
+  @Column(name = "is_read", nullable = false)
+  private boolean read = false;
+
   public OrderFeedbackEntity() {}
 
   public UUID getId() {
@@ -78,5 +81,13 @@ public class OrderFeedbackEntity {
 
   public void setCreatedAt(ZonedDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public boolean isRead() {
+    return read;
+  }
+
+  public void setRead(boolean read) {
+    this.read = read;
   }
 }

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260502-add-is-read-to-feedbacks
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: order_feedbacks
+            columns:
+              - column:
+                  name: is_read
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

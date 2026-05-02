@@ -20,14 +20,20 @@ public class ManagerControllerAdvice {
 
   private final GetTickets getTickets;
   private final ListActiveWaiterCalls listActiveWaiterCalls;
+  private final dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount
+      getFeedbackUnreadCount;
 
   @org.springframework.beans.factory.annotation.Value("${app.version}")
   private String appVersion;
 
   public ManagerControllerAdvice(
-      GetTickets getTickets, ListActiveWaiterCalls listActiveWaiterCalls) {
+      GetTickets getTickets,
+      ListActiveWaiterCalls listActiveWaiterCalls,
+      dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount
+          getFeedbackUnreadCount) {
     this.getTickets = getTickets;
     this.listActiveWaiterCalls = listActiveWaiterCalls;
+    this.getFeedbackUnreadCount = getFeedbackUnreadCount;
   }
 
   @ModelAttribute
@@ -43,7 +49,12 @@ public class ManagerControllerAdvice {
       if (account.getSidebarModules().contains(Module.TABLES)) {
         waiterCount = listActiveWaiterCalls.execute(account.getRestaurant().getId()).size();
       }
-      model.addAttribute("context", new ContextModel(auth, ordersCount, waiterCount));
+      long feedbackCount = 0;
+      if (account.getSidebarModules().contains(Module.FEEDBACKS)) {
+        feedbackCount = getFeedbackUnreadCount.execute(account.getRestaurant().getId());
+      }
+      model.addAttribute(
+          "context", new ContextModel(auth, ordersCount, waiterCount, feedbackCount));
     } else throw new RuntimeException("never to be here");
 
     var module = (Module) request.getAttribute("currentModule");

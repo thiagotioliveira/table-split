@@ -10,12 +10,22 @@ import org.springframework.context.annotation.Configuration;
 public class FeedbackConfig {
 
   @Bean
-  public SubmitGeneralFeedback submitGeneralFeedback(FeedbackRepository feedbackRepository) {
-    return new SubmitGeneralFeedback(feedbackRepository);
+  public SubmitGeneralFeedback submitGeneralFeedback(
+      FeedbackRepository feedbackRepository,
+      dev.thiagooliveira.tablesplit.domain.order.OrderRepository orderRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+    return new SubmitGeneralFeedback(feedbackRepository, orderRepository, eventPublisher);
   }
 
   @Bean
   public RateItem rateItem(FeedbackRepository feedbackRepository) {
     return new RateItem(feedbackRepository);
+  }
+
+  @Bean
+  public dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview getFeedbackOverview(
+      FeedbackRepository feedbackRepository) {
+    return new dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview(
+        feedbackRepository);
   }
 }

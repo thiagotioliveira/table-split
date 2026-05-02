@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.api.TablesApi;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.CreateTableRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.PaymentRequest;
@@ -132,5 +133,15 @@ public class TableApiController implements TablesApi {
   public ResponseEntity<Void> deletePayment(UUID tableId, UUID paymentId) {
     transactionalContext.execute(() -> deletePayment.execute(tableId, paymentId));
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<TableOrderHistoryResponse> getOrderDetail(UUID orderId) {
+    var context = getContext();
+    return getOrder
+        .findById(orderId)
+        .map(o -> mapper.mapToOrderHistoryResponse(o, context.getUser().getLanguage()))
+        .map(ResponseEntity::ok)
+        .orElseThrow(() -> new NotFoundException("error.order.not.found"));
   }
 }

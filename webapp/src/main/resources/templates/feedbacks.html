@@ -111,7 +111,6 @@
             font-weight: 700;
             color: var(--foreground);
             line-height: 1;
-            margin-bottom: 0.25rem;
         }
 
         .feedback-stat-label {
@@ -175,6 +174,8 @@
             border-radius: var(--radius-lg);
             padding: 1rem 1.25rem;
             margin-bottom: 1.5rem;
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
             box-shadow: var(--shadow);
         }
 
@@ -286,6 +287,8 @@
             display: grid;
             grid-template-columns: 1fr 360px;
             gap: 1.5rem;
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
         }
 
         @media (max-width: 1100px) {
@@ -772,21 +775,18 @@
             margin-bottom: 0;
         }
 
-        .attention-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: rgba(239, 68, 68, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .attention-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            overflow: hidden;
             flex-shrink: 0;
         }
 
-        .attention-icon svg {
-            width: 16px;
-            height: 16px;
-            color: #ef4444;
+        .attention-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .attention-info {
@@ -797,6 +797,102 @@
         .attention-name {
             font-size: 0.8125rem;
             font-weight: 500;
+        }
+
+        /* Order Modal Specific Styles */
+        .order-detail-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-detail-id {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-detail-meta {
+            font-size: 0.875rem;
+            color: var(--muted);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .client-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .client-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-main {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .order-item-qty {
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 20px;
+        }
+
+        .order-item-name {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .order-item-customs {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-style: italic;
+            margin-top: 0.125rem;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .bill-summary {
+            background: var(--background-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bill-row.total {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
         }
 
         .attention-stats {
@@ -1145,7 +1241,7 @@
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" x2="12" y1="15" y2="3"/>
             </svg>
-            Exportar
+            <span th:text="#{page.feedback.export}">Exportar</span>
         </button>
     </div>
 </div>
@@ -1156,101 +1252,87 @@
         <!-- Page Title -->
         <div class="page-header-section">
             <div class="page-title-section">
-                <h1>Feedbacks e Avaliações</h1>
-                <p>Acompanhe as opiniões dos seus clientes sobre o atendimento e os itens</p>
+                <h1 th:text="#{page.feedback.title}">Feedbacks e Avaliações</h1>
+                <p th:text="#{page.feedback.subtitle}">Acompanhe as opiniões dos seus clientes sobre o atendimento e os itens</p>
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stats Cards -        <!-- Stats Cards -->
         <div class="feedback-stats">
+            <!-- Média Geral -->
             <div class="feedback-stat-card">
                 <div class="feedback-stat-header">
                     <div class="feedback-stat-icon amber">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </div>
-                    <span class="feedback-stat-trend up">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              0.3
-            </span>
+                    <div class="feedback-stat-value" id="avgRatingValue">0.0</div>
                 </div>
-                <div class="feedback-stat-value">
-                    <div class="rating-display">
-                        <span class="rating-big">4.6</span>
-                        <div class="rating-stars large">
-                            <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <svg class="half" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="feedback-stat-label">Média Geral</div>
+                <div class="feedback-stat-label" th:text="#{page.feedback.stat.avg_rating}">Média Geral</div>
             </div>
 
+            <!-- Total Feedbacks -->
             <div class="feedback-stat-card">
                 <div class="feedback-stat-header">
                     <div class="feedback-stat-icon blue">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <span class="feedback-stat-trend up">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              12%
-            </span>
+                    <div class="feedback-stat-value" id="totalFeedbacksValue">0</div>
                 </div>
-                <div class="feedback-stat-value">248</div>
-                <div class="feedback-stat-label">Total de Feedbacks</div>
+                <div class="feedback-stat-label" th:text="#{page.feedback.stat.total}">Total de Feedbacks</div>
             </div>
 
+            <!-- Positivos -->
             <div class="feedback-stat-card">
                 <div class="feedback-stat-header">
                     <div class="feedback-stat-icon green">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                     </div>
+                    <div class="feedback-stat-value" id="positiveFeedbacksValue">0</div>
                 </div>
-                <div class="feedback-stat-value">211</div>
-                <div class="feedback-stat-label">Avaliações Positivas (4-5★)</div>
+                <div class="feedback-stat-label" th:text="#{page.feedback.stat.positive}">Positivas (4-5★)</div>
             </div>
 
+            <!-- Negativos -->
             <div class="feedback-stat-card">
                 <div class="feedback-stat-header">
                     <div class="feedback-stat-icon red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
                     </div>
+                    <div class="feedback-stat-value" id="negativeFeedbacksValue">0</div>
                 </div>
-                <div class="feedback-stat-value">17</div>
-                <div class="feedback-stat-label">Avaliações Negativas (0-2★)</div>
+                <div class="feedback-stat-label" th:text="#{page.feedback.stat.negative}">Negativas (0-2★)</div>
             </div>
 
+            <!-- Itens Avaliados -->
             <div class="feedback-stat-card">
                 <div class="feedback-stat-header">
                     <div class="feedback-stat-icon purple">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                     </div>
+                    <div class="feedback-stat-value" id="itemsRatedValue">0</div>
                 </div>
-                <div class="feedback-stat-value">892</div>
-                <div class="feedback-stat-label">Itens Avaliados</div>
+                <div class="feedback-stat-label" th:text="#{page.feedback.stat.items_rated}">Itens Avaliados</div>
             </div>
         </div>
 
         <!-- Filters -->
         <div class="filters-bar">
             <div class="filter-group">
-                <span class="filter-label">Período:</span>
+                <span class="filter-label" th:text="#{page.feedback.filters.period.label}">Período:</span>
                 <select class="filter-select" id="filterPeriod">
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="30" selected>Últimos 30 dias</option>
-                    <option value="90">Últimos 3 meses</option>
-                    <option value="365">Último ano</option>
-                    <option value="all">Todo o período</option>
+                    <option value="7" th:text="#{page.feedback.filters.period.7days}">Últimos 7 dias</option>
+                    <option value="30" selected th:text="#{page.feedback.filters.period.30days}">Últimos 30 dias</option>
+                    <option value="90" th:text="#{page.feedback.filters.period.90days}">Últimos 3 meses</option>
+                    <option value="365" th:text="#{page.feedback.filters.period.year}">Último ano</option>
+                    <option value="all" th:text="#{page.feedback.filters.period.all}">Todo o período</option>
                 </select>
             </div>
 
             <div class="filter-group">
-                <span class="filter-label">Nota:</span>
+                <span class="filter-label" th:text="#{page.feedback.filters.rating.label}">Nota:</span>
                 <div class="rating-filter">
                     <button class="rating-filter-btn active" data-rating="all" onclick="filterByRating(this, 'all')">
-                        Todas
+                        <span th:text="#{page.feedback.rating.all}">Todas</span>
                     </button>
                     <button class="rating-filter-btn" data-rating="5" onclick="filterByRating(this, 5)">5</button>
                     <button class="rating-filter-btn" data-rating="4" onclick="filterByRating(this, 4)">4</button>
@@ -1261,18 +1343,10 @@
                 </div>
             </div>
 
-            <div class="filter-group">
-                <span class="filter-label">Status:</span>
-                <select class="filter-select" id="filterStatus">
-                    <option value="all">Todos</option>
-                    <option value="pending">Não respondidos</option>
-                    <option value="responded">Respondidos</option>
-                </select>
-            </div>
 
             <div class="search-input">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input type="text" placeholder="Buscar por cliente ou mensagem..." id="searchInput">
+                <input type="text" th:placeholder="#{page.feedback.filters.search_placeholder}" id="searchInput">
             </div>
         </div>
 
@@ -1283,234 +1357,14 @@
                 <div class="feedback-list-header">
                     <h3 class="feedback-list-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        Feedbacks Recentes
+                        <span th:text="#{page.feedback.list.recent_title}">Feedbacks Recentes</span>
                     </h3>
-                    <span class="feedback-count">248 feedbacks</span>
-                </div>
-
-                <div class="feedback-tabs">
-                    <button class="feedback-tab active" onclick="setFeedbackTab(this, 'all')">
-                        Todos
-                        <span class="feedback-tab-count">248</span>
-                    </button>
-                    <button class="feedback-tab" onclick="setFeedbackTab(this, 'service')">
-                        Atendimento
-                        <span class="feedback-tab-count">186</span>
-                    </button>
-                    <button class="feedback-tab" onclick="setFeedbackTab(this, 'items')">
-                        Itens
-                        <span class="feedback-tab-count">62</span>
-                    </button>
+                    <span class="feedback-count" id="feedbackTotalCount">0 feedbacks</span>
                 </div>
 
                 <!-- Feedback Items -->
                 <div id="feedbackList">
-                    <!-- Feedback 1 - 5 stars -->
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <div class="feedback-customer">
-                                <div class="feedback-avatar" style="background: #22c55e;">MA</div>
-                                <div class="feedback-customer-info">
-                                    <div class="feedback-customer-name">Maria Antônia</div>
-                                    <div class="feedback-meta">
-                                        <span>Hoje, 14:32</span>
-                                        <span class="feedback-meta-divider"></span>
-                                        <span>Pedido #1048</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="feedback-rating-badge excellent">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                5.0
-                            </div>
-                        </div>
-                        <p class="feedback-message">Simplesmente maravilhoso! A lasanha estava perfeita, igual da vovó. O garçom Carlos foi muito atencioso. Voltarei com certeza!</p>
-                        <div class="feedback-items">
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Lasanha Bolonhesa</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    5
-                  </span>
-                            </div>
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Tiramisù</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    5
-                  </span>
-                            </div>
-                        </div>
-                        <div class="feedback-actions">
-                            <button class="feedback-action-btn responded">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                Respondido
-                            </button>
-                            <a href="#" class="feedback-order-link">Ver pedido</a>
-                        </div>
-                    </div>
-
-                    <!-- Feedback 2 - 4 stars -->
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <div class="feedback-customer">
-                                <div class="feedback-avatar" style="background: #3b82f6;">PS</div>
-                                <div class="feedback-customer-info">
-                                    <div class="feedback-customer-name">Pedro Santos</div>
-                                    <div class="feedback-meta">
-                                        <span>Hoje, 12:15</span>
-                                        <span class="feedback-meta-divider"></span>
-                                        <span>Pedido #1045</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="feedback-rating-badge good">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                4.0
-                            </div>
-                        </div>
-                        <p class="feedback-message">Pizza muito boa, mas demorou um pouco para chegar. O sabor compensa a espera!</p>
-                        <div class="feedback-items">
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Pizza Margherita</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    5
-                  </span>
-                            </div>
-                        </div>
-                        <div class="feedback-actions">
-                            <button class="feedback-action-btn" onclick="openResponseModal(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-                                Responder
-                            </button>
-                            <a href="#" class="feedback-order-link">Ver pedido</a>
-                        </div>
-                    </div>
-
-                    <!-- Feedback 3 - 3 stars -->
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <div class="feedback-customer">
-                                <div class="feedback-avatar" style="background: #f59e0b;">JC</div>
-                                <div class="feedback-customer-info">
-                                    <div class="feedback-customer-name">Julia Costa</div>
-                                    <div class="feedback-meta">
-                                        <span>Ontem, 20:45</span>
-                                        <span class="feedback-meta-divider"></span>
-                                        <span>Pedido #1038</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="feedback-rating-badge average">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                3.0
-                            </div>
-                        </div>
-                        <p class="feedback-message">O risoto estava bom, mas achei um pouco salgado. O ambiente é agradável, porém estava muito barulhento.</p>
-                        <div class="feedback-items">
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Risoto de Camarão</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    3
-                  </span>
-                            </div>
-                        </div>
-                        <div class="feedback-actions">
-                            <button class="feedback-action-btn" onclick="openResponseModal(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-                                Responder
-                            </button>
-                            <a href="#" class="feedback-order-link">Ver pedido</a>
-                        </div>
-                    </div>
-
-                    <!-- Feedback 4 - 2 stars (poor) -->
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <div class="feedback-customer">
-                                <div class="feedback-avatar" style="background: #ef4444;">RF</div>
-                                <div class="feedback-customer-info">
-                                    <div class="feedback-customer-name">Roberto Ferreira</div>
-                                    <div class="feedback-meta">
-                                        <span>Ontem, 13:20</span>
-                                        <span class="feedback-meta-divider"></span>
-                                        <span>Pedido #1032</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="feedback-rating-badge poor">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                2.0
-                            </div>
-                        </div>
-                        <p class="feedback-message">Esperamos mais de 40 minutos pelo pedido. Quando chegou, a comida estava morna. Decepcionante para um restaurante desse nível.</p>
-                        <div class="feedback-items">
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Filé à Parmegiana</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    2
-                  </span>
-                            </div>
-                        </div>
-                        <div class="feedback-actions">
-                            <button class="feedback-action-btn" onclick="openResponseModal(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-                                Responder
-                            </button>
-                            <a href="#" class="feedback-order-link">Ver pedido</a>
-                        </div>
-                    </div>
-
-                    <!-- Feedback 5 - 5 stars, no message -->
-                    <div class="feedback-item">
-                        <div class="feedback-item-header">
-                            <div class="feedback-customer">
-                                <div class="feedback-avatar" style="background: #8b5cf6;">AL</div>
-                                <div class="feedback-customer-info">
-                                    <div class="feedback-customer-name">Ana Luiza</div>
-                                    <div class="feedback-meta">
-                                        <span>2 dias atrás</span>
-                                        <span class="feedback-meta-divider"></span>
-                                        <span>Pedido #1025</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="feedback-rating-badge excellent">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                5.0
-                            </div>
-                        </div>
-                        <p class="feedback-message empty">Sem comentário</p>
-                        <div class="feedback-items">
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Bruschetta</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    5
-                  </span>
-                            </div>
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Spaghetti Carbonara</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    5
-                  </span>
-                            </div>
-                            <div class="feedback-item-chip">
-                                <span class="feedback-item-chip-name">Vinho Tinto</span>
-                                <span class="feedback-item-chip-rating">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    4
-                  </span>
-                            </div>
-                        </div>
-                        <div class="feedback-actions">
-                            <a href="#" class="feedback-order-link">Ver pedido</a>
-                        </div>
-                    </div>
+                    <!-- Dynamic Content -->
                 </div>
             </div>
 
@@ -1521,71 +1375,12 @@
                     <div class="panel-header">
                         <h3 class="panel-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect width="4" height="7" x="7" y="10" rx="1"/><rect width="4" height="12" x="15" y="5" rx="1"/></svg>
-                            Distribuição
+                            <span th:text="#{page.feedback.panels.rating_dist}">Distribuição</span>
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <div class="rating-breakdown">
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    5
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r5" style="width: 65%;"></div>
-                                </div>
-                                <span class="rating-bar-count">161</span>
-                            </div>
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    4
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r4" style="width: 20%;"></div>
-                                </div>
-                                <span class="rating-bar-count">50</span>
-                            </div>
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    3
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r3" style="width: 8%;"></div>
-                                </div>
-                                <span class="rating-bar-count">20</span>
-                            </div>
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    2
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r2" style="width: 4%;"></div>
-                                </div>
-                                <span class="rating-bar-count">10</span>
-                            </div>
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    1
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r1" style="width: 2%;"></div>
-                                </div>
-                                <span class="rating-bar-count">5</span>
-                            </div>
-                            <div class="rating-bar-row">
-                  <span class="rating-bar-label">
-                    0
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill r1" style="width: 1%;"></div>
-                                </div>
-                                <span class="rating-bar-count">2</span>
-                            </div>
+                        <div class="rating-breakdown" id="ratingDistributionContainer">
+                            <!-- Dynamic Content -->
                         </div>
                     </div>
                 </div>
@@ -1595,67 +1390,12 @@
                     <div class="panel-header">
                         <h3 class="panel-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-                            Mais Elogiados
+                            <span th:text="#{page.feedback.panels.top_items}">Mais Elogiados</span>
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <div class="item-ranking">
-                            <div class="item-ranking-row">
-                                <span class="item-ranking-position gold">1</span>
-                                <div class="item-ranking-image">
-                                    <img src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div class="item-ranking-info">
-                                    <div class="item-ranking-name">Lasanha Bolonhesa</div>
-                                    <div class="item-ranking-reviews">186 avaliações</div>
-                                </div>
-                                <div class="item-ranking-rating">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    4.9
-                                </div>
-                            </div>
-                            <div class="item-ranking-row">
-                                <span class="item-ranking-position silver">2</span>
-                                <div class="item-ranking-image">
-                                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div class="item-ranking-info">
-                                    <div class="item-ranking-name">Tiramisù</div>
-                                    <div class="item-ranking-reviews">124 avaliações</div>
-                                </div>
-                                <div class="item-ranking-rating">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    4.8
-                                </div>
-                            </div>
-                            <div class="item-ranking-row">
-                                <span class="item-ranking-position bronze">3</span>
-                                <div class="item-ranking-image">
-                                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div class="item-ranking-info">
-                                    <div class="item-ranking-name">Pizza Margherita</div>
-                                    <div class="item-ranking-reviews">98 avaliações</div>
-                                </div>
-                                <div class="item-ranking-rating">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    4.7
-                                </div>
-                            </div>
-                            <div class="item-ranking-row">
-                                <span class="item-ranking-position default">4</span>
-                                <div class="item-ranking-image">
-                                    <img src="https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div class="item-ranking-info">
-                                    <div class="item-ranking-name">Bruschetta</div>
-                                    <div class="item-ranking-reviews">76 avaliações</div>
-                                </div>
-                                <div class="item-ranking-rating">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    4.6
-                                </div>
-                            </div>
+                        <div class="item-ranking" id="topRatedItemsContainer">
+                            <!-- Dynamic Content -->
                         </div>
                     </div>
                 </div>
@@ -1665,35 +1405,12 @@
                     <div class="panel-header">
                         <h3 class="panel-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                            Precisam Atenção
+                            <span th:text="#{page.feedback.panels.need_attention}">Precisam Atenção</span>
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <div class="attention-item">
-                            <div class="attention-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-                            </div>
-                            <div class="attention-info">
-                                <div class="attention-name">Risoto de Camarão</div>
-                                <div class="attention-stats">5 avaliações negativas</div>
-                            </div>
-                            <div class="attention-rating">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                2.8
-                            </div>
-                        </div>
-                        <div class="attention-item">
-                            <div class="attention-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
-                            </div>
-                            <div class="attention-info">
-                                <div class="attention-name">Suco Natural</div>
-                                <div class="attention-stats">3 avaliações negativas</div>
-                            </div>
-                            <div class="attention-rating">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                3.1
-                            </div>
+                        <div id="needAttentionItemsContainer">
+                            <!-- Dynamic Content -->
                         </div>
                     </div>
                 </div>
@@ -1702,33 +1419,54 @@
     </div>
 </main>
 
-<!-- Response Modal -->
-<div class="modal-overlay" id="responseModal">
-    <div class="modal-content">
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
-            <h3 class="modal-title">Responder Feedback</h3>
-            <button class="modal-close" onclick="closeResponseModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <h3 class="modal-title" th:text="#{page.feedback.modal.order_detail.title}">Detalhes do Pedido</h3>
+            <button class="modal-close" onclick="closeOrderModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label class="form-label">Sua resposta ao cliente</label>
-                <textarea class="form-textarea" placeholder="Escreva uma resposta profissional e cordial..." id="responseText"></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Nota interna (não visível ao cliente)</label>
-                <textarea class="form-textarea" style="min-height: 80px;" placeholder="Adicione observações internas se necessário..." id="internalNote"></textarea>
-            </div>
+        <div class="modal-body" id="orderModalBody">
+            <!-- Dynamic Content -->
         </div>
         <div class="modal-footer">
-            <button class="btn btn-outline" onclick="closeResponseModal()">Cancelar</button>
-            <button class="btn btn-primary" onclick="sendResponse()">Enviar Resposta</button>
+            <button class="btn btn-outline" onclick="closeOrderModal()" th:text="#{page.feedback.modal.order_detail.close}">Fechar</button>
         </div>
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    const currencySymbol = [[${currencySymbol}]];
+    const i18n = {
+        orderShortId: [[#{page.feedback.list.order_short_id}]],
+        noComment: [[#{page.feedback.list.no_comment}]],
+        viewOrder: [[#{page.feedback.list.view_order}]],
+        emptyList: [[#{page.feedback.list.empty}]],
+        loading: [[#{page.feedback.list.loading}]],
+        error: [[#{page.feedback.list.error}]],
+        feedbackTotalCount: [[#{page.feedback.list.feedback_total_count}]],
+        orderModal: {
+            loading: [[#{page.feedback.modal.order_detail.loading}]],
+            error: [[#{page.feedback.modal.order_detail.error}]],
+            openedAt: [[#{page.feedback.modal.order_detail.opened_at}]],
+            table: [[#{page.feedback.modal.order_detail.table}]],
+            subtotal: [[#{page.feedback.modal.order_detail.subtotal}]],
+            serviceFee: [[#{page.feedback.modal.order_detail.service_fee}]],
+            total: [[#{page.feedback.modal.order_detail.total}]],
+            payments: [[#{page.feedback.modal.order_detail.payments}]]
+        },
+        exporting: [[#{page.feedback.exporting}]]
+    };
+</script>
+<script type="module">
+    import { feedbacksApi } from '/js/api/v1/manager/api-feedbacks-bridge.js';
+    import { tablesApi } from '/js/api/v1/manager/api-table-bridge.js';
+
+    let allFeedbacks = [];
+    let currentRatingFilter = 'all';
+
     // Sidebar
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -1756,77 +1494,355 @@
         }
     });
 
-    // Rating filter
-    function filterByRating(btn, rating) {
-        document.querySelectorAll('.rating-filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        // Filter logic would go here
-        console.log('Filter by rating:', rating);
+    // Load Data
+    async function loadFeedbacks() {
+        const days = document.getElementById('filterPeriod').value;
+        const listContainer = document.getElementById('feedbackList');
+        
+        // Show loading state
+        listContainer.innerHTML = `<div class="loading-state">${i18n.loading}</div>`;
+
+        try {
+            const response = await feedbacksApi.getFeedbacks(days === 'all' ? undefined : days);
+            allFeedbacks = response.feedbacks;
+            
+            updateStatsUI(response.stats);
+            updateDistributionUI(response.distribution);
+            updateTopItemsUI(response.topRatedItems);
+            updateNeedAttentionUI(response.needAttentionItems);
+            
+            applyFilters();
+        } catch (error) {
+            console.error('Error loading feedbacks:', error);
+            listContainer.innerHTML = `<div class="error-state">${i18n.error}</div>`;
+        }
     }
 
-    // Feedback tabs
-    function setFeedbackTab(tab, type) {
-        document.querySelectorAll('.feedback-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        // Filter logic would go here
-        console.log('Filter by type:', type);
+    function updateStatsUI(stats) {
+        document.getElementById('avgRatingValue').textContent = stats.averageRating.toFixed(1);
+        document.getElementById('totalFeedbacksValue').textContent = stats.totalFeedbacks;
+        document.getElementById('positiveFeedbacksValue').textContent = stats.positiveCount;
+        document.getElementById('negativeFeedbacksValue').textContent = stats.negativeCount;
+        document.getElementById('itemsRatedValue').textContent = stats.totalItemsRated;
     }
 
-    // Response Modal
-    let currentFeedbackBtn = null;
+    function updateDistributionUI(distribution) {
+        const container = document.getElementById('ratingDistributionContainer');
+        container.innerHTML = '';
+        
+        const maxCount = Math.max(...Object.values(distribution), 1);
 
-    function openResponseModal(btn) {
-        currentFeedbackBtn = btn;
-        document.getElementById('responseModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
+        // Sort keys descending
+        const ratings = [5, 4, 3, 2, 1, 0];
+        ratings.forEach(rating => {
+            const count = distribution['r' + rating] || 0;
+            const percentage = (count / maxCount) * 100;
+            
+            const row = document.createElement('div');
+            row.className = 'rating-bar-row';
+            row.innerHTML = `
+                <span class="rating-bar-label">
+                    ${rating}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <div class="rating-bar-track">
+                    <div class="rating-bar-fill r${rating === 5 ? '5' : rating >= 3 ? '4' : rating >= 2 ? '2' : '1'}" style="width: ${percentage}%;"></div>
+                </div>
+                <span class="rating-bar-count">${count}</span>
+            `;
+            container.appendChild(row);
+        });
     }
 
-    function closeResponseModal() {
-        document.getElementById('responseModal').classList.remove('active');
-        document.body.style.overflow = '';
-        document.getElementById('responseText').value = '';
-        document.getElementById('internalNote').value = '';
-    }
-
-    function sendResponse() {
-        const responseText = document.getElementById('responseText').value;
-        if (!responseText.trim()) {
-            alert('Por favor, escreva uma resposta.');
+    function updateTopItemsUI(items) {
+        const container = document.getElementById('topRatedItemsContainer');
+        container.innerHTML = '';
+        
+        if (!items || items.length === 0) {
+            container.innerHTML = '<div class="empty-state">Nenhum item avaliado no período.</div>';
             return;
         }
 
-        // Mark as responded
-        if (currentFeedbackBtn) {
-            currentFeedbackBtn.classList.add('responded');
-            currentFeedbackBtn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Respondido
-        `;
-            currentFeedbackBtn.onclick = null;
-        }
-
-        closeResponseModal();
-        alert('Resposta enviada com sucesso!');
+        items.forEach((item, index) => {
+            const positionClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : 'default';
+            const row = document.createElement('div');
+            row.className = 'item-ranking-row';
+            row.innerHTML = `
+                <span class="item-ranking-position ${positionClass}">${index + 1}</span>
+                <div class="item-ranking-image">
+                    <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=80&h=80&fit=crop'}" alt="${item.name}">
+                </div>
+                <div class="item-ranking-info">
+                    <div class="item-ranking-name">${item.name}</div>
+                    <div class="item-ranking-reviews">${item.reviewCount} avaliações</div>
+                </div>
+                <div class="item-ranking-rating">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    ${item.averageRating.toFixed(1)}
+                </div>
+            `;
+            container.appendChild(row);
+        });
     }
 
-    // Close modal on overlay click
-    document.getElementById('responseModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeResponseModal();
+    function updateNeedAttentionUI(items) {
+        const container = document.getElementById('needAttentionItemsContainer');
+        container.innerHTML = '';
+
+        if (!items || items.length === 0) {
+            container.innerHTML = '<div class="empty-state">Nenhum item crítico no período.</div>';
+            return;
         }
-    });
+
+        items.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'attention-item';
+            row.innerHTML = `
+                <div class="attention-image">
+                    <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=80&h=80&fit=crop'}" alt="${item.name}">
+                </div>
+                <div class="attention-info">
+                    <div class="attention-name">${item.name}</div>
+                    <div class="attention-stats">${item.reviewCount} avaliações baixas</div>
+                </div>
+                <div class="attention-rating">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    ${item.averageRating.toFixed(1)}
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function applyFilters() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        const filtered = allFeedbacks.filter(f => {
+            const matchesSearch = !searchTerm || 
+                f.customerName.toLowerCase().includes(searchTerm) || 
+                (f.comment && f.comment.toLowerCase().includes(searchTerm)) ||
+                f.orderShortId.toLowerCase().includes(searchTerm);
+            
+            const matchesRating = currentRatingFilter === 'all' || Math.floor(f.rating) === parseInt(currentRatingFilter);
+            
+            return matchesSearch && matchesRating;
+        });
+
+        renderFeedbackList(filtered);
+    }
+
+    function renderFeedbackList(feedbacks) {
+        const listContainer = document.getElementById('feedbackList');
+        
+        if (!feedbacks || feedbacks.length === 0) {
+            listContainer.innerHTML = `<div class="empty-state">${i18n.emptyList}</div>`;
+            document.getElementById('feedbackTotalCount').textContent = i18n.feedbackTotalCount.replace('{0}', 0);
+            return;
+        }
+
+        document.getElementById('feedbackTotalCount').textContent = i18n.feedbackTotalCount.replace('{0}', feedbacks.length);
+
+        listContainer.innerHTML = '';
+
+        feedbacks.forEach(f => {
+            const ratingClass = f.rating >= 4.5 ? 'excellent' : f.rating >= 4.0 ? 'good' : f.rating >= 3.0 ? 'average' : 'poor';
+            
+            const itemChips = (f.items || []).map(item => `
+                <div class="feedback-item-chip">
+                    <span class="feedback-item-chip-name">${item.name}</span>
+                    <span class="feedback-item-chip-rating">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        ${item.rating}
+                    </span>
+                </div>
+            `).join('');
+
+            const item = document.createElement('div');
+            item.className = 'feedback-item';
+            item.innerHTML = `
+                <div class="feedback-item-header">
+                    <div class="feedback-customer">
+                        <div class="feedback-avatar" style="background: ${getAvatarColor(f.customerName)}">${getInitials(f.customerName)}</div>
+                        <div class="feedback-customer-info">
+                            <div class="feedback-customer-name">${f.customerName}</div>
+                            <div class="feedback-meta">
+                                <span>${f.timeAgo}</span>
+                                <span class="feedback-meta-divider"></span>
+                                <span>${i18n.orderShortId}${f.orderShortId}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feedback-rating-badge ${ratingClass}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        ${f.rating.toFixed(1)}
+                    </div>
+                </div>
+
+                <div class="feedback-message ${!f.comment ? 'empty' : ''}">
+                    ${f.comment || i18n.noComment}
+                </div>
+                <div class="feedback-items">
+                    ${itemChips}
+                </div>
+                <div class="feedback-actions">
+                    <button class="feedback-action-btn" onclick="openOrderModal('${f.orderId}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        ${i18n.viewOrder}
+                    </button>
+                </div>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    function renderStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += `<svg class="${i <= rating ? 'filled' : ''}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+        }
+        return stars;
+    }
+
+    window.openOrderModal = async function(orderId) {
+        const modal = document.getElementById('orderModal');
+        const body = document.getElementById('orderModalBody');
+        
+        modal.classList.add('active');
+        body.innerHTML = `<div class="loading-state">${i18n.orderModal.loading}</div>`;
+        document.body.style.overflow = 'hidden';
+
+        try {
+            const order = await tablesApi.getOrderDetail(orderId);
+            renderOrderDetail(order, body);
+        } catch (error) {
+            console.error('Error loading order details:', error);
+            body.innerHTML = `<div class="error-state">${i18n.orderModal.error}</div>`;
+        }
+    };
+
+    window.closeOrderModal = function() {
+        document.getElementById('orderModal').classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    function renderOrderDetail(order, container) {
+        let html = `
+            <div class="order-detail-header">
+                <div class="order-detail-id">${i18n.orderShortId}${order.id.substring(0, 8).toUpperCase()}</div>
+                <div class="order-detail-meta">
+                    <span>${i18n.orderModal.table} ${order.tableCod || 'N/A'}</span>
+                    <span>${i18n.orderModal.openedAt} ${new Date(order.openedAt).toLocaleString()}</span>
+                </div>
+            </div>
+        `;
+
+        // Group items by customer
+        const itemsByCustomer = {};
+        order.items.forEach(item => {
+            const customerName = order.customerNames[item.customerId] || 'Mesa';
+            if (!itemsByCustomer[customerName]) itemsByCustomer[customerName] = [];
+            itemsByCustomer[customerName].push(item);
+        });
+
+        Object.entries(itemsByCustomer).forEach(([customerName, items]) => {
+            html += `
+                <div class="client-section">
+                    <div class="client-section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        ${customerName}
+                    </div>
+                    <div class="client-orders">
+            `;
+
+            items.forEach(item => {
+                html += `
+                    <div class="order-item-row">
+                        <div class="order-item-main">
+                            <span class="order-item-qty">${item.quantity}x</span>
+                            <div>
+                                <div class="order-item-name">${item.name}</div>
+                                ${item.customizationSummary ? `<div class="order-item-customs">${item.customizationSummary}</div>` : ''}
+                                ${item.note ? `<div class="order-item-customs">Nota: ${item.note}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="order-item-price">${currencySymbol} ${item.totalPrice.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+        });
+
+        // Bill Summary
+        const subtotalValue = order.total / (1 + (order.serviceFee / 100));
+        const serviceFeeAmount = order.total - subtotalValue;
+
+        html += `
+             <div class="bill-summary">
+                <div class="bill-row">
+                    <span>${i18n.orderModal.subtotal}</span>
+                    <span>${currencySymbol}${subtotalValue.toFixed(2)}</span>
+                </div>
+                <div class="bill-row">
+                    <span>${i18n.orderModal.serviceFee} (${order.serviceFee}%)</span>
+                    <span>${currencySymbol}${serviceFeeAmount.toFixed(2)}</span>
+                </div>
+                <div class="bill-row total">
+                    <span>${i18n.orderModal.total}</span>
+                    <span>${currencySymbol}${order.total.toFixed(2)}</span>
+                </div>
+            </div>
+
+            ${order.payments && order.payments.length > 0 ? `
+                <div class="client-section-title" style="margin-top: 1.5rem;">${i18n.orderModal.payments}</div>
+                ${order.payments.map(p => `
+                    <div class="bill-row">
+                        <span>${order.customerNames[p.customerId] || 'Mesa'} (${p.method})</span>
+                        <span>${currencySymbol}${p.amount.toFixed(2)}</span>
+                    </div>
+                `).join('')}
+            ` : ''}
+        `;
+
+        container.innerHTML = html;
+    }
 
     // Export feedbacks
-    function exportFeedbacks() {
-        alert('Exportando feedbacks em formato CSV...');
+    window.exportFeedbacks = function() {
+        alert(i18n.exporting);
+    };
+
+    function getInitials(name) {
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     }
 
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        // Search logic would go here
-        console.log('Search:', searchTerm);
-    });
+    function getAvatarColor(name) {
+        const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    // Filters
+    window.filterByRating = function(btn, rating) {
+        document.querySelectorAll('.rating-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRatingFilter = rating;
+        applyFilters();
+    };
+
+    document.getElementById('filterPeriod').addEventListener('change', loadFeedbacks);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    // Global exports for standard HTML onclicks
+    window.openSidebar = openSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleUserMenu = toggleUserMenu;
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', loadFeedbacks);
 </script>
 </body>
 </html>
