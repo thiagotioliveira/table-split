@@ -30,6 +30,7 @@ public record ThemeConfig(
       case UBER_STYLE -> new ThemeConfig("#06C167", "#000000", "#ffffff", "#ffffff", "#000000");
       case UBER_STYLE_DARK ->
           new ThemeConfig("#06C167", "#ffffff", "#000000", "#121212", "#ffffff");
+      case NICOLAU_STYLE -> new ThemeConfig("#00b2bd", "#f2a9b1", "#fcfbf7", "#ffffff", "#1a3a3a");
       case DEFAULT -> new ThemeConfig("#c9a050", "#FFEDD5", "#faf8f5", "#ffffff", "#1a1714");
       default -> new ThemeConfig("#c9a050", "#FFEDD5", "#faf8f5", "#ffffff", "#1a1714");
     };

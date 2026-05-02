@@ -14,6 +14,7 @@ public enum ThemeName {
   VIBRANT_ORANGE_DARK("Vibrant Orange Dark"),
   UBER_STYLE("Uber Style"),
   UBER_STYLE_DARK("Uber Style Dark"),
+  NICOLAU_STYLE("Nicolau Style"),
   CUSTOM("Custom (Your Brand Colors)");
 
   private final String displayName;
