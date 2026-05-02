@@ -1,0 +1,212 @@
+openapi: 3.0.3
+info:
+  title: Manager Reports API
+  description: API for retrieving reports and statistics in the TableSplit Manager module.
+  version: 1.0.0
+servers:
+  - url: /api/v1/manager/reports
+    description: v1 API for Reports module
+
+tags:
+  - name: Reports
+    description: Reports and statistics operations
+
+paths:
+  /overview:
+    get:
+      tags:
+        - Reports
+      summary: Get reports overview data
+      operationId: getReportsOverview
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Successful report data retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportsOverviewResponse'
+
+components:
+  schemas:
+    ReportsOverviewResponse:
+      type: object
+      properties:
+        stats:
+          $ref: '#/components/schemas/ReportStats'
+        revenueChart:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        ordersChart:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        customersChart:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        revenueChartPrevious:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        ordersChartPrevious:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        customersChartPrevious:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataPoint'
+        categorySales:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySaleResponse'
+        topItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemSaleResponse'
+        peakHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeakHourResponse'
+        paymentMethods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodResponse'
+        promoUsage:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromoUsageResponse'
+        customerRatings:
+          $ref: '#/components/schemas/RatingStats'
+        tableOccupancy:
+          $ref: '#/components/schemas/OccupancyStats'
+
+    ReportStats:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+          format: double
+        avgTicket:
+          type: number
+          format: double
+        totalOrders:
+          type: integer
+        totalCustomers:
+          type: integer
+        revenueTrend:
+          type: number
+          format: double
+        ordersTrend:
+          type: number
+          format: double
+
+    ChartDataPoint:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+          format: double
+
+    CategorySaleResponse:
+      type: object
+      properties:
+        categoryName:
+          type: string
+        totalAmount:
+          type: number
+          format: double
+        percentage:
+          type: number
+          format: double
+        color:
+          type: string
+
+    ItemSaleResponse:
+      type: object
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        categoryName:
+          type: string
+        quantity:
+          type: integer
+        totalRevenue:
+          type: number
+          format: double
+        imageUrl:
+          type: string
+
+    PeakHourResponse:
+      type: object
+      properties:
+        hour:
+          type: integer
+        orderCount:
+          type: integer
+        percentage:
+          type: number
+          format: double
+
+    PaymentMethodResponse:
+      type: object
+      properties:
+        method:
+          type: string
+        totalAmount:
+          type: number
+          format: double
+        count:
+          type: integer
+        percentage:
+          type: number
+          format: double
+
+    PromoUsageResponse:
+      type: object
+      properties:
+        promotionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        usageCount:
+          type: integer
+        totalDiscount:
+          type: number
+          format: double
+
+    RatingStats:
+      type: object
+      properties:
+        averageRating:
+          type: number
+          format: double
+        totalReviews:
+          type: integer
+        distribution:
+          type: object
+          additionalProperties:
+            type: integer
+
+    OccupancyStats:
+      type: object
+      properties:
+        averageDurationMinutes:
+          type: integer
+        peakSimultaneousTables:
+          type: integer
+        totalTablesAvailable:
+          type: integer

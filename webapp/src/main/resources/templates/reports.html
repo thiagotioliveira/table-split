@@ -8,6 +8,7 @@
     <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
     <link rel="stylesheet" th:href="@{/css/style.css(v=${appVersion})}">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         /* Reports specific styles */
         .reports-header {
@@ -1189,28 +1190,28 @@
         <!-- Page Title -->
         <div class="reports-header">
             <div class="reports-title-section">
-                <h1>Relatórios e Análises</h1>
-                <p>Acompanhe o desempenho do seu restaurante</p>
+                <h1 th:text="#{page.reports.title}">Dashboard de Relatórios</h1>
+                <p th:text="#{page.reports.subtitle}">Análise detalhada do desempenho do seu restaurante</p>
             </div>
         </div>
 
         <!-- Filters Bar -->
         <div class="filters-bar">
             <div class="period-tabs">
-                <button class="period-tab" onclick="setPeriod(this, 'hoje')">Hoje</button>
-                <button class="period-tab active" onclick="setPeriod(this, '7dias')">7 dias</button>
-                <button class="period-tab" onclick="setPeriod(this, '30dias')">30 dias</button>
-                <button class="period-tab" onclick="setPeriod(this, 'ano')">Ano</button>
+                <button class="period-tab" onclick="setPeriod(this, 1)" th:text="#{page.reports.filters.period.today}">Hoje</button>
+                <button class="period-tab active" onclick="setPeriod(this, 7)" th:text="#{page.reports.filters.period.7days}">7 dias</button>
+                <button class="period-tab" onclick="setPeriod(this, 30)" th:text="#{page.reports.filters.period.30days}">30 dias</button>
+                <button class="period-tab" onclick="setPeriod(this, 90)" th:text="#{page.reports.filters.period.90days}">90 dias</button>
             </div>
 
-            <button class="date-range-btn" onclick="openDatePicker()">
+            <button class="date-range-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M8 2v4"/>
                     <path d="M16 2v4"/>
                     <rect width="18" height="18" x="3" y="4" rx="2"/>
                     <path d="M3 10h18"/>
                 </svg>
-                <span id="dateRangeLabel">01/01 - 07/01/2025</span>
+                <span id="dateRangeLabel">---</span>
             </button>
 
             <span class="filters-divider"></span>
@@ -1265,13 +1266,13 @@
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                         </svg>
                     </div>
-                    <span class="stat-trend up">
+                    <span class="stat-trend" id="revenueTrend">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              12%
+              <span>0%</span>
             </span>
                 </div>
-                <div class="stat-value">R$ 32.450</div>
-                <div class="stat-label">Faturamento Total</div>
+                <div class="stat-value" id="totalRevenue">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.revenue}">Faturamento Total</div>
             </div>
 
             <div class="stat-card">
@@ -1282,13 +1283,13 @@
                             <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/>
                         </svg>
                     </div>
-                    <span class="stat-trend up">
+                    <span class="stat-trend" id="ordersTrend">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              8%
+              <span>0%</span>
             </span>
                 </div>
-                <div class="stat-value">486</div>
-                <div class="stat-label">Total de Pedidos</div>
+                <div class="stat-value" id="totalOrders">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.orders}">Total de Pedidos</div>
             </div>
 
             <div class="stat-card">
@@ -1301,13 +1302,9 @@
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                     </div>
-                    <span class="stat-trend up">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              5%
-            </span>
                 </div>
-                <div class="stat-value">1.842</div>
-                <div class="stat-label">Clientes Atendidos</div>
+                <div class="stat-value" id="totalCustomers">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.customers}">Clientes Atendidos</div>
             </div>
 
             <div class="stat-card">
@@ -1322,13 +1319,9 @@
                             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
                         </svg>
                     </div>
-                    <span class="stat-trend down">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-              2%
-            </span>
                 </div>
-                <div class="stat-value">R$ 66,77</div>
-                <div class="stat-label">Ticket Médio</div>
+                <div class="stat-value" id="avgTicket">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.avg_ticket}">Ticket Médio</div>
             </div>
 
             <div class="stat-card">
@@ -1339,8 +1332,8 @@
                         </svg>
                     </div>
                 </div>
-                <div class="stat-value">4.6</div>
-                <div class="stat-label">Avaliação Média</div>
+                <div class="stat-value" id="avgRating">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.avg_rating}">Avaliação Média</div>
             </div>
 
             <div class="stat-card">
@@ -1354,13 +1347,9 @@
                             <path d="M17 17h.01"/>
                         </svg>
                     </div>
-                    <span class="stat-trend up">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-              15%
-            </span>
                 </div>
-                <div class="stat-value">78%</div>
-                <div class="stat-label">Taxa de Ocupação</div>
+                <div class="stat-value" id="occupancyRate">---</div>
+                <div class="stat-label" th:text="#{page.reports.stats.occupancy}">Taxa de Ocupação</div>
             </div>
         </div>
 
@@ -1371,120 +1360,30 @@
                 <div class="chart-header">
                     <h3 class="chart-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                        Faturamento
+                        <span th:text="#{page.reports.charts.revenue_title}">Visão Geral de Vendas</span>
                     </h3>
                     <div class="chart-actions">
-                        <button class="chart-action active" onclick="setChartMode(this, 'receita')">Receita</button>
-                        <button class="chart-action" onclick="setChartMode(this, 'pedidos')">Pedidos</button>
-                        <button class="chart-action" onclick="setChartMode(this, 'clientes')">Clientes</button>
+                        <button class="chart-action active" onclick="setChartMode(this, 'receita')" th:text="#{page.reports.stats.revenue}">Receita</button>
+                        <button class="chart-action" onclick="setChartMode(this, 'pedidos')" th:text="#{page.reports.stats.orders}">Pedidos</button>
+                        <button class="chart-action" onclick="setChartMode(this, 'clientes')" th:text="#{page.reports.stats.customers}">Clientes</button>
                     </div>
                 </div>
                 <div class="chart-body">
-                    <div class="revenue-chart">
-                        <svg class="chart-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stop-color="color-mix(in srgb, var(--primary) 30%, transparent)"/>
-                                    <stop offset="100%" stop-color="color-mix(in srgb, var(--primary) 0%, transparent)"/>
-                                </linearGradient>
-                            </defs>
-
-                            <!-- Grid -->
-                            <g class="chart-grid">
-                                <line x1="0" y1="45" x2="600" y2="45"/>
-                                <line x1="0" y1="90" x2="600" y2="90"/>
-                                <line x1="0" y1="135" x2="600" y2="135"/>
-                            </g>
-
-                            <!-- Area -->
-                            <path class="chart-area" d="M0 150 L86 100 L172 120 L258 70 L344 85 L430 50 L516 35 L600 55 L600 180 L0 180 Z"/>
-
-                            <!-- Line - Current period -->
-                            <path class="chart-line" d="M0 150 L86 100 L172 120 L258 70 L344 85 L430 50 L516 35 L600 55"/>
-
-                            <!-- Line - Previous period -->
-                            <path class="chart-line-secondary" d="M0 160 L86 130 L172 145 L258 100 L344 115 L430 90 L516 75 L600 95"/>
-
-                            <!-- Dots -->
-                            <circle cx="86" cy="100" r="4" fill="var(--primary)"/>
-                            <circle cx="172" cy="120" r="4" fill="var(--primary)"/>
-                            <circle cx="258" cy="70" r="4" fill="var(--primary)"/>
-                            <circle cx="344" cy="85" r="4" fill="var(--primary)"/>
-                            <circle cx="430" cy="50" r="4" fill="var(--primary)"/>
-                            <circle cx="516" cy="35" r="4" fill="var(--primary)"/>
-                            <circle cx="600" cy="55" r="4" fill="var(--primary)"/>
-                        </svg>
-                    </div>
-                    <div class="chart-labels">
-                        <span>Seg</span>
-                        <span>Ter</span>
-                        <span>Qua</span>
-                        <span>Qui</span>
-                        <span>Sex</span>
-                        <span>Sáb</span>
-                        <span>Dom</span>
-                    </div>
-                    <div class="chart-legend">
-                        <div class="chart-legend-item">
-                            <div class="chart-legend-dot primary"></div>
-                            <span>Período atual</span>
-                        </div>
-                        <div class="chart-legend-item">
-                            <div class="chart-legend-dot purple"></div>
-                            <span>Período anterior</span>
-                        </div>
-                    </div>
+                    <div id="mainChart" style="min-height: 300px;"></div>
                 </div>
-            </div>
-
-            <!-- Category Pie Chart -->
+                   <!-- Category Pie Chart -->
             <div class="chart-card">
                 <div class="chart-header">
                     <h3 class="chart-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                        Vendas por Categoria
+                        <span th:text="#{page.reports.charts.category_title}">Vendas por Categoria</span>
                     </h3>
                 </div>
                 <div class="chart-body">
-                    <div class="donut-chart">
-                        <svg class="donut-svg" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#EA580C" stroke-width="15" stroke-dasharray="66 220" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#F97316" stroke-width="15" stroke-dasharray="44 220" stroke-dashoffset="-66" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#FB923C" stroke-width="15" stroke-dasharray="33 220" stroke-dashoffset="-110" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#FDBA74" stroke-width="15" stroke-dasharray="44 220" stroke-dashoffset="-143" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#FED7AA" stroke-width="15" stroke-dasharray="33 220" stroke-dashoffset="-187" transform="rotate(-90 50 50)"/>
-                        </svg>
-                        <div class="donut-legend">
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #EA580C;"></div>
-                                <span class="donut-legend-label">Pratos Principais</span>
-                                <span class="donut-legend-value">R$ 9.735</span>
-                                <span class="donut-legend-pct">30%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #F97316;"></div>
-                                <span class="donut-legend-label">Bebidas</span>
-                                <span class="donut-legend-value">R$ 6.490</span>
-                                <span class="donut-legend-pct">20%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #FB923C;"></div>
-                                <span class="donut-legend-label">Pizzas</span>
-                                <span class="donut-legend-value">R$ 4.868</span>
-                                <span class="donut-legend-pct">15%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #FDBA74;"></div>
-                                <span class="donut-legend-label">Sobremesas</span>
-                                <span class="donut-legend-value">R$ 6.490</span>
-                                <span class="donut-legend-pct">20%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #FED7AA;"></div>
-                                <span class="donut-legend-label">Entradas</span>
-                                <span class="donut-legend-value">R$ 4.868</span>
-                                <span class="donut-legend-pct">15%</span>
-                            </div>
+                    <div class="donut-chart" id="categoryChartContainer">
+                        <div id="categoryChart" style="min-width: 200px;"></div>
+                        <div class="donut-legend" id="categoryLegend">
+                            <!-- Dynamic -->
                         </div>
                     </div>
                 </div>
@@ -1498,96 +1397,21 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-                        Itens Mais Vendidos
+                        <span th:text="#{page.reports.charts.top_items_title}">Itens Mais Vendidos</span>
                     </h3>
-                    <a href="menu.html" class="view-all-link">Ver cardápio</a>
+                    <a th:href="@{/menu}" class="view-all-link" th:text="#{page.reports.button.view_menu}">Ver cardápio</a>
                 </div>
                 <table class="data-table">
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Item</th>
-                        <th>Qtd</th>
-                        <th>Receita</th>
+                        <th th:text="#{page.reports.table.column.item}">Item</th>
+                        <th th:text="#{page.reports.table.column.qty}">Qtd</th>
+                        <th th:text="#{page.reports.table.column.revenue}">Receita</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td><span class="item-rank gold">1</span></td>
-                        <td>
-                            <div class="item-cell">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div>
-                                    <div class="item-name">Lasanha Bolonhesa</div>
-                                    <div class="item-category">Pratos Principais</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="qty-badge">186</span></td>
-                        <td class="revenue-value">R$ 10.788</td>
-                    </tr>
-                    <tr>
-                        <td><span class="item-rank silver">2</span></td>
-                        <td>
-                            <div class="item-cell">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div>
-                                    <div class="item-name">Pizza Margherita</div>
-                                    <div class="item-category">Pizzas</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="qty-badge">142</span></td>
-                        <td class="revenue-value">R$ 6.958</td>
-                    </tr>
-                    <tr>
-                        <td><span class="item-rank bronze">3</span></td>
-                        <td>
-                            <div class="item-cell">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=80&h=80&fit=crop" alt="">
-                                </div>
-                                <div>
-                                    <div class="item-name">Tiramisù</div>
-                                    <div class="item-category">Sobremesas</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="qty-badge">98</span></td>
-                        <td class="revenue-value">R$ 2.744</td>
-                    </tr>
-                    <tr>
-                        <td><span class="item-rank default">4</span></td>
-                        <td>
-                            <div class="item-cell">
-                                <div class="item-image">🍷</div>
-                                <div>
-                                    <div class="item-name">Vinho Tinto</div>
-                                    <div class="item-category">Bebidas</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="qty-badge">76</span></td>
-                        <td class="revenue-value">R$ 4.560</td>
-                    </tr>
-                    <tr>
-                        <td><span class="item-rank default">5</span></td>
-                        <td>
-                            <div class="item-cell">
-                                <div class="item-image">🥗</div>
-                                <div>
-                                    <div class="item-name">Salada Caesar</div>
-                                    <div class="item-category">Entradas</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="qty-badge">64</span></td>
-                        <td class="revenue-value">R$ 1.920</td>
-                    </tr>
+                    <tbody id="topItemsBody">
+                        <!-- Dynamic -->
                     </tbody>
                 </table>
             </div>
@@ -1597,143 +1421,28 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Horários de Pico
+                        <span th:text="#{page.reports.charts.peak_hours_title}">Horários de Pico</span>
                     </h3>
                 </div>
-                <div class="hours-chart">
-                    <div class="hour-bar">
-                        <span class="hour-label">12:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 95%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 4.230</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">20:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 100%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 4.560</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">13:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 85%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 3.890</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">19:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 90%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 4.100</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">21:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 75%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 3.420</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">18:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 55%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 2.510</span>
-                    </div>
-                    <div class="hour-bar">
-                        <span class="hour-label">14:00</span>
-                        <div class="hour-track">
-                            <div class="hour-fill" style="width: 45%;"></div>
-                        </div>
-                        <span class="hour-value">R$ 2.050</span>
-                    </div>
+                <div class="hours-chart" id="peakHoursChart">
+                    <!-- Dynamic -->
                 </div>
             </div>
         </div>
 
         <!-- Tables Section Row 2 -->
         <div class="tables-section">
-            <!-- Staff Performance -->
+            <!-- Promotions Usage -->
             <div class="table-card">
                 <div class="table-header">
                     <h3 class="table-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        Desempenho da Equipe
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+                        <span th:text="#{page.reports.charts.promo_title}">Uso de Promoções</span>
                     </h3>
-                    <a href="staff.html" class="view-all-link">Ver equipe</a>
+                    <a th:href="@{/promotions}" class="view-all-link" th:text="#{page.reports.button.view_promotions}">Ver promoções</a>
                 </div>
-                <div>
-                    <div class="staff-row">
-                        <div class="staff-avatar" style="background: #EA580C;">CS</div>
-                        <div class="staff-info">
-                            <div class="staff-name">Carlos Silva</div>
-                            <div class="staff-role">Garçom</div>
-                        </div>
-                        <div class="staff-stats">
-                            <div>
-                                <div class="staff-stat-value">86</div>
-                                <div class="staff-stat-label">Pedidos</div>
-                            </div>
-                            <div>
-                                <div class="staff-stat-value" style="color: var(--green);">R$ 6.192</div>
-                                <div class="staff-stat-label">Vendas</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="staff-row">
-                        <div class="staff-avatar" style="background: #8b5cf6;">MO</div>
-                        <div class="staff-info">
-                            <div class="staff-name">Maria Oliveira</div>
-                            <div class="staff-role">Garçom</div>
-                        </div>
-                        <div class="staff-stats">
-                            <div>
-                                <div class="staff-stat-value">72</div>
-                                <div class="staff-stat-label">Pedidos</div>
-                            </div>
-                            <div>
-                                <div class="staff-stat-value" style="color: var(--green);">R$ 5.184</div>
-                                <div class="staff-stat-label">Vendas</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="staff-row">
-                        <div class="staff-avatar" style="background: #14b8a6;">PS</div>
-                        <div class="staff-info">
-                            <div class="staff-name">Pedro Santos</div>
-                            <div class="staff-role">Garçom</div>
-                        </div>
-                        <div class="staff-stats">
-                            <div>
-                                <div class="staff-stat-value">64</div>
-                                <div class="staff-stat-label">Pedidos</div>
-                            </div>
-                            <div>
-                                <div class="staff-stat-value" style="color: var(--green);">R$ 4.608</div>
-                                <div class="staff-stat-label">Vendas</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="staff-row">
-                        <div class="staff-avatar" style="background: #ec4899;">AL</div>
-                        <div class="staff-info">
-                            <div class="staff-name">Ana Lima</div>
-                            <div class="staff-role">Garçom</div>
-                        </div>
-                        <div class="staff-stats">
-                            <div>
-                                <div class="staff-stat-value">58</div>
-                                <div class="staff-stat-label">Pedidos</div>
-                            </div>
-                            <div>
-                                <div class="staff-stat-value" style="color: var(--green);">R$ 4.176</div>
-                                <div class="staff-stat-label">Vendas</div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="promoUsageBody">
+                    <!-- Dynamic -->
                 </div>
             </div>
 
@@ -1742,57 +1451,15 @@
                 <div class="table-header">
                     <h3 class="table-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                        Formas de Pagamento
+                        <span th:text="#{page.reports.charts.payments_title}">Formas de Pagamento</span>
                     </h3>
                 </div>
                 <div class="chart-body">
-                    <div class="payment-bar">
-                        <div class="payment-segment" style="width: 40%; background: #3b82f6;"></div>
-                        <div class="payment-segment" style="width: 30%; background: #22c55e;"></div>
-                        <div class="payment-segment" style="width: 20%; background: #f59e0b;"></div>
-                        <div class="payment-segment" style="width: 10%; background: #8b5cf6;"></div>
+                    <div class="payment-bar" id="paymentBar">
+                        <!-- Dynamic -->
                     </div>
-                    <div class="payment-list">
-                        <div class="payment-item">
-                            <div class="payment-icon" style="background: rgba(59, 130, 246, 0.1);">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            </div>
-                            <div class="payment-details">
-                                <div class="payment-name">Cartão de Crédito</div>
-                                <div class="payment-pct">40% • 194 transações</div>
-                            </div>
-                            <div class="payment-value">R$ 12.980</div>
-                        </div>
-                        <div class="payment-item">
-                            <div class="payment-icon" style="background: rgba(34, 197, 94, 0.1);">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                            </div>
-                            <div class="payment-details">
-                                <div class="payment-name">PIX</div>
-                                <div class="payment-pct">30% • 146 transações</div>
-                            </div>
-                            <div class="payment-value">R$ 9.735</div>
-                        </div>
-                        <div class="payment-item">
-                            <div class="payment-icon" style="background: rgba(245, 158, 11, 0.1);">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            </div>
-                            <div class="payment-details">
-                                <div class="payment-name">Cartão de Débito</div>
-                                <div class="payment-pct">20% • 97 transações</div>
-                            </div>
-                            <div class="payment-value">R$ 6.490</div>
-                        </div>
-                        <div class="payment-item">
-                            <div class="payment-icon" style="background: rgba(139, 92, 246, 0.1);">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            </div>
-                            <div class="payment-details">
-                                <div class="payment-name">Dinheiro</div>
-                                <div class="payment-pct">10% • 49 transações</div>
-                            </div>
-                            <div class="payment-value">R$ 3.245</div>
-                        </div>
+                    <div class="payment-list" id="paymentList">
+                        <!-- Dynamic -->
                     </div>
                 </div>
             </div>
@@ -1800,236 +1467,64 @@
 
         <!-- Tables Section Row 3 -->
         <div class="tables-section">
-            <!-- Promotions Usage -->
-            <div class="table-card">
-                <div class="table-header">
-                    <h3 class="table-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
-                        Uso de Promoções
-                    </h3>
-                    <a href="promotions.html" class="view-all-link">Ver promoções</a>
-                </div>
-                <div>
-                    <div class="promo-row">
-                        <span class="promo-badge">-20%</span>
-                        <div class="promo-info">
-                            <div class="promo-name">Happy Hour</div>
-                            <div class="promo-desc">Bebidas • 17h às 19h</div>
-                        </div>
-                        <div class="promo-stats">
-                            <div>
-                                <div class="promo-stat-value">156</div>
-                                <div class="promo-stat-label">Usos</div>
-                            </div>
-                            <div>
-                                <div class="promo-stat-value" style="color: var(--green);">R$ 2.340</div>
-                                <div class="promo-stat-label">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="promo-row">
-                        <span class="promo-badge">-15%</span>
-                        <div class="promo-info">
-                            <div class="promo-name">Combo Família</div>
-                            <div class="promo-desc">Pratos + Sobremesa</div>
-                        </div>
-                        <div class="promo-stats">
-                            <div>
-                                <div class="promo-stat-value">89</div>
-                                <div class="promo-stat-label">Usos</div>
-                            </div>
-                            <div>
-                                <div class="promo-stat-value" style="color: var(--green);">R$ 1.780</div>
-                                <div class="promo-stat-label">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="promo-row">
-                        <span class="promo-badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">R$10</span>
-                        <div class="promo-info">
-                            <div class="promo-name">Cupom: BEMVINDO10</div>
-                            <div class="promo-desc">Primeira compra</div>
-                        </div>
-                        <div class="promo-stats">
-                            <div>
-                                <div class="promo-stat-value">42</div>
-                                <div class="promo-stat-label">Usos</div>
-                            </div>
-                            <div>
-                                <div class="promo-stat-value" style="color: var(--green);">R$ 420</div>
-                                <div class="promo-stat-label">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="promo-row">
-                        <span class="promo-badge">-10%</span>
-                        <div class="promo-info">
-                            <div class="promo-name">Aniversariante</div>
-                            <div class="promo-desc">Todo o pedido</div>
-                        </div>
-                        <div class="promo-stats">
-                            <div>
-                                <div class="promo-stat-value">28</div>
-                                <div class="promo-stat-label">Usos</div>
-                            </div>
-                            <div>
-                                <div class="promo-stat-value" style="color: var(--green);">R$ 560</div>
-                                <div class="promo-stat-label">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Customer Ratings -->
             <div class="table-card">
                 <div class="table-header">
                     <h3 class="table-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        Avaliações dos Clientes
+                        <span th:text="#{page.reports.charts.ratings_title}">Avaliações dos Clientes</span>
                     </h3>
                 </div>
                 <div class="chart-body">
                     <div class="rating-overview">
                         <div class="rating-big">
-                            <div class="rating-big-value">4.6</div>
-                            <div class="rating-stars">
-                                <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                <svg class="empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <div class="rating-big-value" id="bigRatingValue">0.0</div>
+                            <div class="rating-stars" id="bigRatingStars">
+                                <!-- Dynamic -->
                             </div>
-                            <div class="rating-total">248 avaliações</div>
+                            <div class="rating-total" id="totalReviewsCount">0 avaliações</div>
                         </div>
-                        <div class="rating-breakdown">
-                            <div class="rating-bar-row">
-                                <span class="rating-bar-label">5</span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill" style="width: 65%;"></div>
-                                </div>
-                                <span class="rating-bar-count">161</span>
-                            </div>
-                            <div class="rating-bar-row">
-                                <span class="rating-bar-label">4</span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill" style="width: 20%;"></div>
-                                </div>
-                                <span class="rating-bar-count">50</span>
-                            </div>
-                            <div class="rating-bar-row">
-                                <span class="rating-bar-label">3</span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill" style="width: 8%;"></div>
-                                </div>
-                                <span class="rating-bar-count">20</span>
-                            </div>
-                            <div class="rating-bar-row">
-                                <span class="rating-bar-label">2</span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill" style="width: 4%;"></div>
-                                </div>
-                                <span class="rating-bar-count">10</span>
-                            </div>
-                            <div class="rating-bar-row">
-                                <span class="rating-bar-label">1</span>
-                                <div class="rating-bar-track">
-                                    <div class="rating-bar-fill" style="width: 3%;"></div>
-                                </div>
-                                <span class="rating-bar-count">7</span>
-                            </div>
+                        <div class="rating-breakdown" id="ratingBreakdown">
+                            <!-- Dynamic -->
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tables Section Row 4 -->
-        <div class="tables-section">
             <!-- Table Occupancy -->
             <div class="table-card">
                 <div class="table-header">
                     <h3 class="table-title">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/></svg>
-                        Ocupação de Mesas
+                        <span th:text="#{page.reports.charts.occupancy_title}">Ocupação de Mesas</span>
                     </h3>
-                    <a href="waiterv2.html" class="view-all-link">Ver mesas</a>
+                    <a th:href="@{/tables}" class="view-all-link" th:text="#{page.reports.button.view_tables}">Ver mesas</a>
                 </div>
                 <div class="chart-body">
-                    <div class="occupancy-grid">
-                        <div class="occupancy-cell high">1</div>
-                        <div class="occupancy-cell high">2</div>
-                        <div class="occupancy-cell medium">3</div>
-                        <div class="occupancy-cell high">4</div>
-                        <div class="occupancy-cell low">5</div>
-                        <div class="occupancy-cell medium">6</div>
-                        <div class="occupancy-cell high">7</div>
-                        <div class="occupancy-cell high">8</div>
-                        <div class="occupancy-cell medium">9</div>
-                        <div class="occupancy-cell high">10</div>
-                        <div class="occupancy-cell low">11</div>
-                        <div class="occupancy-cell medium">12</div>
+                    <div class="occupancy-grid" id="occupancyGrid">
+                        <!-- Dynamic -->
                     </div>
                     <div style="display: flex; gap: 1rem; font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem;">
-                        <span style="display: flex; align-items: center; gap: 0.375rem;"><span style="width: 10px; height: 10px; background: var(--green-light); border: 1px solid var(--green); border-radius: 3px;"></span> Alta ocupação</span>
+                        <span style="display: flex; align-items: center; gap: 0.375rem;"><span style="width: 10px; height: 10px; background: var(--green-light); border: 1px solid var(--green); border-radius: 3px;"></span> Alta</span>
                         <span style="display: flex; align-items: center; gap: 0.375rem;"><span style="width: 10px; height: 10px; background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; border-radius: 3px;"></span> Média</span>
                         <span style="display: flex; align-items: center; gap: 0.375rem;"><span style="width: 10px; height: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 3px;"></span> Baixa</span>
                     </div>
                     <div class="occupancy-summary">
                         <div class="occupancy-stat">
-                            <div class="occupancy-stat-value" style="color: var(--green);">78%</div>
-                            <div class="occupancy-stat-label">Taxa média</div>
+                            <div class="occupancy-stat-value" style="color: var(--green);" id="avgOccupancyValue">0%</div>
+                            <div class="occupancy-stat-label" th:text="#{page.reports.stats.occupancy.avg_rate}">Taxa média</div>
                         </div>
                         <div class="occupancy-stat">
-                            <div class="occupancy-stat-value">42 min</div>
-                            <div class="occupancy-stat-label">Tempo médio</div>
+                            <div class="occupancy-stat-value" id="avgDurationValue">0 min</div>
+                            <div class="occupancy-stat-label" th:text="#{page.reports.stats.occupancy.avg_duration}">Tempo médio</div>
                         </div>
                         <div class="occupancy-stat">
-                            <div class="occupancy-stat-value">3.2x</div>
-                            <div class="occupancy-stat-label">Rotatividade</div>
+                            <div class="occupancy-stat-value" id="peakTablesValue">0</div>
+                            <div class="occupancy-stat-label" th:text="#{page.reports.stats.occupancy.peak_tables}">Pico mesas</div>
                         </div>
                         <div class="occupancy-stat">
-                            <div class="occupancy-stat-value">Mesa 4</div>
-                            <div class="occupancy-stat-label">Mais lucrativa</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order Types -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3 class="chart-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"/></svg>
-                        Pedidos por Tipo
-                    </h3>
-                </div>
-                <div class="chart-body">
-                    <div class="donut-chart">
-                        <svg class="donut-svg" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#EA580C" stroke-width="15" stroke-dasharray="121 220" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#22c55e" stroke-width="15" stroke-dasharray="66 220" stroke-dashoffset="-121" transform="rotate(-90 50 50)"/>
-                            <circle cx="50" cy="50" r="35" fill="none" stroke="#3b82f6" stroke-width="15" stroke-dasharray="33 220" stroke-dashoffset="-187" transform="rotate(-90 50 50)"/>
-                        </svg>
-                        <div class="donut-legend">
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #EA580C;"></div>
-                                <span class="donut-legend-label">No Local</span>
-                                <span class="donut-legend-value">267</span>
-                                <span class="donut-legend-pct">55%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #22c55e;"></div>
-                                <span class="donut-legend-label">Delivery</span>
-                                <span class="donut-legend-value">146</span>
-                                <span class="donut-legend-pct">30%</span>
-                            </div>
-                            <div class="donut-legend-item">
-                                <div class="donut-legend-color" style="background: #3b82f6;"></div>
-                                <span class="donut-legend-label">Retirada</span>
-                                <span class="donut-legend-value">73</span>
-                                <span class="donut-legend-pct">15%</span>
-                            </div>
+                            <div class="occupancy-stat-value" id="totalTablesCount">0</div>
+                            <div class="occupancy-stat-label" th:text="#{page.reports.stats.occupancy.total_tables}">Total mesas</div>
                         </div>
                     </div>
                 </div>
@@ -2038,84 +1533,453 @@
     </div>
 </main>
 
-<script>
-    // Sidebar
-    function openSidebar() {
+<script type="module" th:inline="javascript">
+    import { reportsApi } from [[@{/js/api/v1/manager/api-reports-bridge.js(v=${appVersion})}]];
+
+    const currencySymbol = [[${currencySymbol}]];
+    let currentData = null;
+    let currentChartMode = 'receita';
+
+    window.setPeriod = async (tab, days) => {
+        document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        updateDateDisplay(days);
+        await loadDashboard(days);
+    };
+
+    function updateDateDisplay(days) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - (days - 1));
+        
+        const format = (d) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        const label = document.getElementById('dateRangeLabel');
+        if (label) {
+            label.textContent = `${format(start)} - ${format(end)}`;
+        }
+    }
+
+    window.setChartMode = (btn, mode) => {
+        document.querySelectorAll('.chart-action').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentChartMode = mode;
+        if (currentData) renderMainChart(currentData);
+    };
+
+    async function loadDashboard(days = 7) {
+        try {
+            const data = await reportsApi.getReportsOverview(days);
+            currentData = data;
+            renderDashboard(data);
+        } catch (error) {
+            console.error('Error loading reports:', error);
+        }
+    }
+
+    function renderDashboard(data) {
+        // Stats
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.stats.totalRevenue);
+        document.getElementById('totalOrders').textContent = data.stats.totalOrders;
+        document.getElementById('totalCustomers').textContent = data.stats.totalCustomers;
+        document.getElementById('avgTicket').textContent = formatCurrency(data.stats.avgTicket);
+        document.getElementById('avgRating').textContent = data.customerRatings.averageRating.toFixed(1);
+        
+        const occRate = data.tableOccupancy.totalTablesAvailable > 0 ? (data.tableOccupancy.peakSimultaneousTables / data.tableOccupancy.totalTablesAvailable * 100).toFixed(0) : 0;
+        document.getElementById('occupancyRate').textContent = occRate + '%';
+
+        updateTrend('revenueTrend', data.stats.revenueTrend);
+        updateTrend('ordersTrend', data.stats.ordersTrend);
+
+        // Charts
+        renderMainChart(data);
+        renderCategoryChart(data.categorySales);
+        renderTopItems(data.topItems);
+        renderPeakHours(data.peakHours);
+        renderPaymentMethods(data.paymentMethods);
+        renderPromoUsage(data.promoUsage);
+        renderRatings(data.customerRatings);
+        renderOccupancy(data.tableOccupancy);
+    }
+
+    function formatCurrency(value) {
+        return currencySymbol + ' ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+
+    function updateTrend(id, value) {
+        const el = document.getElementById(id);
+        const span = el.querySelector('span');
+        const svg = el.querySelector('svg');
+        
+        el.className = 'stat-trend ' + (value >= 0 ? 'up' : 'down');
+        span.textContent = Math.abs(value).toFixed(1) + '%';
+        svg.style.transform = value >= 0 ? '' : 'rotate(180deg)';
+    }
+
+    let mainChart = null;
+    let categoryChart = null;
+
+    function getThemeColors() {
+        const style = getComputedStyle(document.documentElement);
+        return {
+            primary: style.getPropertyValue('--primary').trim() || '#c9a050',
+            secondary: '#8b5cf6',
+            background: style.getPropertyValue('--card').trim() || '#ffffff',
+            text: style.getPropertyValue('--foreground').trim() || '#1a1714',
+            muted: style.getPropertyValue('--muted').trim() || '#6b635a',
+            border: style.getPropertyValue('--border').trim() || '#e8e4de'
+        };
+    }
+
+    function initCharts() {
+        const colors = getThemeColors();
+        
+        // Main Chart
+        const mainOptions = {
+            series: [],
+            chart: {
+                type: 'area',
+                height: 300,
+                toolbar: { show: false },
+                zoom: { enabled: false },
+                fontFamily: 'inherit'
+            },
+            colors: [colors.primary, colors.secondary],
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 3 },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [20, 100]
+                }
+            },
+            xaxis: {
+                type: 'category',
+                categories: [],
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: { 
+                    show: true,
+                    rotate: -45,
+                    rotateAlways: false,
+                    hideOverlappingLabels: true,
+                    style: { colors: colors.muted, fontSize: '12px' } 
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: { colors: colors.muted, fontSize: '12px' },
+                    formatter: (val) => currentChartMode === 'receita' ? formatCurrency(val) : val
+                }
+            },
+            grid: {
+                borderColor: colors.border,
+                strokeDashArray: 4,
+                padding: { left: 0, right: 0 }
+            },
+            tooltip: {
+                theme: 'light',
+                x: { show: true },
+                y: { formatter: (val) => currentChartMode === 'receita' ? formatCurrency(val) : val }
+            },
+            legend: { show: false }
+        };
+
+        mainChart = new ApexCharts(document.querySelector("#mainChart"), mainOptions);
+        mainChart.render();
+
+        // Category Chart
+        const categoryOptions = {
+            series: [],
+            chart: {
+                type: 'donut',
+                height: 250,
+                fontFamily: 'inherit'
+            },
+            colors: ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'],
+            labels: [],
+            dataLabels: { enabled: false },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '75%',
+                        labels: {
+                            show: true,
+                            name: { show: true, fontSize: '12px', color: colors.muted },
+                            value: {
+                                show: true,
+                                fontSize: '20px',
+                                fontWeight: 700,
+                                color: colors.text,
+                                formatter: (val) => val
+                            },
+                            total: {
+                                show: true,
+                                label: /*[[#{page.reports.charts.total_label}]]*/ 'Total',
+                                color: colors.muted,
+                                formatter: (w) => {
+                                    const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    return currentChartMode === 'receita' ? formatCurrency(sum) : sum;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            legend: { show: false },
+            tooltip: {
+                y: { formatter: (val) => formatCurrency(val) }
+            }
+        };
+
+        categoryChart = new ApexCharts(document.querySelector("#categoryChart"), categoryOptions);
+        categoryChart.render();
+    }
+
+    function renderMainChart(data) {
+        if (!mainChart) return;
+
+        let currentPoints = data.revenueChart;
+        let previousPoints = data.revenueChartPrevious;
+        
+        if (currentChartMode === 'pedidos') {
+            currentPoints = data.ordersChart;
+            previousPoints = data.ordersChartPrevious;
+        } else if (currentChartMode === 'clientes') {
+            currentPoints = data.customersChart;
+            previousPoints = data.customersChartPrevious;
+        }
+
+        if (!currentPoints || currentPoints.length === 0) return;
+
+        const categories = currentPoints.map(p => p.label);
+        const currentSeries = currentPoints.map(p => p.value);
+        const previousSeries = previousPoints ? previousPoints.map(p => p.value) : [];
+
+        mainChart.updateOptions({
+            xaxis: { 
+                categories: categories,
+                type: 'category'
+            },
+            yaxis: {
+                labels: {
+                    formatter: (val) => currentChartMode === 'receita' ? formatCurrency(val) : val
+                }
+            },
+            tooltip: {
+                y: { formatter: (val) => currentChartMode === 'receita' ? formatCurrency(val) : val }
+            }
+        }, false, true);
+
+        const series = [
+            {
+                name: /*[[#{page.reports.charts.current_period}]]*/ 'Período Atual',
+                data: currentSeries
+            }
+        ];
+
+        if (previousSeries.length > 0) {
+            series.push({
+                name: /*[[#{page.reports.charts.previous_period}]]*/ 'Período Anterior',
+                data: previousSeries
+            });
+        }
+
+        mainChart.updateSeries(series, true);
+    }
+
+    function renderCategoryChart(categories) {
+        if (!categoryChart) return;
+        
+        const legend = document.getElementById('categoryLegend');
+        legend.innerHTML = '';
+
+        const series = categories.map(c => c.totalAmount);
+        const labels = categories.map(c => c.categoryName);
+
+        categoryChart.updateOptions({ labels: labels });
+        categoryChart.updateSeries(series);
+
+        categories.forEach((cat, i) => {
+            const colors = categoryChart.w.config.colors;
+            const item = document.createElement('div');
+            item.className = 'donut-legend-item';
+            item.innerHTML = `
+                <div class="donut-legend-color" style="background: ${colors[i % colors.length]};"></div>
+                <span class="donut-legend-label">${cat.categoryName}</span>
+                <span class="donut-legend-value">${formatCurrency(cat.totalAmount)}</span>
+                <span class="donut-legend-pct">${cat.percentage.toFixed(0)}%</span>
+            `;
+            legend.appendChild(item);
+        });
+    }
+
+    function renderTopItems(items) {
+        const body = document.getElementById('topItemsBody');
+        body.innerHTML = items.map((item, i) => `
+            <tr>
+                <td><span class="item-rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'default'}">${i + 1}</span></td>
+                <td>
+                    <div class="item-cell">
+                        <div class="item-image">
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">` : '<div class="item-placeholder">🍽️</div>'}
+                        </div>
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-category">${item.categoryName || ''}</div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="qty-badge">${item.quantity}</span></td>
+                <td class="revenue-value">${formatCurrency(item.totalRevenue)}</td>
+            </tr>
+        `).join('');
+    }
+
+    function renderPeakHours(hours) {
+        const container = document.getElementById('peakHoursChart');
+        const max = Math.max(...hours.map(h => h.orderCount), 1);
+        
+        container.innerHTML = hours.filter(h => h.orderCount > 0).map(h => `
+            <div class="hour-bar">
+                <span class="hour-label">${h.hour}:00</span>
+                <div class="hour-track">
+                    <div class="hour-fill" style="width: ${(h.orderCount / max * 100)}%;"></div>
+                </div>
+                <span class="hour-value">${h.orderCount} pedidos</span>
+            </div>
+        `).join('');
+    }
+
+    function renderPaymentMethods(methods) {
+        const bar = document.getElementById('paymentBar');
+        const list = document.getElementById('paymentList');
+        
+        const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6'];
+        bar.innerHTML = methods.map((m, i) => `
+            <div class="payment-segment" style="width: ${m.percentage}%; background: ${colors[i % colors.length]};"></div>
+        `).join('');
+
+        list.innerHTML = methods.map((m, i) => `
+            <div class="payment-item">
+                <div class="payment-icon" style="background: ${colors[i % colors.length]}1a;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${colors[i % colors.length]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-name">${m.method}</div>
+                    <div class="payment-pct">${m.percentage.toFixed(0)}% • ${m.count} transações</div>
+                </div>
+                <div class="payment-value">${formatCurrency(m.totalAmount)}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderPromoUsage(promos) {
+        const body = document.getElementById('promoUsageBody');
+        if (!promos || promos.length === 0) {
+            body.innerHTML = '<div class="empty-state">Nenhum uso de promoção no período.</div>';
+            return;
+        }
+        body.innerHTML = promos.map(p => `
+            <div class="promo-row">
+                <span class="promo-badge">PROMO</span>
+                <div class="promo-info">
+                    <div class="promo-name">${p.name}</div>
+                </div>
+                <div class="promo-stats">
+                    <div>
+                        <div class="promo-stat-value">${p.usageCount}</div>
+                        <div class="promo-stat-label">Usos</div>
+                    </div>
+                    <div>
+                        <div class="promo-stat-value" style="color: var(--green);">${formatCurrency(p.totalDiscount)}</div>
+                        <div class="promo-stat-label">Economia</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderRatings(ratings) {
+        document.getElementById('bigRatingValue').textContent = ratings.averageRating.toFixed(1);
+        document.getElementById('totalReviewsCount').textContent = ratings.totalReviews + ' avaliações';
+        
+        const stars = document.getElementById('bigRatingStars');
+        stars.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            const isFilled = i <= Math.round(ratings.averageRating);
+            stars.innerHTML += `<svg class="${isFilled ? 'filled' : 'empty'}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" ${!isFilled ? 'fill="none" stroke="currentColor" stroke-width="2"' : ''}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+        }
+
+        const breakdown = document.getElementById('ratingBreakdown');
+        breakdown.innerHTML = '';
+        for (let i = 5; i >= 1; i--) {
+            const count = ratings.distribution['r' + i] || 0;
+            const pct = ratings.totalReviews > 0 ? (count / ratings.totalReviews * 100) : 0;
+            breakdown.innerHTML += `
+                <div class="rating-bar-row">
+                    <span class="rating-bar-label">${i}</span>
+                    <div class="rating-bar-track">
+                        <div class="rating-bar-fill" style="width: ${pct}%;"></div>
+                    </div>
+                    <span class="rating-bar-count">${count}</span>
+                </div>
+            `;
+        }
+    }
+
+    function renderOccupancy(occ) {
+        document.getElementById('avgOccupancyValue').textContent = occ.totalTablesAvailable > 0 ? (occ.peakSimultaneousTables / occ.totalTablesAvailable * 100).toFixed(0) + '%' : '0%';
+        document.getElementById('avgDurationValue').textContent = occ.averageDurationMinutes + ' min';
+        document.getElementById('peakTablesValue').textContent = occ.peakSimultaneousTables;
+        document.getElementById('totalTablesCount').textContent = occ.totalTablesAvailable;
+
+        const grid = document.getElementById('occupancyGrid');
+        grid.innerHTML = '';
+        for (let i = 1; i <= occ.totalTablesAvailable; i++) {
+            const level = i <= occ.peakSimultaneousTables ? 'high' : 'low';
+            grid.innerHTML += `<div class="occupancy-cell ${level}">${i}</div>`;
+        }
+    }
+
+
+    // Sidebar & UI Functions
+    window.openSidebar = () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
-    }
+    };
 
-    function closeSidebar() {
+    window.closeSidebar = () => {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('sidebarOverlay').classList.remove('active');
         document.body.style.overflow = '';
-    }
+    };
 
-    // User Menu
-    function toggleUserMenu() {
-        const container = document.getElementById('userMenuContainer');
-        container.classList.toggle('open');
-    }
-
-    // Close user menu when clicking outside
-    document.addEventListener('click', function(e) {
+    window.toggleUserMenu = () => document.getElementById('userMenuContainer').classList.toggle('open');
+    
+    document.addEventListener('click', (e) => {
         const container = document.getElementById('userMenuContainer');
         if (container && !container.contains(e.target)) {
             container.classList.remove('open');
         }
-    });
-
-    // Period tabs
-    function setPeriod(tab, period) {
-        document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        // Here you would fetch data for the selected period
-        console.log('Selected period:', period);
-    }
-
-    // Chart mode toggle
-    function setChartMode(btn, mode) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.chart-action').forEach(a => a.classList.remove('active'));
-        btn.classList.add('active');
-        // Here you would update the chart data
-        console.log('Chart mode:', mode);
-    }
-
-    // Date picker
-    function openDatePicker() {
-        // In a real implementation, this would open a date picker modal
-        const start = prompt('Data inicial (DD/MM/AAAA):', '01/01/2025');
-        const end = prompt('Data final (DD/MM/AAAA):', '07/01/2025');
-        if (start && end) {
-            document.getElementById('dateRangeLabel').textContent = `${start} - ${end}`;
-        }
-    }
-
-    // Export dropdown
-    function toggleExportMenu() {
-        document.getElementById('exportDropdown').classList.toggle('open');
-    }
-
-    // Close export menu when clicking outside
-    document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('exportDropdown');
         if (dropdown && !dropdown.contains(e.target)) {
             dropdown.classList.remove('open');
         }
     });
 
-    // Export functions
-    function exportReport(format) {
-        const formatNames = {
-            pdf: 'PDF',
-            excel: 'Excel',
-            csv: 'CSV'
-        };
-        alert(`Exportando relatório em formato ${formatNames[format]}...`);
-        document.getElementById('exportDropdown').classList.remove('open');
-    }
+    window.toggleExportMenu = () => document.getElementById('exportDropdown').classList.toggle('open');
+    window.exportReport = (format) => alert(`Exportando relatório em formato ${format.toUpperCase()}...`);
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        updateDateDisplay(7);
+        loadDashboard(7);
+    });
 </script>
 </body>
 </html>

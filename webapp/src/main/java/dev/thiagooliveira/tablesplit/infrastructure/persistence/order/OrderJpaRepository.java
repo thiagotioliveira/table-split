@@ -24,6 +24,12 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
   List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtAfter(
       UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold);
 
+  List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtBetween(
+      UUID restaurantId,
+      OrderStatus status,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end);
+
   @Query(
       "select o from OrderEntity o where o.tableId = :tableId "
           + "and (:status is null or o.status = :status) "
