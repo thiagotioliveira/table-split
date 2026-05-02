@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.domain.restaurant;
 
 public enum ThemeName {
-  DEFAULT("Default Theme"),
+  GOLDEN_HERITAGE("Golden Heritage"),
   DARK_ELEGANCE("Dark Elegance"),
   OCEAN("Ocean"),
   NATURE("Nature"),

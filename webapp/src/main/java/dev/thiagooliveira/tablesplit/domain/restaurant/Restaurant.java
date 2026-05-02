@@ -28,7 +28,7 @@ public class Restaurant extends AggregateRoot {
   private List<BusinessHours> days;
   private String hashPrimaryColor;
   private String hashAccentColor;
-  private ThemeName themeName = ThemeName.DEFAULT;
+  private ThemeName themeName = ThemeName.GOLDEN_HERITAGE;
   private String hashBackgroundColor;
   private String hashCardColor;
   private String hashTextColor;
@@ -93,7 +93,7 @@ public class Restaurant extends AggregateRoot {
     this.days = days;
     this.hashPrimaryColor = hashPrimaryColor;
     this.hashAccentColor = hashAccentColor;
-    this.themeName = themeName != null ? themeName : ThemeName.DEFAULT;
+    this.themeName = themeName != null ? themeName : ThemeName.GOLDEN_HERITAGE;
     this.hashBackgroundColor = hashBackgroundColor;
     this.hashCardColor = hashCardColor;
     this.hashTextColor = hashTextColor;

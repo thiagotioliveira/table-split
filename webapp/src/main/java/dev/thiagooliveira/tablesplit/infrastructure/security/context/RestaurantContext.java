@@ -15,7 +15,7 @@ public class RestaurantContext {
   private int serviceFee;
   private List<Language> customerLanguages;
   private Language defaultLanguage;
-  private ThemeConfig theme;
+  private ThemeContext theme;
 
   public RestaurantContext(Restaurant restaurant) {
     this.id = restaurant.getId();
@@ -25,7 +25,7 @@ public class RestaurantContext {
     this.serviceFee = restaurant.getServiceFee();
     this.customerLanguages = restaurant.getCustomerLanguages();
     this.defaultLanguage = restaurant.getDefaultLanguage();
-    this.theme = ThemeConfig.resolve(restaurant);
+    this.theme = ThemeContext.from(ThemeConfig.resolve(restaurant));
   }
 
   public UUID getId() {
@@ -80,11 +80,11 @@ public class RestaurantContext {
     this.defaultLanguage = defaultLanguage;
   }
 
-  public ThemeConfig getTheme() {
+  public ThemeContext getTheme() {
     return theme;
   }
 
-  public void setTheme(ThemeConfig theme) {
+  public void setTheme(ThemeContext theme) {
     this.theme = theme;
   }
 }

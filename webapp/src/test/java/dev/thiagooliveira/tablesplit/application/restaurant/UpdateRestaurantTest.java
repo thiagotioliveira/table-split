@@ -148,7 +148,7 @@ class UpdateRestaurantTest {
         new ArrayList<>(),
         "#FFFFFF",
         "#000000",
-        ThemeName.DEFAULT,
+        ThemeName.GOLDEN_HERITAGE,
         "#000000",
         "#000000",
         "#000000");

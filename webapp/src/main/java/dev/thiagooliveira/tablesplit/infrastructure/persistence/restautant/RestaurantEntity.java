@@ -75,7 +75,7 @@ public class RestaurantEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "theme_name", nullable = false)
   private dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName themeName =
-      dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName.DEFAULT;
+      dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName.GOLDEN_HERITAGE;
 
   @Column(name = "hash_background_color")
   private String hashBackgroundColor;

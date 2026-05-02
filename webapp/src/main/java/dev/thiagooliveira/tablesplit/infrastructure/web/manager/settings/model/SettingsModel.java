@@ -63,7 +63,7 @@ public class SettingsModel {
   @Size(min = 7, max = 7)
   private String hashAccentColor;
 
-  private String themeName = "DEFAULT";
+  private String themeName = "GOLDEN_HERITAGE";
   private String hashBackgroundColor;
   private String hashCardColor;
   private String hashTextColor;
@@ -99,7 +99,7 @@ public class SettingsModel {
     this.hashPrimaryColor = restaurant.getHashPrimaryColor();
     this.hashAccentColor = restaurant.getHashAccentColor();
     this.themeName =
-        restaurant.getThemeName() != null ? restaurant.getThemeName().name() : "DEFAULT";
+        restaurant.getThemeName() != null ? restaurant.getThemeName().name() : "GOLDEN_HERITAGE";
     this.hashBackgroundColor = restaurant.getHashBackgroundColor();
     this.hashCardColor = restaurant.getHashCardColor();
     this.hashTextColor = restaurant.getHashTextColor();

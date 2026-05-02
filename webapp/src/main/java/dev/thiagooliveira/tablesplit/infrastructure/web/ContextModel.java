@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
-import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.ThemeContext;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.core.Authentication;
@@ -116,14 +116,14 @@ public class ContextModel {
     private final String name;
     private final Currency currency;
     private final List<Language> customerLanguages;
-    private final ThemeConfig theme;
+    private final ThemeContext theme;
 
     public RestaurantContextModel(
         UUID id,
         String name,
         Currency currency,
         List<Language> customerLanguages,
-        ThemeConfig theme) {
+        ThemeContext theme) {
       this.id = id;
       this.name = name;
       this.currency = currency;
@@ -147,7 +147,7 @@ public class ContextModel {
       return customerLanguages;
     }
 
-    public ThemeConfig getTheme() {
+    public ThemeContext getTheme() {
       return theme;
     }
   }

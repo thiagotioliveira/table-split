@@ -1704,6 +1704,7 @@
             
             --font-display: '[(${profile.theme.fontDisplay()})]', sans-serif;
             --font-body: '[(${profile.theme.fontBody()})]', sans-serif;
+            color-scheme: [(${profile.theme.dark() ? 'dark' : 'light'})];
         }
 
         body { font-family: var(--font-body); }

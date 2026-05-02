@@ -129,6 +129,8 @@ public class SettingsController {
     context.getRestaurant().setDefaultLanguage(restaurant.getDefaultLanguage());
     context
         .getRestaurant()
-        .setTheme(dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig.resolve(restaurant));
+        .setTheme(
+            dev.thiagooliveira.tablesplit.infrastructure.security.context.ThemeContext.from(
+                dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig.resolve(restaurant)));
   }
 }

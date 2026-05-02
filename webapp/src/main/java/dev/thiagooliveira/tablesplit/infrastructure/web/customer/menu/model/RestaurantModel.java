@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
+import dev.thiagooliveira.tablesplit.infrastructure.security.context.ThemeContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.RestaurantImageModel;
 import java.util.List;
@@ -23,7 +24,7 @@ public class RestaurantModel {
   private final boolean open;
   private final java.util.Optional<java.time.ZonedDateTime> nextOpeningOrClosingHours;
   private final org.springframework.context.MessageSource messageSource;
-  private final ThemeConfig theme;
+  private final ThemeContext theme;
 
   public RestaurantModel(
       Restaurant restaurant,
@@ -59,7 +60,7 @@ public class RestaurantModel {
     this.open = restaurant.isOpen(now);
     this.nextOpeningOrClosingHours = restaurant.getNextOpeningOrClosing(now);
     this.messageSource = messageSource;
-    this.theme = ThemeConfig.resolve(restaurant);
+    this.theme = ThemeContext.from(ThemeConfig.resolve(restaurant));
   }
 
   public String getSlug() {
@@ -102,6 +103,10 @@ public class RestaurantModel {
     return serviceFee;
   }
 
+  public double getServiceFeePercentage() {
+    return serviceFee * 100;
+  }
+
   public Currency getCurrency() {
     return currency;
   }
@@ -139,7 +144,7 @@ public class RestaurantModel {
     }
   }
 
-  public ThemeConfig getTheme() {
+  public ThemeContext getTheme() {
     return theme;
   }
 }
