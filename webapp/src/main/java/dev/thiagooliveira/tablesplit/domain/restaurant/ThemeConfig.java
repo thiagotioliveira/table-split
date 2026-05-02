@@ -25,6 +25,11 @@ public record ThemeConfig(
       case PEACH_BLOSSOM -> new ThemeConfig("#FB7185", "#FFF1F2", "#FFFBFC", "#FFFFFF", "#881337");
       case SKY_PASTEL -> new ThemeConfig("#3EB0EF", "#F0F9FF", "#F9FDFF", "#FFFFFF", "#0C4A6E");
       case VIBRANT_ORANGE -> new ThemeConfig("#f97316", "#10b981", "#ffffff", "#ffffff", "#0f172a");
+      case VIBRANT_ORANGE_DARK ->
+          new ThemeConfig("#f97316", "#10b981", "#111827", "#1f2937", "#f9fafb");
+      case UBER_STYLE -> new ThemeConfig("#06C167", "#000000", "#ffffff", "#ffffff", "#000000");
+      case UBER_STYLE_DARK ->
+          new ThemeConfig("#06C167", "#ffffff", "#000000", "#121212", "#ffffff");
       case DEFAULT -> new ThemeConfig("#c9a050", "#FFEDD5", "#faf8f5", "#ffffff", "#1a1714");
       default -> new ThemeConfig("#c9a050", "#FFEDD5", "#faf8f5", "#ffffff", "#1a1714");
     };

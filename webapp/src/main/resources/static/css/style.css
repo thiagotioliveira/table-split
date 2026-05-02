@@ -234,7 +234,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--background) 80%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
 }
@@ -1085,7 +1085,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--background) 80%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
 }
@@ -1566,7 +1566,7 @@ a {
 .unavailable-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: color-mix(in srgb, var(--card) 80%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1714,6 +1714,7 @@ a {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font: inherit;
+  color: var(--foreground);
   background: var(--background);
   transition: border-color 0.2s;
 }
@@ -1723,12 +1724,18 @@ a {
   border-color: var(--primary);
 }
 
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--muted);
+}
+
 .form-textarea {
   width: 100%;
   padding: 0.625rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font: inherit;
+  color: var(--foreground);
   background: var(--background);
   resize: vertical;
   min-height: 5rem;
@@ -1745,6 +1752,7 @@ a {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font: inherit;
+  color: var(--foreground);
   background: var(--background);
   cursor: pointer;
 }

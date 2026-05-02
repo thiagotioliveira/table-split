@@ -132,6 +132,7 @@
       border-radius: var(--radius);
       font: inherit;
       font-size: 0.875rem;
+      color: var(--foreground);
       background: var(--background);
     }
 
@@ -344,10 +345,11 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 0.75rem;
-      background: var(--accent);
+      background: var(--accent-light);
       border: 1px solid var(--border);
       border-radius: 20px;
       font-size: 0.875rem;
+      color: var(--foreground);
       cursor: grab;
     }
 
@@ -383,7 +385,7 @@
       border: 2px dashed var(--border);
       border-radius: 20px;
       font-size: 0.875rem;
-      color: var(--muted-foreground);
+      color: var(--muted);
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -417,6 +419,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-size: 0.8125rem;
+      color: var(--foreground);
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -484,7 +487,7 @@
     }
 
     .period-separator {
-      color: var(--muted-foreground);
+      color: var(--muted);
       font-size: 0.875rem;
     }
 
@@ -647,13 +650,14 @@
       border: 2px solid var(--border);
       border-radius: 999px;
       background: var(--card);
+      color: var(--foreground);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .cuisine-tag:hover {
       border-color: var(--primary);
-      background: var(--accent);
+      background: var(--accent-light);
     }
 
     .cuisine-tag.selected {
