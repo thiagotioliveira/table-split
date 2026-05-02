@@ -16,7 +16,14 @@ const STATIC_ASSETS = [
 ];
 
 // Páginas para cache dinâmico
-const CACHE_PAGES = [
+// Páginas que são apenas "shells" e carregam dados via AJAX (Estratégia: Stale-While-Revalidate para load instantâneo)
+const AJAX_DRIVEN_PAGES = [
+  '/feedback',
+  '/reports'
+];
+
+// Páginas que dependem do modelo do servidor/Thymeleaf (Estratégia: Network First para garantir dados frescos)
+const SSR_PAGES = [
   '/dashboard',
   '/menu',
   '/tables',
@@ -94,7 +101,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Estratégia de fetch: Network First com fallback para cache
+// Estratégia de fetch
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -115,8 +122,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Páginas HTML: Network First
-  if (request.headers.get('accept')?.includes('text/html')) {
+  // 1. Páginas AJAX-driven: Stale While Revalidate (Foco em Performance)
+  if (request.headers.get('accept')?.includes('text/html') && 
+      AJAX_DRIVEN_PAGES.some(path => url.pathname === path || url.pathname === path + '/')) {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+  
+  // 2. Páginas SSR/Thymeleaf: Network First (Foco em Integridade de Dados)
+  if (request.headers.get('accept')?.includes('text/html') && 
+      SSR_PAGES.some(path => url.pathname === path || url.pathname === path + '/')) {
     event.respondWith(networkFirst(request));
     return;
   }
@@ -130,6 +145,20 @@ self.addEventListener('fetch', (event) => {
   // Default: Network First
   event.respondWith(networkFirst(request));
 });
+
+// Estratégia: Stale While Revalidate (para páginas AJAX-driven)
+async function staleWhileRevalidate(request) {
+  const cachedResponse = await caches.match(request);
+  
+  const fetchPromise = fetch(request).then(async (networkResponse) => {
+    if (networkResponse.ok) {
+      await addToCache(DYNAMIC_CACHE, request, networkResponse.clone());
+    }
+    return networkResponse;
+  }).catch(() => null);
+
+  return cachedResponse || fetchPromise;
+}
 
 // Verifica se é arquivo estático
 function isStaticAsset(url) {
