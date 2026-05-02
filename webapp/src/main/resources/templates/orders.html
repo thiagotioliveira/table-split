@@ -207,8 +207,8 @@
         }
 
         @keyframes pulse-border {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-            50% { box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
+            0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 40%, transparent); }
+            50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 10%, transparent); }
         }
 
         .order-header {
@@ -229,7 +229,7 @@
             width: 2rem;
             height: 2rem;
             border-radius: var(--radius);
-            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.05));
+            background: linear-gradient(135deg, var(--primary-light), color-mix(in srgb, var(--primary) 5%, transparent));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -679,7 +679,7 @@
             display: flex;
             justify-content: space-between;
             padding: 0.75rem 1rem;
-            background: linear-gradient(135deg, var(--primary-light), rgba(249, 115, 22, 0.1));
+            background: linear-gradient(135deg, var(--primary-light), color-mix(in srgb, var(--primary) 10%, transparent));
             border-radius: var(--radius);
             margin-bottom: 1rem;
             font-size: 0.875rem;

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web;
 
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
+import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +34,8 @@ public class ContextModel {
                 .map(
                     l ->
                         dev.thiagooliveira.tablesplit.infrastructure.web.Language.valueOf(l.name()))
-                .toList());
+                .toList(),
+            restaurant.getTheme());
     this.sidebarModules = account.getSidebarModules();
     this.footerModules = account.getFooterModules();
     this.pendingOrdersCount = pendingOrdersCount;
@@ -114,13 +116,19 @@ public class ContextModel {
     private final String name;
     private final Currency currency;
     private final List<Language> customerLanguages;
+    private final ThemeConfig theme;
 
     public RestaurantContextModel(
-        UUID id, String name, Currency currency, List<Language> customerLanguages) {
+        UUID id,
+        String name,
+        Currency currency,
+        List<Language> customerLanguages,
+        ThemeConfig theme) {
       this.id = id;
       this.name = name;
       this.currency = currency;
       this.customerLanguages = customerLanguages;
+      this.theme = theme;
     }
 
     public UUID getId() {
@@ -137,6 +145,10 @@ public class ContextModel {
 
     public List<Language> getCustomerLanguages() {
       return customerLanguages;
+    }
+
+    public ThemeConfig getTheme() {
+      return theme;
     }
   }
 }

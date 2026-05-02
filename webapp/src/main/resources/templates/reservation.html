@@ -91,10 +91,10 @@
             background: var(--surface);
         }
         .calendar-day.today {
-            background: rgba(234, 88, 12, 0.05);
+            background: color-mix(in srgb, var(--primary) 5%, transparent);
         }
         .calendar-day.selected {
-            background: rgba(234, 88, 12, 0.1);
+            background: color-mix(in srgb, var(--primary) 10%, transparent);
             box-shadow: inset 0 0 0 2px var(--primary);
         }
         .calendar-day.other-month {
@@ -381,7 +381,7 @@
             justify-content: center;
         }
         .reservation-stat-icon.today {
-            background: linear-gradient(135deg, rgba(234, 88, 12, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+            background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, transparent) 0%, color-mix(in srgb, var(--primary) 10%, transparent) 100%);
         }
         .reservation-stat-icon.today svg {
             color: var(--primary);
@@ -626,7 +626,7 @@
         .add-period-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(234, 88, 12, 0.05);
+            background: color-mix(in srgb, var(--primary) 5%, transparent);
         }
         .add-period-btn svg {
             width: 18px;
@@ -645,7 +645,7 @@
         .block-reason:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
         }
         .blocked-list {
             margin-top: 1.5rem;
@@ -885,7 +885,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
         }
         .form-input::placeholder {
             color: var(--muted);
@@ -1036,7 +1036,7 @@
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
         }
         .modal-footer {
             padding: 1rem 1.5rem 1.5rem;

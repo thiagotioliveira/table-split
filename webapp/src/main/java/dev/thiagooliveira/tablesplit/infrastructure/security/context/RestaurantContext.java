@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.security.context;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ public class RestaurantContext {
   private int serviceFee;
   private List<Language> customerLanguages;
   private Language defaultLanguage;
+  private ThemeConfig theme;
 
   public RestaurantContext(Restaurant restaurant) {
     this.id = restaurant.getId();
@@ -23,6 +25,7 @@ public class RestaurantContext {
     this.serviceFee = restaurant.getServiceFee();
     this.customerLanguages = restaurant.getCustomerLanguages();
     this.defaultLanguage = restaurant.getDefaultLanguage();
+    this.theme = ThemeConfig.resolve(restaurant);
   }
 
   public UUID getId() {
@@ -75,5 +78,13 @@ public class RestaurantContext {
 
   public void setDefaultLanguage(Language defaultLanguage) {
     this.defaultLanguage = defaultLanguage;
+  }
+
+  public ThemeConfig getTheme() {
+    return theme;
+  }
+
+  public void setTheme(ThemeConfig theme) {
+    this.theme = theme;
   }
 }

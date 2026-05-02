@@ -122,8 +122,13 @@ public class SettingsController {
 
   private void updateContext(AccountContext context, Restaurant restaurant) {
     context.getRestaurant().setName(restaurant.getName());
+    context.getRestaurant().setSlug(restaurant.getSlug());
     context.getRestaurant().setCurrency(restaurant.getCurrency());
+    context.getRestaurant().setServiceFee(restaurant.getServiceFee());
     context.getRestaurant().setCustomerLanguages(restaurant.getCustomerLanguages());
     context.getRestaurant().setDefaultLanguage(restaurant.getDefaultLanguage());
+    context
+        .getRestaurant()
+        .setTheme(dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig.resolve(restaurant));
   }
 }

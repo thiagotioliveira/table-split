@@ -3,42 +3,39 @@
 :root {
   /* Core brand */
   --primary: #c9a050;
-  --primary-light: rgba(201, 160, 80, 0.15);
-  --primary-dark: #a88535;
+  --primary-light: color-mix(in srgb, var(--primary) 15%, transparent);
+  --primary-dark: color-mix(in srgb, var(--primary) 85%, black);
   --destructive-light: rgba(239, 68, 68, 0.1);
 
   --accent: #FFEDD5;
-  --accent-light: rgba(45, 90, 71, 0.12);
+  --accent-light: color-mix(in srgb, var(--accent) 15%, transparent);
 
   /* Backgrounds */
   --background: #faf8f5;
-  --background-secondary: #f3efe9;
+  --background-secondary: color-mix(in srgb, var(--background) 95%, black);
   --card: #ffffff;
 
   /* Text */
   --foreground: #1a1714;
-  --muted: #6b635a;
+  --muted: color-mix(in srgb, var(--foreground) 60%, transparent);
 
   /* Borders */
-  --border: #e8e4de;
+  --border: color-mix(in srgb, var(--foreground) 10%, transparent);
 
   /* Status */
   --destructive: #c45c5c;
   --green: #2d5a47;
-  --green-light: rgba(45, 90, 71, 0.12);
-
-  /* Mantendo consistência com primary */
-  --orange: #d97706;
-  --orange-light: rgba(217, 119, 6, 0.12);
+  --green-light: color-mix(in srgb, var(--green) 12%, transparent);
 
   /* Neutral */
   --gray: #6b635a;
-  --gray-light: rgba(107, 99, 90, 0.1);
+  --gray-light: color-mix(in srgb, var(--gray) 10%, transparent);
 
-  /* Shadows (mais suaves e elegantes) */
-  --shadow: 0 2px 8px rgba(26, 23, 20, 0.06);
-  --shadow-lg: 0 12px 40px rgba(26, 23, 20, 0.12);
-  --shadow-xl: 0 20px 60px rgba(26, 23, 20, 0.18);
+  /* Shadows */
+  --shadow-color: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --shadow: 0 2px 8px var(--shadow-color);
+  --shadow-lg: 0 12px 40px var(--shadow-color);
+  --shadow-xl: 0 20px 60px var(--shadow-color);
 
   /* Radius */
   --radius: 0.75rem;
@@ -263,7 +260,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.25);
+  box-shadow: 0 4px 14px var(--shadow-color);
 }
 
 .logo-icon svg {

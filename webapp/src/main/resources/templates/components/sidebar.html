@@ -3,6 +3,23 @@
 
 <th:block th:fragment="sidebar(pageTitle, extraContent, showHeaderOnLg)">
     <th:block th:with="showHeaderOnLg=${showHeaderOnLg == null ? true : showHeaderOnLg}">
+    
+    <style th:inline="css">
+        :root {
+            --primary: [(${context.restaurant.theme.primary})];
+            --primary-light: color-mix(in srgb, var(--primary) 10%, transparent);
+            --primary-dark: color-mix(in srgb, var(--primary) 85%, black);
+            --accent: [(${context.restaurant.theme.accent})];
+            --accent-light: color-mix(in srgb, var(--accent) 15%, transparent);
+            --background: [(${context.restaurant.theme.background})];
+            --background-secondary: color-mix(in srgb, var(--background) 95%, black);
+            --card: [(${context.restaurant.theme.card})];
+            --foreground: [(${context.restaurant.theme.text})];
+            --muted: color-mix(in srgb, var(--foreground) 60%, transparent);
+            --border: color-mix(in srgb, var(--foreground) 10%, transparent);
+            --shadow-color: color-mix(in srgb, var(--foreground) 10%, transparent);
+        }
+    </style>
 
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
