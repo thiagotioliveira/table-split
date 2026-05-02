@@ -113,7 +113,12 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
                                                       ::getName)
                                               .findFirst()))
                       .orElse(null);
-              return new ItemRating(itemId, name, (Double) obj[1], (Long) obj[2], imageUrl);
+              return new ItemRating(
+                  itemId,
+                  name,
+                  ((Number) obj[1]).doubleValue(),
+                  ((Number) obj[2]).longValue(),
+                  imageUrl);
             })
         .toList();
   }
@@ -164,7 +169,12 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
                                                       ::getName)
                                               .findFirst()))
                       .orElse(null);
-              return new ItemRating(itemId, name, (Double) obj[1], (Long) obj[2], imageUrl);
+              return new ItemRating(
+                  itemId,
+                  name,
+                  ((Number) obj[1]).doubleValue(),
+                  ((Number) obj[2]).longValue(),
+                  imageUrl);
             })
         .toList();
   }
