@@ -10,7 +10,9 @@ public record ThemeContext(
     String text,
     String fontDisplay,
     String fontBody,
-    boolean dark) {
+    boolean dark,
+    String textOnAccent,
+    String textOnPrimary) {
   public static ThemeContext from(ThemeConfig config) {
     if (config == null) return null;
     return new ThemeContext(
@@ -21,6 +23,8 @@ public record ThemeContext(
         config.text(),
         config.fontDisplay(),
         config.fontBody(),
-        config.dark());
+        config.dark(),
+        config.textOnAccent(),
+        config.textOnPrimary());
   }
 }
