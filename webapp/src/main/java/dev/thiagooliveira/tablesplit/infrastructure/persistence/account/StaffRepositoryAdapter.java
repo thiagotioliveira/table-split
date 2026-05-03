@@ -78,6 +78,11 @@ public class StaffRepositoryAdapter implements StaffRepository {
   }
 
   @Override
+  public Optional<Staff> findByPhone(String phone) {
+    return this.staffJpaRepository.findByPhone(phone).map(this::toDomainWithAccount);
+  }
+
+  @Override
   public List<Staff> findByRestaurantId(UUID restaurantId) {
     return this.staffJpaRepository.findByRestaurantId(restaurantId).stream()
         .map(this::toDomainWithAccount)

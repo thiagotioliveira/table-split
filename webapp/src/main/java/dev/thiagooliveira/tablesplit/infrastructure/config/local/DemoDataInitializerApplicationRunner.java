@@ -190,7 +190,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Thiago",
                               "Oliveira",
                               "thiago@thiagoti.com",
-                              "+351 963 927 988",
+                              "+351 963 927 952",
                               passwordEncoder.encode("Test#123"),
                               Language.PT),
                           new CreateRestaurantCommand(

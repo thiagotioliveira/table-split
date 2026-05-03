@@ -11,6 +11,8 @@ public interface StaffRepository {
 
   Optional<Staff> findByEmail(String email);
 
+  Optional<Staff> findByPhone(String phone);
+
   List<Staff> findByRestaurantId(UUID restaurantId);
 
   void deleteById(UUID id);

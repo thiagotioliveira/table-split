@@ -1,6 +1,11 @@
 spring:
   application:
     name: table-split-agent
+  ai:
+    openai:
+      chat:
+        options:
+          model: gpt-4o-mini
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   rabbitmq:

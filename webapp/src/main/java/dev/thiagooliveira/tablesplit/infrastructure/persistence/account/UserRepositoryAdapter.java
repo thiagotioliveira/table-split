@@ -42,6 +42,11 @@ public class UserRepositoryAdapter implements UserRepository {
   }
 
   @Override
+  public Optional<User> findByPhone(String phone) {
+    return this.userJpaRepository.findByPhone(phone).map(mapper::toDomain);
+  }
+
+  @Override
   public List<User> findByAccountId(UUID accountId) {
     return this.userJpaRepository.findByAccountId(accountId).stream()
         .map(mapper::toDomain)
