@@ -56,7 +56,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     this.chatAiService = chatAiService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
-    logger.info("TelegramBot inicializado com sucesso! Username: {}", properties.getUsername());
+    String instanceId = java.util.UUID.randomUUID().toString().substring(0, 8);
+    logger.info(
+        "TelegramBot inicializado com sucesso! [ID: {}] Username: {}",
+        instanceId,
+        properties.getUsername());
   }
 
   @Override
@@ -257,7 +261,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
       logger.info("Chamando ChatAiService para chatId: {}", chatId);
       String response = chatAiService.chat(chatId, text);
-      logger.info("Resposta da IA recebida. Enviando para o usuário...");
+      logger.info("Resposta da IA recebida. Enviando para o usuário a mensagem: {}", response);
       sendText(chatId, response);
     } catch (Exception e) {
       sendText(chatId, "Desculpe, tive um problema ao processar sua mensagem com a IA.");
