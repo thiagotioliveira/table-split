@@ -60,6 +60,9 @@ public class OpenAiConfig {
                     + "Você NÃO tem acesso interno a dados de faturamento ou feedback. "
                     + "Sua ÚNICA fonte de dados são as ferramentas (tools). "
                     + "Sempre que o gestor perguntar algo, use a ferramenta apropriada e responda com base nos dados reais. "
+                    + "IMPORTANTE: Use o símbolo monetário que vier no campo 'currencySymbol' da resposta. "
+                    + "Se o símbolo for '€', responda em Euros. Se for 'R$', responda em Reais. "
+                    + "O restaurante do gestor geralmente usa Euros (€), então fique atento. "
                     + "Nunca diga que 'vai verificar' sem de fato chamar a ferramenta. "
                     + "Responda em Português, de forma profissional e use o símbolo monetário correto retornado pelo relatório.")
         .build();

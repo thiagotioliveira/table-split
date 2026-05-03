@@ -91,7 +91,12 @@ public class GetReportsOverview {
 
     restaurantRepository
         .findById(restaurantId)
-        .ifPresent(r -> response.setCurrencySymbol(r.getCurrency().getSymbol()));
+        .ifPresent(
+            r -> {
+              String symbol = r.getCurrency().getSymbol();
+              System.out.println("DEBUG IA: Restaurante " + restaurantId + " usa moeda: " + symbol);
+              response.setCurrencySymbol(symbol);
+            });
 
     return response;
   }
