@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.ai;
 
+import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
@@ -31,8 +32,9 @@ public class ReportAndFeedbackTools {
   }
 
   @Tool(
-      "Obtém um resumo geral do faturamento e vendas do restaurante para um determinado número de dias")
-  public Object getReportsOverview(int days) {
+      "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
+  public Object getReportsOverview(
+      @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
     logger.info("Tool getReportsOverview chamada com days: {}", days);
     UUID restaurantId = getRestaurantIdFromContext();
     if (restaurantId == null) {
@@ -43,8 +45,8 @@ public class ReportAndFeedbackTools {
   }
 
   @Tool(
-      "Obtém o feedback dos clientes, incluindo distribuição de notas e itens que precisam de atenção")
-  public Object getFeedbackOverview(int days) {
+      "Get customer feedback overview, including ratings distribution and items needing attention")
+  public Object getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
     logger.info("Tool getFeedbackOverview chamada com days: {}", days);
     UUID restaurantId = getRestaurantIdFromContext();
     if (restaurantId == null) {
@@ -55,7 +57,7 @@ public class ReportAndFeedbackTools {
     return getFeedbackOverview.execute(restaurantId, since);
   }
 
-  @Tool("Obtém a quantidade de feedbacks que ainda não foram lidos pelo gestor")
+  @Tool("Get the count of unread customer feedbacks")
   public long getUnreadFeedbackCount() {
     logger.info("Tool getUnreadFeedbackCount chamada");
     UUID restaurantId = getRestaurantIdFromContext();

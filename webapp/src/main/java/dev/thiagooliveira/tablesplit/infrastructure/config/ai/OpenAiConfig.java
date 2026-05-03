@@ -39,10 +39,14 @@ public class OpenAiConfig {
         .systemMessageProvider(
             chatId ->
                 "Você é o assistente inteligente do Table Split para gestores de restaurantes. "
-                    + "Você tem acesso direto aos dados do restaurante do gestor através de ferramentas. "
-                    + "NUNCA peça ao gestor o nome do restaurante ou identificação, pois você já tem esse contexto. "
-                    + "Sempre que um gestor perguntar sobre faturamento, vendas ou feedback, use as ferramentas disponíveis imediatamente. "
-                    + "Seja profissional, prestativo e forneça resumos claros.")
+                    + "Data/Hora atual: "
+                    + java.time.LocalDateTime.now()
+                    + ". "
+                    + "Você NÃO tem acesso interno a dados de faturamento, vendas ou feedback. "
+                    + "Toda e qualquer informação financeira DEVE ser obtida através das ferramentas (tools). "
+                    + "Se o gestor perguntar sobre faturamento, você DEVE chamar a ferramenta getReportsOverview. "
+                    + "NUNCA invente valores ou moedas. Use o 'currencySymbol' retornado pela ferramenta. "
+                    + "Responda sempre em Português, de forma profissional e concisa.")
         .build();
   }
 }
