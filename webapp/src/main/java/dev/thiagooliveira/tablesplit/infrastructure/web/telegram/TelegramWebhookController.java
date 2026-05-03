@@ -21,8 +21,17 @@ public class TelegramWebhookController {
   }
 
   @PostMapping("/telegram/webhook")
-  public void onUpdateReceived(@RequestBody Update update) {
+  public void onUpdateReceived(@RequestBody String updateJson) {
     logger.debug("Webhook do Telegram recebeu um update.");
-    updateHandler.onUpdateReceived(update);
+    try {
+      com.fasterxml.jackson.databind.ObjectMapper mapper =
+          new com.fasterxml.jackson.databind.ObjectMapper();
+      mapper.configure(
+          com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      Update update = mapper.readValue(updateJson, Update.class);
+      updateHandler.onUpdateReceived(update);
+    } catch (Exception e) {
+      logger.error("Erro ao desserializar update do Telegram: {}", e.getMessage());
+    }
   }
 }
