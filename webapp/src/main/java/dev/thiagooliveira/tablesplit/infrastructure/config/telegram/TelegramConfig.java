@@ -12,9 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Configuration
 @ConditionalOnExpression(
@@ -46,17 +43,5 @@ public class TelegramConfig {
   public TelegramNotificationListener telegramNotificationListener(
       TelegramBot telegramBot, TelegramUserMappingJpaRepository mappingRepository) {
     return new TelegramNotificationListener(telegramBot, mappingRepository);
-  }
-
-  @Bean
-  public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
-    TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-    try {
-      botsApi.registerBot(telegramBot);
-      logger.debug("Bot manually registered with TelegramBotsApi successfully!");
-    } catch (TelegramApiException e) {
-      logger.error("Error registering the bot manually: {}", e.getMessage());
-    }
-    return botsApi;
   }
 }
