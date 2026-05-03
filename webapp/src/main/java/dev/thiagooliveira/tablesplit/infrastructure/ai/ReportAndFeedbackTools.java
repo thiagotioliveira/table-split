@@ -6,7 +6,9 @@ import dev.langchain4j.agent.tool.Tool;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
 import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
+import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import jakarta.persistence.EntityManager;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -30,7 +32,7 @@ public class ReportAndFeedbackTools {
   private final TransactionTemplate transactionTemplate;
   private final ObjectMapper objectMapper;
   private final EntityManager entityManager;
-  private final boolean isH2;
+  private final DatabaseDialectHelper dialectHelper;
 
   public ReportAndFeedbackTools(
       GetReportsOverview getReportsOverview,
@@ -39,34 +41,19 @@ public class ReportAndFeedbackTools {
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      boolean isH2) {
+      DatabaseDialectHelper dialectHelper) {
     this.getReportsOverview = getReportsOverview;
     this.getFeedbackOverview = getFeedbackOverview;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
     this.transactionTemplate = transactionTemplate;
     this.objectMapper = objectMapper;
     this.entityManager = entityManager;
-    this.isH2 = isH2;
+    this.dialectHelper = dialectHelper;
   }
 
   private void setTenantSchema(String tenant) {
-    if (tenant == null || tenant.trim().isEmpty() || "PUBLIC".equalsIgnoreCase(tenant)) {
-      String sql = isH2 ? "SET SCHEMA_SEARCH_PATH PUBLIC" : "SET search_path TO PUBLIC";
-      entityManager.createNativeQuery(sql).executeUpdate();
-      return;
-    }
-
-    if (isH2) {
-      // Syntax para H2 (Local/Testes)
-      entityManager
-          .createNativeQuery("SET SCHEMA_SEARCH_PATH " + tenant + ", PUBLIC")
-          .executeUpdate();
-    } else {
-      // Syntax para PostgreSQL (Produção)
-      entityManager
-          .createNativeQuery("SET search_path TO \"" + tenant + "\", PUBLIC")
-          .executeUpdate();
-    }
+    String sql = dialectHelper.getSetSchemaSql(tenant);
+    entityManager.createNativeQuery(sql).executeUpdate();
   }
 
   @Tool(
@@ -105,7 +92,7 @@ public class ReportAndFeedbackTools {
 
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
-            ZonedDateTime since = ZonedDateTime.now().minusDays(days);
+            ZonedDateTime since = Time.nowZonedDateTime().minusDays(days);
             Object result = getFeedbackOverview.execute(restaurantId, since);
             return objectMapper.writeValueAsString(result);
           } catch (Exception e) {

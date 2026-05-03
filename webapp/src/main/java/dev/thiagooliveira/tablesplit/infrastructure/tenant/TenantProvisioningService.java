@@ -25,10 +25,12 @@ public class TenantProvisioningService {
   private static final Logger logger = LoggerFactory.getLogger(TenantProvisioningService.class);
 
   private final DataSource dataSource;
+  private final DatabaseDialectHelper dialectHelper;
   private static final String TENANT_CHANGELOG = "db/changelog/db.changelog-tenant-master.yaml";
 
-  public TenantProvisioningService(DataSource dataSource) {
+  public TenantProvisioningService(DataSource dataSource, DatabaseDialectHelper dialectHelper) {
     this.dataSource = dataSource;
+    this.dialectHelper = dialectHelper;
   }
 
   public void provisionTenant(UUID restaurantId) {
@@ -37,11 +39,7 @@ public class TenantProvisioningService {
     try (Connection connection = dataSource.getConnection()) {
       // 1. Create Schema
       try (Statement statement = connection.createStatement()) {
-        String dbName = connection.getMetaData().getDatabaseProductName();
-        String sql =
-            "H2".equalsIgnoreCase(dbName)
-                ? "CREATE SCHEMA IF NOT EXISTS " + tenantId
-                : "CREATE SCHEMA IF NOT EXISTS \"" + tenantId + "\"";
+        String sql = dialectHelper.getCreateSchemaSql(tenantId);
         statement.execute(sql);
       }
 
@@ -62,11 +60,7 @@ public class TenantProvisioningService {
   private void runLiquibase(Connection connection, String schemaName)
       throws LiquibaseException, SQLException {
     // Set search path for the session to the new schema
-    String dbName = connection.getMetaData().getDatabaseProductName();
-    String sql =
-        "H2".equalsIgnoreCase(dbName)
-            ? "SET SCHEMA_SEARCH_PATH " + schemaName + ", PUBLIC"
-            : "SET search_path TO \"" + schemaName + "\", PUBLIC";
+    String sql = dialectHelper.getSetSchemaSql(schemaName);
 
     try (Statement statement = connection.createStatement()) {
       statement.execute(sql);

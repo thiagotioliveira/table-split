@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
 import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ChatAiService;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ReportAndFeedbackTools;
+import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import jakarta.persistence.EntityManager;
 import java.lang.reflect.Method;
@@ -40,11 +41,9 @@ public class OpenAiConfig {
       PlatformTransactionManager transactionManager,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      org.springframework.core.env.Environment env) {
+      DatabaseDialectHelper dialectHelper) {
 
     logger.debug("Inicializando ChatAiService...");
-
-    boolean isH2 = java.util.Arrays.asList(env.getActiveProfiles()).contains("h2");
 
     // Criamos o TransactionTemplate para gerenciar transações programaticamente na infra.
     // Usamos REQUIRES_NEW para garantir que o Hibernate resolva o Tenant corretamente,
@@ -62,7 +61,7 @@ public class OpenAiConfig {
             transactionTemplate,
             objectMapper,
             entityManager,
-            isH2);
+            dialectHelper);
 
     // Log de diagnóstico para confirmar detecção
     for (Method method : tools.getClass().getDeclaredMethods()) {

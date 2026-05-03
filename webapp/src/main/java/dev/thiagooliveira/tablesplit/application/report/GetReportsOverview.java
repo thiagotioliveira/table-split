@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.model.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -41,7 +42,7 @@ public class GetReportsOverview {
   }
 
   public ReportsOverviewResponse execute(UUID restaurantId, int days) {
-    ZonedDateTime end = ZonedDateTime.now();
+    ZonedDateTime end = Time.nowZonedDateTime();
     ZonedDateTime start =
         end.minusDays(days - 1).withHour(0).withMinute(0).withSecond(0).withNano(0);
     ZonedDateTime prevStart = start.minusDays(days);

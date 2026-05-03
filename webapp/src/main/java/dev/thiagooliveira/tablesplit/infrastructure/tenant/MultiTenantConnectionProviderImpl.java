@@ -16,9 +16,12 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
       LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
   private final DataSource dataSource;
+  private final DatabaseDialectHelper dialectHelper;
 
-  public MultiTenantConnectionProviderImpl(DataSource dataSource) {
+  public MultiTenantConnectionProviderImpl(
+      DataSource dataSource, DatabaseDialectHelper dialectHelper) {
     this.dataSource = dataSource;
+    this.dialectHelper = dialectHelper;
   }
 
   @Override
@@ -44,27 +47,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   }
 
   private void setSearchPath(Connection connection, String tenantIdentifier) throws SQLException {
-    String dbName = connection.getMetaData().getDatabaseProductName();
-    String sql;
-
-    // Safety check for null or empty tenant
-    if (tenantIdentifier == null
-        || tenantIdentifier.trim().isEmpty()
-        || "PUBLIC".equalsIgnoreCase(tenantIdentifier)) {
-      tenantIdentifier = "PUBLIC";
-      if ("H2".equalsIgnoreCase(dbName)) {
-        sql = "SET SCHEMA_SEARCH_PATH PUBLIC";
-      } else {
-        sql = "SET search_path TO PUBLIC";
-      }
-    } else {
-      if ("H2".equalsIgnoreCase(dbName)) {
-        sql = "SET SCHEMA_SEARCH_PATH " + tenantIdentifier + ", PUBLIC";
-      } else {
-        sql = "SET search_path TO \"" + tenantIdentifier + "\", PUBLIC";
-      }
-    }
-
+    String sql = dialectHelper.getSetSchemaSql(tenantIdentifier);
     logger.debug("[MultiTenantConnection] Setting schema to: {} (SQL: {})", tenantIdentifier, sql);
     connection.createStatement().execute(sql);
   }
@@ -73,11 +56,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   public void releaseConnection(String tenantIdentifier, Connection connection)
       throws SQLException {
     try {
-      String dbName = connection.getMetaData().getDatabaseProductName();
-      String sql =
-          "H2".equalsIgnoreCase(dbName)
-              ? "SET SCHEMA_SEARCH_PATH PUBLIC"
-              : "SET search_path TO PUBLIC";
+      String sql = dialectHelper.getSetSchemaSql("PUBLIC");
       connection.createStatement().execute(sql);
     } catch (SQLException e) {
       // ignore
