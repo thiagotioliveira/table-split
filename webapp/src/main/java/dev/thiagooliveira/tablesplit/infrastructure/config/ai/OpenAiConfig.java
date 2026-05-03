@@ -39,8 +39,9 @@ public class OpenAiConfig {
         .systemMessageProvider(
             chatId ->
                 "Você é o assistente inteligente do Table Split para gestores de restaurantes. "
-                    + "Sua missão é fornecer informações sobre relatórios de vendas e feedback de clientes. "
-                    + "Sempre que um gestor perguntar algo, use as ferramentas disponíveis para buscar os dados em tempo real. "
+                    + "Você tem acesso direto aos dados do restaurante do gestor através de ferramentas. "
+                    + "NUNCA peça ao gestor o nome do restaurante ou identificação, pois você já tem esse contexto. "
+                    + "Sempre que um gestor perguntar sobre faturamento, vendas ou feedback, use as ferramentas disponíveis imediatamente. "
                     + "Seja profissional, prestativo e forneça resumos claros.")
         .build();
   }
