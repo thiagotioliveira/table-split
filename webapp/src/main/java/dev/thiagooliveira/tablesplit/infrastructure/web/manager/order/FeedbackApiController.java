@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.manager.order;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.domain.order.OrderFeedback;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.api.FeedbacksApi;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.spec.v1.model.*;
 import java.time.ZonedDateTime;
@@ -44,7 +45,7 @@ public class FeedbackApiController implements FeedbacksApi {
   @Override
   public ResponseEntity<FeedbackOverviewResponse> getFeedbacks(Integer days) {
     AccountContext context = getContext();
-    ZonedDateTime since = ZonedDateTime.now().minusDays(days != null ? days : 30);
+    ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
 
     GetFeedbackOverview.Overview overview =
         getFeedbackOverview.execute(context.getRestaurant().getId(), since);
