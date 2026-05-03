@@ -10,11 +10,12 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * IA Tools para relatórios e feedbacks. Esta classe NÃO deve ter anotações de Proxy do Spring
- * (como @Transactional ou @Service) para garantir que o LangChain4j consiga ler as anotações @Tool
- * via reflexão.
+ * IA Tools para relatórios e feedbacks. Esta classe NÃO é um Bean do Spring para garantir que o
+ * LangChain4j consiga ler as anotações @Tool sem interferência de Proxies. Gerenciamos as
+ * transações programaticamente usando TransactionTemplate para evitar LazyInitializationException.
  */
 public class ReportAndFeedbackTools {
 
@@ -23,51 +24,62 @@ public class ReportAndFeedbackTools {
   private final GetReportsOverview getReportsOverview;
   private final GetFeedbackOverview getFeedbackOverview;
   private final GetFeedbackUnreadCount getFeedbackUnreadCount;
+  private final TransactionTemplate transactionTemplate;
 
   public ReportAndFeedbackTools(
       GetReportsOverview getReportsOverview,
       GetFeedbackOverview getFeedbackOverview,
-      GetFeedbackUnreadCount getFeedbackUnreadCount) {
+      GetFeedbackUnreadCount getFeedbackUnreadCount,
+      TransactionTemplate transactionTemplate) {
     this.getReportsOverview = getReportsOverview;
     this.getFeedbackOverview = getFeedbackOverview;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
+    this.transactionTemplate = transactionTemplate;
   }
 
   @Tool(
       "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
-  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public Object getReportsOverview(
       @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
-    logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
-    UUID restaurantId = getRestaurantIdFromContext();
-    if (restaurantId == null) {
-      logger.warn("restaurantId não identificado no contexto!");
-      return "Erro: Restaurante não identificado no contexto.";
-    }
-    return getReportsOverview.execute(restaurantId, days);
+    return transactionTemplate.execute(
+        status -> {
+          logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
+          UUID restaurantId = getRestaurantIdFromContext();
+          if (restaurantId == null) {
+            logger.warn("restaurantId não identificado no contexto!");
+            return "Erro: Restaurante não identificado no contexto.";
+          }
+          return getReportsOverview.execute(restaurantId, days);
+        });
   }
 
   @Tool(
       "Get customer feedback overview, including ratings distribution and items needing attention")
-  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public Object getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
-    logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
-    UUID restaurantId = getRestaurantIdFromContext();
-    if (restaurantId == null) {
-      logger.warn("restaurantId não identificado no contexto!");
-      return "Erro: Restaurante não identificado no contexto.";
-    }
-    ZonedDateTime since = ZonedDateTime.now().minusDays(days);
-    return getFeedbackOverview.execute(restaurantId, since);
+    return transactionTemplate.execute(
+        status -> {
+          logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
+          UUID restaurantId = getRestaurantIdFromContext();
+          if (restaurantId == null) {
+            logger.warn("restaurantId não identificado no contexto!");
+            return "Erro: Restaurante não identificado no contexto.";
+          }
+          ZonedDateTime since = ZonedDateTime.now().minusDays(days);
+          return getFeedbackOverview.execute(restaurantId, since);
+        });
   }
 
   @Tool("Get the count of unread customer feedbacks")
-  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public long getUnreadFeedbackCount() {
-    logger.info("Tool getUnreadFeedbackCount chamada via IA");
-    UUID restaurantId = getRestaurantIdFromContext();
-    if (restaurantId == null) return -1;
-    return getFeedbackUnreadCount.execute(restaurantId);
+    Long result =
+        transactionTemplate.execute(
+            status -> {
+              logger.info("Tool getUnreadFeedbackCount chamada via IA");
+              UUID restaurantId = getRestaurantIdFromContext();
+              if (restaurantId == null) return -1L;
+              return getFeedbackUnreadCount.execute(restaurantId);
+            });
+    return result != null ? result : -1L;
   }
 
   private UUID getRestaurantIdFromContext() {
