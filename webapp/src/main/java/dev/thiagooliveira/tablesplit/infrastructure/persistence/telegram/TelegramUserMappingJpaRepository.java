@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface TelegramUserMappingJpaRepository
     extends JpaRepository<TelegramUserMappingEntity, Long> {
   List<TelegramUserMappingEntity> findByRestaurantId(UUID restaurantId);
+
+  void deleteByChatId(Long chatId);
 }

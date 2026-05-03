@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ChatAiService;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ReportAndFeedbackTools;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
+import jakarta.persistence.EntityManager;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public class OpenAiConfig {
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount,
       PlatformTransactionManager transactionManager,
-      ObjectMapper objectMapper) {
+      ObjectMapper objectMapper,
+      EntityManager entityManager) {
 
     logger.debug("Inicializando ChatAiService...");
 
@@ -55,7 +57,8 @@ public class OpenAiConfig {
             getFeedbackOverview,
             getFeedbackUnreadCount,
             transactionTemplate,
-            objectMapper);
+            objectMapper,
+            entityManager);
 
     // Log de diagnóstico para confirmar detecção
     for (Method method : tools.getClass().getDeclaredMethods()) {

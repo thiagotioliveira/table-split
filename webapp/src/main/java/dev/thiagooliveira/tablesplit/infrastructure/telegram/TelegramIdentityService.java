@@ -37,11 +37,17 @@ public class TelegramIdentityService {
         .findByPhone(normalizedPhone)
         .map(
             user -> {
+              logger.info(
+                  "[Identity] Usuário encontrado: {} (ID: {}, AccountID: {})",
+                  user.getFirstName(),
+                  user.getId(),
+                  user.getAccountId());
               UUID restaurantId =
                   restaurantRepository
                       .findByAccountId(user.getAccountId())
                       .map(Restaurant::getId)
                       .orElse(null);
+              logger.info("[Identity] Restaurante resolvido para a conta: {}", restaurantId);
               return new IdentifiedUser(user.getFirstName(), "Cliente", restaurantId);
             });
   }

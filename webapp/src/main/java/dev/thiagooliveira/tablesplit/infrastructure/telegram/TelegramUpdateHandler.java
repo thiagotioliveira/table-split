@@ -55,6 +55,11 @@ public class TelegramUpdateHandler {
 
         if ("/start".equals(text)) {
           requestContact(chatId);
+        } else if ("/reset".equals(text)) {
+          handleReset(chatId);
+        } else if (text.startsWith("/login ")) {
+          String slug = text.substring(7).trim().toLowerCase();
+          handleSlugLogin(chatId, slug);
         } else {
           handleTextMessage(chatId, text);
         }
@@ -109,6 +114,64 @@ public class TelegramUpdateHandler {
         "Não encontrei você como cliente. Você faz parte da equipe de algum restaurante? Se sim, por favor digite o identificador (slug) do seu restaurante.");
   }
 
+  private void handleReset(Long chatId) {
+    identifiedUsers.remove(chatId);
+    userStates.remove(chatId);
+    chatToPhoneMap.remove(chatId);
+    mappingRepository.deleteByChatId(chatId);
+    telegramSender.sendText(chatId, "Sua identificação foi removida. Use /start para recomeçar.");
+  }
+
+  private void handleSlugLogin(Long chatId, String slug) {
+    String phone = chatToPhoneMap.get(chatId);
+    if (phone == null) {
+      // Try to load phone from DB
+      TelegramUserMappingEntity mapping = mappingRepository.findById(chatId).orElse(null);
+      if (mapping != null) {
+        phone = mapping.getPhone();
+        chatToPhoneMap.put(chatId, phone);
+      }
+    }
+
+    if (phone == null) {
+      telegramSender.sendText(chatId, "Por favor, compartilhe seu contato primeiro usando /start.");
+      return;
+    }
+
+    Optional<TelegramIdentityService.IdentifiedUser> staffOpt =
+        identityService.identifyStaffBySlug(slug, phone);
+    if (staffOpt.isPresent()) {
+      var staff = staffOpt.get();
+      identifiedUsers.put(chatId, staff);
+      saveMapping(chatId, phone, staff);
+      telegramSender.sendText(
+          chatId,
+          "Olá "
+              + staff.name()
+              + "! Você foi identificado como "
+              + staff.role()
+              + ". Como posso ajudar hoje?");
+    } else {
+      telegramSender.sendText(
+          chatId, "Não encontrei você na equipe do restaurante '" + slug + "'.");
+    }
+  }
+
+  private TelegramIdentityService.IdentifiedUser loadFromDb(Long chatId) {
+    return mappingRepository
+        .findById(chatId)
+        .map(
+            m -> {
+              var user =
+                  new TelegramIdentityService.IdentifiedUser(
+                      m.getName(), m.getRole(), m.getRestaurantId());
+              identifiedUsers.put(chatId, user);
+              chatToPhoneMap.put(chatId, m.getPhone());
+              return user;
+            })
+        .orElse(null);
+  }
+
   private void saveMapping(Long chatId, String phone, TelegramIdentityService.IdentifiedUser user) {
     if (user.restaurantId() == null) return;
     TelegramUserMappingEntity entity = new TelegramUserMappingEntity();
@@ -155,9 +218,14 @@ public class TelegramUpdateHandler {
     }
 
     var user = identifiedUsers.get(chatId);
+    if (user == null) {
+      user = loadFromDb(chatId);
+    }
+
     if (user == null || user.restaurantId() == null) {
       telegramSender.sendText(
-          chatId, "Desculpe, não consegui identificar seu restaurante para fornecer informações.");
+          chatId,
+          "Desculpe, não consegui identificar seu restaurante para fornecer informações. Use /start para se identificar.");
       return;
     }
 
