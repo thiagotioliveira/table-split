@@ -8,8 +8,8 @@ import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
 import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ChatAiService;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ReportAndFeedbackTools;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +55,7 @@ public class OpenAiConfig {
             chatId ->
                 "Você é o assistente inteligente do Table Split para gestores de restaurantes. "
                     + "Data/Hora atual: "
-                    + LocalDateTime.now()
+                    + Time.nowLocalDateTime()
                     + ". "
                     + "Você NÃO tem acesso interno a dados de faturamento ou feedback. "
                     + "Sua ÚNICA fonte de dados são as ferramentas (tools). "

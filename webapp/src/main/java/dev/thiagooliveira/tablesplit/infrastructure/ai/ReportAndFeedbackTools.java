@@ -35,6 +35,7 @@ public class ReportAndFeedbackTools {
 
   @Tool(
       "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
+  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public Object getReportsOverview(
       @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
     logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
@@ -48,6 +49,7 @@ public class ReportAndFeedbackTools {
 
   @Tool(
       "Get customer feedback overview, including ratings distribution and items needing attention")
+  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public Object getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
     logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
     UUID restaurantId = getRestaurantIdFromContext();
@@ -60,6 +62,7 @@ public class ReportAndFeedbackTools {
   }
 
   @Tool("Get the count of unread customer feedbacks")
+  @org.springframework.transaction.annotation.Transactional(readOnly = true)
   public long getUnreadFeedbackCount() {
     logger.info("Tool getUnreadFeedbackCount chamada via IA");
     UUID restaurantId = getRestaurantIdFromContext();
