@@ -56,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     this.chatAiService = chatAiService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
-    logger.debug("TelegramBot inicializado com sucesso! Username: {}", properties.getUsername());
+    logger.info("TelegramBot inicializado com sucesso! Username: {}", properties.getUsername());
   }
 
   @Override
@@ -73,13 +73,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
   @Override
   public void onUpdateReceived(Update update) {
+    logger.info("Update recebido do Telegram!");
     if (update.hasMessage()) {
       Message message = update.getMessage();
       Long chatId = message.getChatId();
 
       if (message.hasText()) {
         String text = message.getText();
-        logger.debug("Mensagem recebida de chatId: {} Texto: {}", chatId, text);
+        logger.info("Mensagem recebida de chatId: {} Texto: {}", chatId, text);
 
         if ("/start".equals(text)) {
           requestContact(chatId);
@@ -240,11 +241,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     // Regular AI Chat
     var user = identifiedUsers.get(chatId);
     if (user == null || user.restaurantId() == null) {
+      logger.info("Usuário {} não identificado ou sem restaurante vinculado.", chatId);
       sendText(
           chatId, "Desculpe, não consegui identificar seu restaurante para fornecer informações.");
       return;
     }
 
+    logger.info("Processando mensagem para restaurante: {}", user.restaurantId());
     sendTyping(chatId);
 
     try {
@@ -252,7 +255,9 @@ public class TelegramBot extends TelegramLongPollingBot {
           dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext
               .generateTenantIdentifier(user.restaurantId()));
 
+      logger.info("Chamando ChatAiService para chatId: {}", chatId);
       String response = chatAiService.chat(chatId, text);
+      logger.info("Resposta da IA recebida. Enviando para o usuário...");
       sendText(chatId, response);
     } catch (Exception e) {
       sendText(chatId, "Desculpe, tive um problema ao processar sua mensagem com a IA.");

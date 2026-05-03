@@ -27,6 +27,7 @@ public class TelegramConfig {
 
   @Bean
   public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
+    logger.info("Configurando TelegramBotsApi...");
     return new TelegramBotsApi(DefaultBotSession.class);
   }
 
