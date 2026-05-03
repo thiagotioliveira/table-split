@@ -3,6 +3,9 @@ cloudinary:
 app:
   register:
     enabled: false
+telegram:
+  bot:
+    base-url: https://www.tablesplit.app/
 
 logging:
   level:
