@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = true)
 public class ReportAndFeedbackTools {
 
   private static final Logger logger = LoggerFactory.getLogger(ReportAndFeedbackTools.class);
@@ -33,6 +32,7 @@ public class ReportAndFeedbackTools {
 
   @Tool(
       "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
+  @Transactional(readOnly = true)
   public Object getReportsOverview(
       @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
     logger.info("Tool getReportsOverview chamada com days: {}", days);
@@ -46,6 +46,7 @@ public class ReportAndFeedbackTools {
 
   @Tool(
       "Get customer feedback overview, including ratings distribution and items needing attention")
+  @Transactional(readOnly = true)
   public Object getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
     logger.info("Tool getFeedbackOverview chamada com days: {}", days);
     UUID restaurantId = getRestaurantIdFromContext();
@@ -58,6 +59,7 @@ public class ReportAndFeedbackTools {
   }
 
   @Tool("Get the count of unread customer feedbacks")
+  @Transactional(readOnly = true)
   public long getUnreadFeedbackCount() {
     logger.info("Tool getUnreadFeedbackCount chamada");
     UUID restaurantId = getRestaurantIdFromContext();
