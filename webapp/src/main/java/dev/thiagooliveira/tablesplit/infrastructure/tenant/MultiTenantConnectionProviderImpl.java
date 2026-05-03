@@ -65,7 +65,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
       }
     }
 
-    logger.debug("[MultiTenantConnection] Setting schema to: {} (SQL: {})", tenantIdentifier, sql);
+    logger.info("[MultiTenantConnection] Setting schema to: {} (SQL: {})", tenantIdentifier, sql);
     connection.createStatement().execute(sql);
   }
 

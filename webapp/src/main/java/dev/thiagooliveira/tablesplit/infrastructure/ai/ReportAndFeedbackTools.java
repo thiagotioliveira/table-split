@@ -48,7 +48,10 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.debug("Tool getReportsOverview chamada via IA com days: {}", days);
+            logger.info(
+                "Tool getReportsOverview chamada via IA com days: {}. TenantContext: {}",
+                days,
+                TenantContext.getCurrentTenant());
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             Object result = getReportsOverview.execute(restaurantId, days);
@@ -66,7 +69,10 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.debug("Tool getFeedbackOverview chamada via IA com days: {}", days);
+            logger.info(
+                "Tool getFeedbackOverview chamada via IA com days: {}. TenantContext: {}",
+                days,
+                TenantContext.getCurrentTenant());
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             ZonedDateTime since = ZonedDateTime.now().minusDays(days);
