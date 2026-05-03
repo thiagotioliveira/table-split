@@ -28,4 +28,11 @@ public class FeedbackConfig {
     return new dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview(
         feedbackRepository);
   }
+
+  @Bean
+  public dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount
+      getFeedbackUnreadCount(FeedbackRepository feedbackRepository) {
+    return new dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount(
+        feedbackRepository);
+  }
 }

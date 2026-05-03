@@ -7,9 +7,11 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.m
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Transactional(readOnly = true)
 @org.springframework.web.bind.annotation.RequestMapping("/api/v1/manager/reports")
 public class ReportsApiController implements ReportsApi {
 

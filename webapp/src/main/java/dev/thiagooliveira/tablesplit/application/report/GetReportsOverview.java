@@ -14,9 +14,7 @@ import java.util.*;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
 
-@Service
 public class GetReportsOverview {
 
   private final OrderRepository orderRepository;

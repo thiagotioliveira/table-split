@@ -7,7 +7,9 @@ import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 public class ReportAndFeedbackTools {
 
   private final GetReportsOverview getReportsOverview;
