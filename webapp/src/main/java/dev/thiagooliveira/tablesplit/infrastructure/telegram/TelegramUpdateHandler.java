@@ -83,9 +83,9 @@ public class TelegramUpdateHandler {
 
   private void requestContact(Long chatId) {
     userStates.put(chatId, BotState.AWAITING_CONTACT);
-    telegramSender.sendText(
+    telegramSender.sendContactRequest(
         chatId,
-        "Olá! Para começar, por favor compartilhe seu contato para que eu possa identificar você no Table Split.");
+        "Olá! Para começar, por favor clique no botão abaixo para compartilhar seu contato e eu possa identificar você no Table Split.");
   }
 
   private void handleContact(Long chatId, Contact contact) {

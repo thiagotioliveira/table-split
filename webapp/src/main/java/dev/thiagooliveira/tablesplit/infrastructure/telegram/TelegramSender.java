@@ -75,4 +75,33 @@ public class TelegramSender extends DefaultAbsSender {
 
     executeSafe(sendMessage);
   }
+
+  public void sendContactRequest(Long chatId, String text) {
+    SendMessage sendMessage = new SendMessage();
+    sendMessage.setChatId(chatId.toString());
+    sendMessage.setText(text);
+    sendMessage.setParseMode("Markdown");
+
+    org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
+        replyKeyboardMarkup =
+            new org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup();
+    replyKeyboardMarkup.setSelective(true);
+    replyKeyboardMarkup.setResizeKeyboard(true);
+    replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+    List<org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow> keyboard =
+        new ArrayList<>();
+    org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow keyboardFirstRow =
+        new org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow();
+    org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton keyboardButton =
+        new org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton();
+    keyboardButton.setText("📱 Compartilhar Contato");
+    keyboardButton.setRequestContact(true);
+    keyboardFirstRow.add(keyboardButton);
+    keyboard.add(keyboardFirstRow);
+    replyKeyboardMarkup.setKeyboard(keyboard);
+    sendMessage.setReplyMarkup(replyKeyboardMarkup);
+
+    executeSafe(sendMessage);
+  }
 }
