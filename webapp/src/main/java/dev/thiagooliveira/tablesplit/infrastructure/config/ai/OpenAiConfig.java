@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.ai;
 
+import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
@@ -8,8 +9,11 @@ import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
 import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ChatAiService;
 import dev.thiagooliveira.tablesplit.infrastructure.ai.ReportAndFeedbackTools;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
+import java.lang.reflect.Method;
 import java.time.Duration;
+import java.time.LocalDateTime;
+
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,20 +29,24 @@ public class OpenAiConfig {
   private static final Logger logger = LoggerFactory.getLogger(OpenAiConfig.class);
 
   @Bean
-  public ReportAndFeedbackTools reportAndFeedbackTools(
+  public ChatAiService chatAiService(
+      @Value("${spring.ai.openai.api-key:}") String apiKey,
       GetReportsOverview getReportsOverview,
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount) {
-    return new ReportAndFeedbackTools(
+
+    logger.info("Inicializando ChatAiService...");
+
+    // Criamos o objeto de ferramentas DIRETAMENTE aqui para evitar Proxies do Spring
+    ReportAndFeedbackTools tools = new ReportAndFeedbackTools(
         getReportsOverview, getFeedbackOverview, getFeedbackUnreadCount);
-  }
 
-  @Bean
-  public ChatAiService chatAiService(
-      @Value("${spring.ai.openai.api-key:}") String apiKey,
-      ReportAndFeedbackTools reportAndFeedbackTools) {
-
-    logger.info("Inicializando ChatAiService com ferramentas de relatório...");
+    // Log de diagnóstico para confirmar detecção
+    for (Method method : tools.getClass().getDeclaredMethods()) {
+        if (method.isAnnotationPresent(Tool.class)) {
+            logger.info("-> Ferramenta registrada com sucesso: {}", method.getName());
+        }
+    }
 
     return AiServices.builder(ChatAiService.class)
         .chatLanguageModel(
@@ -49,22 +57,18 @@ public class OpenAiConfig {
                 .logRequests(true)
                 .logResponses(true)
                 .build())
-        .tools(reportAndFeedbackTools)
+        .tools(tools)
         .chatMemoryProvider(chatId -> MessageWindowChatMemory.withMaxMessages(20))
         .systemMessageProvider(
             chatId ->
-                "Você é o assistente inteligente do Table Split para gestores de restaurantes. "
-                    + "Data/Hora atual: "
-                    + Time.nowLocalDateTime()
-                    + ". "
-                    + "Você NÃO tem acesso interno a dados de faturamento ou feedback. "
-                    + "Sua ÚNICA fonte de dados são as ferramentas (tools). "
-                    + "Sempre que o gestor perguntar algo, use a ferramenta apropriada e responda com base nos dados reais. "
-                    + "IMPORTANTE: Use o símbolo monetário que vier no campo 'currencySymbol' da resposta. "
-                    + "Se o símbolo for '€', responda em Euros. Se for 'R$', responda em Reais. "
-                    + "O restaurante do gestor geralmente usa Euros (€), então fique atento. "
-                    + "Nunca diga que 'vai verificar' sem de fato chamar a ferramenta. "
-                    + "Responda em Português, de forma profissional e use o símbolo monetário correto retornado pelo relatório.")
+                "Você é o assistente inteligente do Table Split. "
+                    + "Data/Hora atual: " + Time.nowLocalDateTime() + ". "
+                    + "Sua ÚNICA fonte de dados financeiros são as ferramentas (tools). "
+                    + "Ao receber uma pergunta sobre faturamento ou feedback, você DEVE chamar a ferramenta IMEDIATAMENTE. "
+                    + "NUNCA responda que 'vai verificar' ou 'um momento'. Responda apenas quando tiver os dados da ferramenta. "
+                    + "Use o símbolo monetário (currencySymbol) retornado pela ferramenta. "
+                    + "Se o símbolo for '€', use Euros. Se for 'R$', use Reais. "
+                    + "Responda sempre em Português de forma concisa.")
         .build();
   }
 }
