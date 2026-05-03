@@ -225,3 +225,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260420-add-print-agent-tokens.yaml
   - include:
       file: db/changelog/changesets/20260501-add-restaurant-theme.yaml
+  - include:
+      file: db/changelog/changesets/20260503-add-telegram-user-mappings.yaml

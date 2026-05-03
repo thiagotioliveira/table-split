@@ -1,26 +1,35 @@
 package dev.thiagooliveira.tablesplit.infrastructure.telegram;
 
-import dev.thiagooliveira.tablesplit.infrastructure.ai.openai.OpenAiSimpleClient;
+import dev.thiagooliveira.tablesplit.infrastructure.ai.AiClient;
+import dev.thiagooliveira.tablesplit.infrastructure.config.telegram.TelegramProperties;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Contact;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-@Component
 public class TelegramBot extends TelegramLongPollingBot {
 
   private final TelegramProperties properties;
-  private final OpenAiSimpleClient aiClient;
+  private final AiClient aiClient;
   private final TelegramIdentityService identityService;
   private final BotContextService botContextService;
+  private final dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram
+          .TelegramUserMappingJpaRepository
+      mappingRepository;
 
   // States for the conversation
   private enum BotState {
@@ -36,13 +45,17 @@ public class TelegramBot extends TelegramLongPollingBot {
 
   public TelegramBot(
       TelegramProperties properties,
-      OpenAiSimpleClient aiClient,
+      AiClient aiClient,
       TelegramIdentityService identityService,
-      BotContextService botContextService) {
+      BotContextService botContextService,
+      dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram
+              .TelegramUserMappingJpaRepository
+          mappingRepository) {
     this.properties = properties;
     this.aiClient = aiClient;
     this.identityService = identityService;
     this.botContextService = botContextService;
+    this.mappingRepository = mappingRepository;
     System.out.println(
         "TelegramBot inicializado com sucesso! Username: " + properties.getUsername());
   }
@@ -61,26 +74,59 @@ public class TelegramBot extends TelegramLongPollingBot {
 
   @Override
   public void onUpdateReceived(Update update) {
-    System.out.println("Recebi uma atualização do Telegram!");
     if (update.hasMessage()) {
-      var message = update.getMessage();
+      Message message = update.getMessage();
       Long chatId = message.getChatId();
-      System.out.println("Mensagem recebida de chatId: " + chatId + " Texto: " + message.getText());
-
-      if (message.hasText() && "/start".equals(message.getText())) {
-        System.out.println("Comando /start detectado.");
-        requestContact(chatId);
-        return;
-      }
-
-      if (message.hasContact()) {
-        handleContact(chatId, message.getContact());
-        return;
-      }
 
       if (message.hasText()) {
-        handleTextMessage(chatId, message.getText());
+        String text = message.getText();
+        System.out.println("Mensagem recebida de chatId: " + chatId + " Texto: " + text);
+
+        if ("/start".equals(text)) {
+          requestContact(chatId);
+        } else {
+          handleTextMessage(chatId, text);
+        }
+      } else if (message.hasContact()) {
+        handleContact(chatId, message.getContact());
       }
+    } else if (update.hasCallbackQuery()) {
+      handleCallbackQuery(update.getCallbackQuery());
+    }
+  }
+
+  private void handleCallbackQuery(CallbackQuery callbackQuery) {
+    String data = callbackQuery.getData();
+    Long chatId = callbackQuery.getMessage().getChatId();
+
+    if (data.startsWith("confirm_order:")) {
+      sendText(chatId, "✅ Você confirmou o recebimento do pedido!");
+    }
+  }
+
+  public void sendTextWithButton(Long chatId, String text, String buttonText, String callbackData) {
+    SendMessage sendMessage = new SendMessage();
+    sendMessage.setChatId(chatId.toString());
+    sendMessage.setText(text);
+    sendMessage.setParseMode("Markdown");
+
+    InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+    List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+    List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+    InlineKeyboardButton button = new InlineKeyboardButton();
+    button.setText(buttonText);
+    button.setCallbackData(callbackData);
+
+    rowInline.add(button);
+    rowsInline.add(rowInline);
+    markupInline.setKeyboard(rowsInline);
+    sendMessage.setReplyMarkup(markupInline);
+
+    try {
+      execute(sendMessage);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
@@ -126,6 +172,7 @@ public class TelegramBot extends TelegramLongPollingBot {
       var user = userOpt.get();
       identifiedUsers.put(chatId, user);
       userStates.put(chatId, BotState.IDLE);
+      saveMapping(chatId, phone, user);
       sendText(
           chatId,
           "Bem-vindo, "
@@ -141,6 +188,20 @@ public class TelegramBot extends TelegramLongPollingBot {
     sendText(
         chatId,
         "Não encontrei você como cliente. Você faz parte da equipe de algum restaurante? Se sim, por favor digite o identificador (slug) do seu restaurante.");
+  }
+
+  private void saveMapping(Long chatId, String phone, TelegramIdentityService.IdentifiedUser user) {
+    if (user.restaurantId() == null) return;
+
+    var entity =
+        new dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram
+            .TelegramUserMappingEntity();
+    entity.setChatId(chatId);
+    entity.setPhone(phone);
+    entity.setRestaurantId(user.restaurantId());
+    entity.setName(user.name());
+    entity.setRole(user.role());
+    mappingRepository.save(entity);
   }
 
   private void handleTextMessage(Long chatId, String text) {
@@ -159,6 +220,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         var staff = staffOpt.get();
         identifiedUsers.put(chatId, staff);
         userStates.put(chatId, BotState.IDLE);
+        saveMapping(chatId, phone, staff);
         sendText(
             chatId,
             "Excelente! Bem-vindo, "
@@ -202,10 +264,23 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
   }
 
-  private void sendText(Long chatId, String text) {
+  public void sendTyping(Long chatId) {
+    SendChatAction action = new SendChatAction();
+    action.setChatId(chatId.toString());
+    action.setAction(org.telegram.telegrambots.meta.api.methods.ActionType.TYPING);
+    try {
+      execute(action);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void sendText(Long chatId, String text) {
     SendMessage sendMessage = new SendMessage();
     sendMessage.setChatId(chatId.toString());
     sendMessage.setText(text);
+    sendMessage.setParseMode("Markdown");
+    sendMessage.setDisableNotification(false);
     try {
       execute(sendMessage);
     } catch (Exception e) {

@@ -8,9 +8,7 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
-@Service
 public class TelegramIdentityService {
 
   private final UserRepository userRepository;

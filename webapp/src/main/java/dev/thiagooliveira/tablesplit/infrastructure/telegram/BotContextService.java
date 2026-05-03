@@ -11,9 +11,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
 
-@Service
 public class BotContextService {
 
   private final GetRestaurant getRestaurant;

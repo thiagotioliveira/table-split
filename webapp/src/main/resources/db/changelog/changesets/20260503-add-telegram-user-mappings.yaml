@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260503-add-telegram-user-mappings
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: telegram_user_mappings
+            columns:
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: role
+                  type: varchar(50)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()

@@ -31,6 +31,9 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
 
 springdoc:
   api-docs:
@@ -100,3 +103,8 @@ management:
   health:
     rabbit:
       enabled: ${app.integration.rabbit.enabled}
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:}
+    username: ${TELEGRAM_BOT_USERNAME:}

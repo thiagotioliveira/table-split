@@ -1,17 +1,15 @@
 package dev.thiagooliveira.tablesplit.infrastructure.ai.openai;
 
+import dev.thiagooliveira.tablesplit.infrastructure.ai.AiClient;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-@Service
-public class OpenAiSimpleClient {
+public class OpenAiSimpleClient implements AiClient {
 
   private final RestClient restClient;
   private final String apiKey;
 
-  public OpenAiSimpleClient(@Value("${spring.ai.openai.api-key}") String apiKey) {
+  public OpenAiSimpleClient(String apiKey) {
     this.restClient = RestClient.builder().baseUrl("https://api.openai.com/v1").build();
     this.apiKey = apiKey;
   }
