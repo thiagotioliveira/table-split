@@ -96,7 +96,7 @@ public class SecurityConfig {
     http.csrf(
         csrf -> {
           if (env.acceptsProfiles(Profiles.of("prod"))) {
-            csrf.ignoringRequestMatchers("/api/print-agent/**");
+            csrf.ignoringRequestMatchers("/api/print-agent/**", "/telegram/webhook");
             if (env.acceptsProfiles(Profiles.of("h2"))) {
               csrf.ignoringRequestMatchers("/h2-console/**");
             }
@@ -128,7 +128,8 @@ public class SecurityConfig {
                       "/api/print-agent/**",
                       "/api/notifications/sse/subscribe/**",
                       "/api/notifications/push/public-key",
-                      "/api/v1/customer/**")
+                      "/api/v1/customer/**",
+                      "/telegram/webhook")
                   .permitAll()
                   .dispatcherTypeMatchers(DispatcherType.ERROR)
                   .permitAll();

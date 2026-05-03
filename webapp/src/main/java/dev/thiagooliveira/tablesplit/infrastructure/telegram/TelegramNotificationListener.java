@@ -5,12 +5,12 @@ import dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram.Telegra
 
 public class TelegramNotificationListener {
 
-  private final TelegramBot telegramBot;
+  private final TelegramSender telegramSender;
   private final TelegramUserMappingJpaRepository mappingRepository;
 
   public TelegramNotificationListener(
-      TelegramBot telegramBot, TelegramUserMappingJpaRepository mappingRepository) {
-    this.telegramBot = telegramBot;
+      TelegramSender telegramSender, TelegramUserMappingJpaRepository mappingRepository) {
+    this.telegramSender = telegramSender;
     this.mappingRepository = mappingRepository;
   }
 
@@ -28,8 +28,8 @@ public class TelegramNotificationListener {
             event.getTicket().calculateTotal());
 
     for (TelegramUserMappingEntity mapping : mappings) {
-      telegramBot.sendTyping(mapping.getChatId());
-      telegramBot.sendTextWithButton(
+      telegramSender.sendTyping(mapping.getChatId());
+      telegramSender.sendTextWithButton(
           mapping.getChatId(),
           message,
           "✅ Confirmar Recebimento",

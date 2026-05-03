@@ -12,6 +12,8 @@ public class TelegramProperties {
   private String token;
   private String username;
   private boolean enabled;
+  private String baseUrl;
+  private String webhookPath = "/telegram/webhook";
 
   @AssertTrue(
       message =
@@ -43,5 +45,21 @@ public class TelegramProperties {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+
+  public void setBaseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
+  }
+
+  public String getWebhookPath() {
+    return webhookPath;
+  }
+
+  public void setWebhookPath(String webhookPath) {
+    this.webhookPath = webhookPath;
   }
 }
