@@ -95,7 +95,6 @@ public class GetReportsOverview {
         .ifPresent(
             r -> {
               String symbol = r.getCurrency().getSymbol();
-              System.out.println("DEBUG IA: Restaurante " + restaurantId + " usa moeda: " + symbol);
               response.setCurrencySymbol(symbol);
             });
 

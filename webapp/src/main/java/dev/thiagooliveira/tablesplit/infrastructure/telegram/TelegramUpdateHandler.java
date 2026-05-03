@@ -52,7 +52,7 @@ public class TelegramUpdateHandler {
 
       if (message.hasText()) {
         String text = message.getText();
-        logger.info("Mensagem recebida de chatId: {} Texto: {}", chatId, text);
+        logger.debug("Mensagem recebida de chatId: {} Texto: {}", chatId, text);
 
         if ("/start".equals(text)) {
           requestContact(chatId);

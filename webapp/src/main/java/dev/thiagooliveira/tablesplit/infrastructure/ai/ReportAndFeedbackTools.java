@@ -64,7 +64,7 @@ public class ReportAndFeedbackTools {
         status -> {
           try {
             String tenant = TenantContext.getCurrentTenant();
-            logger.info("Tool getReportsOverview chamada via IA. TenantContext: {}", tenant);
+            logger.debug("Tool getReportsOverview chamada via IA. TenantContext: {}", tenant);
 
             setTenantSchema(tenant);
 
@@ -86,7 +86,7 @@ public class ReportAndFeedbackTools {
         status -> {
           try {
             String tenant = TenantContext.getCurrentTenant();
-            logger.info("Tool getFeedbackOverview chamada via IA. TenantContext: {}", tenant);
+            logger.debug("Tool getFeedbackOverview chamada via IA. TenantContext: {}", tenant);
 
             setTenantSchema(tenant);
 
@@ -108,7 +108,7 @@ public class ReportAndFeedbackTools {
         status -> {
           try {
             String tenant = TenantContext.getCurrentTenant();
-            logger.info("Tool getUnreadFeedbackCount chamada via IA. TenantContext: {}", tenant);
+            logger.debug("Tool getUnreadFeedbackCount chamada via IA. TenantContext: {}", tenant);
 
             setTenantSchema(tenant);
 
