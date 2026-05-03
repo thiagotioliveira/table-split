@@ -48,7 +48,7 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
+            logger.debug("Tool getReportsOverview chamada via IA com days: {}", days);
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             Object result = getReportsOverview.execute(restaurantId, days);
@@ -66,7 +66,7 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
+            logger.debug("Tool getFeedbackOverview chamada via IA com days: {}", days);
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             ZonedDateTime since = ZonedDateTime.now().minusDays(days);
@@ -84,7 +84,7 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info("Tool getUnreadFeedbackCount chamada via IA");
+            logger.debug("Tool getUnreadFeedbackCount chamada via IA");
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             long count = getFeedbackUnreadCount.execute(restaurantId);

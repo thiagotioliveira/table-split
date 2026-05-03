@@ -88,7 +88,7 @@ public class TelegramConfig {
               ? properties.getWebhookPath().substring(1)
               : properties.getWebhookPath();
 
-      logger.info("Registrando Webhook do Telegram: {}", webhookUrl);
+      logger.debug("Registrando Webhook do Telegram: {}", webhookUrl);
       try {
         SetWebhook setWebhook = SetWebhook.builder().url(webhookUrl).build();
         telegramSender.execute(setWebhook);

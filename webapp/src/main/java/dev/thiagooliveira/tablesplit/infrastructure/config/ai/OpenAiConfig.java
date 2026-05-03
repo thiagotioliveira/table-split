@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
@@ -38,10 +39,13 @@ public class OpenAiConfig {
       PlatformTransactionManager transactionManager,
       ObjectMapper objectMapper) {
 
-    logger.info("Inicializando ChatAiService...");
+    logger.debug("Inicializando ChatAiService...");
 
-    // Criamos o TransactionTemplate para gerenciar transações programaticamente na infra
+    // Criamos o TransactionTemplate para gerenciar transações programaticamente na infra.
+    // Usamos REQUIRES_NEW para garantir que o Hibernate resolva o Tenant corretamente,
+    // ignorando qualquer sessão já aberta (como pelo OpenSessionInViewFilter).
     TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+    transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     transactionTemplate.setReadOnly(true);
 
     // Criamos o objeto de ferramentas DIRETAMENTE aqui para evitar Proxies do Spring
@@ -56,7 +60,7 @@ public class OpenAiConfig {
     // Log de diagnóstico para confirmar detecção
     for (Method method : tools.getClass().getDeclaredMethods()) {
       if (method.isAnnotationPresent(Tool.class)) {
-        logger.info("-> Ferramenta registrada com sucesso: {}", method.getName());
+        logger.debug("-> Ferramenta registrada com sucesso: {}", method.getName());
       }
     }
 
