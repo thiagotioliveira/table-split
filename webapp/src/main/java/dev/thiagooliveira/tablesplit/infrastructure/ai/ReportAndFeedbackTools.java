@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
 import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
+import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class ReportAndFeedbackTools {
       logger.warn("restaurantId não identificado no contexto!");
       return "Erro: Restaurante não identificado no contexto.";
     }
-    ZonedDateTime since = ZonedDateTime.now().minusDays(days);
+    ZonedDateTime since = Time.nowZonedDateTime().minusDays(days);
     return getFeedbackOverview.execute(restaurantId, since);
   }
 

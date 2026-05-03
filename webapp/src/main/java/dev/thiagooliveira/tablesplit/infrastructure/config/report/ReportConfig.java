@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +19,14 @@ public class ReportConfig {
       FeedbackRepository feedbackRepository,
       TableRepository tableRepository,
       ItemRepository itemRepository,
-      PromotionRepository promotionRepository) {
+      PromotionRepository promotionRepository,
+      RestaurantRepository restaurantRepository) {
     return new GetReportsOverview(
-        orderRepository, feedbackRepository, tableRepository, itemRepository, promotionRepository);
+        orderRepository,
+        feedbackRepository,
+        tableRepository,
+        itemRepository,
+        promotionRepository,
+        restaurantRepository);
   }
 }

@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.Promotion;
 import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.model.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -22,18 +23,21 @@ public class GetReportsOverview {
   private final TableRepository tableRepository;
   private final ItemRepository itemRepository;
   private final PromotionRepository promotionRepository;
+  private final RestaurantRepository restaurantRepository;
 
   public GetReportsOverview(
       OrderRepository orderRepository,
       FeedbackRepository feedbackRepository,
       TableRepository tableRepository,
       ItemRepository itemRepository,
-      PromotionRepository promotionRepository) {
+      PromotionRepository promotionRepository,
+      RestaurantRepository restaurantRepository) {
     this.orderRepository = orderRepository;
     this.feedbackRepository = feedbackRepository;
     this.tableRepository = tableRepository;
     this.itemRepository = itemRepository;
     this.promotionRepository = promotionRepository;
+    this.restaurantRepository = restaurantRepository;
   }
 
   public ReportsOverviewResponse execute(UUID restaurantId, int days) {
@@ -84,6 +88,10 @@ public class GetReportsOverview {
     response.setPromoUsage(calculatePromoUsage(orders));
     response.setCustomerRatings(calculateRatings(restaurantId, start));
     response.setTableOccupancy(calculateOccupancy(orders, restaurantId));
+
+    restaurantRepository
+        .findById(restaurantId)
+        .ifPresent(r -> response.setCurrencySymbol(r.getCurrency().getSymbol()));
 
     return response;
   }

@@ -87,6 +87,9 @@ components:
           $ref: '#/components/schemas/RatingStats'
         tableOccupancy:
           $ref: '#/components/schemas/OccupancyStats'
+        currencySymbol:
+          type: string
+          description: The currency symbol of the restaurant (e.g., €, R$)
 
     ReportStats:
       type: object
