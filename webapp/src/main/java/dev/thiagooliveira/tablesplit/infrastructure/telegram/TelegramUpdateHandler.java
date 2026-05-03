@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -114,7 +115,8 @@ public class TelegramUpdateHandler {
         "Não encontrei você como cliente. Você faz parte da equipe de algum restaurante? Se sim, por favor digite o identificador (slug) do seu restaurante.");
   }
 
-  private void handleReset(Long chatId) {
+  @Transactional
+  public void handleReset(Long chatId) {
     identifiedUsers.remove(chatId);
     userStates.remove(chatId);
     chatToPhoneMap.remove(chatId);
@@ -122,7 +124,8 @@ public class TelegramUpdateHandler {
     telegramSender.sendText(chatId, "Sua identificação foi removida. Use /start para recomeçar.");
   }
 
-  private void handleSlugLogin(Long chatId, String slug) {
+  @Transactional
+  public void handleSlugLogin(Long chatId, String slug) {
     String phone = chatToPhoneMap.get(chatId);
     if (phone == null) {
       // Try to load phone from DB

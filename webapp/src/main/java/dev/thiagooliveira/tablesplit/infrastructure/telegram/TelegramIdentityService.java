@@ -56,9 +56,12 @@ public class TelegramIdentityService {
     String normalizedPhone = phone.replaceAll("\\s+", "");
     Optional<Restaurant> restaurant = restaurantRepository.findBySlug(slug);
     if (restaurant.isEmpty()) {
+      logger.warn("[Identity] Restaurante não encontrado para o slug: {}", slug);
       return Optional.empty();
     }
 
+    logger.info(
+        "[Identity] Restaurante encontrado por slug: {} (ID: {})", slug, restaurant.get().getId());
     TenantContext.setCurrentTenant(
         TenantContext.generateTenantIdentifier(restaurant.get().getId()));
     try {
