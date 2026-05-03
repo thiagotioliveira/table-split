@@ -191,6 +191,12 @@ public class TelegramUpdateHandler {
     String phone = chatToPhoneMap.get(chatId);
 
     if (phone == null) {
+      // Tenta carregar do banco de dados se não estiver em memória
+      loadFromDb(chatId);
+      phone = chatToPhoneMap.get(chatId);
+    }
+
+    if (phone == null) {
       requestContact(chatId);
       return;
     }

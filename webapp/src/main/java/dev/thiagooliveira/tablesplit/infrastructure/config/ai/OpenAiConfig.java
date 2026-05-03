@@ -39,9 +39,12 @@ public class OpenAiConfig {
       GetFeedbackUnreadCount getFeedbackUnreadCount,
       PlatformTransactionManager transactionManager,
       ObjectMapper objectMapper,
-      EntityManager entityManager) {
+      EntityManager entityManager,
+      org.springframework.core.env.Environment env) {
 
     logger.debug("Inicializando ChatAiService...");
+
+    boolean isH2 = java.util.Arrays.asList(env.getActiveProfiles()).contains("h2");
 
     // Criamos o TransactionTemplate para gerenciar transações programaticamente na infra.
     // Usamos REQUIRES_NEW para garantir que o Hibernate resolva o Tenant corretamente,
@@ -58,7 +61,8 @@ public class OpenAiConfig {
             getFeedbackUnreadCount,
             transactionTemplate,
             objectMapper,
-            entityManager);
+            entityManager,
+            isH2);
 
     // Log de diagnóstico para confirmar detecção
     for (Method method : tools.getClass().getDeclaredMethods()) {

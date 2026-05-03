@@ -30,6 +30,7 @@ public class ReportAndFeedbackTools {
   private final TransactionTemplate transactionTemplate;
   private final ObjectMapper objectMapper;
   private final EntityManager entityManager;
+  private final boolean isH2;
 
   public ReportAndFeedbackTools(
       GetReportsOverview getReportsOverview,
@@ -37,13 +38,35 @@ public class ReportAndFeedbackTools {
       GetFeedbackUnreadCount getFeedbackUnreadCount,
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
-      EntityManager entityManager) {
+      EntityManager entityManager,
+      boolean isH2) {
     this.getReportsOverview = getReportsOverview;
     this.getFeedbackOverview = getFeedbackOverview;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
     this.transactionTemplate = transactionTemplate;
     this.objectMapper = objectMapper;
     this.entityManager = entityManager;
+    this.isH2 = isH2;
+  }
+
+  private void setTenantSchema(String tenant) {
+    if (tenant == null || tenant.trim().isEmpty() || "PUBLIC".equalsIgnoreCase(tenant)) {
+      String sql = isH2 ? "SET SCHEMA_SEARCH_PATH PUBLIC" : "SET search_path TO PUBLIC";
+      entityManager.createNativeQuery(sql).executeUpdate();
+      return;
+    }
+
+    if (isH2) {
+      // Syntax para H2 (Local/Testes)
+      entityManager
+          .createNativeQuery("SET SCHEMA_SEARCH_PATH " + tenant + ", PUBLIC")
+          .executeUpdate();
+    } else {
+      // Syntax para PostgreSQL (Produção)
+      entityManager
+          .createNativeQuery("SET search_path TO \"" + tenant + "\", PUBLIC")
+          .executeUpdate();
+    }
   }
 
   @Tool(
@@ -53,10 +76,11 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info(
-                "Tool getReportsOverview chamada via IA com days: {}. TenantContext: {}",
-                days,
-                TenantContext.getCurrentTenant());
+            String tenant = TenantContext.getCurrentTenant();
+            logger.info("Tool getReportsOverview chamada via IA. TenantContext: {}", tenant);
+
+            setTenantSchema(tenant);
+
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             Object result = getReportsOverview.execute(restaurantId, days);
@@ -74,10 +98,11 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info(
-                "Tool getFeedbackOverview chamada via IA com days: {}. TenantContext: {}",
-                days,
-                TenantContext.getCurrentTenant());
+            String tenant = TenantContext.getCurrentTenant();
+            logger.info("Tool getFeedbackOverview chamada via IA. TenantContext: {}", tenant);
+
+            setTenantSchema(tenant);
+
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             ZonedDateTime since = ZonedDateTime.now().minusDays(days);
@@ -95,7 +120,11 @@ public class ReportAndFeedbackTools {
     return transactionTemplate.execute(
         status -> {
           try {
-            logger.info("Tool getUnreadFeedbackCount chamada via IA");
+            String tenant = TenantContext.getCurrentTenant();
+            logger.info("Tool getUnreadFeedbackCount chamada via IA. TenantContext: {}", tenant);
+
+            setTenantSchema(tenant);
+
             UUID restaurantId = getRestaurantIdFromContext();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             long count = getFeedbackUnreadCount.execute(restaurantId);
@@ -113,6 +142,8 @@ public class ReportAndFeedbackTools {
           try {
             String tenant = TenantContext.getCurrentTenant();
             if (tenant == null) return "Erro: TenantContext nulo.";
+
+            setTenantSchema(tenant);
 
             StringBuilder report = new StringBuilder();
             report.append("Diagnóstico para o tenant: ").append(tenant).append("\n");
