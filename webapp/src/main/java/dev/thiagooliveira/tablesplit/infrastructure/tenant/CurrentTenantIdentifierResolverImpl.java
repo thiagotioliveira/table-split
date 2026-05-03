@@ -22,7 +22,7 @@ public class CurrentTenantIdentifierResolverImpl
   public String resolveCurrentTenantIdentifier() {
     String tenant = TenantContext.getCurrentTenant();
     String resolved = tenant != null ? tenant : DEFAULT_TENANT;
-    logger.info("[TenantResolver] Resolved tenant: {}", resolved);
+    logger.debug("[TenantResolver] Resolved tenant: {}", resolved);
     return resolved;
   }
 
