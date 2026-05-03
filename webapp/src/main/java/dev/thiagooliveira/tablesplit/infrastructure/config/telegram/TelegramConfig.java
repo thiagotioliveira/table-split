@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Configuration
 @ConditionalOnExpression(
@@ -21,6 +24,11 @@ import org.springframework.context.annotation.Configuration;
 public class TelegramConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(TelegramConfig.class);
+
+  @Bean
+  public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
+    return new TelegramBotsApi(DefaultBotSession.class);
+  }
 
   @Bean
   public TelegramIdentityService telegramIdentityService(
