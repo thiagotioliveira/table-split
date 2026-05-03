@@ -8,8 +8,11 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TelegramIdentityService {
+  private static final Logger logger = LoggerFactory.getLogger(TelegramIdentityService.class);
 
   private final UserRepository userRepository;
   private final StaffRepository staffRepository;
@@ -26,7 +29,7 @@ public class TelegramIdentityService {
 
   public Optional<IdentifiedUser> identify(String phone) {
     String normalizedPhone = phone.replaceAll("\\s+", "");
-    System.out.println("[Identity] Buscando User com telefone normalizado: " + normalizedPhone);
+    logger.debug("[Identity] Buscando User com telefone normalizado: {}", normalizedPhone);
 
     // Try exact match first
     TenantContext.setCurrentTenant(null);

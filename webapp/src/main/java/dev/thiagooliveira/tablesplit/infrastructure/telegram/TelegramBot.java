@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -22,6 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 public class TelegramBot extends TelegramLongPollingBot {
+  private static final Logger logger = LoggerFactory.getLogger(TelegramBot.class);
 
   private final TelegramProperties properties;
   private final TelegramIdentityService identityService;
@@ -53,19 +56,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     this.chatAiService = chatAiService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
-    System.out.println(
-        "TelegramBot inicializado com sucesso! Username: " + properties.getUsername());
+    logger.debug("TelegramBot inicializado com sucesso! Username: {}", properties.getUsername());
   }
 
   @Override
   public String getBotUsername() {
-    System.out.println("SDK solicitou o username: " + properties.getUsername());
+    logger.debug("SDK solicitou o username: {}", properties.getUsername());
     return properties.getUsername();
   }
 
   @Override
   public String getBotToken() {
-    System.out.println("SDK solicitou o token.");
+    logger.debug("SDK solicitou o token.");
     return properties.getToken();
   }
 
@@ -77,7 +79,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
       if (message.hasText()) {
         String text = message.getText();
-        System.out.println("Mensagem recebida de chatId: " + chatId + " Texto: " + text);
+        logger.debug("Mensagem recebida de chatId: {} Texto: {}", chatId, text);
 
         if ("/start".equals(text)) {
           requestContact(chatId);
@@ -123,12 +125,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(sendMessage);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Error sending message with button", e);
     }
   }
 
   private void requestContact(Long chatId) {
-    System.out.println("Solicitando contato para chatId: " + chatId);
+    logger.debug("Solicitando contato para chatId: {}", chatId);
     userStates.put(chatId, BotState.AWAITING_CONTACT);
     SendMessage sendMessage = new SendMessage();
 
@@ -152,7 +154,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(sendMessage);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Error requesting contact", e);
     }
   }
 
@@ -254,7 +256,7 @@ public class TelegramBot extends TelegramLongPollingBot {
       sendText(chatId, response);
     } catch (Exception e) {
       sendText(chatId, "Desculpe, tive um problema ao processar sua mensagem com a IA.");
-      e.printStackTrace();
+      logger.error("Error in regular AI chat", e);
     } finally {
       dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.clear();
     }
@@ -267,7 +269,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(action);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Error sending typing action", e);
     }
   }
 
@@ -280,7 +282,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(sendMessage);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Error sending text message", e);
     }
   }
 }
