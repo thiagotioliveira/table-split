@@ -11,7 +11,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
 import jakarta.persistence.EntityManager;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,7 @@ public class ReportAndFeedbackTools {
 
             setTenantSchema(tenant);
 
-            UUID restaurantId = getRestaurantIdFromContext();
+            UUID restaurantId = TenantContext.getRestaurantId();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             Object result = getReportsOverview.execute(restaurantId, days);
             return objectMapper.writeValueAsString(result);
@@ -90,7 +89,7 @@ public class ReportAndFeedbackTools {
 
             setTenantSchema(tenant);
 
-            UUID restaurantId = getRestaurantIdFromContext();
+            UUID restaurantId = TenantContext.getRestaurantId();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             ZonedDateTime since = Time.nowZonedDateTime().minusDays(days);
             Object result = getFeedbackOverview.execute(restaurantId, since);
@@ -112,7 +111,7 @@ public class ReportAndFeedbackTools {
 
             setTenantSchema(tenant);
 
-            UUID restaurantId = getRestaurantIdFromContext();
+            UUID restaurantId = TenantContext.getRestaurantId();
             if (restaurantId == null) return "Erro: Restaurante não identificado.";
             long count = getFeedbackUnreadCount.execute(restaurantId);
             return String.valueOf(count);
@@ -120,63 +119,5 @@ public class ReportAndFeedbackTools {
             return "Erro ao contar feedbacks: " + e.getMessage();
           }
         });
-  }
-
-  @Tool("Diagnose database schema and table existence for the current tenant")
-  public String diagnoseDatabase() {
-    return transactionTemplate.execute(
-        status -> {
-          try {
-            String tenant = TenantContext.getCurrentTenant();
-            if (tenant == null) return "Erro: TenantContext nulo.";
-
-            setTenantSchema(tenant);
-
-            StringBuilder report = new StringBuilder();
-            report.append("Diagnóstico para o tenant: ").append(tenant).append("\n");
-
-            // 1. Check Schema
-            List<?> schemas =
-                entityManager
-                    .createNativeQuery(
-                        "SELECT schema_name FROM information_schema.schemata WHERE schema_name = :tenant")
-                    .setParameter("tenant", tenant)
-                    .getResultList();
-
-            if (schemas.isEmpty()) {
-              report.append("❌ SCHEMA NÃO ENCONTRADO NO BANCO DE DADOS.\n");
-            } else {
-              report.append("✅ Schema encontrado.\n");
-
-              // 2. Check Table
-              List<?> tables =
-                  entityManager
-                      .createNativeQuery(
-                          "SELECT table_name FROM information_schema.tables WHERE table_schema = :tenant AND table_name = 'orders'")
-                      .setParameter("tenant", tenant)
-                      .getResultList();
-
-              if (tables.isEmpty()) {
-                report.append("❌ TABELA 'orders' NÃO ENCONTRADA NESTE SCHEMA.\n");
-              } else {
-                report.append("✅ Tabela 'orders' encontrada.\n");
-              }
-            }
-
-            return report.toString();
-          } catch (Exception e) {
-            return "Erro no diagnóstico: " + e.getMessage();
-          }
-        });
-  }
-
-  private UUID getRestaurantIdFromContext() {
-    String tenant = TenantContext.getCurrentTenant();
-    if (tenant == null || !tenant.startsWith("t_")) return null;
-    try {
-      return UUID.fromString(tenant.substring(2).replace("_", "-"));
-    } catch (Exception e) {
-      return null;
-    }
   }
 }

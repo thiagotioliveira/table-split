@@ -28,4 +28,14 @@ public class TenantContext {
     if (id == null) return "PUBLIC";
     return "t_" + id.toString().replace("-", "_").toLowerCase();
   }
+
+  public static UUID getRestaurantId() {
+    String tenant = getCurrentTenant();
+    if (tenant == null || !tenant.startsWith("t_")) return null;
+    try {
+      return UUID.fromString(tenant.substring(2).replace("_", "-"));
+    } catch (Exception e) {
+      return null;
+    }
+  }
 }
