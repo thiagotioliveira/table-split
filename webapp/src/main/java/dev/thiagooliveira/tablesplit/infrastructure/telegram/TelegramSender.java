@@ -43,8 +43,15 @@ public class TelegramSender extends DefaultAbsSender {
     SendMessage sendMessage = new SendMessage();
     sendMessage.setChatId(chatId.toString());
     sendMessage.setText(text);
-    sendMessage.setParseMode("Markdown");
-    executeSafe(sendMessage);
+    sendMessage.setParseMode("HTML");
+
+    try {
+      execute(sendMessage);
+    } catch (TelegramApiException e) {
+      logger.warn("Falha ao enviar HTML, tentando texto puro: {}", e.getMessage());
+      sendMessage.setParseMode(null);
+      executeSafe(sendMessage);
+    }
   }
 
   public void sendTyping(Long chatId) {
@@ -58,7 +65,7 @@ public class TelegramSender extends DefaultAbsSender {
     SendMessage sendMessage = new SendMessage();
     sendMessage.setChatId(chatId.toString());
     sendMessage.setText(text);
-    sendMessage.setParseMode("Markdown");
+    sendMessage.setParseMode("HTML");
 
     InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
     List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
@@ -73,14 +80,20 @@ public class TelegramSender extends DefaultAbsSender {
     markupInline.setKeyboard(rowsInline);
     sendMessage.setReplyMarkup(markupInline);
 
-    executeSafe(sendMessage);
+    try {
+      execute(sendMessage);
+    } catch (TelegramApiException e) {
+      logger.warn("Falha ao enviar HTML com botão, tentando texto puro: {}", e.getMessage());
+      sendMessage.setParseMode(null);
+      executeSafe(sendMessage);
+    }
   }
 
   public void sendContactRequest(Long chatId, String text) {
     SendMessage sendMessage = new SendMessage();
     sendMessage.setChatId(chatId.toString());
     sendMessage.setText(text);
-    sendMessage.setParseMode("Markdown");
+    sendMessage.setParseMode("HTML");
 
     org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
         replyKeyboardMarkup =
