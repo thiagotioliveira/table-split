@@ -26,9 +26,16 @@ public class TelegramConfig {
   private static final Logger logger = LoggerFactory.getLogger(TelegramConfig.class);
 
   @Bean
-  public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
-    logger.info("Configurando TelegramBotsApi...");
-    return new TelegramBotsApi(DefaultBotSession.class);
+  public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
+    logger.info("Configurando TelegramBotsApi e registrando bot...");
+    TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+    try {
+      botsApi.registerBot(telegramBot);
+      logger.info("Bot registrado com sucesso no TelegramBotsApi!");
+    } catch (TelegramApiException e) {
+      logger.error("Erro ao registrar o bot: {}", e.getMessage());
+    }
+    return botsApi;
   }
 
   @Bean
