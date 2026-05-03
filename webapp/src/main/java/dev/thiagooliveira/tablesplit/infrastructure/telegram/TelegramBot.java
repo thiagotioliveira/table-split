@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.telegram;
 
-import dev.thiagooliveira.tablesplit.infrastructure.ai.AiClient;
+import dev.thiagooliveira.tablesplit.infrastructure.ai.ChatAiService;
 import dev.thiagooliveira.tablesplit.infrastructure.config.telegram.TelegramProperties;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +24,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 public class TelegramBot extends TelegramLongPollingBot {
 
   private final TelegramProperties properties;
-  private final AiClient aiClient;
   private final TelegramIdentityService identityService;
-  private final BotContextService botContextService;
+  private final ChatAiService chatAiService;
   private final dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram
           .TelegramUserMappingJpaRepository
       mappingRepository;
@@ -45,16 +44,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
   public TelegramBot(
       TelegramProperties properties,
-      AiClient aiClient,
+      ChatAiService chatAiService,
       TelegramIdentityService identityService,
-      BotContextService botContextService,
       dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram
               .TelegramUserMappingJpaRepository
           mappingRepository) {
     this.properties = properties;
-    this.aiClient = aiClient;
+    this.chatAiService = chatAiService;
     this.identityService = identityService;
-    this.botContextService = botContextService;
     this.mappingRepository = mappingRepository;
     System.out.println(
         "TelegramBot inicializado com sucesso! Username: " + properties.getUsername());
@@ -240,27 +237,26 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     // Regular AI Chat
     var user = identifiedUsers.get(chatId);
-    String userName = (user != null) ? user.name() : "Usuário";
-    String role = (user != null) ? user.role() : "Desconhecido";
-
-    String restaurantContext = "";
-    if (user != null && user.restaurantId() != null) {
-      restaurantContext = botContextService.getRestaurantContext(user.restaurantId());
+    if (user == null || user.restaurantId() == null) {
+      sendText(
+          chatId, "Desculpe, não consegui identificar seu restaurante para fornecer informações.");
+      return;
     }
 
-    String systemPrompt =
-        String.format(
-            "Você é o assistente inteligente do Table Split. Você está conversando com %s, que é um %s.\n"
-                + "Seja prestativo, profissional e use um tom amigável.\n"
-                + "Abaixo estão informações sobre o restaurante para você usar nas respostas:\n%s",
-            userName, role, restaurantContext);
+    sendTyping(chatId);
 
     try {
-      String response = aiClient.chat(systemPrompt, text);
+      dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext
+              .generateTenantIdentifier(user.restaurantId()));
+
+      String response = chatAiService.chat(chatId, text);
       sendText(chatId, response);
     } catch (Exception e) {
       sendText(chatId, "Desculpe, tive um problema ao processar sua mensagem com a IA.");
       e.printStackTrace();
+    } finally {
+      dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.clear();
     }
   }
 

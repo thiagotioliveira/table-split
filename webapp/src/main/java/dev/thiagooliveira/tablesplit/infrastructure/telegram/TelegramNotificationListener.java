@@ -1,10 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.telegram;
 
 import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram.TelegramUserMappingEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram.TelegramUserMappingJpaRepository;
-import java.util.List;
-import org.springframework.context.event.EventListener;
 
 public class TelegramNotificationListener {
 
@@ -17,8 +14,9 @@ public class TelegramNotificationListener {
     this.mappingRepository = mappingRepository;
   }
 
-  @EventListener
+  // @EventListener
   public void onTicketCreated(TicketCreatedEvent event) {
+    /* Desativado temporariamente para testes
     List<TelegramUserMappingEntity> mappings =
         mappingRepository.findByRestaurantId(event.getRestaurantId());
 
@@ -37,5 +35,6 @@ public class TelegramNotificationListener {
           "✅ Confirmar Recebimento",
           "confirm_order:" + event.getOrderId());
     }
+    */
   }
 }
