@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.ai;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -34,7 +35,8 @@ public class OpenAiConfig {
       GetReportsOverview getReportsOverview,
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount,
-      PlatformTransactionManager transactionManager) {
+      PlatformTransactionManager transactionManager,
+      ObjectMapper objectMapper) {
 
     logger.info("Inicializando ChatAiService...");
 
@@ -45,7 +47,11 @@ public class OpenAiConfig {
     // Criamos o objeto de ferramentas DIRETAMENTE aqui para evitar Proxies do Spring
     ReportAndFeedbackTools tools =
         new ReportAndFeedbackTools(
-            getReportsOverview, getFeedbackOverview, getFeedbackUnreadCount, transactionTemplate);
+            getReportsOverview,
+            getFeedbackOverview,
+            getFeedbackUnreadCount,
+            transactionTemplate,
+            objectMapper);
 
     // Log de diagnóstico para confirmar detecção
     for (Method method : tools.getClass().getDeclaredMethods()) {

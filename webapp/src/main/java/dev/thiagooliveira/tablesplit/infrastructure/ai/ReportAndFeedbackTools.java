@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.ai;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
@@ -13,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * IA Tools para relatórios e feedbacks. Esta classe NÃO é um Bean do Spring para garantir que o
- * LangChain4j consiga ler as anotações @Tool sem interferência de Proxies. Gerenciamos as
- * transações programaticamente usando TransactionTemplate para evitar LazyInitializationException.
+ * IA Tools para relatórios e feedbacks. Gerencia as transações programaticamente e utiliza
+ * ObjectMapper para evitar erros de serialização do GSON com classes nativas do Java (como
+ * ZonedDateTime).
  */
 public class ReportAndFeedbackTools {
 
@@ -25,61 +26,73 @@ public class ReportAndFeedbackTools {
   private final GetFeedbackOverview getFeedbackOverview;
   private final GetFeedbackUnreadCount getFeedbackUnreadCount;
   private final TransactionTemplate transactionTemplate;
+  private final ObjectMapper objectMapper;
 
   public ReportAndFeedbackTools(
       GetReportsOverview getReportsOverview,
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount,
-      TransactionTemplate transactionTemplate) {
+      TransactionTemplate transactionTemplate,
+      ObjectMapper objectMapper) {
     this.getReportsOverview = getReportsOverview;
     this.getFeedbackOverview = getFeedbackOverview;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
     this.transactionTemplate = transactionTemplate;
+    this.objectMapper = objectMapper;
   }
 
   @Tool(
       "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
-  public Object getReportsOverview(
+  public String getReportsOverview(
       @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
     return transactionTemplate.execute(
         status -> {
-          logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
-          UUID restaurantId = getRestaurantIdFromContext();
-          if (restaurantId == null) {
-            logger.warn("restaurantId não identificado no contexto!");
-            return "Erro: Restaurante não identificado no contexto.";
+          try {
+            logger.info("Tool getReportsOverview chamada via IA com days: {}", days);
+            UUID restaurantId = getRestaurantIdFromContext();
+            if (restaurantId == null) return "Erro: Restaurante não identificado.";
+            Object result = getReportsOverview.execute(restaurantId, days);
+            return objectMapper.writeValueAsString(result);
+          } catch (Exception e) {
+            logger.error("Erro ao processar getReportsOverview", e);
+            return "Erro ao processar dados de faturamento: " + e.getMessage();
           }
-          return getReportsOverview.execute(restaurantId, days);
         });
   }
 
   @Tool(
       "Get customer feedback overview, including ratings distribution and items needing attention")
-  public Object getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
+  public String getFeedbackOverview(@P("Number of days to look back for feedback") int days) {
     return transactionTemplate.execute(
         status -> {
-          logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
-          UUID restaurantId = getRestaurantIdFromContext();
-          if (restaurantId == null) {
-            logger.warn("restaurantId não identificado no contexto!");
-            return "Erro: Restaurante não identificado no contexto.";
+          try {
+            logger.info("Tool getFeedbackOverview chamada via IA com days: {}", days);
+            UUID restaurantId = getRestaurantIdFromContext();
+            if (restaurantId == null) return "Erro: Restaurante não identificado.";
+            ZonedDateTime since = ZonedDateTime.now().minusDays(days);
+            Object result = getFeedbackOverview.execute(restaurantId, since);
+            return objectMapper.writeValueAsString(result);
+          } catch (Exception e) {
+            logger.error("Erro ao processar getFeedbackOverview", e);
+            return "Erro ao processar dados de feedback: " + e.getMessage();
           }
-          ZonedDateTime since = ZonedDateTime.now().minusDays(days);
-          return getFeedbackOverview.execute(restaurantId, since);
         });
   }
 
   @Tool("Get the count of unread customer feedbacks")
-  public long getUnreadFeedbackCount() {
-    Long result =
-        transactionTemplate.execute(
-            status -> {
-              logger.info("Tool getUnreadFeedbackCount chamada via IA");
-              UUID restaurantId = getRestaurantIdFromContext();
-              if (restaurantId == null) return -1L;
-              return getFeedbackUnreadCount.execute(restaurantId);
-            });
-    return result != null ? result : -1L;
+  public String getUnreadFeedbackCount() {
+    return transactionTemplate.execute(
+        status -> {
+          try {
+            logger.info("Tool getUnreadFeedbackCount chamada via IA");
+            UUID restaurantId = getRestaurantIdFromContext();
+            if (restaurantId == null) return "Erro: Restaurante não identificado.";
+            long count = getFeedbackUnreadCount.execute(restaurantId);
+            return String.valueOf(count);
+          } catch (Exception e) {
+            return "Erro ao contar feedbacks: " + e.getMessage();
+          }
+        });
   }
 
   private UUID getRestaurantIdFromContext() {
