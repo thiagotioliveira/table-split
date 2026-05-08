@@ -1,0 +1,48 @@
+package dev.thiagooliveira.tablesplit.infrastructure.notification.listener;
+
+import dev.thiagooliveira.tablesplit.domain.account.Module;
+import dev.thiagooliveira.tablesplit.domain.account.event.StaffUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class StaffUpdatedListener {
+
+  private final PushSubscriptionRepository pushSubscriptionRepository;
+
+  public StaffUpdatedListener(PushSubscriptionRepository pushSubscriptionRepository) {
+    this.pushSubscriptionRepository = pushSubscriptionRepository;
+  }
+
+  @EventListener
+  public void onStaffUpdated(StaffUpdatedEvent event) {
+    var removed = event.getRemovedModules();
+    if (removed == null || removed.isEmpty()) {
+      return;
+    }
+
+    boolean removeOrders = removed.contains(Module.ORDERS);
+    boolean removeTables = removed.contains(Module.TABLES);
+
+    if (removeOrders || removeTables) {
+      var subscriptions =
+          pushSubscriptionRepository.findAllByStaffIdAndRestaurantId(
+              event.getStaffId(), event.getRestaurantId());
+      for (var sub : subscriptions) {
+        boolean changed = false;
+        if (removeOrders && sub.isNotifyNewOrders()) {
+          sub.setNotifyNewOrders(false);
+          changed = true;
+        }
+        if (removeTables && sub.isNotifyCallWaiter()) {
+          sub.setNotifyCallWaiter(false);
+          changed = true;
+        }
+        if (changed) {
+          pushSubscriptionRepository.save(sub);
+        }
+      }
+    }
+  }
+}

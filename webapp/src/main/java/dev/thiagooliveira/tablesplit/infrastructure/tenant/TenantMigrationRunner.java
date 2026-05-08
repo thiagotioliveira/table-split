@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.tenant;
 
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantEntity;
-import dev.thiagooliveira.tablesplit.infrastructure.persistence.restautant.RestaurantJpaRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

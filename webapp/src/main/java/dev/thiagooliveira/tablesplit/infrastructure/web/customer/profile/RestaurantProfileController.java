@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model.ProfileModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import org.springframework.context.MessageSource;
@@ -32,12 +32,7 @@ public class RestaurantProfileController {
         getRestaurant
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
-    model.addAttribute(
-        "profile",
-        new ProfileModel(
-            restaurant,
-            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
-            messageSource));
+    model.addAttribute("profile", new ProfileModel(restaurant, Time.getZoneId(), messageSource));
     return "restaurant-profile";
   }
 }

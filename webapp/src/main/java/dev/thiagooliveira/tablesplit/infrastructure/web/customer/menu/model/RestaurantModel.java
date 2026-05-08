@@ -3,9 +3,9 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeConfig;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.ThemeContext;
+import dev.thiagooliveira.tablesplit.infrastructure.restaurant.web.model.RestaurantImageModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
-import dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery.model.RestaurantImageModel;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.ThemeContext;
 import java.util.List;
 
 public class RestaurantModel {

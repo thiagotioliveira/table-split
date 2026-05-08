@@ -7,7 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import dev.thiagooliveira.tablesplit.domain.order.*;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.utils.Time;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.model.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

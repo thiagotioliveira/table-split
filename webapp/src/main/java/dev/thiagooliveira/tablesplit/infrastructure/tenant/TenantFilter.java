@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.tenant;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

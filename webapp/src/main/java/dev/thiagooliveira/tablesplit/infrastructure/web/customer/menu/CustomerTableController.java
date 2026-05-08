@@ -9,6 +9,7 @@ import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.*;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.profile.model.ProfileModel;
@@ -70,12 +71,7 @@ public class CustomerTableController {
     }
     getTable(restaurant, tableCode);
 
-    model.addAttribute(
-        "profile",
-        new ProfileModel(
-            restaurant,
-            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
-            messageSource));
+    model.addAttribute("profile", new ProfileModel(restaurant, Time.getZoneId(), messageSource));
 
     model.addAttribute("tableCode", tableCode);
     model.addAttribute("slug", slug);
@@ -122,13 +118,7 @@ public class CustomerTableController {
       var items = getItem.execute(restaurant.getId(), domainLanguages, true);
       CustomerMenuModel menuModel =
           new CustomerMenuModel(
-              restaurant,
-              categories,
-              items,
-              table,
-              activeOrder,
-              dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
-              messageSource);
+              restaurant, categories, items, table, activeOrder, Time.getZoneId(), messageSource);
 
       List<OrderCustomerModel> tableCustomers = null;
       if (activeOrder != null) {
@@ -174,13 +164,7 @@ public class CustomerTableController {
 
     CustomerMenuModel menuModel =
         new CustomerMenuModel(
-            restaurant,
-            categories,
-            items,
-            table,
-            activeOrder,
-            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
-            messageSource);
+            restaurant, categories, items, table, activeOrder, Time.getZoneId(), messageSource);
 
     // Server-side feedback check
     if (!isNewCustomer) {

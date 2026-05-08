@@ -1,0 +1,70 @@
+package dev.thiagooliveira.tablesplit.infrastructure.restaurant.config;
+
+import dev.thiagooliveira.tablesplit.application.restaurant.*;
+import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentTokenRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImageStorage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RestaurantConfig {
+
+  @Bean
+  public GetRestaurant getRestaurant(RestaurantRepository restaurantRepository) {
+    return new GetRestaurant(restaurantRepository);
+  }
+
+  @Bean
+  public UpdateRestaurant updateRestaurant(RestaurantRepository restaurantRepository) {
+    return new UpdateRestaurant(restaurantRepository);
+  }
+
+  @Bean
+  public CreateRestaurant createRestaurant(RestaurantRepository restaurantRepository) {
+    return new CreateRestaurant(restaurantRepository);
+  }
+
+  @Bean
+  public GetRestaurantImages getRestaurantImages(RestaurantRepository restaurantRepository) {
+    return new GetRestaurantImages(restaurantRepository);
+  }
+
+  @Bean
+  public UploadRestaurantImage uploadRestaurantImage(
+      RestaurantRepository restaurantRepository,
+      RestaurantImageStorage restaurantImageStorage,
+      @org.springframework.beans.factory.annotation.Value("${app.gallery.image.max-size:1048576}")
+          long maxImageSize) {
+    return new UploadRestaurantImage(restaurantRepository, restaurantImageStorage, maxImageSize);
+  }
+
+  @Bean
+  public DeleteRestaurantImage deleteRestaurantImage(
+      RestaurantRepository restaurantRepository, RestaurantImageStorage restaurantImageStorage) {
+    return new DeleteRestaurantImage(restaurantRepository, restaurantImageStorage);
+  }
+
+  @Bean
+  public SetRestaurantCoverImage setRestaurantCoverImage(
+      RestaurantRepository restaurantRepository) {
+    return new SetRestaurantCoverImage(restaurantRepository);
+  }
+
+  @Bean
+  public GetOrCreateToken getOrCreateToken(
+      PrintAgentTokenRepository tokenRepository, RestaurantRepository restaurantRepository) {
+    return new GetOrCreateToken(tokenRepository, restaurantRepository);
+  }
+
+  @Bean
+  public RegenerateToken regenerateToken(
+      PrintAgentTokenRepository tokenRepository, RestaurantRepository restaurantRepository) {
+    return new RegenerateToken(tokenRepository, restaurantRepository);
+  }
+
+  @Bean
+  public ValidateAndUseToken validateAndUseToken(PrintAgentTokenRepository tokenRepository) {
+    return new ValidateAndUseToken(tokenRepository);
+  }
+}

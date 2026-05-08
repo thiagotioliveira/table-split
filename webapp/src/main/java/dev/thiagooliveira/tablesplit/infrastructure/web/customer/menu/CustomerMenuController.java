@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CustomerMenuModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.Locale;
@@ -49,11 +50,7 @@ public class CustomerMenuController {
             .toList();
     CustomerMenuModel menuModel =
         new CustomerMenuModel(
-            restaurant,
-            categories,
-            availableItems,
-            dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId(),
-            messageSource);
+            restaurant, categories, availableItems, Time.getZoneId(), messageSource);
     model.addAttribute("customerMenu", menuModel);
     model.addAttribute(
         "itemTags", dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.values());

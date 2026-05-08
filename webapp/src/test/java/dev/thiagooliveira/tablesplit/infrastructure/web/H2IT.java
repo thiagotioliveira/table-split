@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web;
 
-import dev.thiagooliveira.tablesplit.infrastructure.security.CustomUserDetailsService;
-import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.CustomUserDetailsService;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

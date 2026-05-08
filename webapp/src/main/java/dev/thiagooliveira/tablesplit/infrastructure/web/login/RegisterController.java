@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRe
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
@@ -120,11 +121,7 @@ public class RegisterController {
     }
     var user =
         this.transactionalContext.execute(
-            () ->
-                this.createAccount.execute(
-                    form.toCommand(
-                        passwordEncoder,
-                        dev.thiagooliveira.tablesplit.infrastructure.utils.Time.getZoneId())));
+            () -> this.createAccount.execute(form.toCommand(passwordEncoder, Time.getZoneId())));
     var token =
         new UsernamePasswordAuthenticationToken(user.getEmail(), form.getUser().getPassword());
 

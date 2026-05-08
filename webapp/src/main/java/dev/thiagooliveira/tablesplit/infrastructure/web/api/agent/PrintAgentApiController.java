@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.api.agent;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.ValidateAndUseToken;
 import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentToken;
+import dev.thiagooliveira.tablesplit.infrastructure.account.persistence.AccountJpaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,7 @@ public class PrintAgentApiController {
 
   private final ValidateAndUseToken validateAndUseToken;
   private final GetRestaurant getRestaurant;
-  private final dev.thiagooliveira.tablesplit.infrastructure.persistence.account
-          .AccountJpaRepository
-      accountRepository;
+  private final AccountJpaRepository accountRepository;
 
   @Value("${spring.rabbitmq.addresses:localhost:5672}")
   private String rabbitAddresses;
@@ -35,8 +34,7 @@ public class PrintAgentApiController {
   public PrintAgentApiController(
       ValidateAndUseToken validateAndUseToken,
       GetRestaurant getRestaurant,
-      dev.thiagooliveira.tablesplit.infrastructure.persistence.account.AccountJpaRepository
-          accountRepository) {
+      AccountJpaRepository accountRepository) {
     this.validateAndUseToken = validateAndUseToken;
     this.getRestaurant = getRestaurant;
     this.accountRepository = accountRepository;
