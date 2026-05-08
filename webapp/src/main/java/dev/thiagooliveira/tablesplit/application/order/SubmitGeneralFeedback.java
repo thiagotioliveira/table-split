@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.application.order;
 
 import dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderFeedback;
+import dev.thiagooliveira.tablesplit.domain.order.event.FeedbackSubmittedEvent;
 import java.util.UUID;
 
 public class SubmitGeneralFeedback {
@@ -30,7 +31,7 @@ public class SubmitGeneralFeedback {
     feedbackRepository.save(feedback);
 
     eventPublisher.publishEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.FeedbackSubmittedEvent(
+        new FeedbackSubmittedEvent(
             order.getAccountId(), order.getRestaurantId(), orderId, feedback.getId()));
   }
 }

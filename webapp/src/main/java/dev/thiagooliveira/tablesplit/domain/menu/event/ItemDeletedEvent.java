@@ -1,5 +1,6 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.menu.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
 import java.util.UUID;
 
 public class ItemDeletedEvent implements DomainEvent {

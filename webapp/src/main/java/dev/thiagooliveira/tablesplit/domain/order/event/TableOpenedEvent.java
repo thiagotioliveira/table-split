@@ -1,16 +1,17 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.order.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import java.util.UUID;
 
-public class TableClosedEvent implements DomainEvent {
+public class TableOpenedEvent implements DomainEvent {
   private final UUID accountId;
   private final UUID restaurantId;
   private final UUID tableId;
   private final UUID orderId;
 
-  public TableClosedEvent(Order order, Table table) {
+  public TableOpenedEvent(Order order, Table table) {
     this.accountId = order.getAccountId();
     this.restaurantId = order.getRestaurantId();
     this.tableId = table.getId();

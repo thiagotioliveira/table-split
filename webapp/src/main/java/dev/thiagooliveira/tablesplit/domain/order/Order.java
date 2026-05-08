@@ -2,6 +2,7 @@ package dev.thiagooliveira.tablesplit.domain.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
+import dev.thiagooliveira.tablesplit.domain.order.event.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -37,8 +38,7 @@ public class Order extends AggregateRoot {
 
   public static Order open(Table table, int serviceFee) {
     Order order = new Order(UUID.randomUUID(), table.getRestaurantId(), table.getId(), serviceFee);
-    order.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent(order, table));
+    order.registerEvent(new TableOpenedEvent(order, table));
     return order;
   }
 
@@ -126,8 +126,7 @@ public class Order extends AggregateRoot {
     this.status = OrderStatus.CLOSED;
     this.closedAt = Time.now();
     table.release();
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TableClosedEvent(this, table));
+    this.registerEvent(new TableClosedEvent(this, table));
   }
 
   public void addCustomer(UUID id, String name) {
@@ -298,8 +297,7 @@ public class Order extends AggregateRoot {
     this.tickets.add(ticket);
 
     // Register Domain Event
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent(this, ticket, tableCod));
+    this.registerEvent(new TicketCreatedEvent(this, ticket, tableCod));
   }
 
   public void updateTicketItemStatus(UUID ticketId, UUID itemId, TicketStatus newStatus) {
@@ -318,14 +316,10 @@ public class Order extends AggregateRoot {
     item.setStatus(newStatus);
     ticket.recalculateStatus();
 
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
-            this, ticket, item, newStatus));
+    this.registerEvent(new TicketItemStatusChangedEvent(this, ticket, item, newStatus));
 
     if (ticket.getStatus() != oldTicketStatus) {
-      this.registerEvent(
-          new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
-              this, ticket, ticket.getStatus()));
+      this.registerEvent(new TicketStatusChangedEvent(this, ticket, ticket.getStatus()));
     }
   }
 
@@ -350,8 +344,7 @@ public class Order extends AggregateRoot {
         item.setNote(note + " (Cancelado: " + reason + ")");
       }
       this.registerEvent(
-          new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
-              this, ticket, item, TicketStatus.CANCELLED));
+          new TicketItemStatusChangedEvent(this, ticket, item, TicketStatus.CANCELLED));
     } else {
       // Partial cancellation
       int remainingQty = item.getQuantity() - quantityToCancel;
@@ -368,15 +361,12 @@ public class Order extends AggregateRoot {
 
       ticket.getItems().add(cancelledItem);
       this.registerEvent(
-          new dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent(
-              this, ticket, cancelledItem, TicketStatus.CANCELLED));
+          new TicketItemStatusChangedEvent(this, ticket, cancelledItem, TicketStatus.CANCELLED));
     }
 
     ticket.recalculateStatus();
     if (ticket.getStatus() != oldTicketStatus) {
-      this.registerEvent(
-          new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
-              this, ticket, ticket.getStatus()));
+      this.registerEvent(new TicketStatusChangedEvent(this, ticket, ticket.getStatus()));
     }
   }
 
@@ -401,15 +391,12 @@ public class Order extends AggregateRoot {
       ticket.setReadyAt(Time.now());
     }
 
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent(
-            this, ticket, newStatus));
+    this.registerEvent(new TicketStatusChangedEvent(this, ticket, newStatus));
   }
 
   public void processPayment(Payment payment) {
     this.addPayment(payment);
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.PaymentProcessedEvent(this, payment));
+    this.registerEvent(new PaymentProcessedEvent(this, payment));
   }
 
   public boolean hasParticipant(UUID customerId) {

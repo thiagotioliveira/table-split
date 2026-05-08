@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.messaging.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.messaging.order.model.IntegrationOrderDTO;
 import java.util.List;
 import org.slf4j.Logger;

@@ -2,9 +2,9 @@ package dev.thiagooliveira.tablesplit.domain.menu;
 
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryDeletedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryDeletedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryUpdatedEvent;
 import java.util.Map;
 import java.util.UUID;
 

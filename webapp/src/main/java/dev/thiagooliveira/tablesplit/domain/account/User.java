@@ -1,10 +1,10 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.account.event.PasswordUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.account.event.UserCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.account.event.UserUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.PasswordUpdatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.UserCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.UserUpdatedEvent;
 import java.util.UUID;
 
 public class User extends AggregateRoot {

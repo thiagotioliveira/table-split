@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.exception;
+package dev.thiagooliveira.tablesplit.application.common;
 
 public abstract class ApplicationException extends RuntimeException {
   public ApplicationException() {

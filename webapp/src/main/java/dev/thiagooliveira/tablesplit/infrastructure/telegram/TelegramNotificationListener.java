@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.telegram;
 
-import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.persistence.telegram.TelegramUserMappingJpaRepository;
 
 public class TelegramNotificationListener {

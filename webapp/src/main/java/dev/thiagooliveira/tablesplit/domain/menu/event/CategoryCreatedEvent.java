@@ -1,19 +1,20 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.menu.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
 import java.util.UUID;
 
-public class CategoryDeletedEvent implements DomainEvent {
+public class CategoryCreatedEvent implements DomainEvent {
   private final UUID accountId;
   private final UUID categoryId;
 
-  public CategoryDeletedEvent(UUID accountId, UUID categoryId) {
+  public CategoryCreatedEvent(UUID accountId, UUID categoryId) {
     this.accountId = accountId;
     this.categoryId = categoryId;
   }
 
   @Override
   public UUID getAccountId() {
-    return this.accountId;
+    return accountId;
   }
 
   public UUID getCategoryId() {

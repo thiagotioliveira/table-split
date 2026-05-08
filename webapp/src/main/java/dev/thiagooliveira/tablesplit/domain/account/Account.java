@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.account.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
-import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

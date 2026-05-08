@@ -139,7 +139,7 @@ public class MenuController {
         redirectAttributes.addFlashAttribute(
             "alert", AlertModel.success("alert.menu.item.updated"));
       }
-    } catch (dev.thiagooliveira.tablesplit.application.exception.ApplicationException ex) {
+    } catch (dev.thiagooliveira.tablesplit.application.common.ApplicationException ex) {
       populateModel(auth, model);
       model.addAttribute("alert", AlertModel.error(ex.getMessage()));
       model.addAttribute("openItemModal", true);

@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.event;
 
-import dev.thiagooliveira.tablesplit.application.EventPublisher;
-import dev.thiagooliveira.tablesplit.domain.event.DomainEvent;
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
+import dev.thiagooliveira.tablesplit.domain.common.EventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 

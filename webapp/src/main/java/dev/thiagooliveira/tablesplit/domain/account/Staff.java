@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.domain.account;
 
+import dev.thiagooliveira.tablesplit.domain.account.event.StaffUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.StaffUpdatedEvent;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;

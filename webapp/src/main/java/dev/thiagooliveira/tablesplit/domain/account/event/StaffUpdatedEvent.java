@@ -1,6 +1,7 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.account.event;
 
 import dev.thiagooliveira.tablesplit.domain.account.Module;
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
 import java.util.Set;
 import java.util.UUID;
 

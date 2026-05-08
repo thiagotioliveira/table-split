@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
 import dev.thiagooliveira.tablesplit.application.notification.SseService;
-import dev.thiagooliveira.tablesplit.domain.event.FeedbackSubmittedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.FeedbackSubmittedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

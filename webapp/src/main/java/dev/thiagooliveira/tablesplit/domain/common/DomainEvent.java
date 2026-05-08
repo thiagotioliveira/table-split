@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.common;
 
 import java.util.UUID;
 

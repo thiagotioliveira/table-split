@@ -2,9 +2,9 @@ package dev.thiagooliveira.tablesplit.domain.menu;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import dev.thiagooliveira.tablesplit.domain.event.CategoryCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryDeletedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.CategoryUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryDeletedEvent;
+import dev.thiagooliveira.tablesplit.domain.menu.event.CategoryUpdatedEvent;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 

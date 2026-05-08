@@ -3,6 +3,8 @@ package dev.thiagooliveira.tablesplit.domain.restaurant;
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.event.RestaurantCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.restaurant.event.RestaurantUpdatedEvent;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -42,9 +44,7 @@ public class Restaurant extends AggregateRoot {
     restaurant.setAccountId(accountId);
     restaurant.setName(name);
     restaurant.setSlug(slug);
-    restaurant.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent(
-            restaurant, numberOfTables));
+    restaurant.registerEvent(new RestaurantCreatedEvent(restaurant, numberOfTables));
     return restaurant;
   }
 
@@ -98,9 +98,7 @@ public class Restaurant extends AggregateRoot {
     this.hashCardColor = hashCardColor;
     this.hashTextColor = hashTextColor;
 
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent(
-            this, added, removed));
+    this.registerEvent(new RestaurantUpdatedEvent(this, added, removed));
   }
 
   public Language getDefaultLanguage() {

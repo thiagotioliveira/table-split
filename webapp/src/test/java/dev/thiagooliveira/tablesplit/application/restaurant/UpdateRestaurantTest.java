@@ -7,11 +7,11 @@ import dev.thiagooliveira.tablesplit.application.restaurant.command.UpdateRestau
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.RestaurantUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.ThemeName;
+import dev.thiagooliveira.tablesplit.domain.restaurant.event.RestaurantUpdatedEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;

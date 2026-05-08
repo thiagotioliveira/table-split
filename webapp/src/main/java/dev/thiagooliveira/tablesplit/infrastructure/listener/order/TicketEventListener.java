@@ -5,13 +5,14 @@ import dev.thiagooliveira.tablesplit.application.notification.RegisterWaiterCall
 import dev.thiagooliveira.tablesplit.application.notification.SseService;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
-import dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TicketItemStatusChangedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.TicketStatusChangedEvent;
-import dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketItemStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.WaiterCallDismissedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.WaiterCalledEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.order.model.TicketModel;
@@ -127,11 +128,10 @@ public class TicketEventListener {
   }
 
   @EventListener
-  public void handleWaiterCallDismissed(
-      dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent event) {
+  public void handleWaiterCallDismissed(WaiterCallDismissedEvent event) {
     long count = listActiveWaiterCalls.execute(event.getRestaurantId()).size();
-    dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent eventWithCount =
-        new dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent(
+    WaiterCallDismissedEvent eventWithCount =
+        new WaiterCallDismissedEvent(
             event.getAccountId(), event.getRestaurantId(), event.getCallId(), count);
 
     broadcast(event.getRestaurantId(), "WAITER_CALL_DISMISSED", eventWithCount);

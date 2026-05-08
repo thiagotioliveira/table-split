@@ -2,7 +2,7 @@ package dev.thiagooliveira.tablesplit.domain.notification;
 
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
-import dev.thiagooliveira.tablesplit.domain.event.WaiterCallDismissedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.WaiterCallDismissedEvent;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 

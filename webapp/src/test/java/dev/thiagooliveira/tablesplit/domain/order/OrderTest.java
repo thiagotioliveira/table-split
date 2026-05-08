@@ -2,6 +2,10 @@ package dev.thiagooliveira.tablesplit.domain.order;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import dev.thiagooliveira.tablesplit.domain.order.event.TableCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableOpenedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -37,10 +41,7 @@ class OrderTest {
     Order order = Order.open(table, 10);
 
     assertEquals(
-        1,
-        order.getDomainEvents().stream()
-            .filter(e -> e instanceof dev.thiagooliveira.tablesplit.domain.event.TableOpenedEvent)
-            .count());
+        1, order.getDomainEvents().stream().filter(e -> e instanceof TableOpenedEvent).count());
   }
 
   @Test
@@ -52,20 +53,14 @@ class OrderTest {
     order.addTicketWithItems(items, "Note", "T1");
 
     assertEquals(
-        1,
-        order.getDomainEvents().stream()
-            .filter(e -> e instanceof dev.thiagooliveira.tablesplit.domain.event.TicketCreatedEvent)
-            .count());
+        1, order.getDomainEvents().stream().filter(e -> e instanceof TicketCreatedEvent).count());
   }
 
   @Test
   void shouldRegisterTableCreatedEventOnCreate() {
     Table table = Table.create(UUID.randomUUID(), UUID.randomUUID(), "T1");
     assertEquals(
-        1,
-        table.getDomainEvents().stream()
-            .filter(e -> e instanceof dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent)
-            .count());
+        1, table.getDomainEvents().stream().filter(e -> e instanceof TableCreatedEvent).count());
   }
 
   @Test
@@ -74,10 +69,6 @@ class OrderTest {
     table.occupy();
     assertEquals(
         1,
-        table.getDomainEvents().stream()
-            .filter(
-                e ->
-                    e instanceof dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent)
-            .count());
+        table.getDomainEvents().stream().filter(e -> e instanceof TableStatusChangedEvent).count());
   }
 }

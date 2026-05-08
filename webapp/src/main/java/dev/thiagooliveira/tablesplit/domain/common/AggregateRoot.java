@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.domain.common;
 
-import dev.thiagooliveira.tablesplit.domain.event.DomainEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

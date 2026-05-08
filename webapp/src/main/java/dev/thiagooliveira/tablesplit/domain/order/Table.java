@@ -2,6 +2,9 @@ package dev.thiagooliveira.tablesplit.domain.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.WaiterCalledEvent;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -30,7 +33,7 @@ public class Table extends AggregateRoot {
 
   public static Table create(UUID id, UUID restaurantId, String cod) {
     Table table = new Table(id, restaurantId, cod);
-    table.registerEvent(new dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent(table));
+    table.registerEvent(new TableCreatedEvent(table));
     return table;
   }
 
@@ -86,31 +89,26 @@ public class Table extends AggregateRoot {
   public void restore() {
     this.deletedAt = null;
     this.status = TableStatus.AVAILABLE;
-    this.registerEvent(new dev.thiagooliveira.tablesplit.domain.event.TableCreatedEvent(this));
+    this.registerEvent(new TableCreatedEvent(this));
   }
 
   public void callWaiter() {
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.WaiterCalledEvent(
-            this.accountId, this.restaurantId, this.cod));
+    this.registerEvent(new WaiterCalledEvent(this.accountId, this.restaurantId, this.cod));
   }
 
   public void occupy() {
     this.status = TableStatus.OCCUPIED;
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
+    this.registerEvent(new TableStatusChangedEvent(this));
   }
 
   public void waiting() {
     this.status = TableStatus.WAITING;
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
+    this.registerEvent(new TableStatusChangedEvent(this));
   }
 
   public void release() {
     this.status = TableStatus.AVAILABLE;
-    this.registerEvent(
-        new dev.thiagooliveira.tablesplit.domain.event.TableStatusChangedEvent(this));
+    this.registerEvent(new TableStatusChangedEvent(this));
   }
 
   public void syncStatus(OrderStatus orderStatus) {

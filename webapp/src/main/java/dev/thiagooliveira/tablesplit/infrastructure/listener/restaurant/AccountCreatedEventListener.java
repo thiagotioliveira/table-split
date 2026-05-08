@@ -2,8 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.listener.restaurant;
 
 import dev.thiagooliveira.tablesplit.application.restaurant.CreateRestaurant;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.CreateRestaurantCommand;
+import dev.thiagooliveira.tablesplit.domain.account.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
 import java.time.DayOfWeek;

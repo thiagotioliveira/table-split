@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.listener.order;
 
 import dev.thiagooliveira.tablesplit.application.order.CreateTable;
-import dev.thiagooliveira.tablesplit.domain.event.RestaurantCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.restaurant.event.RestaurantCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantOperationService;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantProvisioningService;

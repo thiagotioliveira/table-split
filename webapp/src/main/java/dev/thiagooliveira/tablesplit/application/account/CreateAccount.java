@@ -8,7 +8,7 @@ import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.account.Role;
 import dev.thiagooliveira.tablesplit.domain.account.User;
 import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
-import dev.thiagooliveira.tablesplit.domain.event.AccountCreatedEvent;
+import dev.thiagooliveira.tablesplit.domain.account.event.AccountCreatedEvent;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

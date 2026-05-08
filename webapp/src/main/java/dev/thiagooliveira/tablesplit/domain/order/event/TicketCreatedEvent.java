@@ -1,28 +1,24 @@
-package dev.thiagooliveira.tablesplit.domain.event;
+package dev.thiagooliveira.tablesplit.domain.order.event;
 
+import dev.thiagooliveira.tablesplit.domain.common.DomainEvent;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
-import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
-import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import java.util.UUID;
 
-public class TicketItemStatusChangedEvent implements DomainEvent {
+public class TicketCreatedEvent implements DomainEvent {
   private final UUID restaurantId;
   private final UUID tableId;
+  private final String tableCod;
   private final UUID orderId;
-  private final UUID ticketId;
-  private final UUID itemId;
-  private final TicketStatus newStatus;
+  private final Ticket ticket;
   private final Order order;
 
-  public TicketItemStatusChangedEvent(
-      Order order, Ticket ticket, TicketItem item, TicketStatus newStatus) {
+  public TicketCreatedEvent(Order order, Ticket ticket, String tableCod) {
     this.restaurantId = order.getRestaurantId();
     this.tableId = order.getTableId();
+    this.tableCod = tableCod;
     this.orderId = order.getId();
-    this.ticketId = ticket.getId();
-    this.itemId = item.getId();
-    this.newStatus = newStatus;
+    this.ticket = ticket;
     this.order = order;
   }
 
@@ -43,16 +39,12 @@ public class TicketItemStatusChangedEvent implements DomainEvent {
     return orderId;
   }
 
-  public UUID getTicketId() {
-    return ticketId;
+  public Ticket getTicket() {
+    return ticket;
   }
 
-  public UUID getItemId() {
-    return itemId;
-  }
-
-  public TicketStatus getNewStatus() {
-    return newStatus;
+  public String getTableCod() {
+    return tableCod;
   }
 
   public Order getOrder() {
