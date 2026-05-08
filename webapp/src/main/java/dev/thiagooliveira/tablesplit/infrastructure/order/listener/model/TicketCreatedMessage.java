@@ -1,11 +1,11 @@
-package dev.thiagooliveira.tablesplit.agent.model;
+package dev.thiagooliveira.tablesplit.infrastructure.order.listener.model;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record IntegrationOrderDTO(
+public record TicketCreatedMessage(
     UUID ticketId,
     String tableCod,
     String customerName,

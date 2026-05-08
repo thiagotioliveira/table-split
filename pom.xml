@@ -8,15 +8,15 @@
 		<version>4.0.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>dev.thiagooliveira</groupId>
-	<artifactId>table-split-parent</artifactId>
-	<version>1.6.0-SNAPSHOT</version>
+	<groupId>dev.thiagooliveira.tablesplit</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.7.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>table-split</name>
 	<description>TableSplit Multi-Module Project</description>
 
 	<modules>
-		<module>agent</module>
+		<module>printagent</module>
 		<module>webapp</module>
 	</modules>
 

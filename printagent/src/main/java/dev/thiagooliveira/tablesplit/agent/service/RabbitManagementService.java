@@ -1,7 +1,7 @@
 package dev.thiagooliveira.tablesplit.agent.service;
 
-import dev.thiagooliveira.tablesplit.agent.config.AgentConfig;
-import dev.thiagooliveira.tablesplit.agent.listener.OrderListener;
+import dev.thiagooliveira.tablesplit.agent.config.PrintAgentConfig;
+import dev.thiagooliveira.tablesplit.agent.listener.TicketListener;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,19 +20,22 @@ public class RabbitManagementService {
 
   private static final Logger log = LoggerFactory.getLogger(RabbitManagementService.class);
 
-  private final AgentConfig agentConfig;
-  private final OrderListener orderListener;
+  private final PrintAgentConfig printAgentConfig;
+  private final TicketListener ticketListener;
   private final Jackson2JsonMessageConverter messageConverter;
+
+  @org.springframework.beans.factory.annotation.Value("${app.integration.rabbit.order-ticket-exchange}")
+  private String exchangeName;
 
   private CachingConnectionFactory connectionFactory;
   private SimpleMessageListenerContainer container;
 
   public RabbitManagementService(
-      AgentConfig agentConfig,
-      OrderListener orderListener,
+      PrintAgentConfig printAgentConfig,
+      TicketListener ticketListener,
       Jackson2JsonMessageConverter messageConverter) {
-    this.agentConfig = agentConfig;
-    this.orderListener = orderListener;
+    this.printAgentConfig = printAgentConfig;
+    this.ticketListener = ticketListener;
     this.messageConverter = messageConverter;
   }
 
@@ -48,7 +51,7 @@ public class RabbitManagementService {
     }
 
     connectionFactory = new CachingConnectionFactory();
-    String rabbitAddress = agentConfig.getRabbitHost();
+    String rabbitAddress = printAgentConfig.getRabbitHost();
 
     if (rabbitAddress.startsWith("amqp://") || rabbitAddress.startsWith("amqps://")) {
       try {
@@ -60,16 +63,15 @@ public class RabbitManagementService {
       }
     } else {
       connectionFactory.setAddresses(rabbitAddress);
-      connectionFactory.setUsername(agentConfig.getRabbitUsername());
-      connectionFactory.setPassword(agentConfig.getRabbitPassword());
+      connectionFactory.setUsername(printAgentConfig.getRabbitUsername());
+      connectionFactory.setPassword(printAgentConfig.getRabbitPassword());
     }
 
     // Configura o RabbitAdmin para criar a fila/exchange se não existirem
     RabbitAdmin admin = new RabbitAdmin(connectionFactory);
 
-    String queueName = agentConfig.getQueueName();
-    String exchangeName = "order.integration.exchange";
-    String routingKey = agentConfig.getRoutingKey();
+    String queueName = printAgentConfig.getQueueName();
+    String routingKey = printAgentConfig.getRoutingKey();
 
     log.info(
         "Declaring queue: {}, exchange: {}, routingKey: {}", queueName, exchangeName, routingKey);
@@ -87,7 +89,7 @@ public class RabbitManagementService {
     container.setQueueNames(queueName);
 
     // Adaptador para redirecionar as mensagens para o OrderListener
-    MessageListenerAdapter adapter = new MessageListenerAdapter(orderListener, "receiveOrder");
+    MessageListenerAdapter adapter = new MessageListenerAdapter(ticketListener, "receiveOrder");
     adapter.setMessageConverter(messageConverter);
 
     container.setMessageListener(adapter);

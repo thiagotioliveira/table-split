@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.agent.config;
 
+import dev.thiagooliveira.tablesplit.agent.listener.model.TicketCreatedMessage;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ public class RabbitMQConfig {
     java.util.Map<String, Class<?>> idClassMapping = new java.util.HashMap<>();
     idClassMapping.put(
         "dev.thiagooliveira.tablesplit.infrastructure.messaging.order.model.IntegrationOrderDTO",
-        dev.thiagooliveira.tablesplit.agent.model.IntegrationOrderDTO.class);
+        TicketCreatedMessage.class);
     typeMapper.setIdClassMapping(idClassMapping);
 
     typeMapper.addTrustedPackages("*");

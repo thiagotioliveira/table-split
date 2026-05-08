@@ -1,6 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.messaging.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.thiagooliveira.tablesplit.infrastructure.order.listener.TicketMessageMapper;
+import dev.thiagooliveira.tablesplit.infrastructure.order.listener.TicketMessagingListener;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,11 +19,13 @@ public class RabbitMQConfig {
   private static final org.slf4j.Logger log =
       org.slf4j.LoggerFactory.getLogger(RabbitMQConfig.class);
 
-  public static final String EXCHANGE_NAME = "order.integration.exchange";
+  @org.springframework.beans.factory.annotation.Value(
+      "${app.integration.rabbit.order-ticket-exchange}")
+  private String exchangeName;
 
   @Bean
-  public TopicExchange orderIntegrationExchange() {
-    return new TopicExchange(EXCHANGE_NAME);
+  public TopicExchange ticketIntegrationExchange() {
+    return new TopicExchange(exchangeName);
   }
 
   @Bean
@@ -31,7 +35,9 @@ public class RabbitMQConfig {
 
   @jakarta.annotation.PostConstruct
   public void init() {
-    log.info("RabbitMQConfig: Integration is ENABLED and configuration is being loaded.");
+    log.info(
+        "RabbitMQConfig: Integration is ENABLED and configuration is being loaded. Exchange: {}",
+        exchangeName);
   }
 
   @Bean
@@ -43,9 +49,8 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  public dev.thiagooliveira.tablesplit.infrastructure.messaging.order.OrderDispatcher
-      orderDispatcher(RabbitTemplate rabbitTemplate) {
-    return new dev.thiagooliveira.tablesplit.infrastructure.messaging.order.OrderDispatcher(
-        rabbitTemplate);
+  public TicketMessagingListener orderDispatcher(
+      RabbitTemplate rabbitTemplate, TicketMessageMapper ticketMessageMapper) {
+    return new TicketMessagingListener(rabbitTemplate, exchangeName, ticketMessageMapper);
   }
 }

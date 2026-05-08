@@ -54,6 +54,7 @@ app:
   integration:
     rabbit:
       enabled: false
+      order-ticket-exchange: order.ticket.exchange
   time:
     zone-id: Europe/Lisbon
   cleaner:

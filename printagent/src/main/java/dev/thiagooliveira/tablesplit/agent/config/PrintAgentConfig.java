@@ -3,7 +3,7 @@ package dev.thiagooliveira.tablesplit.agent.config;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AgentConfig {
+public class PrintAgentConfig {
   private String restaurantId;
   private String restaurantName;
   private String token;

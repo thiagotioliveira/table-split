@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.development;
+package dev.thiagooliveira.tablesplit.infrastructure.startup;
 
 import dev.thiagooliveira.tablesplit.application.account.*;
 import dev.thiagooliveira.tablesplit.application.account.command.*;

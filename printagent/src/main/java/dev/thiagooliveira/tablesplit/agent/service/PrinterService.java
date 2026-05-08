@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.agent.service;
 
-import dev.thiagooliveira.tablesplit.agent.model.IntegrationOrderDTO;
+import dev.thiagooliveira.tablesplit.agent.listener.model.TicketCreatedMessage;
 import java.awt.*;
 import java.awt.print.*;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +24,7 @@ public class PrinterService {
         .collect(java.util.stream.Collectors.toList());
   }
 
-  public void printOrder(IntegrationOrderDTO order, String printerName) {
+  public void printOrder(TicketCreatedMessage order, String printerName) {
     log.info("Starting print job for ticket: {} on printer: {}", order.ticketId(), printerName);
 
     PrinterJob job = PrinterJob.getPrinterJob();
@@ -55,20 +55,20 @@ public class PrinterService {
 
   public void printTest(String printerName) {
     java.util.UUID testId = java.util.UUID.randomUUID();
-    IntegrationOrderDTO testOrder =
-        new IntegrationOrderDTO(
+    TicketCreatedMessage testOrder =
+        new TicketCreatedMessage(
             testId,
             "MESA TESTE",
             "Admin",
             java.util.List.of(
-                new IntegrationOrderDTO.Item(
+                new TicketCreatedMessage.Item(
                     java.util.UUID.randomUUID(),
                     "Batata Frita",
                     1,
                     new java.math.BigDecimal("25.00"),
                     new java.math.BigDecimal("25.00"),
                     "Sem sal"),
-                new IntegrationOrderDTO.Item(
+                new TicketCreatedMessage.Item(
                     java.util.UUID.randomUUID(),
                     "Cerveja Gelada",
                     2,
@@ -81,9 +81,9 @@ public class PrinterService {
   }
 
   private static class OrderPrintable implements Printable {
-    private final IntegrationOrderDTO order;
+    private final TicketCreatedMessage order;
 
-    public OrderPrintable(IntegrationOrderDTO order) {
+    public OrderPrintable(TicketCreatedMessage order) {
       this.order = order;
     }
 
@@ -117,7 +117,7 @@ public class PrinterService {
       y += 15;
       g2d.setFont(new Font("Monospaced", Font.PLAIN, 10));
 
-      for (IntegrationOrderDTO.Item item : order.items()) {
+      for (TicketCreatedMessage.Item item : order.items()) {
         String itemName = item.name();
         if (itemName.length() > 25) {
           itemName = itemName.substring(0, 22) + "...";

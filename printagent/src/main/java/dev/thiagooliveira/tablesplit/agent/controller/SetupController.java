@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.agent.controller;
 
-import dev.thiagooliveira.tablesplit.agent.config.AgentConfig;
+import dev.thiagooliveira.tablesplit.agent.config.PrintAgentConfig;
 import dev.thiagooliveira.tablesplit.agent.service.PrinterService;
 import dev.thiagooliveira.tablesplit.agent.service.RabbitManagementService;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SetupController {
 
   private final PrinterService printerService;
-  private final AgentConfig agentConfig;
+  private final PrintAgentConfig printAgentConfig;
   private final RabbitManagementService rabbitManagementService;
   private final RestTemplate restTemplate = new RestTemplate();
 
@@ -26,10 +26,10 @@ public class SetupController {
 
   public SetupController(
       PrinterService printerService,
-      AgentConfig agentConfig,
+      PrintAgentConfig printAgentConfig,
       RabbitManagementService rabbitManagementService) {
     this.printerService = printerService;
-    this.agentConfig = agentConfig;
+    this.printAgentConfig = printAgentConfig;
     this.rabbitManagementService = rabbitManagementService;
   }
 
@@ -37,14 +37,14 @@ public class SetupController {
   public String setup(Model model) {
     List<String> printers = printerService.getAvailablePrinters();
     model.addAttribute("printers", printers);
-    model.addAttribute("connected", agentConfig.isConnected());
-    model.addAttribute("configToken", agentConfig.getToken());
-    model.addAttribute("selectedPrinter", agentConfig.getPrinter());
+    model.addAttribute("connected", printAgentConfig.isConnected());
+    model.addAttribute("configToken", printAgentConfig.getToken());
+    model.addAttribute("selectedPrinter", printAgentConfig.getPrinter());
     model.addAttribute(
         "queueName",
-        agentConfig.getQueueName() != null ? agentConfig.getQueueName() : "Aguardando conexão...");
+        printAgentConfig.getQueueName() != null ? printAgentConfig.getQueueName() : "Aguardando conexão...");
     model.addAttribute(
-        "rabbitHost", agentConfig.getRabbitHost() != null ? agentConfig.getRabbitHost() : "-");
+        "rabbitHost", printAgentConfig.getRabbitHost() != null ? printAgentConfig.getRabbitHost() : "-");
     return "setup";
   }
 
@@ -73,21 +73,21 @@ public class SetupController {
       if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
         Map<String, Object> body = response.getBody();
 
-        agentConfig.setToken(token);
-        agentConfig.setPrinter(printer);
-        agentConfig.setRestaurantId(body.get("restaurantId").toString());
-        agentConfig.setRestaurantName(body.get("restaurantName").toString());
-        agentConfig.setRabbitHost(body.get("rabbitHost").toString());
-        agentConfig.setRabbitUsername(body.get("rabbitUsername").toString());
-        agentConfig.setRabbitPassword(body.get("rabbitPassword").toString());
-        agentConfig.setQueueName(body.get("queueName").toString());
-        agentConfig.setConnected(true);
+        printAgentConfig.setToken(token);
+        printAgentConfig.setPrinter(printer);
+        printAgentConfig.setRestaurantId(body.get("restaurantId").toString());
+        printAgentConfig.setRestaurantName(body.get("restaurantName").toString());
+        printAgentConfig.setRabbitHost(body.get("rabbitHost").toString());
+        printAgentConfig.setRabbitUsername(body.get("rabbitUsername").toString());
+        printAgentConfig.setRabbitPassword(body.get("rabbitPassword").toString());
+        printAgentConfig.setQueueName(body.get("queueName").toString());
+        printAgentConfig.setConnected(true);
 
         // Inicia a conexão RabbitMQ dinamicamente
         rabbitManagementService.startConnection();
 
         redirectAttributes.addFlashAttribute(
-            "success", "Agente ativado com sucesso para " + agentConfig.getRestaurantName());
+            "success", "Agente ativado com sucesso para " + printAgentConfig.getRestaurantName());
       } else {
         redirectAttributes.addFlashAttribute("error", "Token inválido ou erro no servidor.");
       }

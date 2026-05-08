@@ -10,19 +10,22 @@ Provide real-time order printing at the restaurant's kitchen or bar, ensuring th
 - **Automated Printing**: Sends the formatted order directly to the default system printer using Java's Printing API.
 - **Robustness**: Handles different class packages via Jackson's `INFERRED` type mapping.
 
-## Configuration
-
+### Configuration
 The agent is configured via an `application.yml` file.
 
-### RabbitMQ
-Configures the message broker address the Agent should listen to.
+#### RabbitMQ
 ```yaml
 spring:
   rabbitmq:
     addresses: amqp://guest:guest@localhost:5672
+
+app:
+  integration:
+    rabbit:
+      order-ticket-exchange: order.ticket.exchange
 ```
 
-### Logging
+#### Logging
 To monitor incoming orders in real-time:
 ```yaml
 logging:
@@ -39,7 +42,7 @@ logging:
    ```
 3. Run the Agent:
    ```bash
-   java -jar target/table-split-agent.jar
+   java -jar target/print-agent.jar
    ```
 
 ## Roadmap

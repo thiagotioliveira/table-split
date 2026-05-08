@@ -16,7 +16,7 @@
 - [Project Structure](#project-structure)
 - [Domain Model](#domain-model)
 - [Screens & Flows](#screens--flows)
-- [WebSocket & Real-Time](#websocket--real-time)
+- [Real-Time Notifications (SSE & Push)](#real-time-notifications-sse--push)
 - [Internationalization](#internationalization)
 - [Database Migrations](#database-migrations)
 
@@ -39,7 +39,7 @@ Each restaurant is a **separate tenant** with its own isolated PostgreSQL schema
 
 ### 🍽️ Table Management
 - Create, view, open, and **delete** tables (physical or soft-delete based on order history)
-- Real-time status updates via **WebSocket (STOMP/SockJS)** — status refreshes automatically across all active sessions when a customer joins
+- Real-time status updates via **Server-Sent Events (SSE)** — status refreshes automatically across all active sessions when a customer joins
 - Table statuses: `AVAILABLE` · `WAITING` · `OCCUPIED`
 - Soft-delete with `deletedAt` column — deleted tables with order history are recoverable; `CreateTable` automatically resurrects a soft-deleted table if the code is reused
 
@@ -101,11 +101,28 @@ Each restaurant is a **separate tenant** with its own isolated PostgreSQL schema
 | Persistence | Spring Data JPA + Hibernate |
 | Database | PostgreSQL (production) · H2 (local/dev) |
 | Migrations | Liquibase |
-| Real-time | WebSocket (STOMP + SockJS) |
+| Real-time | SSE (Server-Sent Events) |
 | Image Storage | Cloudinary |
+| Messaging | RabbitMQ |
 | Build | Maven |
 | Frontend | Vanilla HTML/CSS/JS (no framework) |
 | i18n | Spring MessageSource (`messages.properties`, `messages_pt.properties`) |
+
+---
+
+## POS Integration
+
+The system integrates with a local **Print Agent** via **RabbitMQ**. When a new ticket is created, the `TicketMessagingListener` dispatches a message to the `order.ticket.exchange`.
+
+### Configuration
+Enabled via property:
+```yaml
+app:
+  integration:
+    rabbit:
+      enabled: true
+      order-ticket-exchange: order.ticket.exchange
+```
 
 ---
 
@@ -138,7 +155,7 @@ TableSplit follows a **clean / layered architecture**:
 │         Infrastructure Layer            │
 │   JPA Repositories (adapters)           │
 │   Cloudinary image storage              │
-│   WebSocket broadcasting                │
+│   SSE broadcasting                      │
 │   Tenant schema provisioning            │
 │   Spring Security configuration         │
 └─────────────────────────────────────────┘
@@ -328,14 +345,14 @@ When an order is placed, each `TicketItem` stores a **snapshot** of the promotio
 
 ---
 
-## WebSocket & Real-Time
+## Real-Time Notifications (SSE & Push)
 
-TableSplit uses **STOMP over SockJS** for real-time updates.
+TableSplit uses **Server-Sent Events (SSE)** for lightweight, one-way real-time updates from the server to the browser, and the **Web Push API** for background notifications.
 
-- **Endpoint:** `/ws` (SockJS fallback)
-- **Topic:** `/topic/table/{restaurantId}` — broadcasts table status changes
-- When a customer joins a table (`OpenTable` use case), `SyncTableStatus` broadcasts a status-changed event to all subscribed sessions (e.g., the waiter's dashboard).
-- The waiter dashboard auto-refreshes the table card without a full page reload.
+- **SSE Endpoint:** `/api/notifications/sse/{restaurantId}`
+- When a customer joins a table, a waiter calls, or a ticket status changes, the `TicketEventListener` uses the `SseService` to broadcast the event.
+- The manager dashboard listens for these events to refresh UI components (like table cards or call counters) without a full page reload.
+- **Push Notifications:** Uses the `Broadcaster` service to send native browser notifications to registered staff members via VAPID keys.
 
 ---
 
