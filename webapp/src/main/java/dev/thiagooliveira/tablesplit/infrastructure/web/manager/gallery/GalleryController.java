@@ -1,10 +1,10 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.gallery;
 
-import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
 import dev.thiagooliveira.tablesplit.application.restaurant.DeleteRestaurantImage;
 import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurantImages;
 import dev.thiagooliveira.tablesplit.application.restaurant.SetRestaurantCoverImage;
 import dev.thiagooliveira.tablesplit.application.restaurant.UploadRestaurantImage;
+import dev.thiagooliveira.tablesplit.application.restaurant.command.RestaurantImageDataCommand;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UploadRestaurantImageCommand;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
@@ -63,20 +63,21 @@ public class GalleryController {
       Authentication auth,
       @RequestParam("file") MultipartFile file,
       @RequestParam(value = "cover", defaultValue = "false") boolean cover,
-      RedirectAttributes redirectAttributes)
-      throws IOException {
+      RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
     var restaurantId = context.getRestaurant().getId();
     var accountId = context.getId();
-
-    ImageData imageData =
-        new ImageData(file.getOriginalFilename(), file.getContentType(), file.getBytes());
 
     transactionalContext.execute(
         () -> {
           try {
             uploadRestaurantImage.execute(
-                new UploadRestaurantImageCommand(accountId, restaurantId, imageData, false));
+                new UploadRestaurantImageCommand(
+                    accountId,
+                    restaurantId,
+                    new RestaurantImageDataCommand(
+                        file.getOriginalFilename(), file.getContentType(), file.getBytes()),
+                    false));
           } catch (IOException e) {
             throw new RuntimeException(e);
           }

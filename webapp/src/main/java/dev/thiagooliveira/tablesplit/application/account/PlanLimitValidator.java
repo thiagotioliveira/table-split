@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.account;
 
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;

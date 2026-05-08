@@ -1,17 +1,17 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageStorage;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.util.UUID;
 
 public class DeleteItem {
 
   private final ItemRepository itemRepository;
-  private final ImageStorage imageStorage;
+  private final ItemImageStorage itemImageStorage;
 
-  public DeleteItem(ItemRepository itemRepository, ImageStorage imageStorage) {
+  public DeleteItem(ItemRepository itemRepository, ItemImageStorage itemImageStorage) {
     this.itemRepository = itemRepository;
-    this.imageStorage = imageStorage;
+    this.itemImageStorage = itemImageStorage;
   }
 
   public void execute(UUID accountId, UUID restaurantId, UUID itemId) {
@@ -19,11 +19,11 @@ public class DeleteItem {
     if (!item.getAccountId().equals(accountId) || !item.getRestaurantId().equals(restaurantId)) {
       throw new IllegalArgumentException("Access denied");
     }
-    item.delete();
-    this.itemRepository.save(item);
+    this.itemRepository.delete(itemId);
 
     for (var img : item.getImages()) {
-      this.imageStorage.deleteItem(accountId, restaurantId, itemId, img.getId());
+      this.itemImageStorage.delete(accountId, restaurantId, itemId, img.getId());
     }
+    item.delete();
   }
 }

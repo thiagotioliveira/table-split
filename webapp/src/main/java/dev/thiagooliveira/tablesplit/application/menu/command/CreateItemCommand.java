@@ -11,7 +11,7 @@ import java.util.UUID;
 public record CreateItemCommand(
     UUID categoryId,
     List<UUID> imageIdsToKeep,
-    ImageCommand images,
+    ItemImageCommand images,
     Map<Language, String> name,
     Map<Language, String> description,
     BigDecimal price,
@@ -23,7 +23,7 @@ public record CreateItemCommand(
   public CreateItemCommand(
       UUID categoryId,
       List<UUID> imageIdsToKeep,
-      ImageCommand images,
+      ItemImageCommand images,
       Map<Language, String> name,
       Map<Language, String> description,
       BigDecimal price,
@@ -36,7 +36,7 @@ public record CreateItemCommand(
   public CreateItemCommand(
       UUID categoryId,
       List<UUID> imageIdsToKeep,
-      ImageCommand images,
+      ItemImageCommand images,
       Map<Language, String> name,
       Map<Language, String> description,
       BigDecimal price,

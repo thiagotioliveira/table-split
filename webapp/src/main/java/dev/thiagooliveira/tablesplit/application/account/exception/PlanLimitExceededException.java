@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.exception;
+package dev.thiagooliveira.tablesplit.application.account.exception;
 
 public class PlanLimitExceededException extends RuntimeException {
   public PlanLimitExceededException(String message) {

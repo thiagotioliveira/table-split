@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.manager.menu.model;
 
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
-import dev.thiagooliveira.tablesplit.application.menu.command.ImageCommand;
-import dev.thiagooliveira.tablesplit.application.menu.command.ImageData;
+import dev.thiagooliveira.tablesplit.application.menu.command.ItemImageCommand;
+import dev.thiagooliveira.tablesplit.application.menu.command.ItemImageDataCommand;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemTag;
@@ -18,7 +18,7 @@ public class UpdateItemModel {
   private BigDecimal price;
   private List<String> tags;
   private boolean available;
-  private List<MultipartFile> imagesFile;
+  private List<MultipartFile> newImages;
   private List<String> imageIdsToKeep;
   private String questionsJson;
 
@@ -28,7 +28,7 @@ public class UpdateItemModel {
   public CreateItemCommand toCreateItemCommand() {
     var imagesToKeep = parseImagesToKeep();
     var newImagesData = parseNewImages();
-    var imagesCommand = new ImageCommand(imagesToKeep, newImagesData);
+    var imagesCommand = new ItemImageCommand(imagesToKeep, newImagesData);
 
     return new CreateItemCommand(
         categoryId,
@@ -45,7 +45,7 @@ public class UpdateItemModel {
   public UpdateItemCommand toUpdateItemCommand() {
     var imagesToKeep = parseImagesToKeep();
     var newImagesData = parseNewImages();
-    var imagesCommand = new ImageCommand(imagesToKeep, newImagesData);
+    var imagesCommand = new ItemImageCommand(imagesToKeep, newImagesData);
 
     return new UpdateItemCommand(
         id,
@@ -69,14 +69,15 @@ public class UpdateItemModel {
         : List.of();
   }
 
-  private List<ImageData> parseNewImages() {
-    return imagesFile != null
-        ? imagesFile.stream()
+  private List<ItemImageDataCommand> parseNewImages() {
+    return newImages != null
+        ? newImages.stream()
             .filter(f -> !f.isEmpty())
             .map(
                 f -> {
                   try {
-                    return new ImageData(f.getOriginalFilename(), f.getContentType(), f.getBytes());
+                    return new ItemImageDataCommand(
+                        f.getOriginalFilename(), f.getContentType(), f.getBytes());
                   } catch (Exception e) {
                     throw new RuntimeException(e);
                   }
@@ -215,12 +216,12 @@ public class UpdateItemModel {
     this.available = available;
   }
 
-  public List<MultipartFile> getImagesFile() {
-    return imagesFile;
+  public List<MultipartFile> getNewImages() {
+    return newImages;
   }
 
-  public void setImagesFile(List<MultipartFile> imagesFile) {
-    this.imagesFile = imagesFile;
+  public void setNewImages(List<MultipartFile> newImages) {
+    this.newImages = newImages;
   }
 
   public List<String> getImageIdsToKeep() {

@@ -1,20 +1,21 @@
 package dev.thiagooliveira.tablesplit.application.menu;
 
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.UpdateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageStorage;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UpdateItem {
 
-  private final ImageStorage imageStorage;
+  private final ItemImageStorage itemImageStorage;
   private final ItemRepository itemRepository;
   private final long maxImageSize;
 
-  public UpdateItem(ImageStorage imageStorage, ItemRepository itemRepository, long maxImageSize) {
-    this.imageStorage = imageStorage;
+  public UpdateItem(
+      ItemImageStorage itemImageStorage, ItemRepository itemRepository, long maxImageSize) {
+    this.itemImageStorage = itemImageStorage;
     this.itemRepository = itemRepository;
     this.maxImageSize = maxImageSize;
   }
@@ -41,7 +42,7 @@ public class UpdateItem {
             .collect(Collectors.toList());
 
     for (var img : imagesToDelete) {
-      imageStorage.deleteItem(accountId, restaurantId, itemId, img.getId());
+      itemImageStorage.delete(accountId, restaurantId, itemId, img.getId());
     }
     item.setImages(
         currentImages.stream()
@@ -56,7 +57,7 @@ public class UpdateItem {
         }
         UUID imageId = UUID.randomUUID();
         String imagePath =
-            imageStorage.uploadItem(imageData, accountId, restaurantId, itemId, imageId);
+            itemImageStorage.upload(imageData.toDomain(), accountId, restaurantId, itemId, imageId);
         item.addImage(imageId, imagePath, item.getImages().isEmpty());
       }
     }

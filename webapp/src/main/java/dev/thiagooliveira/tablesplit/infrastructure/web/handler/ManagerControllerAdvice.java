@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.web.handler;
 
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.notification.ListActiveWaiterCalls;
 import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.infrastructure.security.context.AccountContext;

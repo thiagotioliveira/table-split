@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateCategoryCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
 import java.util.Map;

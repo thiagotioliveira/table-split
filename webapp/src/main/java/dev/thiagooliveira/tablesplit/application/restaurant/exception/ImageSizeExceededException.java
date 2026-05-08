@@ -2,8 +2,8 @@ package dev.thiagooliveira.tablesplit.application.restaurant.exception;
 
 import dev.thiagooliveira.tablesplit.application.exception.ApplicationException;
 
-public class SlugAlreadyExist extends ApplicationException {
-  public SlugAlreadyExist() {
-    super();
+public class ImageSizeExceededException extends ApplicationException {
+  public ImageSizeExceededException(String message) {
+    super(message);
   }
 }

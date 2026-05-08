@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.domain.account.Account;
 import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
 import dev.thiagooliveira.tablesplit.domain.account.Plan;

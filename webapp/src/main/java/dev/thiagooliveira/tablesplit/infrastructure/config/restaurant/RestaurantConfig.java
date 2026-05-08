@@ -1,8 +1,8 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.restaurant;
 
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.restaurant.*;
 import dev.thiagooliveira.tablesplit.domain.restaurant.PrintAgentTokenRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImageStorage;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,16 +33,16 @@ public class RestaurantConfig {
   @Bean
   public UploadRestaurantImage uploadRestaurantImage(
       RestaurantRepository restaurantRepository,
-      ImageStorage imageStorage,
+      RestaurantImageStorage restaurantImageStorage,
       @org.springframework.beans.factory.annotation.Value("${app.gallery.image.max-size:1048576}")
           long maxImageSize) {
-    return new UploadRestaurantImage(restaurantRepository, imageStorage, maxImageSize);
+    return new UploadRestaurantImage(restaurantRepository, restaurantImageStorage, maxImageSize);
   }
 
   @Bean
   public DeleteRestaurantImage deleteRestaurantImage(
-      RestaurantRepository restaurantRepository, ImageStorage imageStorage) {
-    return new DeleteRestaurantImage(restaurantRepository, imageStorage);
+      RestaurantRepository restaurantRepository, RestaurantImageStorage restaurantImageStorage) {
+    return new DeleteRestaurantImage(restaurantRepository, restaurantImageStorage);
   }
 
   @Bean

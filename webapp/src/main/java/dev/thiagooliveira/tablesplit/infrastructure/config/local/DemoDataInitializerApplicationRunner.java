@@ -334,7 +334,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Batata-Frita Rústica",
@@ -355,7 +355,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Dadinhos de Tapioca", Language.EN, "Tapioca Dice"),
                           Map.of(
                               Language.PT,
@@ -372,7 +372,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT, "Coxinhas de Frango", Language.EN, "Chicken Croquettes"),
                           Map.of(
@@ -390,7 +390,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Bolinho de Bacalhau", Language.EN, "Codfish Balls"),
                           Map.of(
                               Language.PT,
@@ -407,7 +407,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Calabresa Acebolada",
@@ -428,7 +428,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryStarters.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Provolone à Milanesa",
@@ -458,7 +458,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Feijoada Completa",
@@ -503,7 +503,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Moqueca de Peixe", Language.EN, "Fish Moqueca"),
                           Map.of(
                               Language.PT,
@@ -520,7 +520,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Picanha na Brasa", Language.EN, "Grilled Picanha"),
                           Map.of(
                               Language.PT,
@@ -561,7 +561,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Baião de Dois", Language.EN, "Baiao de Dois"),
                           Map.of(
                               Language.PT,
@@ -578,7 +578,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT, "Virado à Paulista", Language.EN, "Virado a Paulista"),
                           Map.of(
@@ -596,7 +596,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryMainCourse.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Filé Oswaldo Aranha",
@@ -626,7 +626,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDesserts.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Pudim de Leite", Language.EN, "Milk Pudding"),
                           Map.of(
                               Language.PT,
@@ -643,7 +643,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDesserts.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Mousse de Maracujá",
@@ -664,7 +664,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDesserts.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Quindim Tradicional",
@@ -685,7 +685,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDesserts.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Romeu e Julieta", Language.EN, "Romeo and Juliet"),
                           Map.of(
                               Language.PT,
@@ -711,7 +711,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT, "Caipirinha de Limão", Language.EN, "Lemon Caipirinha"),
                           Map.of(
@@ -753,7 +753,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Guaraná Antarctica", Language.EN, "Guarana Soda"),
                           Map.of(
                               Language.PT,
@@ -770,7 +770,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(Language.PT, "Água de Coco", Language.EN, "Coconut Water"),
                           Map.of(
                               Language.PT,
@@ -787,7 +787,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT, "Chopp Gelado 300ml", Language.EN, "Chilled Beer 300ml"),
                           Map.of(
@@ -805,7 +805,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Suco de Abacaxi c/ Hortelã",
@@ -826,7 +826,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Cerveja Original 600ml",
@@ -847,7 +847,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Caipivodka de Morango",
@@ -868,7 +868,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                       new CreateItemCommand(
                           categoryDrinks.getId(),
                           List.of(),
-                          new ImageCommand(List.of(), List.of()),
+                          new ItemImageCommand(List.of(), List.of()),
                           Map.of(
                               Language.PT,
                               "Café Expresso Gourmet",

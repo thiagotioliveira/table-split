@@ -1,36 +1,41 @@
 package dev.thiagooliveira.tablesplit.application.restaurant;
 
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.restaurant.command.UploadRestaurantImageCommand;
+import dev.thiagooliveira.tablesplit.application.restaurant.exception.ImageSizeExceededException;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImage;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantImageStorage;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import java.io.IOException;
 import java.util.UUID;
 
 public class UploadRestaurantImage {
   private final RestaurantRepository restaurantRepository;
-  private final ImageStorage imageStorage;
+  private final RestaurantImageStorage restaurantImageStorage;
   private final long maxImageSize;
 
   public UploadRestaurantImage(
-      RestaurantRepository restaurantRepository, ImageStorage imageStorage, long maxImageSize) {
+      RestaurantRepository restaurantRepository,
+      RestaurantImageStorage restaurantImageStorage,
+      long maxImageSize) {
     this.restaurantRepository = restaurantRepository;
-    this.imageStorage = imageStorage;
+    this.restaurantImageStorage = restaurantImageStorage;
     this.maxImageSize = maxImageSize;
   }
 
   public RestaurantImage execute(UploadRestaurantImageCommand command) throws IOException {
-    if (command.imageData() != null
-        && command.imageData().content() != null
-        && command.imageData().content().length > this.maxImageSize) {
-      throw new dev.thiagooliveira.tablesplit.application.exception.ImageSizeExceededException(
-          "error.restaurant.image.size");
+    if (command.itemImageData() != null
+        && command.itemImageData().content() != null
+        && command.itemImageData().content().length > this.maxImageSize) {
+      throw new ImageSizeExceededException("error.restaurant.image.size");
     }
 
     var imageId = UUID.randomUUID();
     String url =
-        imageStorage.uploadRestaurantGallery(
-            command.imageData(), command.accountId(), command.restaurantId(), imageId);
+        restaurantImageStorage.upload(
+            command.itemImageData().toDomain(),
+            command.accountId(),
+            command.restaurantId(),
+            imageId);
 
     RestaurantImage image = new RestaurantImage();
     image.setId(imageId);

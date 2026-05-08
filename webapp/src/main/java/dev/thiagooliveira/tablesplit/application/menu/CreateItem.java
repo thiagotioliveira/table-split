@@ -2,25 +2,25 @@ package dev.thiagooliveira.tablesplit.application.menu;
 
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageStorage;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.util.UUID;
 
 public class CreateItem {
 
-  private final ImageStorage imageStorage;
+  private final ItemImageStorage itemImageStorage;
   private final ItemRepository itemRepository;
   private final PlanLimitValidator planLimitValidator;
   private final long maxImageSize;
 
   public CreateItem(
-      ImageStorage imageStorage,
+      ItemImageStorage itemImageStorage,
       ItemRepository itemRepository,
       PlanLimitValidator planLimitValidator,
       long maxImageSize) {
-    this.imageStorage = imageStorage;
+    this.itemImageStorage = itemImageStorage;
     this.itemRepository = itemRepository;
     this.planLimitValidator = planLimitValidator;
     this.maxImageSize = maxImageSize;
@@ -46,7 +46,8 @@ public class CreateItem {
         }
         UUID imageId = UUID.randomUUID();
         String imagePath =
-            imageStorage.uploadItem(imageData, accountId, restaurantId, item.getId(), imageId);
+            itemImageStorage.upload(
+                imageData.toDomain(), accountId, restaurantId, item.getId(), imageId);
         item.addImage(imageId, imagePath, item.getImages().isEmpty());
       }
     }

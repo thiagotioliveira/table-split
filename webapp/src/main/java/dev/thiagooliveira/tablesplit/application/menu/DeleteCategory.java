@@ -17,7 +17,8 @@ public class DeleteCategory {
         || !category.getRestaurantId().equals(restaurantId)) {
       throw new IllegalArgumentException("Access denied");
     }
+
+    this.categoryRepository.delete(categoryId);
     category.delete();
-    this.categoryRepository.save(category);
   }
 }

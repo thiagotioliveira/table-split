@@ -1,9 +1,9 @@
 package dev.thiagooliveira.tablesplit.infrastructure.config.menu;
 
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
 import dev.thiagooliveira.tablesplit.application.menu.*;
 import dev.thiagooliveira.tablesplit.domain.menu.CategoryRepository;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageStorage;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import dev.thiagooliveira.tablesplit.domain.menu.PromotionRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class MenuConfig {
 
   @Bean
   public UpdateItem updateItem(
-      ImageStorage imageStorage,
+      ItemImageStorage imageStorage,
       ItemRepository itemRepository,
       @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
     return new UpdateItem(imageStorage, itemRepository, maxImageSize);
@@ -49,7 +49,7 @@ public class MenuConfig {
 
   @Bean
   public CreateItem createItem(
-      ImageStorage imageStorage,
+      ItemImageStorage imageStorage,
       ItemRepository itemRepository,
       PlanLimitValidator planLimitValidator,
       @Value("${app.menu.item.image.max-size:1048576}") long maxImageSize) {
@@ -57,7 +57,7 @@ public class MenuConfig {
   }
 
   @Bean
-  public DeleteItem deleteItem(ItemRepository itemRepository, ImageStorage imageStorage) {
-    return new DeleteItem(itemRepository, imageStorage);
+  public DeleteItem deleteItem(ItemRepository itemRepository, ItemImageStorage itemImageStorage) {
+    return new DeleteItem(itemRepository, itemImageStorage);
   }
 }

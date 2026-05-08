@@ -5,10 +5,10 @@ import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitType;
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
-import dev.thiagooliveira.tablesplit.application.image.ImageStorage;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreateItemCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.menu.ItemImageStorage;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CreateItemTest {
 
-  @Mock private ImageStorage imageStorage;
+  @Mock private ItemImageStorage itemImageStorage;
   @Mock private ItemRepository itemRepository;
   @Mock private PlanLimitValidator planLimitValidator;
 
@@ -32,7 +32,8 @@ class CreateItemTest {
 
   @BeforeEach
   void setUp() {
-    createItem = new CreateItem(imageStorage, itemRepository, planLimitValidator, MAX_IMAGE_SIZE);
+    createItem =
+        new CreateItem(itemImageStorage, itemRepository, planLimitValidator, MAX_IMAGE_SIZE);
   }
 
   @Test

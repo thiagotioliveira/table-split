@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.account.PlanLimitValidator;
-import dev.thiagooliveira.tablesplit.application.exception.PlanLimitExceededException;
+import dev.thiagooliveira.tablesplit.application.account.exception.PlanLimitExceededException;
 import dev.thiagooliveira.tablesplit.application.menu.command.CreatePromotionCommand;
 import dev.thiagooliveira.tablesplit.domain.menu.ApplyType;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
