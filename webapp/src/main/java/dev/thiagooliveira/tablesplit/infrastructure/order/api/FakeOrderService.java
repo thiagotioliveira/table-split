@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 public class FakeOrderService {
@@ -41,6 +41,7 @@ public class FakeOrderService {
   private final ProcessPayment processPayment;
   private final SubmitGeneralFeedback submitGeneralFeedback;
   private final RateItem rateItem;
+  private final TransactionTemplate transactionTemplate;
 
   @Value("${app.demo.restaurant-id}")
   private String demoRestaurantId;
@@ -56,7 +57,8 @@ public class FakeOrderService {
       PlaceOrder placeOrder,
       ProcessPayment processPayment,
       SubmitGeneralFeedback submitGeneralFeedback,
-      RateItem rateItem) {
+      RateItem rateItem,
+      TransactionTemplate transactionTemplate) {
     this.properties = properties;
     this.restaurantRepository = restaurantRepository;
     this.tableRepository = tableRepository;
@@ -65,10 +67,10 @@ public class FakeOrderService {
     this.processPayment = processPayment;
     this.submitGeneralFeedback = submitGeneralFeedback;
     this.rateItem = rateItem;
+    this.transactionTemplate = transactionTemplate;
   }
 
   @Async
-  @Transactional
   public void generateFakeOrder() {
     UUID restaurantId = UUID.fromString(demoRestaurantId);
     logger.debug("Starting fake order generation for restaurant: {}", restaurantId);
@@ -78,107 +80,114 @@ public class FakeOrderService {
     TenantContext.setCurrentTenant(schema);
 
     try {
-      Restaurant restaurant =
-          restaurantRepository
-              .findById(restaurantId)
-              .orElseThrow(
-                  () -> new IllegalArgumentException("Restaurant not found: " + restaurantId));
+      transactionTemplate.executeWithoutResult(
+          status -> {
+            Restaurant restaurant =
+                restaurantRepository
+                    .findById(restaurantId)
+                    .orElseThrow(
+                        () ->
+                            new IllegalArgumentException("Restaurant not found: " + restaurantId));
 
-      if (!restaurant.isOpen(ZonedDateTime.now(ZoneId.of(zoneId)))) {
-        logger.debug("Restaurant is closed. Skipping fake order generation.");
-        return;
-      }
+            if (!restaurant.isOpen(ZonedDateTime.now(ZoneId.of(zoneId)))) {
+              logger.debug("Restaurant is closed. Skipping fake order generation.");
+              return;
+            }
 
-      List<Table> tables = tableRepository.findAllByRestaurantId(restaurantId);
-      List<Table> availableTables =
-          tables.stream().filter(t -> t.getStatus() == TableStatus.AVAILABLE).toList();
+            List<Table> tables = tableRepository.findAllByRestaurantId(restaurantId);
+            List<Table> availableTables =
+                tables.stream().filter(t -> t.getStatus() == TableStatus.AVAILABLE).toList();
 
-      if (availableTables.isEmpty()) {
-        logger.warn(
-            "No available tables for restaurant: {}. Skipping fake order generation.",
-            restaurantId);
-        return;
-      }
+            if (availableTables.isEmpty()) {
+              logger.warn(
+                  "No available tables for restaurant: {}. Skipping fake order generation.",
+                  restaurantId);
+              return;
+            }
 
-      Random random = new Random();
-      Table table = availableTables.get(random.nextInt(availableTables.size()));
-      String customerName =
-          properties.getCustomerNames().get(random.nextInt(properties.getCustomerNames().size()));
-      UUID customerId = UUID.randomUUID();
+            Random random = new Random();
+            Table table = availableTables.get(random.nextInt(availableTables.size()));
+            String customerName =
+                properties
+                    .getCustomerNames()
+                    .get(random.nextInt(properties.getCustomerNames().size()));
+            UUID customerId = UUID.randomUUID();
 
-      List<Item> menuItems =
-          getItem.execute(restaurantId, List.of(restaurant.getDefaultLanguage()), true);
-      if (menuItems.isEmpty()) {
-        logger.warn(
-            "No menu items found for restaurant: {}. Skipping fake order generation.",
-            restaurantId);
-        return;
-      }
+            List<Item> menuItems =
+                getItem.execute(restaurantId, List.of(restaurant.getDefaultLanguage()), true);
+            if (menuItems.isEmpty()) {
+              logger.warn(
+                  "No menu items found for restaurant: {}. Skipping fake order generation.",
+                  restaurantId);
+              return;
+            }
 
-      int numberOfItems = random.nextInt(3) + 1; // 1 to 3 different items
-      List<TicketItemCommand> itemCommands = new ArrayList<>();
-      for (int i = 0; i < numberOfItems; i++) {
-        Item item = menuItems.get(random.nextInt(menuItems.size()));
+            int numberOfItems = random.nextInt(3) + 1; // 1 to 3 different items
+            List<TicketItemCommand> itemCommands = new ArrayList<>();
+            for (int i = 0; i < numberOfItems; i++) {
+              Item item = menuItems.get(random.nextInt(menuItems.size()));
 
-        int quantity = random.nextInt(3) + 1; // 1 to 3 items of the same type
-        UUID promotionId = null;
-        String discountType = null;
-        BigDecimal discountValue = BigDecimal.ZERO;
+              int quantity = random.nextInt(3) + 1; // 1 to 3 items of the same type
+              UUID promotionId = null;
+              String discountType = null;
+              BigDecimal discountValue = BigDecimal.ZERO;
 
-        if (item.getPromotion() != null) {
-          promotionId = item.getPromotion().promotionId();
-          discountType = item.getPromotion().discountType().name();
-          discountValue = item.getPromotion().discountValue();
-        }
+              if (item.getPromotion() != null) {
+                promotionId = item.getPromotion().promotionId();
+                discountType = item.getPromotion().discountType().name();
+                discountValue = item.getPromotion().discountValue();
+              }
 
-        List<TicketItemCustomizationCommand> customizations =
-            generateRandomCustomizations(item, restaurant.getDefaultLanguage(), random);
+              List<TicketItemCustomizationCommand> customizations =
+                  generateRandomCustomizations(item, restaurant.getDefaultLanguage(), random);
 
-        itemCommands.add(
-            new TicketItemCommand(
-                item.getId(),
+              itemCommands.add(
+                  new TicketItemCommand(
+                      item.getId(),
+                      customerId,
+                      quantity,
+                      null,
+                      promotionId,
+                      item.getPrice(),
+                      discountType,
+                      discountValue,
+                      customizations));
+            }
+
+            PlaceOrderCommand placeOrderCommand =
+                new PlaceOrderCommand(
+                    restaurantId,
+                    table.getCod(),
+                    List.of(new TicketCommand(null, itemCommands)),
+                    restaurant.getServiceFee(),
+                    List.of(new CustomerCommand(customerId, customerName)));
+
+            Order order = placeOrder.execute(placeOrderCommand);
+            logger.debug("Fake order created: {} for table: {}", order.getId(), table.getCod());
+
+            // Payment
+            PaymentMethod paymentMethod =
+                PaymentMethod.values()[random.nextInt(PaymentMethod.values().length)];
+            processPayment.execute(
+                table.getId(),
                 customerId,
-                quantity,
-                null,
-                promotionId,
-                item.getPrice(),
-                discountType,
-                discountValue,
-                customizations));
-      }
+                order.calculateTotal(),
+                paymentMethod,
+                "Fake payment for demo");
+            logger.debug("Fake payment processed for order: {}", order.getId());
 
-      PlaceOrderCommand placeOrderCommand =
-          new PlaceOrderCommand(
-              restaurantId,
-              table.getCod(),
-              List.of(new TicketCommand(null, itemCommands)),
-              restaurant.getServiceFee(),
-              List.of(new CustomerCommand(customerId, customerName)));
+            // Feedback
+            int rating = random.nextInt(5) + 1; // 1 to 5
+            List<String> comments = properties.getFeedbacks().get(rating);
+            String comment = comments.get(random.nextInt(comments.size()));
 
-      Order order = placeOrder.execute(placeOrderCommand);
-      logger.debug("Fake order created: {} for table: {}", order.getId(), table.getCod());
-
-      // Payment
-      PaymentMethod paymentMethod =
-          PaymentMethod.values()[random.nextInt(PaymentMethod.values().length)];
-      processPayment.execute(
-          table.getId(),
-          customerId,
-          order.calculateTotal(),
-          paymentMethod,
-          "Fake payment for demo");
-      logger.debug("Fake payment processed for order: {}", order.getId());
-
-      // Feedback
-      int rating = random.nextInt(5) + 1; // 1 to 5
-      List<String> comments = properties.getFeedbacks().get(rating);
-      String comment = comments.get(random.nextInt(comments.size()));
-
-      submitGeneralFeedback.execute(order.getId(), customerId, rating, comment);
-      for (TicketItemCommand itemCommand : itemCommands) {
-        rateItem.execute(itemCommand.itemId(), rating);
-      }
-      logger.debug("Fake feedback submitted for order: {} with rating: {}", order.getId(), rating);
+            submitGeneralFeedback.execute(order.getId(), customerId, rating, comment);
+            for (TicketItemCommand itemCommand : itemCommands) {
+              rateItem.execute(itemCommand.itemId(), rating);
+            }
+            logger.debug(
+                "Fake feedback submitted for order: {} with rating: {}", order.getId(), rating);
+          });
 
     } catch (Exception e) {
       logger.error("Error generating fake order for restaurant: {}", restaurantId, e);

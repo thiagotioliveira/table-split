@@ -20,9 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 class FakeOrderServiceTest {
 
@@ -34,6 +37,7 @@ class FakeOrderServiceTest {
   private ProcessPayment processPayment;
   private SubmitGeneralFeedback submitGeneralFeedback;
   private RateItem rateItem;
+  private TransactionTemplate transactionTemplate;
   private FakeOrderService fakeOrderService;
 
   private final UUID restaurantId = UUID.randomUUID();
@@ -48,6 +52,17 @@ class FakeOrderServiceTest {
     processPayment = mock(ProcessPayment.class);
     submitGeneralFeedback = mock(SubmitGeneralFeedback.class);
     rateItem = mock(RateItem.class);
+    transactionTemplate = mock(TransactionTemplate.class);
+
+    // Mock TransactionTemplate.executeWithoutResult to run the callback immediately
+    doAnswer(
+            invocation -> {
+              Consumer<TransactionStatus> callback = invocation.getArgument(0);
+              callback.accept(mock(TransactionStatus.class));
+              return null;
+            })
+        .when(transactionTemplate)
+        .executeWithoutResult(any());
 
     fakeOrderService =
         new FakeOrderService(
@@ -58,7 +73,8 @@ class FakeOrderServiceTest {
             placeOrder,
             processPayment,
             submitGeneralFeedback,
-            rateItem);
+            rateItem,
+            transactionTemplate);
 
     ReflectionTestUtils.setField(fakeOrderService, "demoRestaurantId", restaurantId.toString());
     ReflectionTestUtils.setField(fakeOrderService, "zoneId", "Europe/Lisbon");
