@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web;
+package dev.thiagooliveira.tablesplit.infrastructure;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 

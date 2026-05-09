@@ -193,6 +193,7 @@ public class TicketEventListener {
                     TicketItemModel.fromDomain(
                         item,
                         order.getCustomerName(item.getCustomerId()),
+                        ticket.getNote(),
                         ticket.getCreatedAt(),
                         getCurrentUserLanguage()))
             .toList();

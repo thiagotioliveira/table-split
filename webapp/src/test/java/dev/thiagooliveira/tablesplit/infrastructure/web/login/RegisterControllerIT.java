@@ -9,7 +9,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
-import dev.thiagooliveira.tablesplit.infrastructure.web.H2IT;
+import dev.thiagooliveira.tablesplit.infrastructure.H2IT;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

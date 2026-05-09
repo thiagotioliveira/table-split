@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web;
+package dev.thiagooliveira.tablesplit.infrastructure;
 
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.CustomUserDetailsService;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;

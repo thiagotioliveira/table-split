@@ -61,7 +61,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
               "https://www.aquinacozinha.com/wp-content/uploads/2025/04/bolinhos_bacalhau.png");
           put(
               "Calabresa Acebolada",
-              "https://revistamenu.com.br/wp-content/uploads/sites/24/2021/05/linguiedercachaca-istock-1.jpg");
+              "https://cdn.vucasolution.com.br/upload/w_800/https://gryyplgyeyqb.compat.objectstorage.sa-saopaulo-1.oraclecloud.com/vuca-cdn/papitos/arqs/produtos/qvmpt2dhr6fw70mpwk8s.jpg");
           put(
               "Provolone à Milanesa",
               "https://guiadacozinha.com.br/wp-content/uploads/2019/10/provolone-a-milanesa-50584.jpg");

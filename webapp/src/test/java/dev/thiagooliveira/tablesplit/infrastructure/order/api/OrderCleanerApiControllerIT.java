@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
+import dev.thiagooliveira.tablesplit.infrastructure.PostgresIT;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemEntity;
@@ -16,7 +17,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepo
 import dev.thiagooliveira.tablesplit.infrastructure.order.persistence.*;
 import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
-import dev.thiagooliveira.tablesplit.infrastructure.web.PostgresIT;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.CustomUserDetailsService;
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -179,7 +179,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
     TenantContext.clear();
 
     mockMvc
-        .perform(post("/api/system/cleaner/run").with(httpBasic("system", "supersecret")))
+        .perform(post("/api/system/orders/cleaner/run").with(httpBasic("system", "supersecret")))
         .andExpect(status().isOk());
 
     await()

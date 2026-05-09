@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
-@Component
 public class TicketMessagingListener {
 
   private static final Logger log = LoggerFactory.getLogger(TicketMessagingListener.class);

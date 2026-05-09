@@ -175,6 +175,12 @@ public class CustomerApiController implements CustomerMenuApi {
             .execute(slug)
             .orElseThrow(() -> new NotFoundException("Restaurant not found"));
 
+    // Validate table existence to avoid creating "ghost" tables if the code is slightly different
+    // (e.g. 01 vs 1)
+    getTables
+        .findByRestaurantIdAndCod(restaurant.getId(), tableCode)
+        .orElseThrow(() -> new NotFoundException("Table " + tableCode + " not found"));
+
     var command =
         new PlaceOrderCommand(
             restaurant.getId(),
@@ -183,13 +189,15 @@ public class CustomerApiController implements CustomerMenuApi {
                 .map(
                     t ->
                         new TicketCommand(
-                            "", // note from cart is not at ticket level in this request
+                            t.getNote(),
                             t.getItems().stream()
                                 .map(
                                     i ->
                                         new TicketItemCommand(
                                             i.getItemId(),
-                                            t.getCustomerId(),
+                                            i.getCustomerId() != null
+                                                ? i.getCustomerId()
+                                                : t.getCustomerId(),
                                             i.getQuantity(),
                                             i.getNote(),
                                             null, // promotion

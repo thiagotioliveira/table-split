@@ -47,6 +47,7 @@ public abstract class TableApiMapper {
                                     TicketItemModel.fromDomain(
                                         item,
                                         order.getCustomerName(item.getCustomerId()),
+                                        t.getNote(),
                                         t.getCreatedAt(),
                                         userLanguage))))
             .collect(Collectors.toList()));

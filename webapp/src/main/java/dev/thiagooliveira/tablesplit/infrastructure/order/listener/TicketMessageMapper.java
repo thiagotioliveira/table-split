@@ -28,7 +28,8 @@ public class TicketMessageMapper {
                       item.getQuantity(),
                       item.getUnitPrice(),
                       item.getTotalPrice(),
-                      item.getNote());
+                      item.getNote(),
+                      ticket.getNote());
                 })
             .toList();
 
@@ -42,6 +43,7 @@ public class TicketMessageMapper {
                     .getItems()
                     .get(0)
                     .getCustomerId()), // Passing the customer ID from the first item
+        ticket.getNote(),
         items,
         ticket.calculateTotal(),
         ticket.getCreatedAt());

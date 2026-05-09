@@ -9,6 +9,7 @@ public record TicketCreatedMessage(
     UUID ticketId,
     String tableCod,
     String customerName,
+    String ticketNote,
     List<Item> items,
     BigDecimal total,
     ZonedDateTime createdAt) {
@@ -18,5 +19,6 @@ public record TicketCreatedMessage(
       Integer quantity,
       BigDecimal unitPrice,
       BigDecimal totalPrice,
-      String note) {}
+      String note,
+      String ticketNote) {}
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/system/cleaner")
+@RequestMapping("/api/system/orders/cleaner")
 public class OrderCleanerApiController {
 
   private final OrderCleanerService orderCleanerService;

@@ -945,6 +945,7 @@
                                         <div class="order-item-name" th:text="${item.name}">Item Name</div>
                                         <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
                                         <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.note}">Note</p>
+                                        <p th:if="${item.ticketNote != null && !item.ticketNote.isEmpty() && item.ticketNote != item.note}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.ticketNote}">Ticket Note</p>
                                     </div>
                                 </div>
                             </div>
@@ -997,6 +998,7 @@
                                         <div class="order-item-name" th:text="${item.name}">Item Name</div>
                                         <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
                                         <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.note}">Note</p>
+                                        <p th:if="${item.ticketNote != null && !item.ticketNote.isEmpty() && item.ticketNote != item.note}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.ticketNote}">Ticket Note</p>
                                     </div>
                                 </div>
                             </div>
@@ -1045,6 +1047,7 @@
                                         <div class="order-item-name" th:text="${item.name}">Item Name</div>
                                         <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
                                         <p th:if="${item.note != null && !item.note.isEmpty()}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.note}">Note</p>
+                                        <p th:if="${item.ticketNote != null && !item.ticketNote.isEmpty() && item.ticketNote != item.note}" class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;" th:text="${item.ticketNote}">Ticket Note</p>
                                     </div>
                                 </div>
                             </div>
@@ -1440,6 +1443,7 @@
                     <div style="margin-left: 2rem;">
                         ${renderCustomizationSnapshot(item.customizations)}
                         ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                        ${item.ticketNote && item.ticketNote !== item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.ticketNote}</p>` : ''}
                     </div>
                 </div>
                 <div class="order-detail-item-right" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
@@ -1622,6 +1626,7 @@
                     <div class="order-item-name">${itemName}</div>
                     ${renderCustomizationSnapshot(item.customizations)}
                     ${item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.note}</p>` : ''}
+                    ${item.ticketNote && item.ticketNote !== item.note ? `<p class="order-item-note" style="margin-left: 0; margin-top: 0.25rem;">${item.ticketNote}</p>` : ''}
                 </div>
             </div>
             `;

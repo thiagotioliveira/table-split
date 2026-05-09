@@ -50,6 +50,7 @@ public abstract class OrderApiMapper {
                     TicketItemModel.fromDomain(
                         item,
                         order.getCustomerName(item.getCustomerId()),
+                        ticket.getNote(),
                         ticket.getCreatedAt(),
                         userLanguage))
             .toList();

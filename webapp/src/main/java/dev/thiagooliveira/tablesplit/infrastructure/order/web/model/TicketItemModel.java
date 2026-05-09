@@ -15,6 +15,7 @@ public class TicketItemModel {
   private final BigDecimal unitPrice;
   private final BigDecimal totalPrice;
   private final String note;
+  private final String ticketNote;
   private final String status;
   private final String statusClass;
   private final Integer rating;
@@ -35,6 +36,7 @@ public class TicketItemModel {
       BigDecimal unitPrice,
       BigDecimal totalPrice,
       String note,
+      String ticketNote,
       String status,
       String statusClass,
       ZonedDateTime createdAt) {
@@ -48,6 +50,7 @@ public class TicketItemModel {
         unitPrice,
         totalPrice,
         note,
+        ticketNote,
         status,
         statusClass,
         null,
@@ -66,6 +69,7 @@ public class TicketItemModel {
       BigDecimal unitPrice,
       BigDecimal totalPrice,
       String note,
+      String ticketNote,
       String status,
       String statusClass,
       Integer rating,
@@ -81,6 +85,7 @@ public class TicketItemModel {
         unitPrice,
         totalPrice,
         note,
+        ticketNote,
         status,
         statusClass,
         rating,
@@ -99,6 +104,7 @@ public class TicketItemModel {
       BigDecimal unitPrice,
       BigDecimal totalPrice,
       String note,
+      String ticketNote,
       String status,
       String statusClass,
       Integer rating,
@@ -116,6 +122,7 @@ public class TicketItemModel {
         unitPrice,
         totalPrice,
         note,
+        ticketNote,
         status,
         statusClass,
         rating,
@@ -135,6 +142,7 @@ public class TicketItemModel {
       BigDecimal unitPrice,
       BigDecimal totalPrice,
       String note,
+      String ticketNote,
       String status,
       String statusClass,
       Integer rating,
@@ -152,6 +160,7 @@ public class TicketItemModel {
     this.unitPrice = unitPrice;
     this.totalPrice = totalPrice;
     this.note = note;
+    this.ticketNote = ticketNote;
     this.status = status;
     this.statusClass = statusClass;
     this.rating = rating;
@@ -164,6 +173,7 @@ public class TicketItemModel {
   public static TicketItemModel fromDomain(
       dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
       String customerName,
+      String ticketNote,
       java.time.ZonedDateTime createdAt,
       dev.thiagooliveira.tablesplit.domain.common.Language userLanguage) {
 
@@ -204,6 +214,7 @@ public class TicketItemModel {
         item.getUnitPrice(),
         item.getTotalPrice(),
         item.getNote(),
+        ticketNote,
         item.getStatus().getLabel(),
         item.getStatus().getCssClass(),
         item.getRating(),
@@ -264,6 +275,10 @@ public class TicketItemModel {
 
   public String getNote() {
     return note;
+  }
+
+  public String getTicketNote() {
+    return ticketNote;
   }
 
   public String getStatus() {

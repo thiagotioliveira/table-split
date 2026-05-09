@@ -261,6 +261,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomerItemRequest'
+        note:
+          type: string
 
     CustomerItemRequest:
       type: object
@@ -272,6 +274,9 @@ components:
           type: integer
         note:
           type: string
+        customerId:
+          type: string
+          format: uuid
         customizations:
           type: array
           items:

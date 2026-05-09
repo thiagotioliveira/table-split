@@ -170,6 +170,7 @@ public class TableController {
                                 TicketItemModel.fromDomain(
                                     item,
                                     order.getCustomerName(item.getCustomerId()),
+                                    t.getNote(),
                                     t.getCreatedAt(),
                                     userLanguage)))
             .forEach(

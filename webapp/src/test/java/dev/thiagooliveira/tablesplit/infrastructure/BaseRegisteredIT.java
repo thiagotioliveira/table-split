@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.infrastructure.web;
+package dev.thiagooliveira.tablesplit.infrastructure;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.account.Plan;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
+import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.MediaType;
