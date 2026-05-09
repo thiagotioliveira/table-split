@@ -36,6 +36,7 @@ public class FakeOrderService {
   private final FakeOrderProperties properties;
   private final RestaurantRepository restaurantRepository;
   private final TableRepository tableRepository;
+  private final OrderRepository orderRepository;
   private final GetItem getItem;
   private final PlaceOrder placeOrder;
   private final ProcessPayment processPayment;
@@ -53,6 +54,7 @@ public class FakeOrderService {
       FakeOrderProperties properties,
       RestaurantRepository restaurantRepository,
       TableRepository tableRepository,
+      OrderRepository orderRepository,
       GetItem getItem,
       PlaceOrder placeOrder,
       ProcessPayment processPayment,
@@ -62,6 +64,7 @@ public class FakeOrderService {
     this.properties = properties;
     this.restaurantRepository = restaurantRepository;
     this.tableRepository = tableRepository;
+    this.orderRepository = orderRepository;
     this.getItem = getItem;
     this.placeOrder = placeOrder;
     this.processPayment = processPayment;
@@ -165,6 +168,16 @@ public class FakeOrderService {
             Order order = placeOrder.execute(placeOrderCommand);
             logger.debug("Fake order created: {} for table: {}", order.getId(), table.getCod());
 
+            // Mark items as delivered before payment
+            order
+                .getTickets()
+                .forEach(
+                    t -> {
+                      t.getItems().forEach(item -> item.setStatus(TicketStatus.DELIVERED));
+                      t.recalculateStatus();
+                    });
+            orderRepository.save(order);
+
             // Payment
             PaymentMethod paymentMethod =
                 PaymentMethod.values()[random.nextInt(PaymentMethod.values().length)];
@@ -182,9 +195,9 @@ public class FakeOrderService {
             String comment = comments.get(random.nextInt(comments.size()));
 
             submitGeneralFeedback.execute(order.getId(), customerId, rating, comment);
-            for (TicketItemCommand itemCommand : itemCommands) {
-              rateItem.execute(itemCommand.itemId(), rating);
-            }
+            order.getTickets().stream()
+                .flatMap(t -> t.getItems().stream())
+                .forEach(item -> rateItem.execute(item.getId(), rating));
             logger.debug(
                 "Fake feedback submitted for order: {} with rating: {}", order.getId(), rating);
           });

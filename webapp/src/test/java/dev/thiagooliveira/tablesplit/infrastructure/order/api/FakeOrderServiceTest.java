@@ -32,6 +32,7 @@ class FakeOrderServiceTest {
   private FakeOrderProperties properties;
   private RestaurantRepository restaurantRepository;
   private TableRepository tableRepository;
+  private OrderRepository orderRepository;
   private GetItem getItem;
   private PlaceOrder placeOrder;
   private ProcessPayment processPayment;
@@ -47,6 +48,7 @@ class FakeOrderServiceTest {
     properties = mock(FakeOrderProperties.class);
     restaurantRepository = mock(RestaurantRepository.class);
     tableRepository = mock(TableRepository.class);
+    orderRepository = mock(OrderRepository.class);
     getItem = mock(GetItem.class);
     placeOrder = mock(PlaceOrder.class);
     processPayment = mock(ProcessPayment.class);
@@ -69,6 +71,7 @@ class FakeOrderServiceTest {
             properties,
             restaurantRepository,
             tableRepository,
+            orderRepository,
             getItem,
             placeOrder,
             processPayment,
@@ -113,6 +116,12 @@ class FakeOrderServiceTest {
     when(order.calculateTotal()).thenReturn(new BigDecimal("55"));
     when(placeOrder.execute(any(PlaceOrderCommand.class))).thenReturn(order);
 
+    Ticket ticket = mock(Ticket.class);
+    TicketItem ticketItem = mock(TicketItem.class);
+    when(ticketItem.getId()).thenReturn(UUID.randomUUID());
+    when(ticket.getItems()).thenReturn(List.of(ticketItem));
+    when(order.getTickets()).thenReturn(List.of(ticket));
+
     fakeOrderService.generateFakeOrder();
 
     verify(placeOrder).execute(any(PlaceOrderCommand.class));
@@ -120,7 +129,8 @@ class FakeOrderServiceTest {
         .execute(eq(table.getId()), any(UUID.class), eq(new BigDecimal("55")), any(), anyString());
     verify(submitGeneralFeedback)
         .execute(eq(order.getId()), any(UUID.class), anyInt(), anyString());
-    verify(rateItem, atLeastOnce()).execute(eq(item.getId()), anyInt());
+    verify(rateItem, atLeastOnce()).execute(any(UUID.class), anyInt());
+    verify(orderRepository).save(order);
   }
 
   @Test
