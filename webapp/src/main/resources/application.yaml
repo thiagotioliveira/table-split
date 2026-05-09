@@ -49,6 +49,43 @@ cloudinary:
 
 app:
   version: "@project.version@"
+  demo:
+    restaurant-id: 4ec8cc82-9185-444c-9aee-71502a7f991c
+    fake-orders:
+      customer-names:
+        - "Thiago Oliveira"
+        - "Ana Silva"
+        - "Pedro Santos"
+        - "Maria Ferreira"
+        - "João Pereira"
+        - "Carla Rodrigues"
+        - "Ricardo Costa"
+        - "Sílvia Gomes"
+        - "Nuno Martins"
+        - "Beatriz Lopes"
+      feedbacks:
+        5:
+          - "Experiência fantástica! Tudo perfeito."
+          - "Comida maravilhosa e atendimento nota 10."
+          - "O melhor restaurante da cidade, com certeza!"
+          - "Ambiente agradável e pratos deliciosos."
+        4:
+          - "Muito bom, recomendo vivamente."
+          - "Gostei bastante da comida, voltarei em breve."
+          - "Atendimento atencioso e comida saborosa."
+          - "Experiência positiva no geral."
+        3:
+          - "Refeição ok, nada de extraordinário."
+          - "O atendimento foi um pouco lento, mas a comida estava boa."
+          - "Preço justo para a qualidade apresentada."
+        2:
+          - "Pode melhorar bastante no tempo de espera."
+          - "A comida chegou morna à mesa."
+          - "Esperava mais pelo preço cobrado."
+        1:
+          - "Não gostei da experiência, não pretendo voltar."
+          - "Atendimento muito abaixo do esperado."
+          - "Comida sem sabor e ambiente barulhento."
   register:
     enabled: true
   integration:
