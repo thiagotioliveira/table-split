@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FakeOrderService {
@@ -67,6 +68,7 @@ public class FakeOrderService {
   }
 
   @Async
+  @Transactional
   public void generateFakeOrder() {
     UUID restaurantId = UUID.fromString(demoRestaurantId);
     logger.debug("Starting fake order generation for restaurant: {}", restaurantId);
