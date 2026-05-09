@@ -285,7 +285,7 @@
                style="cursor: zoom-in;"
                th:attr="data-src=${image.name}"
                onclick="openLightbox(this.getAttribute('data-src'))">
-            <img th:src="${image.name}" th:alt="#{page.gallery.photo.alt}">
+            <img th:src="@{${image.name}}" th:alt="#{page.gallery.photo.alt}">
             
             <div class="gallery-card-actions" onclick="event.stopPropagation()">
               <!-- Set as Cover -->

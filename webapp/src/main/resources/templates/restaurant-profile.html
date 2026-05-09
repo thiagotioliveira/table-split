@@ -8,7 +8,7 @@
   <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link th:href="${'https://fonts.googleapis.com/css2?family=' + profile.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + profile.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'}" rel="stylesheet">
+  <link th:href="@{https://fonts.googleapis.com/css2(family=${profile.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + profile.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'})}" rel="stylesheet">
 
   <style>
     :root {
@@ -1731,7 +1731,7 @@
     <!-- Hero Carousel (Cover images) -->
     <div class="hero-carousel" id="heroCarousel" th:unless="${#lists.isEmpty(profile.coverImages)}">
       <div th:each="image : ${profile.coverImages}" class="hero-slide">
-        <img th:src="${image.name}" th:alt="${profile.name}">
+        <img th:src="@{${image.name}}" th:alt="${profile.name}">
       </div>
     </div>
     <div class="hero-overlay"></div>
@@ -1739,7 +1739,7 @@
     <!-- Hero Navigation -->
     <nav class="hero-nav">
       <a/>
-      <a class="nav-btn" th:href="${profile.menuLink}" th:if="${false}">
+      <a class="nav-btn" th:href="@{${profile.menuLink}}" th:if="${false}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
       </a>
       <div class="nav-actions">
@@ -1820,7 +1820,15 @@
   </section>
 
   <div class="action-section">
-    <a th:href="${tableCode != null ? '/@' + slug + '/table/' + tableCode + '/menu' : profile.menuLink}" class="action-btn primary">
+    <a th:if="${tableCode != null}" th:href="@{/@{slug}/table/{tableCode}/menu(slug=${slug}, tableCode=${tableCode})}" class="action-btn primary">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+        <path d="M7 2v20"/>
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+      </svg>
+      <span th:text="#{page.profile.view.menu}">View Menu</span>
+    </a>
+    <a th:unless="${tableCode != null}" th:href="@{${profile.menuLink}}" class="action-btn primary">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
         <path d="M7 2v20"/>
@@ -1922,7 +1930,7 @@
           </div>
           <div class="info-content">
             <h4>Website</h4>
-            <p><a th:href="${profile.website}" target="_blank" th:text="${profile.website}">saborarte.com.br</a></p>
+            <p><a th:href="@{${profile.website}}" target="_blank" th:text="${profile.website}">saborarte.com.br</a></p>
           </div>
         </div>
         <div class="info-card">
@@ -1963,7 +1971,7 @@
              th:classappend="${iter.index == 5 and profile.galleryImages.size() > 6} ? 'more' : ''"
              th:attr="data-src=${image.name}"
              onclick="openLightbox(this.getAttribute('data-src'))">
-          <img th:src="${image.name}" th:alt="${profile.name}">
+          <img th:src="@{${image.name}}" th:alt="${profile.name}">
           <span th:if="${iter.index == 5 and profile.galleryImages.size() > 6}" th:text="'+' + (${profile.galleryImages.size()} - 6)">+18</span>
         </div>
       </div>
@@ -1980,12 +1988,12 @@
                   style="border:0"
                   loading="lazy"
                   allowfullscreen
-                  th:src="${profile.getGoogleMapsEmbedUrl()}">
+                  th:src="@{${profile.getGoogleMapsEmbedUrl()}}">
           </iframe>
         </div>
         <div class="map-info">
           <p class="map-address" th:text="${profile.address}">Rua das Flores, 123 - Centro<br>São Paulo, SP - 01234-567</p>
-          <a th:href="${profile.getGoogleMapsEmbedUrl()}" target="_blank" class="map-btn">
+          <a th:href="@{${profile.getGoogleMapsEmbedUrl()}}" target="_blank" class="map-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="3 11 22 2 13 21 11 13 3 11"/>
             </svg>

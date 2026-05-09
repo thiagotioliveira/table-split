@@ -6,7 +6,7 @@
     <title th:text="#{page.customer.menu.title(${customerMenu.restaurant.name})}">Menu - Cantina Bella Italia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link th:href="${'https://fonts.googleapis.com/css2?family=' + customerMenu.restaurant.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + customerMenu.restaurant.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'}" rel="stylesheet">
+    <link th:href="@{https://fonts.googleapis.com/css2(family=${customerMenu.restaurant.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + customerMenu.restaurant.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'})}" rel="stylesheet">
     <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
     <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
@@ -2335,17 +2335,17 @@
     <!-- Hero Carousel (Cover images) -->
     <div class="hero-carousel" id="heroCarousel" th:unless="${#lists.isEmpty(customerMenu.restaurant.coverImages)}">
         <div th:each="image : ${customerMenu.restaurant.coverImages}" class="hero-slide">
-            <img th:src="${image.name}" th:alt="${customerMenu.restaurant.name}">
+            <img th:src="@{${image.name}}" th:alt="${customerMenu.restaurant.name}">
         </div>
     </div>
     <div class="hero-overlay"></div>
 
     <!-- Hero Navigation -->
     <div class="hero-nav">
-        <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug+'/table/'+tableCode}" th:if="${customerMenu.hasTable()}">
+        <a class="nav-btn" th:href="@{/@{slug}/table/{tableCode}(slug=${customerMenu.restaurant.slug}, tableCode=${tableCode})}" th:if="${customerMenu.hasTable()}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </a>
-        <a class="nav-btn" th:href="${'/@'+customerMenu.restaurant.slug}" th:unless="${customerMenu.hasTable()}">
+        <a class="nav-btn" th:href="@{/@{slug}(slug=${customerMenu.restaurant.slug})}" th:unless="${customerMenu.hasTable()}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </a>
         <div class="hero-actions">
@@ -2504,7 +2504,7 @@
             <div class="menu-item" th:attr="onclick=|openItemModal('${item.id}')|" th:each="item : ${category.items}">
                 <div class="menu-item-image">
                     <svg th:if="${item.images.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                    <img th:src="${item.images.get(0).url + '?w=400'}" th:alt="${item.name[#locale.language]}"
+                    <img th:src="@{${item.images.get(0).url}(w=400)}" th:alt="${item.name[#locale.language]}"
                          th:if="${!item.images.isEmpty()}">
                 </div>
                 <div class="menu-item-content">

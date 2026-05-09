@@ -1099,11 +1099,11 @@
       </p>
 
       <div class="hero-actions">
-        <a th:href="${'/register'}" class="btn btn-primary btn-xl">
+        <a th:href="@{/register}" class="btn btn-primary btn-xl">
           <span data-i18n="hero.cta">Experimentar Grátis</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
-        <a th:href="${'/@cantinabrasileira'}" target="_blank" class="btn btn-outline btn-xl" data-i18n="hero.demo">Ver Como Funciona</a>
+        <a th:href="@{/@cantinabrasileira}" target="_blank" class="btn btn-outline btn-xl" data-i18n="hero.demo">Ver Como Funciona</a>
       </div>
 
       <div class="hero-stats">
@@ -1494,7 +1494,7 @@
     <div class="cta-content">
       <h2 data-i18n="cta.title">Pronto para modernizar o seu restaurante?</h2>
       <p data-i18n="cta.subtitle">Junte-se aos restaurantes que já usam o TableSplit para oferecer uma experiência superior aos seus clientes.</p>
-      <a th:href="${'/register'}" class="btn btn-xl">
+      <a th:href="@{/register}" class="btn btn-xl">
         <span data-i18n="cta.button">Começar Gratuitamente</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>

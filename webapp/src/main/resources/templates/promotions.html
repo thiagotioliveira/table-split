@@ -1431,7 +1431,7 @@
                         <h3 class="promo-name" th:text="${combo.name}">Combo Lanche + Refri</h3>
                         <div class="combo-items">
                             <div th:each="ci : ${combo.items}" class="combo-item">
-                                <img class="combo-item-image" th:src="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).image : 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100'}" alt="Item">
+                                <img class="combo-item-image" th:src="${itemMap.get(ci.getItemId()) != null} ? @{${itemMap.get(ci.getItemId()).image}} : @{https://images.unsplash.com/photo-1568901346375-23c9450c58cd(w=100)}" alt="Item">
                                 <span class="combo-item-name" th:text="${itemMap.get(ci.getItemId()) != null ? itemMap.get(ci.getItemId()).name : 'Item removido'}">Item</span>
                                 <span class="combo-item-price" th:data-price="${itemMap.get(ci.getItemId())?.price}">R$ 0,00</span>
                             </div>

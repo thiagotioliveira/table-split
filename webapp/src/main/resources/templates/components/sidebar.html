@@ -7,7 +7,7 @@
     <!-- Dynamic Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link th:href="${'https://fonts.googleapis.com/css2?family=' + context.restaurant.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + context.restaurant.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'}" rel="stylesheet">
+    <link th:href="@{https://fonts.googleapis.com/css2(family=${context.restaurant.theme.fontDisplay.replace(' ', '+') + ':wght@400;500;600;700&family=' + context.restaurant.theme.fontBody.replace(' ', '+') + ':wght@400;500;600;700&display=swap'})}" rel="stylesheet">
 
     <style th:inline="css">
         :root {
@@ -67,7 +67,7 @@
     <nav class="sidebar-nav">
         <ul>
             <li th:each="m : ${context.sidebarModules}">
-                <a th:href="${m.getHref()}" class="nav-item" th:classappend="${module.name() == m.name()} ? ' active'">
+                <a th:href="@{${m.getHref()}}" class="nav-item" th:classappend="${module.name() == m.name()} ? ' active'">
                     <div th:utext="${m.icon}"></div>
                     <span th:text="#{${m.name}}">Dashboard</span>
                     <span th:if="${m.name() == 'ORDERS'}" id="ordersBadge" class="nav-badge" 
@@ -96,7 +96,7 @@
                 <svg class="user-menu-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
             </button>
             <div class="user-submenu">
-                <a th:href="${m.getHref()}" class="user-submenu-item" th:each="m : ${context.footerModules}">
+                <a th:href="@{${m.getHref()}}" class="user-submenu-item" th:each="m : ${context.footerModules}">
                     <div th:utext="${m.icon}"></div>
                     <span th:text="#{${m.name}}">User Profile</span>
                 </a>
