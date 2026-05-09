@@ -7,7 +7,7 @@ RUN apk add --no-cache python3 py3-yaml
 
 COPY pom.xml .
 COPY webapp/pom.xml webapp/
-COPY agent/pom.xml printagent/
+COPY printagent/pom.xml printagent/
 COPY .mvn .mvn
 COPY mvnw .
 
