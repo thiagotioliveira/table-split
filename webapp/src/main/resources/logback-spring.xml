@@ -5,48 +5,69 @@
     <springProperty scope="context" name="appLogLevel" source="logging.level.dev.thiagooliveira" defaultValue="INFO"/>
     <springProperty scope="context" name="hibernateSqlLevel" source="logging.level.org.hibernate.SQL" defaultValue="INFO"/>
 
+    <!-- Appender para Console (Legível por humanos) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
         </encoder>
     </appender>
 
-    <!-- Tomcat/Catalina: log servlet exceptions at ERROR, suppress lower-level noise -->
-    <logger name="org.apache.catalina" level="ERROR" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+    <!-- Appender para Erros no System.err (Ajuda a infraestrutura a detectar erros críticos) -->
+    <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
+        </encoder>
+    </appender>
 
-    <!-- Spring Web: log dispatcher and servlet exceptions at ERROR -->
-    <logger name="org.springframework.web" level="ERROR" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+    <!-- Appender JSON (Ideal para Produção/Cloud) -->
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <includeContext>true</includeContext>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>severity</level>
+                <logger>logger</logger>
+                <thread>thread</thread>
+                <message>message</message>
+            </fieldNames>
+        </encoder>
+    </appender>
 
-    <!-- Spring Web MVC servlet handler: ensure full stack traces surface at ERROR -->
-    <logger name="org.springframework.web.servlet" level="ERROR" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+    <!-- Loggers de Terceiros -->
+    <logger name="org.apache.catalina" level="ERROR"/>
+    <logger name="org.springframework.web" level="ERROR"/>
+    <logger name="org.springframework.web.servlet" level="ERROR"/>
+    <logger name="org.springframework.transaction" level="OFF"/>
+    <logger name="org.hibernate.SQL" level="${hibernateSqlLevel}"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="${hibernateSqlLevel}"/>
+    <logger name="liquibase" level="OFF"/>
 
-    <!-- Spring transactions: keep suppressed as per application.yaml -->
-    <logger name="org.springframework.transaction" level="OFF" additivity="false"/>
+    <!-- Loggers da Aplicação -->
+    <logger name="dev.thiagooliveira" level="${appLogLevel}"/>
+    <logger name="org.thymeleaf" level="WARN"/>
 
-    <!-- Hibernate SQL: driven by application.yaml property -->
-    <logger name="org.hibernate.SQL" level="${hibernateSqlLevel}" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="${hibernateSqlLevel}" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+    <!-- Configuração por Perfil -->
 
-    <!-- Liquibase: keep suppressed as per application.yaml -->
-    <logger name="liquibase" level="OFF" additivity="false"/>
+    <!-- Perfil de Produção: JSON + Erros no Stderr -->
+    <springProfile name="prod">
+        <root level="${rootLogLevel}">
+            <appender-ref ref="JSON"/>
+            <appender-ref ref="CONSOLE_ERROR"/>
+        </root>
+    </springProfile>
 
-    <!-- Application code -->
-    <logger name="dev.thiagooliveira" level="${appLogLevel}" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
-    <root level="${rootLogLevel}">
-        <appender-ref ref="CONSOLE"/>
-    </root>
+    <!-- Perfil Default/Dev: Console legível -->
+    <springProfile name="!prod">
+        <root level="${rootLogLevel}">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="CONSOLE_ERROR"/>
+        </root>
+    </springProfile>
 
 </configuration>
