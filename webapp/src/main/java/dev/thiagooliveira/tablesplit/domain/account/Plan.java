@@ -21,6 +21,7 @@ public enum Plan {
           Module.SETTINGS,
           Module.USER_PROFILE,
           Module.ACCOUNT,
+          Module.COUNTER,
           Module.TABLES,
           Module.ORDERS,
           Module.FEEDBACKS,

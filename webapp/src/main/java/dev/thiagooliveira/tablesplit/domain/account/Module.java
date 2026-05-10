@@ -6,6 +6,7 @@ public enum Module {
   SETTINGS,
   USER_PROFILE,
   ACCOUNT,
+  COUNTER,
   TABLES,
   ORDERS,
   FEEDBACKS,
