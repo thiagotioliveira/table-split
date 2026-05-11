@@ -1512,11 +1512,11 @@
             <div class="cart-footer" id="cartFooter" style="display: none;">
                 <div class="cart-subtotal">
                     <span>Subtotal</span>
-                    <span id="cartSubtotal">R$ 0,00</span>
+                    <span id="cartSubtotal">${currencySymbol} 0,00</span>
                 </div>
                 <div class="cart-total">
                     <span>Total</span>
-                    <span class="cart-total-value" id="cartTotal">R$ 0,00</span>
+                    <span class="cart-total-value" id="cartTotal">${currencySymbol} 0,00</span>
                 </div>
                 <button class="checkout-btn" onclick="openPayment()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -1531,7 +1531,7 @@
 <button class="mobile-cart-btn" id="mobileCartBtn" onclick="openCart()">
     <span>
       <span>Ver Pedido (<span id="mobileCartCount">0</span> itens)</span>
-      <span id="mobileCartTotal">R$ 0,00</span>
+      <span id="mobileCartTotal">${currencySymbol} 0,00</span>
     </span>
 </button>
 
@@ -1560,7 +1560,7 @@
             </div>
             <button class="add-to-cart-btn" onclick="addToCart()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                Adicionar <span id="modalTotalPrice">R$ 0,00</span>
+                Adicionar <span id="modalTotalPrice">${currencySymbol} 0,00</span>
             </button>
         </div>
     </div>
@@ -1582,11 +1582,11 @@
                 <div class="payment-summary">
                     <div class="payment-summary-row">
                         <span>Itens (<span id="paymentItemCount">0</span>)</span>
-                        <span id="paymentSubtotal">R$ 0,00</span>
+                        <span id="paymentSubtotal">${currencySymbol} 0,00</span>
                     </div>
                     <div class="payment-summary-row">
                         <span>Total</span>
-                        <span id="paymentTotal">R$ 0,00</span>
+                        <span id="paymentTotal">${currencySymbol} 0,00</span>
                     </div>
                 </div>
                 <div id="paymentItemsList" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
@@ -1717,7 +1717,7 @@
     <div class="print-items" id="printItems"></div>
     <div class="print-total">
         <span>TOTAL</span>
-        <span id="printTotal">R$ 0,00</span>
+        <span id="printTotal">${currencySymbol} 0,00</span>
     </div>
     <div class="print-footer">
         <p>Obrigado pela preferência!</p>
@@ -1730,94 +1730,16 @@
     <div class="processing-spinner"></div>
     <p class="processing-text">Processando pagamento...</p>
 </div>
-<script th:inline="javascript">
-    // Sidebar Functions
-    function openSidebar() {
-        document.getElementById('sidebar').classList.add('open');
-        document.getElementById('sidebarOverlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
+<script type="module" th:inline="javascript">
+    import { categoriesApi } from /*[[@{/js/api/v1/manager/api-categories-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-categories-bridge.js';
+    import { itemsApi } from /*[[@{/js/api/v1/manager/api-items-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-items-bridge.js';
+    import { tablesApi } from /*[[@{/js/api/v1/manager/api-table-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-table-bridge.js';
 
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').classList.remove('active');
-        document.body.style.overflow = '';
-    }
+    const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
 
-    function toggleUserMenu() {
-        const container = document.getElementById('userMenuContainer');
-        container.classList.toggle('open');
-    }
-
-    document.addEventListener('click', function(e) {
-        const container = document.getElementById('userMenuContainer');
-        if (container && !container.contains(e.target)) {
-            container.classList.remove('open');
-        }
-    });
-
-    // ============================================
-    // Menu Data
-    // ============================================
-    const menuItems = [
-        {
-            id: 1, name: 'X-Burger Clássico',
-            description: 'Hambúrguer artesanal 180g, queijo cheddar, alface, tomate e molho especial',
-            price: 32.90, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
-            category: 'lanches', available: true,
-            questions: [
-                { id: 'q1', text: 'Ponto da carne', type: 'single', required: true,
-                    options: [{ id: 'o1', name: 'Mal passada', price: 0 },{ id: 'o2', name: 'Ao ponto', price: 0 },{ id: 'o3', name: 'Bem passada', price: 0 }]
-                },
-                { id: 'q2', text: 'Adicionais', type: 'multiple', required: false,
-                    options: [{ id: 'a1', name: 'Bacon extra', price: 5.00 },{ id: 'a2', name: 'Queijo extra', price: 4.00 },{ id: 'a3', name: 'Ovo', price: 3.00 },{ id: 'a4', name: 'Cebola caramelizada', price: 4.00 }]
-                }
-            ]
-        },
-        { id: 2, name: 'X-Bacon Supreme', description: 'Hambúrguer duplo, bacon crocante, queijo, onion rings e BBQ', price: 42.90, image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400', category: 'lanches', available: true, questions: [{ id: 'q1', text: 'Ponto da carne', type: 'single', required: true, options: [{ id: 'o1', name: 'Mal passada', price: 0 },{ id: 'o2', name: 'Ao ponto', price: 0 },{ id: 'o3', name: 'Bem passada', price: 0 }]}]},
-        { id: 3, name: 'Pizza Margherita', description: 'Molho de tomate, mozzarella, tomate e manjericão fresco', price: 54.90, image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400', category: 'pizzas', available: true, questions: [{ id: 'q1', text: 'Tamanho', type: 'single', required: true, options: [{ id: 's1', name: 'Individual (4 fatias)', price: 0 },{ id: 's2', name: 'Média (8 fatias)', price: 15.00 },{ id: 's3', name: 'Grande (12 fatias)', price: 25.00 }]},{ id: 'q2', text: 'Borda', type: 'single', required: false, options: [{ id: 'b1', name: 'Tradicional', price: 0 },{ id: 'b2', name: 'Catupiry', price: 8.00 },{ id: 'b3', name: 'Cheddar', price: 8.00 }]}]},
-        { id: 4, name: 'Pizza Pepperoni', description: 'Molho de tomate, mozzarella e pepperoni premium', price: 59.90, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400', category: 'pizzas', available: true, questions: []},
-        { id: 5, name: 'Filé à Parmegiana', description: 'Filé empanado, molho de tomate, queijo gratinado, arroz e fritas', price: 58.90, image: 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=400', category: 'pratos', available: true, questions: [{ id: 'q1', text: 'Acompanhamento', type: 'single', required: true, options: [{ id: 'ac1', name: 'Arroz e Fritas', price: 0 },{ id: 'ac2', name: 'Arroz e Purê', price: 0 },{ id: 'ac3', name: 'Só Fritas', price: 0 }]}]},
-        { id: 6, name: 'Picanha na Chapa', description: 'Picanha grelhada, arroz, farofa, vinagrete e batatas rústicas', price: 74.90, image: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=400', category: 'pratos', available: true, questions: [{ id: 'q1', text: 'Ponto da carne', type: 'single', required: true, options: [{ id: 'p1', name: 'Mal passada', price: 0 },{ id: 'p2', name: 'Ao ponto', price: 0 },{ id: 'p3', name: 'Bem passada', price: 0 }]}]},
-        { id: 7, name: 'Refrigerante Lata', description: 'Coca-Cola, Guaraná ou Sprite 350ml', price: 7.90, image: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=400', category: 'bebidas', available: true, questions: [{ id: 'q1', text: 'Sabor', type: 'single', required: true, options: [{ id: 'r1', name: 'Coca-Cola', price: 0 },{ id: 'r2', name: 'Coca-Cola Zero', price: 0 },{ id: 'r3', name: 'Guaraná Antarctica', price: 0 },{ id: 'r4', name: 'Sprite', price: 0 }]}]},
-        { id: 8, name: 'Suco Natural', description: 'Laranja, limão, abacaxi ou maracujá 500ml', price: 12.90, image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400', category: 'bebidas', available: true, questions: [{ id: 'q1', text: 'Sabor', type: 'single', required: true, options: [{ id: 's1', name: 'Laranja', price: 0 },{ id: 's2', name: 'Limão', price: 0 },{ id: 's3', name: 'Abacaxi', price: 0 },{ id: 's4', name: 'Maracujá', price: 0 }]},{ id: 'q2', text: 'Açúcar', type: 'single', required: false, options: [{ id: 'a1', name: 'Com açúcar', price: 0 },{ id: 'a2', name: 'Sem açúcar', price: 0 },{ id: 'a3', name: 'Com adoçante', price: 0 }]}]},
-        { id: 9, name: 'Petit Gâteau', description: 'Bolinho de chocolate com centro derretido, sorvete de creme', price: 24.90, image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400', category: 'sobremesas', available: true, questions: []},
-        { id: 10, name: 'Cheesecake', description: 'Cheesecake cremoso com calda de frutas vermelhas', price: 19.90, image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400', category: 'sobremesas', available: true, questions: [{ id: 'q1', text: 'Calda', type: 'single', required: false, options: [{ id: 'c1', name: 'Frutas Vermelhas', price: 0 },{ id: 'c2', name: 'Chocolate', price: 0 },{ id: 'c3', name: 'Caramelo', price: 0 }]}]}
-    ];
-
-    const promotions = [
-        { id: 1, name: 'Combo Burger', type: 'item', targetId: 1, discountType: 'percentage', discountValue: 20, active: true, startDate: '2024-01-01', endDate: '2025-12-31'},
-        { id: 2, name: 'Promo Pizzas', type: 'category', targetId: 'pizzas', discountType: 'fixed', discountValue: 10, active: true, startDate: '2024-01-01', endDate: '2025-12-31'},
-        { id: 3, name: 'Sobremesa em Conta', type: 'item', targetId: 9, discountType: 'percentage', discountValue: 15, active: true, startDate: '2024-01-01', endDate: '2025-12-31'}
-    ];
-
-    function getPromoPrice(item) {
-        const now = new Date();
-        for (const promo of promotions) {
-            if (!promo.active) continue;
-            const startDate = new Date(promo.startDate);
-            const endDate = new Date(promo.endDate);
-            if (now < startDate || now > endDate) continue;
-            let matches = false;
-            if (promo.type === 'item' && promo.targetId === item.id) matches = true;
-            else if (promo.type === 'category' && promo.targetId === item.category) matches = true;
-            else if (promo.type === 'all') matches = true;
-            if (matches) {
-                let promoPrice, discountPercent;
-                if (promo.discountType === 'percentage') {
-                    promoPrice = item.price * (1 - promo.discountValue / 100);
-                    discountPercent = promo.discountValue;
-                } else {
-                    promoPrice = Math.max(0, item.price - promo.discountValue);
-                    discountPercent = Math.round((promo.discountValue / item.price) * 100);
-                }
-                return { hasPromo: true, originalPrice: item.price, promoPrice, discountPercent, promoName: promo.name };
-            }
-        }
-        return { hasPromo: false, originalPrice: item.price, promoPrice: item.price };
-    }
-
-    // State
+    // Global state
+    let menuItems = [];
+    let allCategories = [];
     let cart = [];
     let currentItem = null;
     let currentQty = 1;
@@ -1828,103 +1750,190 @@
     let currentOrderNumber = null;
     let currentPaymentStep = 1;
 
-    // Dummy Tables
-    const tables = Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: `Mesa ${i + 1}` }));
+    // Sidebar Functions
+    window.openSidebar = function() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
 
-    function populateTables() {
-        const select = document.getElementById('tableNumber');
-        if (!select) return;
-        select.innerHTML = '<option value="">Selecione uma mesa</option>' +
-            tables.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    window.closeSidebar = function() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    window.toggleUserMenu = function() {
+        const container = document.getElementById('userMenuContainer');
+        container.classList.toggle('open');
+    };
+
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('userMenuContainer');
+        if (container && !container.contains(e.target)) {
+            container.classList.remove('open');
+        }
+    });
+
+    // ============================================
+    // Menu Data & Loading
+    // ============================================
+    async function loadMenu() {
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const menuGrid = document.getElementById('menuGrid');
+        
+        // Show skeletons
+        if (categoriesContainer) {
+            categoriesContainer.innerHTML = '<div class="category-chip skeleton"></div>'.repeat(5);
+        }
+        if (menuGrid) {
+            menuGrid.innerHTML = '<div class="menu-item-card skeleton"></div>'.repeat(8);
+        }
+
+        try {
+            const lang = (/*[[${#locale.language}]]*/ 'pt').toUpperCase();
+            
+            // Load Categories
+            allCategories = await categoriesApi.getCategories([lang]);
+            renderCategories();
+
+            // Load Items
+            menuItems = await itemsApi.getItems([lang], true);
+            renderMenu('all');
+        } catch (error) {
+            console.error('Error loading menu:', error);
+            if (menuGrid) {
+                menuGrid.innerHTML = '<div class="error-message">Erro ao carregar o cardápio. Por favor, tente novamente.</div>';
+            }
+        }
     }
 
-    // Render Menu
-    function renderMenu(category = 'all') {
+    function renderCategories() {
+        const container = document.getElementById('categoriesContainer');
+        let html = `<button class="category-btn active" data-category="all" onclick="filterMenu('all')">Todos</button>`;
+        allCategories.forEach(cat => {
+            html += `<button class="category-btn" data-category="${cat.id}" onclick="filterMenu('${cat.id}')">${cat.name}</button>`;
+        });
+        container.innerHTML = html;
+    }
+
+    window.filterMenu = function(categoryId) {
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.category === categoryId);
+        });
+        renderMenu(categoryId);
+    };
+
+    function renderMenu(categoryId = 'all') {
         const grid = document.getElementById('menuGrid');
-        const filtered = category === 'all' ? menuItems : menuItems.filter(item => item.category === category);
+        const filtered = categoryId === 'all' ? menuItems : menuItems.filter(item => item.categoryId === categoryId);
+        
         grid.innerHTML = filtered.map(item => {
-            const promo = getPromoPrice(item);
+            const promo = item.promotion;
             let priceHtml, promoBadgeHtml = '';
-            if (promo.hasPromo) {
-                priceHtml = `<div class="menu-item-prices"><span class="price-original">${formatPrice(promo.originalPrice)}</span><span class="price-promo">${formatPrice(promo.promoPrice)}</span></div>`;
-                promoBadgeHtml = `<span class="promo-badge">-${promo.discountPercent}%</span>`;
+            
+            if (promo) {
+                priceHtml = `
+                    <div class="menu-item-prices">
+                        <span class="price-original">${formatPrice(item.price)}</span>
+                        <span class="price-promo">${formatPrice(promo.promotionalPrice)}</span>
+                    </div>`;
+                promoBadgeHtml = `<span class="promo-badge">-${promo.discountValue}${promo.discountType === 'PERCENTAGE' ? '%' : ''}</span>`;
             } else {
                 priceHtml = `<span class="menu-item-price">${formatPrice(item.price)}</span>`;
             }
-            return `<div class="menu-item ${!item.available ? 'unavailable' : ''}" onclick="openItemModal(${item.id})">${promoBadgeHtml}<img class="menu-item-image" src="${item.image}" alt="${item.name}" loading="lazy"><div class="menu-item-body"><h3 class="menu-item-name">${item.name}</h3><p class="menu-item-desc">${item.description}</p><div class="menu-item-footer">${priceHtml}<button class="menu-item-add"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg></button></div></div></div>`;
+
+            return `
+                <div class="menu-item" onclick="openItemModal('${item.id}')">
+                    ${promoBadgeHtml}
+                    <img class="menu-item-image" src="${item.image || '/img/placeholder-item.png'}" alt="${item.name}" loading="lazy">
+                    <div class="menu-item-body">
+                        <h3 class="menu-item-name">${item.name}</h3>
+                        <p class="menu-item-desc">${item.description || ''}</p>
+                        <div class="menu-item-footer">
+                            ${priceHtml}
+                            <button class="menu-item-add">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
         }).join('');
     }
 
-    // Render Cart
-    function renderCart() {
-        const container = document.getElementById('cartItems');
-        const empty = document.getElementById('cartEmpty');
-        const footer = document.getElementById('cartFooter');
-        const countEl = document.getElementById('cartCount');
-        const mobileCountEl = document.getElementById('mobileCartCount');
-        const subtotalEl = document.getElementById('cartSubtotal');
-        const totalEl = document.getElementById('cartTotal');
-        const mobileTotalEl = document.getElementById('mobileCartTotal');
-        const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
-        countEl.textContent = itemCount;
-        mobileCountEl.textContent = itemCount;
-        if (cart.length === 0) {
-            empty.style.display = 'block';
-            footer.style.display = 'none';
-            container.innerHTML = empty.outerHTML;
-            return;
-        }
-        empty.style.display = 'none';
-        footer.style.display = 'block';
-        let html = '';
-        cart.forEach((item, index) => {
-            const customizations = item.options.map(opt => opt.name).join(', ');
-            html += `<div class="cart-item"><div class="cart-item-header"><img class="cart-item-image" src="${item.image}" alt="${item.name}"><div class="cart-item-info"><div class="cart-item-name">${item.name}${item.hasPromo ? `<span class="cart-promo-badge">-${item.discountPercent}%</span>` : ''}</div>${customizations ? `<div class="cart-item-customizations">${customizations}</div>` : ''}</div><button class="cart-item-remove" onclick="removeFromCart(${index})"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button></div><div class="cart-item-footer"><div class="cart-item-qty"><button class="qty-btn" onclick="updateCartQty(${index}, -1)">−</button><span class="qty-value">${item.qty}</span><button class="qty-btn" onclick="updateCartQty(${index}, 1)">+</button></div><div>${item.hasPromo ? `<span class="cart-price-original">${formatPrice(item.originalPrice * item.qty)}</span>` : ''}<span class="cart-item-price">${formatPrice(item.totalPrice)}</span></div></div></div>`;
-        });
-        container.innerHTML = html;
-        const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        subtotalEl.textContent = formatPrice(subtotal);
-        totalEl.textContent = formatPrice(subtotal);
-        mobileTotalEl.textContent = formatPrice(subtotal);
-    }
-
     // Item Modal
-    function openItemModal(id) {
+    window.openItemModal = function(id) {
         const item = menuItems.find(i => i.id === id);
-        if (!item || !item.available) return;
+        if (!item) return;
+        
         currentItem = item;
-        currentItem.promo = getPromoPrice(item);
         currentQty = 1;
         selectedOptions = {};
-        document.getElementById('modalImage').src = item.image;
+        
+        document.getElementById('modalImage').src = item.image || '/img/placeholder-item.png';
         document.getElementById('modalName').textContent = item.name;
-        document.getElementById('modalDesc').textContent = item.description;
+        document.getElementById('modalDesc').textContent = item.description || '';
+        
         const priceContainer = document.getElementById('modalPriceContainer');
-        if (currentItem.promo.hasPromo) {
-            priceContainer.innerHTML = `<div class="item-modal-prices"><span class="price-original">${formatPrice(currentItem.promo.originalPrice)}</span><span class="price-promo">${formatPrice(currentItem.promo.promoPrice)}</span><span class="modal-promo-badge">-${currentItem.promo.discountPercent}%</span></div>`;
+        if (item.promotion) {
+            priceContainer.innerHTML = `
+                <div class="item-modal-prices">
+                    <span class="price-original">${formatPrice(item.price)}</span>
+                    <span class="price-promo">${formatPrice(item.promotion.promotionalPrice)}</span>
+                    <span class="modal-promo-badge">-${item.promotion.discountValue}${item.promotion.discountType === 'PERCENTAGE' ? '%' : ''}</span>
+                </div>`;
         } else {
             priceContainer.innerHTML = `<span class="item-modal-price">${formatPrice(item.price)}</span>`;
         }
+        
         document.getElementById('modalQty').textContent = '1';
+        
         const body = document.getElementById('modalBody');
         let html = '';
+        
         if (item.questions && item.questions.length > 0) {
             item.questions.forEach(question => {
-                html += `<div class="question-group" data-question-id="${question.id}"><div class="question-label">${question.text}${question.required ? '<span class="question-required">Obrigatório</span>' : '<span class="question-optional">Opcional</span>'}</div><div class="question-options">${question.options.map(option => `<label class="question-option" data-option-id="${option.id}" onclick="selectOption('${question.id}', '${option.id}', '${question.type}', ${option.price}, '${option.name}')"><input type="${question.type === 'single' ? 'radio' : 'checkbox'}" name="question_${question.id}" value="${option.id}"><div class="${question.type === 'single' ? 'option-radio' : 'option-checkbox'}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div class="option-content"><span class="option-name">${option.name}</span>${option.price > 0 ? `<span class="option-price">+ ${formatPrice(option.price)}</span>` : ''}</div></label>`).join('')}</div></div>`;
+                html += `
+                    <div class="question-group" data-question-id="${question.id}">
+                        <div class="question-label">
+                            ${question.title}
+                            ${question.required ? '<span class="question-required">Obrigatório</span>' : '<span class="question-optional">Opcional</span>'}
+                        </div>
+                        <div class="question-options">
+                            ${question.options.map(option => `
+                                <label class="question-option" data-option-id="${option.id}" onclick="selectOption('${question.id}', '${option.id}', '${question.type.toLowerCase()}', ${option.extraPrice || 0}, '${option.text}')">
+                                    <input type="${question.type === 'SINGLE' ? 'radio' : 'checkbox'}" name="question_${question.id}" value="${option.id}">
+                                    <div class="${question.type === 'SINGLE' ? 'option-radio' : 'option-checkbox'}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </div>
+                                    <div class="option-content">
+                                        <span class="option-name">${option.text}</span>
+                                        ${(option.extraPrice > 0) ? `<span class="option-price">+ ${formatPrice(option.extraPrice)}</span>` : ''}
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>`;
             });
         }
-        html += `<div class="question-group"><div class="question-label">Observações<span class="question-optional">Opcional</span></div><textarea class="observations-input" id="observations" rows="2" placeholder="Ex: sem cebola, bem passado..."></textarea></div>`;
+        
+        html += `
+            <div class="question-group">
+                <div class="question-label">Observações<span class="question-optional">Opcional</span></div>
+                <textarea class="observations-input" id="observations" rows="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background-secondary); color: var(--foreground); resize: none;" placeholder="Ex: sem cebola, bem passado..."></textarea>
+            </div>`;
+        
         body.innerHTML = html;
         updateModalTotal();
         document.getElementById('itemModal').classList.add('active');
-    }
+    };
 
-    function closeItemModal() {
+    window.closeItemModal = function() {
         document.getElementById('itemModal').classList.remove('active');
         currentItem = null;
-    }
+    };
 
-    function selectOption(questionId, optionId, type, price, name) {
+    window.selectOption = function(questionId, optionId, type, price, name) {
         if (type === 'single') {
             selectedOptions[questionId] = [{ id: optionId, price, name }];
             document.querySelectorAll(`[data-question-id="${questionId}"] .question-option`).forEach(el => el.classList.remove('selected'));
@@ -1942,17 +1951,17 @@
             }
         }
         updateModalTotal();
-    }
+    };
 
-    function changeModalQty(delta) {
+    window.changeModalQty = function(delta) {
         currentQty = Math.max(1, currentQty + delta);
         document.getElementById('modalQty').textContent = currentQty;
         updateModalTotal();
-    }
+    };
 
     function updateModalTotal() {
         if (!currentItem) return;
-        let basePrice = currentItem.promo && currentItem.promo.hasPromo ? currentItem.promo.promoPrice : currentItem.price;
+        let basePrice = currentItem.promotion ? currentItem.promotion.promotionalPrice : currentItem.price;
         let itemTotal = basePrice;
         Object.values(selectedOptions).forEach(options => options.forEach(opt => itemTotal += opt.price));
         const total = itemTotal * currentQty;
@@ -1960,37 +1969,120 @@
     }
 
     // Cart Functions
-    function addToCart() {
+    window.renderCart = function() {
+        const container = document.getElementById('cartItems');
+        const empty = document.getElementById('cartEmpty');
+        const footer = document.getElementById('cartFooter');
+        const countEl = document.getElementById('cartCount');
+        const mobileCountEl = document.getElementById('mobileCartCount');
+        const subtotalEl = document.getElementById('cartSubtotal');
+        const totalEl = document.getElementById('cartTotal');
+        const mobileTotalEl = document.getElementById('mobileCartTotal');
+        
+        const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
+        countEl.textContent = itemCount;
+        mobileCountEl.textContent = itemCount;
+        
+        if (cart.length === 0) {
+            empty.style.display = 'block';
+            footer.style.display = 'none';
+            container.innerHTML = empty.outerHTML;
+            return;
+        }
+        
+        empty.style.display = 'none';
+        footer.style.display = 'block';
+        
+        let html = '';
+        cart.forEach((item, index) => {
+            const customizations = item.options.map(opt => opt.name).join(', ');
+            html += `
+                <div class="cart-item">
+                    <div class="cart-item-header">
+                        <img class="cart-item-image" src="${item.image || '/img/placeholder-item.png'}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}${item.hasPromo ? `<span class="cart-promo-badge">-${item.discountValue}${item.discountType === 'PERCENTAGE' ? '%' : ''}</span>` : ''}</div>
+                            ${customizations ? `<div class="cart-item-customizations">${customizations}</div>` : ''}
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${index})">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                    <div class="cart-item-footer">
+                        <div class="cart-item-qty">
+                            <button class="qty-btn" onclick="updateCartQty(${index}, -1)">−</button>
+                            <span class="qty-value">${item.qty}</span>
+                            <button class="qty-btn" onclick="updateCartQty(${index}, 1)">+</button>
+                        </div>
+                        <div>
+                            ${item.hasPromo ? `<span class="cart-price-original">${formatPrice(item.originalPrice * item.qty)}</span>` : ''}
+                            <span class="cart-item-price">${formatPrice(item.totalPrice)}</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        
+        container.innerHTML = html;
+        const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        subtotalEl.textContent = formatPrice(subtotal);
+        totalEl.textContent = formatPrice(subtotal);
+        mobileTotalEl.textContent = formatPrice(subtotal);
+    };
+
+    window.addToCart = function() {
         if (!currentItem) return;
-        const requiredQuestions = currentItem.questions.filter(q => q.required);
+        
+        const requiredQuestions = (currentItem.questions || []).filter(q => q.required);
         for (const question of requiredQuestions) {
             if (!selectedOptions[question.id] || selectedOptions[question.id].length === 0) {
-                alert(`Por favor, selecione: ${question.text}`);
+                alert(`Por favor, selecione: ${question.title}`);
                 return;
             }
         }
-        let basePrice = currentItem.promo && currentItem.promo.hasPromo ? currentItem.promo.promoPrice : currentItem.price;
+        
+        let basePrice = currentItem.promotion ? currentItem.promotion.promotionalPrice : currentItem.price;
         let itemPrice = basePrice;
         const options = [];
-        Object.values(selectedOptions).forEach(opts => opts.forEach(opt => { itemPrice += opt.price; options.push(opt); }));
+        Object.values(selectedOptions).forEach(opts => opts.forEach(opt => { 
+            itemPrice += opt.price; 
+            options.push(opt); 
+        }));
+        
         const observations = document.getElementById('observations')?.value || '';
         const cartItem = {
-            id: currentItem.id, name: currentItem.name, image: currentItem.image, basePrice, originalPrice: currentItem.price,
-            hasPromo: currentItem.promo && currentItem.promo.hasPromo, discountPercent: currentItem.promo ? currentItem.promo.discountPercent : 0,
-            unitPrice: itemPrice, totalPrice: itemPrice * currentQty, qty: currentQty, options, observations
+            id: currentItem.id, 
+            name: currentItem.name, 
+            image: currentItem.image, 
+            basePrice, 
+            originalPrice: currentItem.price,
+            hasPromo: !!currentItem.promotion, 
+            discountValue: currentItem.promotion ? currentItem.promotion.discountValue : 0,
+            discountType: currentItem.promotion ? currentItem.promotion.discountType : '',
+            unitPrice: itemPrice, 
+            totalPrice: itemPrice * currentQty, 
+            qty: currentQty, 
+            options, 
+            observations
         };
+        
         cart.push(cartItem);
-        renderCart();
-        closeItemModal();
-    }
+        window.renderCart();
+        window.closeItemModal();
+    };
 
-    function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
-    function updateCartQty(index, delta) { const item = cart[index]; item.qty = Math.max(1, item.qty + delta); item.totalPrice = item.unitPrice * item.qty; renderCart(); }
-    function openCart() { document.getElementById('cartPanel').classList.add('mobile-open'); }
-    function closeCart() { document.getElementById('cartPanel').classList.remove('mobile-open'); }
+    window.removeFromCart = function(index) { cart.splice(index, 1); window.renderCart(); };
+    window.updateCartQty = function(index, delta) { 
+        const item = cart[index]; 
+        item.qty = Math.max(1, item.qty + delta); 
+        item.totalPrice = item.unitPrice * item.qty; 
+        window.renderCart(); 
+    };
+    
+    window.openCart = function() { document.getElementById('cartPanel').classList.add('mobile-open'); };
+    window.closeCart = function() { document.getElementById('cartPanel').classList.remove('mobile-open'); };
 
     // Payment Wizard
-    function openPayment() {
+    window.openPayment = function() {
         if (cart.length === 0) return;
         currentPaymentStep = 1;
         updateWizardUI();
@@ -2001,24 +2093,22 @@
         document.getElementById('paymentSubtotal').textContent = formatPrice(total);
         document.getElementById('paymentTotal').textContent = formatPrice(total);
 
-        // Render summary list in Step 1
         let summaryHtml = '';
         cart.forEach(item => {
             summaryHtml += `<div class="payment-summary-row" style="border-bottom: 1px dotted var(--border); padding: 0.5rem 0;"><span>${item.qty}x ${item.name}</span><span>${formatPrice(item.totalPrice)}</span></div>`;
         });
         document.getElementById('paymentItemsList').innerHTML = summaryHtml;
 
-        // Reset Step 2 fields
         document.getElementById('customerName').value = '';
         document.getElementById('tableNumber').value = '';
-        setOrderType('local');
+        window.setOrderType('local');
 
         document.getElementById('paymentModal').classList.add('active');
-    }
+    };
 
-    function closePayment() { document.getElementById('paymentModal').classList.remove('active'); }
+    window.closePayment = function() { document.getElementById('paymentModal').classList.remove('active'); };
 
-    function setOrderType(type) {
+    window.setOrderType = function(type) {
         orderType = type;
         const btns = document.querySelectorAll('#paymentStep2 .order-type-btn');
         btns.forEach(btn => {
@@ -2029,9 +2119,9 @@
         const tableGroup = document.getElementById('tableSelectionGroup');
         if (type === 'local') tableGroup.style.display = 'flex';
         else tableGroup.style.display = 'none';
-    }
+    };
 
-    function nextPaymentStep() {
+    window.nextPaymentStep = function() {
         if (currentPaymentStep === 1) {
             currentPaymentStep = 2;
         } else if (currentPaymentStep === 2) {
@@ -2052,16 +2142,16 @@
             return;
         }
         updateWizardUI();
-    }
+    };
 
-    function prevPaymentStep() {
+    window.prevPaymentStep = function() {
         if (currentPaymentStep === 1) {
-            closePayment();
+            window.closePayment();
             return;
         }
         currentPaymentStep--;
         updateWizardUI();
-    }
+    };
 
     function updateWizardUI() {
         const steps = document.querySelectorAll('.payment-step');
@@ -2106,7 +2196,7 @@
         }, 2000);
     }
 
-    function printOrder() {
+    window.printOrder = function() {
         document.getElementById('printOrderNumber').textContent = currentOrderNumber;
         document.getElementById('printOrderType').textContent = orderType === 'takeaway' ? 'PARA LEVAR' : 'COMER AQUI';
         document.getElementById('printDate').textContent = new Date().toLocaleString('pt-BR');
@@ -2130,25 +2220,16 @@
         printArea.style.display = 'block';
         window.print();
         setTimeout(() => { printArea.style.display = 'none'; }, 500);
-    }
+    };
 
-    function newOrder() {
+    window.newOrder = function() {
         document.getElementById('successModal').classList.remove('active');
         cart = [];
         customerName = '';
         tableNumber = '';
         currentOrderNumber = null;
-        renderCart();
-    }
-
-    // Event Listeners
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            renderMenu(this.dataset.category);
-        });
-    });
+        window.renderCart();
+    };
 
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', function() {
@@ -2162,12 +2243,30 @@
         modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
     });
 
-    function formatPrice(value) { return 'R$ ' + value.toFixed(2).replace('.', ','); }
+    function formatPrice(value) { return `${currencySymbol} ` + value.toFixed(2).replace('.', ','); }
 
     // Initialize
-    populateTables();
-    renderMenu();
-    renderCart();
+    async function init() {
+        try {
+            // Load tables
+            const restId = (/*[[${restaurantId}]]*/ null);
+            if (restId) {
+                const tablesData = await tablesApi.getTables(restId);
+                const select = document.getElementById('tableNumber');
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione uma mesa</option>' +
+                        tablesData.tables.map(t => `<option value="${t.cod}">${t.cod}</option>`).join('');
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching tables:', e);
+        }
+        
+        await loadMenu();
+        window.renderCart();
+    }
+
+    init();
 </script>
 </body>
 </html>

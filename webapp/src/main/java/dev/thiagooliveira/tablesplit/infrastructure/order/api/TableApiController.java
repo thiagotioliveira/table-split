@@ -5,6 +5,7 @@ import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
 import dev.thiagooliveira.tablesplit.application.order.DeleteTable;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
+import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
@@ -29,6 +30,7 @@ public class TableApiController implements TablesApi {
 
   private final TransactionalContext transactionalContext;
   private final CreateTable createTable;
+  private final GetTables getTables;
   private final DeleteTable deleteTable;
   private final OpenTable openTable;
   private final CloseTable closeTable;
@@ -40,6 +42,7 @@ public class TableApiController implements TablesApi {
   public TableApiController(
       TransactionalContext transactionalContext,
       CreateTable createTable,
+      GetTables getTables,
       DeleteTable deleteTable,
       OpenTable openTable,
       CloseTable closeTable,
@@ -49,6 +52,7 @@ public class TableApiController implements TablesApi {
       TableApiMapper mapper) {
     this.transactionalContext = transactionalContext;
     this.createTable = createTable;
+    this.getTables = getTables;
     this.deleteTable = deleteTable;
     this.openTable = openTable;
     this.closeTable = closeTable;
@@ -61,6 +65,32 @@ public class TableApiController implements TablesApi {
   private AccountContext getContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     return (AccountContext) auth.getPrincipal();
+  }
+
+  @Override
+  public ResponseEntity<
+          dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TablesResponse>
+      getTables(UUID restaurantId) {
+    var context = getContext();
+    var targetId = restaurantId != null ? restaurantId : context.getRestaurant().getId();
+    var result = getTables.execute(targetId);
+
+    java.util.Map<UUID, java.math.BigDecimal> balances = new java.util.HashMap<>();
+    result
+        .tables()
+        .forEach(
+            t -> {
+              var activeOrder = getOrder.execute(t.getId());
+              var balance =
+                  activeOrder
+                      .map(
+                          dev.thiagooliveira.tablesplit.domain.order.Order
+                              ::calculateRemainingAmount)
+                      .orElse(java.math.BigDecimal.ZERO);
+              balances.put(t.getId(), balance);
+            });
+
+    return ResponseEntity.ok(mapper.mapToTablesResponse(result, balances));
   }
 
   @Override

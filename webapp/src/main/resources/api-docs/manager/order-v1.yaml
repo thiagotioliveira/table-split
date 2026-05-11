@@ -158,6 +158,25 @@ paths:
 
   # Table Endpoints
   /tables:
+    get:
+      tags:
+        - Tables
+      summary: Get all tables for a restaurant
+      operationId: getTables
+      parameters:
+        - name: restaurantId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful tables retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TablesResponse'
     post:
       tags:
         - Tables
@@ -761,3 +780,33 @@ components:
           format: double
         reviewCount:
           type: integer
+
+    TablesResponse:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableResponse'
+        count:
+          type: integer
+        countAvailable:
+          type: integer
+        countOccupied:
+          type: integer
+        countWaiting:
+          type: integer
+
+    TableResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cod:
+          type: string
+        status:
+          type: string
+          enum: [AVAILABLE, OCCUPIED, WAITING_PAYMENT]
+        balance:
+          type: number

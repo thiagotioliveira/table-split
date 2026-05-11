@@ -53,7 +53,7 @@ public class TableController {
   public String indexContent(
       @PathVariable(required = false) UUID selectedTableId, Authentication auth, Model model) {
     this.populateModel(selectedTableId, auth, model);
-    return "tables :: waiter-content";
+    return "tables :: main-panel";
   }
 
   private void populateModel(UUID selectedTableId, Authentication auth, Model model) {

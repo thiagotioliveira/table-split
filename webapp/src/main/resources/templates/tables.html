@@ -28,6 +28,38 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            animation: slideIn 0.3s ease-out forwards;
+            border-left: 4px solid var(--primary);
+        }
+        .toast.success { border-left-color: var(--green); }
+        .toast.error { border-left-color: var(--red); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
         /* New Order Modal Styles */
         .menu-items-grid {
             display: grid;
@@ -3228,13 +3260,9 @@
 
         <form id="openTableForm" th:action="@{/tables/open-dummy}" method="post" style="display: none;"></form>
         <form id="deleteTableForm" th:action="@{/tables/delete-dummy}" method="post" style="display: none;"></form>
+        <div id="toastContainer" class="toast-container"></div>
 
         <div class="waiter-content" id="waiterContent" th:fragment="waiter-content">
-            <div id="jsData" 
-                 th:data-order-remaining-amount="${orderRemainingAmount}"
-                 th:data-selected-table="${selectedTable}"
-                 th:data-selected-table-cod="${selectedTableObj?.cod}"
-                 style="display: none;"></div>
             <!-- Tables Panel -->
             <aside class="tables-panel" id="tablesPanel">
                 <button class="tables-panel-close" onclick="closeTablesPanel()">
@@ -3255,15 +3283,15 @@
                 </div>
 
                 <div class="tables-filter">
-                    <div class="filter-buttons">
+                    <div class="filter-buttons" id="tablesFilterButtons">
                         <button class="filter-btn active" onclick="filterTables('all')">
-                            <span th:text="#{page.tables.filter.all}">Todas</span> <span class="count" th:text="${count}">12</span>
+                            <span th:text="#{page.tables.filter.all}">Todas</span> <span class="count">0</span>
                         </button>
                         <button class="filter-btn" onclick="filterTables('free')">
-                            <span th:text="#{page.tables.filter.free}">Livres</span> <span class="count" th:text="${countAvailable}">4</span>
+                            <span th:text="#{page.tables.filter.free}">Livres</span> <span class="count">0</span>
                         </button>
                         <button class="filter-btn" onclick="filterTables('occupied')">
-                            <span th:text="#{page.tables.filter.occupied}">Ocupadas</span> <span class="count" th:text="${countOccupied}">6</span>
+                            <span th:text="#{page.tables.filter.occupied}">Ocupadas</span> <span class="count">0</span>
                         </button>
                     </div>
                     <button class="add-table-btn" onclick="openNewTableModal()">
@@ -3273,31 +3301,22 @@
                 </div>
 
                 <div class="tables-list" id="tablesList">
-                    <!-- Dynamic Tables List -->
-                     <div th:each="table : ${tables}" 
-                          class="table-card" 
-                          th:classappend="${table.status.name().toLowerCase()}" 
-                          th:data-table="${table.id}" 
-                          th:data-status="${table.status.name().toLowerCase()}" 
-                          th:onclick="selectTable(this.getAttribute('data-table'))">
-                        <div class="table-card-header">
-                            <span class="table-number" th:text="#{page.tables.card.table(${table.cod})}">Mesa 01</span>
-                            <span class="table-status" 
-                                  th:classappend="${table.status.name().toLowerCase()}" 
-                                  th:text="${table.status.name() == 'AVAILABLE' ? #messages.msg('page.tables.status.free') : (table.status.name() == 'WAITING' ? #messages.msg('page.tables.status.waiting') : (table.status.name() == 'BILL' ? #messages.msg('page.tables.status.bill') : #messages.msg('page.tables.status.occupied')))}">Status</span>
-                        </div>
-                        <div class="table-card-info">
-                            <span th:if="${table.status.name() == 'AVAILABLE'}" th:text="#{page.tables.card.status.free}">Disponível</span>
-                            <span th:if="${table.status.name() == 'WAITING'}" th:text="#{page.tables.card.status.waiting}">Aguardando Pedido</span>
-                            <span th:if="${table.status.name() == 'OCCUPIED'}" th:text="#{page.tables.card.status.occupied}">Em uso</span>
-                            <span class="table-total" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(table.balance, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
-                        </div>
-                    </div>
+                    <!-- Skeletons by default -->
+                    <div class="table-card skeleton"></div>
+                    <div class="table-card skeleton"></div>
+                    <div class="table-card skeleton"></div>
+                    <div class="table-card skeleton"></div>
                 </div>
             </aside>
 
             <!-- Main Panel -->
             <div class="main-panel" id="mainPanel" th:fragment="main-panel">
+                <div th:replace="~{tables :: all-modals}"></div>
+                <div id="jsData" 
+                     th:data-order-remaining-amount="${orderRemainingAmount}"
+                     th:data-selected-table="${selectedTable}"
+                     th:data-selected-table-cod="${selectedTableObj?.cod}"
+                     style="display: none;"></div>
                 <div class="main-panel-header" id="mainPanelHeader">
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <button class="show-tables-btn" onclick="openTablesPanel()">
@@ -3530,7 +3549,6 @@
                     </div>
                 </div>
             </div>
-            <div th:replace="~{tables :: all-modals}"></div>
         </div>
     </div>
 </main>
@@ -3589,7 +3607,16 @@
         itemNotePlaceholder: /*[[#{page.tables.modal.order.item.note.placeholder}]]*/ 'Observation (ex: no onion)',
         customizationSingle: /*[[#{page.customer.menu.customization.single}]]*/ 'Escolha uma',
         customizationMultiple: /*[[#{page.customer.menu.customization.multiple}]]*/ 'Escolha várias',
-        customizationError: /*[[#{page.customer.menu.customization.error}]]*/ 'Selecione as opções obrigatórias'
+        customizationError: /*[[#{page.customer.menu.customization.error}]]*/ 'Selecione as opções obrigatórias',
+        statusFree: /*[[#{page.tables.status.free}]]*/ 'Free',
+        statusWaiting: /*[[#{page.tables.status.waiting}]]*/ 'Waiting',
+        statusOccupied: /*[[#{page.tables.status.occupied}]]*/ 'Occupied',
+        cardStatusFree: /*[[#{page.tables.card.status.free}]]*/ 'Available',
+        cardStatusWaiting: /*[[#{page.tables.card.status.waiting}]]*/ 'Awaiting Order',
+        cardStatusOccupied: /*[[#{page.tables.card.status.occupied}]]*/ 'In use',
+        cardStatusOccupied: /*[[#{page.tables.card.status.occupied}]]*/ 'In use',
+        alertFetchError: /*[[#{page.tables.js.alert.fetch.error}]]*/ 'Erro ao buscar dados. Tente novamente.',
+        msgTableClosed: 'Mesa fechada com sucesso!'
     };
     window.i18n = i18n;
 
@@ -3813,7 +3840,12 @@
     }
 
     function openCloseTableModal() {
-        document.getElementById('closeTableModal').classList.add('active');
+        const modal = document.getElementById('closeTableModal');
+        const amountEl = document.getElementById('closeTableRemainingAmount');
+        if (amountEl) {
+            amountEl.textContent = `${currencySymbol} ${orderRemainingAmount.toFixed(2).replace('.', ',')}`;
+        }
+        modal.classList.add('active');
         document.getElementById('closeTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
     }
 
@@ -4453,7 +4485,7 @@
         </div>
         <div class="modal-body">
             <div style="text-align: center; padding: 1rem 0;">
-                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;"
+                <div id="closeTableRemainingAmount" style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;"
                      th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
                 <div style="color: var(--muted);" th:text="#{page.tables.modal.close.label.remaining}">Saldo restante da conta</div>
             </div>
@@ -4476,7 +4508,7 @@
         </div>
         <div class="modal-footer">
             <button class="modal-btn" onclick="closeCloseTableModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
-            <button class="modal-btn success" onclick="confirmCloseTable()" th:text="#{page.tables.modal.payment.button.confirm}">Confirmar Pagamento</button>
+            <button class="modal-btn success" id="confirmCloseBtn" onclick="confirmCloseTable()" th:text="#{page.tables.modal.payment.button.confirm}">Confirmar Pagamento</button>
         </div>
     </div>
 </div>
@@ -4868,6 +4900,7 @@
     window.openTable = openTable;
     window.confirmDeleteTable = confirmDeleteTable;
     window.filterOrderHistory = filterOrderHistory;
+    window.loadTables = loadTables;
 
     async function confirmCloseTable() {
         if (typeof selectedTable === 'undefined' || !selectedTable) {
@@ -4875,6 +4908,9 @@
             return;
         }
 
+        const btn = document.getElementById('confirmCloseBtn');
+        const originalText = btn.innerHTML;
+        
         const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
         const note = document.getElementById('closeTableNote')?.value || '';
 
@@ -4885,12 +4921,23 @@
         };
 
         try {
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.textContent = 'Processando...';
+
             await tablesApi.processPayment(selectedTable, params);
+            
+            showToast(i18n.msgTableClosed, 'success');
+            
             await refreshContent();
             closeCloseTableModal();
         } catch (e) {
             console.error(e);
-            alert(i18n.alertFetchError);
+            showToast(i18n.alertFetchError, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = '';
+            btn.innerHTML = originalText;
         }
     }
 
@@ -5989,17 +6036,28 @@
     async function refreshContent() {
         const tableId = selectedTable || '';
         const url = tableId ? `/tables/${tableId}/content` : '/tables/content';
-        const response = await fetch(url);
-        if (response.ok) {
-            const html = await response.text();
+        
+        // Parallel fetch for table list (API) and table details (Fragment)
+        const [respFragment, _] = await Promise.all([
+            fetch(url),
+            loadTables()
+        ]);
+
+        if (respFragment.ok) {
+            const html = await respFragment.text();
             
             // Extract the fragment from the response
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const newWaiterContent = doc.querySelector('#waiterContent');
+            // If we returned just the fragment, it might be the root element or inside a body
+            const newMainPanel = doc.querySelector('#mainPanel') || (doc.body.firstElementChild?.id === 'mainPanel' ? doc.body.firstElementChild : null);
             
-            if (newWaiterContent) {
-                document.querySelector('#waiterContent').innerHTML = newWaiterContent.innerHTML;
+            if (newMainPanel) {
+                document.querySelector('#mainPanel').innerHTML = newMainPanel.innerHTML;
+                await refreshState();
+            } else {
+                // If it's just the content (no wrapping div with id)
+                document.querySelector('#mainPanel').innerHTML = html;
                 await refreshState();
             }
         }
@@ -6054,6 +6112,83 @@
                 selectedTableCod = jsData.dataset.selectedTableCod;
             }
         }
+    }
+
+    async function loadTables() {
+        const list = document.getElementById('tablesList');
+        // Check if we already have real tables (not just skeletons)
+        const hasTables = list && list.querySelectorAll('.table-card:not(.skeleton)').length > 0;
+        
+        if (!hasTables && list) {
+            list.innerHTML = '<div class="table-card skeleton"></div>'.repeat(4);
+        }
+
+        try {
+            const restaurantId = /*[[${restaurantId}]]*/ '';
+            const data = await tablesApi.getTables(restaurantId);
+            renderTables(data);
+        } catch (e) {
+            console.error('Error loading tables:', e);
+            if (list && !hasTables) {
+                list.innerHTML = `<div class="error-message">${i18n.alertFetchError || 'Error loading tables'}</div>`;
+            }
+        }
+    }
+
+    function renderTables(data) {
+        const list = document.getElementById('tablesList');
+        const filters = document.getElementById('tablesFilterButtons');
+        const currencySymbol = /*[[${currencySymbol}]]*/ '$';
+        
+        // Update filter counts
+        if (filters) {
+            const countAll = filters.querySelector('button[onclick="filterTables(\'all\')"] .count');
+            const countFree = filters.querySelector('button[onclick="filterTables(\'free\')"] .count');
+            const countOccupied = filters.querySelector('button[onclick="filterTables(\'occupied\')"] .count');
+            
+            if (countAll) countAll.textContent = data.count;
+            if (countFree) countFree.textContent = data.countAvailable;
+            if (countOccupied) countOccupied.textContent = data.countOccupied;
+        }
+
+        if (!list) return;
+
+        let html = '';
+        data.tables.forEach(table => {
+            const statusClass = table.status.toLowerCase();
+            let statusLabel = '';
+            let statusInfo = '';
+            
+            if (table.status === 'AVAILABLE') {
+                statusLabel = i18n.statusFree;
+                statusInfo = i18n.cardStatusFree;
+            } else if (table.status === 'WAITING') {
+                statusLabel = i18n.statusWaiting;
+                statusInfo = i18n.cardStatusWaiting;
+            } else {
+                statusLabel = i18n.statusOccupied;
+                statusInfo = i18n.cardStatusOccupied;
+            }
+
+            const activeClass = (selectedTable === table.id) ? 'active' : '';
+
+            html += `
+                <div class="table-card ${statusClass} ${activeClass}" 
+                     data-table="${table.id}" 
+                     data-status="${statusClass}" 
+                     onclick="selectTable('${table.id}')">
+                    <div class="table-card-header">
+                        <span class="table-number">Mesa ${table.cod}</span>
+                        <span class="table-status ${statusClass}">${statusLabel}</span>
+                    </div>
+                    <div class="table-card-info">
+                        <span>${statusInfo}</span>
+                        <span class="table-total">${currencySymbol} ${table.balance.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                </div>
+            `;
+        });
+        list.innerHTML = html;
     }
 
     async function updateTableStatus(event) {
@@ -6142,7 +6277,26 @@
     }
 
 
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icon = type === 'success' 
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--green)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+            : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--red)"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+            
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease-out forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
     let stompClient = null;
+    loadTables();
     connect();
 </script>
 </body>

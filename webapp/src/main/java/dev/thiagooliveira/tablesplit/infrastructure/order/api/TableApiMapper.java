@@ -1,17 +1,22 @@
 package dev.thiagooliveira.tablesplit.infrastructure.order.api;
 
+import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderCustomer;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
+import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.HistoryPaymentResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TableOrderHistoryResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TableResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TablesResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TicketItemResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TicketItemModel;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ValueMapping;
 
 @Mapper(componentModel = "spring")
 public abstract class TableApiMapper {
@@ -73,4 +78,33 @@ public abstract class TableApiMapper {
   @Mapping(target = "paidAt", expression = "java(payment.getPaidAt().toOffsetDateTime())")
   @Mapping(target = "method", expression = "java(payment.getMethod().name())")
   public abstract HistoryPaymentResponse mapToHistoryPaymentResponse(Payment payment);
+
+  public TablesResponse mapToTablesResponse(
+      GetTables.Result result, java.util.Map<java.util.UUID, java.math.BigDecimal> balances) {
+    if (result == null) return null;
+    TablesResponse response = new TablesResponse();
+    response.setTables(
+        result.tables().stream()
+            .map(
+                t ->
+                    mapToTableResponse(
+                        t,
+                        balances.getOrDefault(t.getId(), java.math.BigDecimal.ZERO).doubleValue()))
+            .collect(Collectors.toList()));
+    response.setCount((int) result.count());
+    response.setCountAvailable((int) result.countAvailable());
+    response.setCountOccupied((int) result.countOccupied());
+    response.setCountWaiting((int) result.countWaiting());
+    return response;
+  }
+
+  @Mapping(target = "id", source = "table.id")
+  @Mapping(target = "cod", source = "table.cod")
+  @Mapping(target = "status", source = "table.status")
+  @Mapping(target = "balance", source = "balance")
+  public abstract TableResponse mapToTableResponse(Table table, Double balance);
+
+  @ValueMapping(target = "WAITING_PAYMENT", source = "WAITING")
+  public abstract TableResponse.StatusEnum mapStatus(
+      dev.thiagooliveira.tablesplit.domain.order.TableStatus status);
 }
