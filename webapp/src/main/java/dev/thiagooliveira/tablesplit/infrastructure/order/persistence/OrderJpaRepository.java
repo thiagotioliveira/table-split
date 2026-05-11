@@ -4,6 +4,7 @@ import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,8 +20,10 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
   List<OrderEntity> findAllByTableIdOrderByOpenedAtDesc(UUID tableId);
 
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers"})
   List<OrderEntity> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
 
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers"})
   List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtAfter(
       UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold);
 

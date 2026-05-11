@@ -57,8 +57,9 @@ public class OrderEntityMapper {
     entity.setClosedAt(domain.getClosedAt());
     if (domain.getTickets() != null) {
       entity.setTickets(
-          new ArrayList<>(
-              domain.getTickets().stream().map(ticket -> ticketToEntity(ticket, entity)).toList()));
+          domain.getTickets().stream()
+              .map(ticket -> ticketToEntity(ticket, entity))
+              .collect(Collectors.toSet()));
     }
     if (domain.getPayments() != null) {
       entity.setPayments(
@@ -104,8 +105,9 @@ public class OrderEntityMapper {
     entity.setNote(domain.getNote());
     if (domain.getItems() != null) {
       entity.setItems(
-          new ArrayList<>(
-              domain.getItems().stream().map(item -> ticketItemToEntity(item, entity)).toList()));
+          domain.getItems().stream()
+              .map(item -> ticketItemToEntity(item, entity))
+              .collect(Collectors.toSet()));
     }
     return entity;
   }

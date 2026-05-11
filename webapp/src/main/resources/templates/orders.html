@@ -197,6 +197,12 @@
             transition: all 0.2s;
         }
 
+        .order-card.skeleton {
+            background: linear-gradient(110deg, var(--background-secondary) 8%, var(--border) 18%, var(--background-secondary) 33%) !important;
+            background-size: 200% 100% !important;
+            animation: 1.5s shine linear infinite !important;
+        }
+
         .order-card:hover {
             box-shadow: var(--shadow-lg);
             transform: translateY(-2px);

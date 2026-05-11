@@ -29,6 +29,12 @@ public interface OrderRepository {
 
   Optional<Order> findByTicketItemId(UUID itemId);
 
+  long countTicketsByStatus(
+      UUID restaurantId,
+      TicketStatus status,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end);
+
   void save(Order order);
 
   void delete(UUID id);

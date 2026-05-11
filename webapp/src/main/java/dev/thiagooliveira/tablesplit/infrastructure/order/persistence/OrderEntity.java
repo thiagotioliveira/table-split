@@ -29,7 +29,7 @@ public class OrderEntity {
   private OrderStatus status;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<TicketEntity> tickets = new ArrayList<>();
+  private Set<TicketEntity> tickets = new HashSet<>();
 
   @OneToMany(
       mappedBy = "order",
@@ -84,11 +84,11 @@ public class OrderEntity {
     this.status = status;
   }
 
-  public List<TicketEntity> getTickets() {
+  public Set<TicketEntity> getTickets() {
     return tickets;
   }
 
-  public void setTickets(List<TicketEntity> tickets) {
+  public void setTickets(Set<TicketEntity> tickets) {
     this.tickets = tickets;
   }
 

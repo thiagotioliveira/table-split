@@ -3,8 +3,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.order.persistence;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -18,7 +18,7 @@ public class TicketEntity {
   private OrderEntity order;
 
   @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<TicketItemEntity> items = new ArrayList<>();
+  private Set<TicketItemEntity> items = new HashSet<>();
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -49,11 +49,11 @@ public class TicketEntity {
     this.order = order;
   }
 
-  public List<TicketItemEntity> getItems() {
+  public Set<TicketItemEntity> getItems() {
     return items;
   }
 
-  public void setItems(List<TicketItemEntity> items) {
+  public void setItems(Set<TicketItemEntity> items) {
     this.items = items;
   }
 

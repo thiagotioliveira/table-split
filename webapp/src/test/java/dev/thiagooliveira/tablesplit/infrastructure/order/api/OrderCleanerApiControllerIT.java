@@ -117,8 +117,8 @@ class OrderCleanerApiControllerIT extends PostgresIT {
       ticketItem.setQuantity(2);
       ticketItem.setUnitPrice(itemEntity.getPrice());
       ticketItem.setStatus(TicketStatus.READY);
-      ticket.setItems(Collections.singletonList(ticketItem));
-      oldOrder.setTickets(Collections.singletonList(ticket));
+      ticket.setItems(java.util.Set.of(ticketItem));
+      oldOrder.setTickets(java.util.Set.of(ticket));
 
       // Add Payment
       PaymentEntity payment = new PaymentEntity();

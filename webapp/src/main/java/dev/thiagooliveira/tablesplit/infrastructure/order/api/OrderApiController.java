@@ -8,6 +8,7 @@ import dev.thiagooliveira.tablesplit.application.order.GetTickets;
 import dev.thiagooliveira.tablesplit.application.order.MoveTicket;
 import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
+import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.OrdersApi;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.CancelItemRequest;
@@ -48,6 +49,7 @@ public class OrderApiController implements OrdersApi {
   private final GetTables getTables;
   private final UpdateTicketItemStatus updateTicketItemStatus;
   private final TransactionalContext transactionalContext;
+  private final OrderRepository orderRepository;
   private final OrderApiMapper mapper;
 
   public OrderApiController(
@@ -60,6 +62,7 @@ public class OrderApiController implements OrdersApi {
       GetTables getTables,
       UpdateTicketItemStatus updateTicketItemStatus,
       TransactionalContext transactionalContext,
+      OrderRepository orderRepository,
       OrderApiMapper mapper) {
     this.getTickets = getTickets;
     this.getHistoryTickets = getHistoryTickets;
@@ -70,6 +73,7 @@ public class OrderApiController implements OrdersApi {
     this.getTables = getTables;
     this.updateTicketItemStatus = updateTicketItemStatus;
     this.transactionalContext = transactionalContext;
+    this.orderRepository = orderRepository;
     this.mapper = mapper;
   }
 
@@ -181,9 +185,8 @@ public class OrderApiController implements OrdersApi {
 
     ZonedDateTime endOfDay = zStart.plusDays(1).minusNanos(1);
     long deliveredTodayCount =
-        getHistoryTickets.execute(context.getRestaurant().getId(), zStart, endOfDay).stream()
-            .filter(t -> t.ticket().getStatus().isDelivered())
-            .count();
+        orderRepository.countTicketsByStatus(
+            context.getRestaurant().getId(), TicketStatus.DELIVERED, zStart, endOfDay);
 
     TicketsResponse response =
         new TicketsResponse()

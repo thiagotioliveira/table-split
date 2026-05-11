@@ -3,6 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.order.persistence;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
+import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
 import java.util.List;
@@ -17,6 +18,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
   private final ItemJpaRepository itemJpaRepository;
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+  private final TicketJpaRepository ticketJpaRepository;
   private final OrderEntityMapper mapper;
 
   public OrderRepositoryAdapter(
@@ -24,11 +26,13 @@ public class OrderRepositoryAdapter implements OrderRepository {
       ItemJpaRepository itemJpaRepository,
       RestaurantJpaRepository restaurantJpaRepository,
       org.springframework.context.ApplicationEventPublisher eventPublisher,
+      TicketJpaRepository ticketJpaRepository,
       OrderEntityMapper mapper) {
     this.orderJpaRepository = orderJpaRepository;
     this.itemJpaRepository = itemJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
+    this.ticketJpaRepository = ticketJpaRepository;
     this.mapper = mapper;
   }
 
@@ -139,38 +143,57 @@ public class OrderRepositoryAdapter implements OrderRepository {
     orderJpaRepository.deleteById(id);
   }
 
+  @Override
+  public long countTicketsByStatus(
+      UUID restaurantId,
+      dev.thiagooliveira.tablesplit.domain.order.TicketStatus status,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end) {
+    return ticketJpaRepository.countByOrderRestaurantIdAndStatusAndCreatedAtBetween(
+        restaurantId, status, start, end);
+  }
+
   private Order fillItemNames(Order order) {
     if (order == null || order.getTickets() == null) return order;
 
+    java.util.Set<UUID> itemIds = new java.util.HashSet<>();
+    order
+        .getTickets()
+        .forEach(
+            t -> {
+              if (t.getItems() == null) return;
+              t.getItems()
+                  .forEach(
+                      i -> {
+                        if (i.getName() == null || i.getName().isEmpty()) {
+                          itemIds.add(i.getItemId());
+                        }
+                      });
+            });
+
+    if (itemIds.isEmpty()) return order;
+
     java.util.Map<UUID, java.util.Map<dev.thiagooliveira.tablesplit.domain.common.Language, String>>
-        nameCache = new java.util.HashMap<>();
+        nameMap =
+            itemJpaRepository.findAllById(itemIds).stream()
+                .collect(
+                    java.util.stream.Collectors.toMap(
+                        ItemEntity::getId,
+                        i ->
+                            i.getName() != null
+                                ? i.getName().getTranslations()
+                                : new java.util.HashMap<>()));
 
     order
         .getTickets()
         .forEach(
-            ticket -> {
-              if (ticket.getItems() == null) return;
-              ticket
-                  .getItems()
+            t -> {
+              if (t.getItems() == null) return;
+              t.getItems()
                   .forEach(
-                      item -> {
-                        if (item.getName() == null || item.getName().isEmpty()) {
-                          var name =
-                              nameCache.computeIfAbsent(
-                                  item.getItemId(),
-                                  itemId ->
-                                      itemJpaRepository
-                                          .findById(itemId)
-                                          .map(
-                                              i ->
-                                                  i.getName() != null
-                                                      ? i.getName().getTranslations()
-                                                      : new java.util.HashMap<
-                                                          dev.thiagooliveira.tablesplit.domain
-                                                              .common.Language,
-                                                          String>())
-                                          .orElse(new java.util.HashMap<>()));
-                          item.setName(name);
+                      i -> {
+                        if (i.getName() == null || i.getName().isEmpty()) {
+                          i.setName(nameMap.getOrDefault(i.getItemId(), new java.util.HashMap<>()));
                         }
                       });
             });
