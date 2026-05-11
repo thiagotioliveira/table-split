@@ -1,19 +1,14 @@
 package dev.thiagooliveira.tablesplit.infrastructure.order.web;
 
-import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
-import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExists;
 import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyOccupied;
 import dev.thiagooliveira.tablesplit.domain.common.DomainException;
-import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
-import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.CategoryModel;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.CustomerModel;
-import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.ItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TableModel;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -38,20 +33,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TableController {
 
   private final GetTables getTables;
-  private final GetCategory getCategory;
-  private final GetItem getItem;
   private final GetOrder getOrder;
   private final MessageSource messageSource;
 
-  public TableController(
-      GetTables getTables,
-      GetCategory getCategory,
-      GetItem getItem,
-      GetOrder getOrder,
-      MessageSource messageSource) {
+  public TableController(GetTables getTables, GetOrder getOrder, MessageSource messageSource) {
     this.getTables = getTables;
-    this.getCategory = getCategory;
-    this.getItem = getItem;
     this.getOrder = getOrder;
     this.messageSource = messageSource;
   }
@@ -100,23 +86,10 @@ public class TableController {
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("orderLoaded", false);
 
-    var userLanguage = context.getUser().getLanguage();
-    var languages =
-        userLanguage != null
-            ? List.of(userLanguage)
-            : context.getRestaurant().getCustomerLanguages();
-    var categories =
-        this.getCategory.execute(context.getRestaurant().getId(), languages).stream()
-            .map(c -> new CategoryModel(c.getId(), convertMap(c.getName())))
-            .collect(Collectors.toList());
-    var menuItems =
-        this.getItem.execute(context.getRestaurant().getId(), languages, true).stream()
-            .map(this::mapToItemModel)
-            .collect(Collectors.toList());
-    model.addAttribute("categories", categories);
-    model.addAttribute("menuItems", menuItems);
     String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
     model.addAttribute("currencySymbol", currencySymbol);
+
+    var userLanguage = context.getUser().getLanguage();
 
     // Defaults for when no order is active
     model.addAttribute("orderSubtotal", BigDecimal.ZERO);
@@ -351,77 +324,6 @@ public class TableController {
       IllegalArgumentException e, RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
     return "redirect:/tables";
-  }
-
-  private ItemModel mapToItemModel(dev.thiagooliveira.tablesplit.domain.menu.Item i) {
-    var questions = unifyQuestions(i.getQuestions());
-    return new ItemModel(
-        i.getId(),
-        convertMap(i.getName()),
-        i.getPrice(),
-        i.getCategory().getId(),
-        i.getPromotion() != null
-            ? new ItemModel.PromotionModel(
-                i.getPromotion().promotionId(),
-                i.getPromotion().promotionalPrice(),
-                i.getPromotion().discountType().name(),
-                i.getPromotion().discountValue())
-            : null,
-        questions);
-  }
-
-  private List<ItemModel.QuestionModel> unifyQuestions(
-      Map<Language, List<dev.thiagooliveira.tablesplit.domain.menu.ItemQuestion>> questionsMap) {
-    if (questionsMap == null) return java.util.Collections.emptyList();
-    java.util.Map<java.util.UUID, ItemModel.QuestionModel> unified =
-        new java.util.LinkedHashMap<>();
-    questionsMap.forEach(
-        (lang, list) -> {
-          list.forEach(
-              q -> {
-                var model =
-                    unified.computeIfAbsent(
-                        q.getId(),
-                        id ->
-                            new ItemModel.QuestionModel(
-                                q.getId(),
-                                new java.util.HashMap<>(),
-                                q.getType().name(),
-                                q.getMinSelections(),
-                                q.getMaxSelections(),
-                                q.isRequired(),
-                                new java.util.ArrayList<>()));
-                model.title().put(lang.name().toLowerCase(), q.getTitle());
-                if (q.getOptions() != null) {
-                  q.getOptions()
-                      .forEach(
-                          opt -> {
-                            var optModel =
-                                model.options().stream()
-                                    .filter(o -> o.id().equals(opt.getId()))
-                                    .findFirst()
-                                    .orElseGet(
-                                        () -> {
-                                          var o =
-                                              new ItemModel.OptionModel(
-                                                  opt.getId(),
-                                                  new java.util.HashMap<>(),
-                                                  opt.getExtraPrice());
-                                          model.options().add(o);
-                                          return o;
-                                        });
-                            optModel.text().put(lang.name().toLowerCase(), opt.getText());
-                          });
-                }
-              });
-        });
-    return new java.util.ArrayList<>(unified.values());
-  }
-
-  private static Map<String, String> convertMap(Map<Language, String> map) {
-    return map.entrySet().stream()
-        .collect(
-            Collectors.toMap(entry -> entry.getKey().name().toLowerCase(), Map.Entry::getValue));
   }
 
   public record OrderHistoryPaymentModel(

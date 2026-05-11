@@ -69,6 +69,38 @@
   }
 }
 
+.stat-value.skeleton {
+  height: 2.25rem;
+  width: 80%;
+  margin-bottom: 0.25rem;
+}
+
+.chart-body.skeleton {
+  height: 300px;
+  width: 100%;
+}
+
+.skeleton-row td {
+  padding: 0.5rem !important;
+}
+
+.promo-row.skeleton {
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+/* Menu Skeletons */
+.category-chip.skeleton {
+  width: 80px;
+  height: 32px;
+  border-radius: 20px;
+}
+
+.menu-item-card.skeleton {
+  height: 160px;
+  width: 100%;
+}
+
 .syncing {
   opacity: 0.6;
   pointer-events: none;

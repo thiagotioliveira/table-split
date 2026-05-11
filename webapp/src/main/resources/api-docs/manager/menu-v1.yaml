@@ -1,14 +1,16 @@
 openapi: 3.0.3
 info:
-  title: Promotions Manager API
-  description: API for managing promotions, combos and coupons in TableSplit Manager.
+  title: Menu Manager API
+  description: API for managing menu, promotions, combos and coupons in TableSplit Manager.
   version: 1.0.0
 servers:
-  - url: /api/v1/manager/promotions
+  - url: /api/v1/manager
 tags:
   - name: Promotions
   - name: Combos
   - name: Coupons
+  - name: Categories
+  - name: Items
 
 paths:
   /promotion:
@@ -218,6 +220,58 @@ paths:
         '204':
           description: Status toggled
 
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Get all categories
+      operationId: getCategories
+      parameters:
+        - name: languages
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+
+  /items:
+    get:
+      tags: [Items]
+      summary: Get all items
+      operationId: getItems
+      parameters:
+        - name: languages
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: includePromotions
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemResponse'
+
 components:
   schemas:
     SavePromotionRequest:
@@ -374,3 +428,84 @@ components:
 
     CouponRuleResponse:
       $ref: '#/components/schemas/CouponRuleRequest'
+
+    CategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        order:
+          type: integer
+
+    ItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        categoryId:
+          type: string
+          format: uuid
+        image:
+          type: string
+        promotion:
+          $ref: '#/components/schemas/ItemPromotionResponse'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemQuestionResponse'
+
+    ItemPromotionResponse:
+      type: object
+      properties:
+        promotionId:
+          type: string
+          format: uuid
+        promotionalPrice:
+          type: number
+        discountType:
+          type: string
+        discountValue:
+          type: number
+
+    ItemQuestionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        type:
+          type: string
+          enum: [SINGLE, MULTIPLE]
+        minSelections:
+          type: integer
+        maxSelections:
+          type: integer
+        required:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemOptionResponse'
+
+    ItemOptionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        extraPrice:
+          type: number

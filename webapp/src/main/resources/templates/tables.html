@@ -3536,7 +3536,6 @@
 </main>
 
 <script th:inline="javascript">
-    const menuItems = /*[[${menuItems}]]*/[];
     const tables = /*[[${tables}]]*/ [];
     let orderHistory = /*[[${orderHistory}]]*/ [];
     let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
@@ -3594,13 +3593,7 @@
     };
     window.i18n = i18n;
 
-    const itemQuestionsMap = /*[[${menuItems}]]*/ [];
     const questionsByItemId = {};
-    itemQuestionsMap.forEach(item => {
-        if (item.questions && item.questions.length > 0) {
-            questionsByItemId[item.id] = item.questions;
-        }
-    });
 
 
 
@@ -4331,39 +4324,21 @@
             <!-- Categories -->
             <div class="category-chips" id="categoryChips">
                 <button class="category-chip active" onclick="filterMenuItems('all')" th:text="#{page.tables.modal.order.category.all}">Todos</button>
-                <button type="button" th:each="category : ${categories}" 
-                        class="category-chip"
-                        th:text="${category.name[#locale.language]}"
-                        th:attr="onclick=|filterMenuItems('${category.id}')|">
-                    Categoria
-                </button>
+                <!-- Skeletons -->
+                <div class="category-chip skeleton"></div>
+                <div class="category-chip skeleton"></div>
+                <div class="category-chip skeleton"></div>
             </div>
 
             <!-- Items Grid -->
             <div class="menu-items-grid" id="menuItemsGrid">
-                <div th:each="item : ${menuItems}" 
-                     class="menu-item-card" 
-                     th:data-id="${item.id}"
-                     th:data-category="${item.categoryId}"
-                     th:data-price="${item.promotion != null ? #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'NONE', 2, 'POINT') : #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'POINT')}"
-                     th:data-original-price="${#numbers.formatDecimal(item.price, 1, 'NONE', 2, 'POINT')}"
-                     th:data-promotion-id="${item.promotion != null ? item.promotion.promotionId : ''}"
-                     th:data-discount-type="${item.promotion != null ? item.promotion.discountType : ''}"
-                     th:data-discount-value="${item.promotion != null ? #numbers.formatDecimal(item.promotion.discountValue, 1, 'NONE', 2, 'POINT') : ''}"
-                     th:attr="onclick=|toggleMenuItem(this)|">
-                    <div th:if="${item.promotion != null}" class="promo-badge" 
-                         th:text="${item.promotion.discountType == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotion.discountValue, 0, 0) + '% OFF') : (item.promotion.discountType == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotion.discountValue, 1, 'POINT', 2, 'COMMA') : 'PROMO')}">
-                        PROMO
-                    </div>
-                    <h4 th:text="${item.name[#locale.language]}">Nome do Item</h4>
-                    <div class="menu-item-price">
-                        <span th:if="${item.promotion != null}" class="price-original" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'COMMA')}">0,00</span>
-                        <span th:class="${item.promotion != null ? 'price-promo' : ''}" 
-                              th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotion != null ? item.promotion.promotionalPrice : item.price, 1, 'POINT', 2, 'COMMA')}">
-                            0,00
-                        </span>
-                    </div>
-                </div>
+                <!-- Skeletons -->
+                <div class="menu-item-card skeleton"></div>
+                <div class="menu-item-card skeleton"></div>
+                <div class="menu-item-card skeleton"></div>
+                <div class="menu-item-card skeleton"></div>
+                <div class="menu-item-card skeleton"></div>
+                <div class="menu-item-card skeleton"></div>
             </div>
 
             <!-- Current Client Order -->
@@ -4876,12 +4851,17 @@
 </div>
 </div>
 
-<script type="module">
-    import { ordersApi } from '/js/api/v1/manager/api-order-bridge.js';
-    import { tablesApi } from '/js/api/v1/manager/api-table-bridge.js';
+<script type="module" th:inline="javascript">
+    import { ordersApi } from /*[[@{/js/api/v1/manager/api-order-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-order-bridge.js';
+    import { tablesApi } from /*[[@{/js/api/v1/manager/api-table-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-table-bridge.js';
+    import { categoriesApi } from /*[[@{/js/api/v1/manager/api-categories-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-categories-bridge.js';
+    import { itemsApi } from /*[[@{/js/api/v1/manager/api-items-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-items-bridge.js';
 
     window.tablesApi = tablesApi;
     window.ordersApi = ordersApi;
+    window.categoriesApi = categoriesApi;
+    window.itemsApi = itemsApi;
+    window.loadMenu = loadMenu;
 
     window.confirmCloseTable = confirmCloseTable;
     window.handleNewTableSubmit = handleNewTableSubmit;
@@ -5387,6 +5367,10 @@
         
         // Also highlight correctly if it's the first time
         document.querySelectorAll('.menu-item-card').forEach(card => card.classList.remove('selected'));
+        
+        if (window.loadMenu) {
+            window.loadMenu();
+        }
     }
 
     function closeOrderModal() {
@@ -5482,7 +5466,7 @@
             if (todosBtn) todosBtn.classList.add('active');
         }
 
-        document.querySelectorAll('.menu-item-card').forEach(card => {
+        document.querySelectorAll('.menu-item-card:not(.skeleton)').forEach(card => {
             if (category === 'all' || card.dataset.category === category) {
                 card.style.display = 'block';
             } else {
@@ -6075,6 +6059,86 @@
     async function updateTableStatus(event) {
         console.log('Table status changed:', event);
         await refreshContent();
+    }
+
+    async function loadMenu() {
+        // Check if we already have real items (not just skeletons)
+        const hasItems = document.querySelectorAll('.menu-item-card:not(.skeleton)').length > 0;
+        if (hasItems) return;
+        
+        try {
+            const lang = (/*[[${#locale.language}]]*/ 'pt').toUpperCase();
+            
+            // Load Categories
+            const categories = await categoriesApi.getCategories([lang]);
+            renderCategories(categories);
+
+            // Load Items
+            const items = await itemsApi.getItems([lang], true);
+            renderItems(items);
+
+            // Populate questions map
+            items.forEach(item => {
+                if (item.questions && item.questions.length > 0) {
+                    questionsByItemId[item.id] = item.questions;
+                }
+            });
+        } catch (error) {
+            console.error('Error loading menu:', error);
+        }
+    }
+
+    function renderCategories(categories) {
+        const container = document.getElementById('categoryChips');
+        const allText = /*[[#{page.tables.modal.order.category.all}]]*/ 'Todos';
+        
+        let html = `<button class="category-chip active" onclick="filterMenuItems('all')">${allText}</button>`;
+        categories.forEach(cat => {
+            html += `<button type="button" class="category-chip" onclick="filterMenuItems('${cat.id}')">${cat.name}</button>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderItems(items) {
+        const container = document.getElementById('menuItemsGrid');
+        const currencySymbol = /*[[${currencySymbol}]]*/ '$';
+        
+        let html = '';
+        items.forEach(item => {
+            const hasPromotion = !!item.promotion;
+            const price = hasPromotion ? item.promotion.promotionalPrice : item.price;
+            const originalPrice = item.price;
+            
+            html += `
+                <div class="menu-item-card" 
+                     data-id="${item.id}"
+                     data-category="${item.categoryId}"
+                     data-price="${price.toFixed(2)}"
+                     data-original-price="${originalPrice.toFixed(2)}"
+                     data-promotion-id="${hasPromotion ? item.promotion.promotionId : ''}"
+                     data-discount-type="${hasPromotion ? item.promotion.discountType : ''}"
+                     data-discount-value="${hasPromotion ? item.promotion.discountValue.toFixed(2) : ''}"
+                     onclick="toggleMenuItem(this)">
+                    ${hasPromotion ? `
+                        <div class="promo-badge">
+                            ${item.promotion.discountType === 'PERCENTAGE' 
+                                ? `${Math.round(item.promotion.discountValue)}% OFF` 
+                                : (item.promotion.discountType === 'FIXED_VALUE' 
+                                    ? `-${currencySymbol} ${item.promotion.discountValue.toFixed(2).replace('.', ',')}` 
+                                    : 'PROMO')}
+                        </div>
+                    ` : ''}
+                    <h4>${item.name}</h4>
+                    <div class="menu-item-price">
+                        ${hasPromotion ? `<span class="price-original">${currencySymbol} ${originalPrice.toFixed(2).replace('.', ',')}</span>` : ''}
+                        <span class="${hasPromotion ? 'price-promo' : ''}">
+                            ${currencySymbol} ${price.toFixed(2).replace('.', ',')}
+                        </span>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
     }
 
 

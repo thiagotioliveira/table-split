@@ -21,6 +21,7 @@ public class ItemEntityMapper {
     domain.setRestaurantId(entity.getCategory().getRestaurantId());
     domain.setCategory(new Category());
     domain.getCategory().setId(entity.getCategory().getId());
+    domain.setCategoryId(entity.getCategory().getId());
     domain
         .getCategory()
         .setName(
