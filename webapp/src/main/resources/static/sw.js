@@ -19,14 +19,15 @@ const STATIC_ASSETS = [
 // Páginas que são apenas "shells" e carregam dados via AJAX (Estratégia: Stale-While-Revalidate para load instantâneo)
 const AJAX_DRIVEN_PAGES = [
   '/feedbacks',
-  '/reports'
+  '/reports',
+  '/counter',
+  '/tables'
 ];
 
 // Páginas que dependem do modelo do servidor/Thymeleaf (Estratégia: Network First para garantir dados frescos)
 const SSR_PAGES = [
   '/dashboard',
   '/menu',
-  '/tables',
   '/orders',
   '/gallery',
   '/reservations',
