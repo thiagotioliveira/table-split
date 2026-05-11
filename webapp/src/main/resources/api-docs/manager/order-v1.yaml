@@ -17,6 +17,26 @@ tags:
 
 paths:
   # Order Endpoints
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all current tickets for the restaurant
+      operationId: getTickets
+      parameters:
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful tickets retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketsResponse'
+
   /orders/history:
     get:
       tags:
@@ -795,6 +815,32 @@ components:
         countOccupied:
           type: integer
         countWaiting:
+          type: integer
+
+    TicketsResponse:
+      type: object
+      properties:
+        ticketsByStatus:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/TicketResponse'
+        allTickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketResponse'
+        pendingCount:
+          type: integer
+        preparingCount:
+          type: integer
+        readyCount:
+          type: integer
+        deliveredCount:
+          type: integer
+        deliveredTodayCount:
+          type: integer
+        totalCount:
           type: integer
 
     TableResponse:

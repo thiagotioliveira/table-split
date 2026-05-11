@@ -21,6 +21,7 @@ const AJAX_DRIVEN_PAGES = [
   '/feedbacks',
   '/reports',
   '/counter',
+  '/orders',
   '/tables'
 ];
 
@@ -28,7 +29,6 @@ const AJAX_DRIVEN_PAGES = [
 const SSR_PAGES = [
   '/dashboard',
   '/menu',
-  '/orders',
   '/gallery',
   '/reservations',
   '/settings',
