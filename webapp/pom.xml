@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>webapp</artifactId>
-	<version>0.33.1-SNAPSHOT</version>
+	<version>0.33.2-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>
@@ -344,7 +344,7 @@
 									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
 									<arg value="${project.basedir}/src/main/resources/api-docs/manager/order-v1.yaml"/>
 									<arg value="/api/v1/manager"/>
-									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-order-bridge.js"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-orders-bridge.js"/>
 									<arg value="ordersApi"/>
 									<arg value="Orders"/>
 								</exec>
