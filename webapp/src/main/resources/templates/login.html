@@ -166,6 +166,11 @@
         `;
       }
     }
+    
+    // Clear Service Worker dynamic cache on login page to ensure fresh state
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+    }
 /*
     function handleLogin(event) {
       event.preventDefault();

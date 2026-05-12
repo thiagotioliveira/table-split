@@ -341,6 +341,19 @@ self.addEventListener('sync', (event) => {
   }
 });
 
+// Listener para mensagens do cliente
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'clear-dynamic-cache') {
+    console.log('[SW] Clearing dynamic cache...');
+    event.waitUntil(
+      caches.delete(DYNAMIC_CACHE)
+        .then(() => {
+          console.log('[SW] Dynamic cache cleared');
+        })
+    );
+  }
+});
+
 // Sincroniza pedidos pendentes
 async function syncOrders() {
   try {
