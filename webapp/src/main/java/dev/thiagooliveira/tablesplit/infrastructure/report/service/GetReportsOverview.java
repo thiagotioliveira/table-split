@@ -1,4 +1,4 @@
-package dev.thiagooliveira.tablesplit.application.report;
+package dev.thiagooliveira.tablesplit.infrastructure.report.service;
 
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
@@ -16,7 +16,9 @@ import java.util.*;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetReportsOverview {
 
   private final OrderRepository orderRepository;

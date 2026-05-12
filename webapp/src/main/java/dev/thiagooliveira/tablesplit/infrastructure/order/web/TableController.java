@@ -9,7 +9,6 @@ import dev.thiagooliveira.tablesplit.domain.order.IllegalOrderStatusException;
 import dev.thiagooliveira.tablesplit.domain.order.OverpaymentException;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.CustomerModel;
-import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TableModel;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
@@ -58,30 +57,8 @@ public class TableController {
 
   private void populateModel(UUID selectedTableId, Authentication auth, Model model) {
     var context = (AccountContext) auth.getPrincipal();
-
-    var result = getTables.execute(context.getRestaurant().getId());
-    var tables =
-        result.tables().stream()
-            .map(
-                t -> {
-                  var activeOrder = getOrder.execute(t.getId());
-                  var balance =
-                      activeOrder
-                          .map(
-                              dev.thiagooliveira.tablesplit.domain.order.Order
-                                  ::calculateRemainingAmount)
-                          .orElse(BigDecimal.ZERO);
-                  return new TableModel(t.getId(), t.getCod(), t.getStatus(), balance);
-                })
-            .collect(Collectors.toList());
-
-    model.addAttribute("tables", tables);
     model.addAttribute("restaurantSlug", context.getRestaurant().getSlug());
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
-    model.addAttribute("count", result.count());
-    model.addAttribute("countAvailable", result.countAvailable());
-    model.addAttribute("countOccupied", result.countOccupied());
-    model.addAttribute("countWaiting", result.countWaiting());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("orderLoaded", false);

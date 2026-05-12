@@ -5,7 +5,6 @@ import dev.thiagooliveira.tablesplit.application.order.CreateTable;
 import dev.thiagooliveira.tablesplit.application.order.DeletePayment;
 import dev.thiagooliveira.tablesplit.application.order.DeleteTable;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
-import dev.thiagooliveira.tablesplit.application.order.GetTables;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
@@ -13,6 +12,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.TablesApi;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.CreateTableRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PaymentRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TableOrderHistoryResponse;
+import dev.thiagooliveira.tablesplit.infrastructure.order.service.GetTablesOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
@@ -30,7 +30,7 @@ public class TableApiController implements TablesApi {
 
   private final TransactionalContext transactionalContext;
   private final CreateTable createTable;
-  private final GetTables getTables;
+  private final GetTablesOverview getTablesOverview;
   private final DeleteTable deleteTable;
   private final OpenTable openTable;
   private final CloseTable closeTable;
@@ -42,7 +42,7 @@ public class TableApiController implements TablesApi {
   public TableApiController(
       TransactionalContext transactionalContext,
       CreateTable createTable,
-      GetTables getTables,
+      GetTablesOverview getTablesOverview,
       DeleteTable deleteTable,
       OpenTable openTable,
       CloseTable closeTable,
@@ -52,7 +52,7 @@ public class TableApiController implements TablesApi {
       TableApiMapper mapper) {
     this.transactionalContext = transactionalContext;
     this.createTable = createTable;
-    this.getTables = getTables;
+    this.getTablesOverview = getTablesOverview;
     this.deleteTable = deleteTable;
     this.openTable = openTable;
     this.closeTable = closeTable;
@@ -73,24 +73,7 @@ public class TableApiController implements TablesApi {
       getTables(UUID restaurantId) {
     var context = getContext();
     var targetId = restaurantId != null ? restaurantId : context.getRestaurant().getId();
-    var result = getTables.execute(targetId);
-
-    java.util.Map<UUID, java.math.BigDecimal> balances = new java.util.HashMap<>();
-    result
-        .tables()
-        .forEach(
-            t -> {
-              var activeOrder = getOrder.execute(t.getId());
-              var balance =
-                  activeOrder
-                      .map(
-                          dev.thiagooliveira.tablesplit.domain.order.Order
-                              ::calculateRemainingAmount)
-                      .orElse(java.math.BigDecimal.ZERO);
-              balances.put(t.getId(), balance);
-            });
-
-    return ResponseEntity.ok(mapper.mapToTablesResponse(result, balances));
+    return ResponseEntity.ok(getTablesOverview.getTables(targetId));
   }
 
   @Override

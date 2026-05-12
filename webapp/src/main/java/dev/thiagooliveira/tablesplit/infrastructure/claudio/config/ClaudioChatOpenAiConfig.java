@@ -1,19 +1,25 @@
 package dev.thiagooliveira.tablesplit.infrastructure.claudio.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
+import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
+import dev.thiagooliveira.tablesplit.application.menu.GetCombos;
+import dev.thiagooliveira.tablesplit.application.menu.GetItem;
+import dev.thiagooliveira.tablesplit.application.menu.GetPromotions;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
-import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.ClaudioService;
-import dev.thiagooliveira.tablesplit.infrastructure.claudio.ReportAndFeedbackTools;
+import dev.thiagooliveira.tablesplit.infrastructure.menu.tools.MenuTools;
+import dev.thiagooliveira.tablesplit.infrastructure.order.service.GetTablesOverview;
+import dev.thiagooliveira.tablesplit.infrastructure.order.tools.FeedbackTools;
+import dev.thiagooliveira.tablesplit.infrastructure.order.tools.TablesTools;
+import dev.thiagooliveira.tablesplit.infrastructure.report.service.GetReportsOverview;
+import dev.thiagooliveira.tablesplit.infrastructure.report.tools.ReportTools;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import jakarta.persistence.EntityManager;
-import java.lang.reflect.Method;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +41,14 @@ public class ClaudioChatOpenAiConfig {
   @Bean
   public ClaudioService claudioService(
       @Value("${spring.ai.openai.api-key:}") String apiKey,
+      GetCategory getCategory,
+      GetItem getItem,
+      GetPromotions getPromotions,
+      GetCombos getCombos,
       GetReportsOverview getReportsOverview,
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount,
+      GetTablesOverview getTablesOverview,
       PlatformTransactionManager transactionManager,
       ObjectMapper objectMapper,
       EntityManager entityManager,
@@ -53,9 +64,12 @@ public class ClaudioChatOpenAiConfig {
     transactionTemplate.setReadOnly(true);
 
     // We created the tools object DIRECTLY here to avoid Spring Proxies.
-    ReportAndFeedbackTools tools =
-        new ReportAndFeedbackTools(
-            getReportsOverview,
+    ReportTools reportTools =
+        new ReportTools(
+            getReportsOverview, transactionTemplate, objectMapper, entityManager, dialectHelper);
+
+    FeedbackTools feedbackTools =
+        new FeedbackTools(
             getFeedbackOverview,
             getFeedbackUnreadCount,
             transactionTemplate,
@@ -63,12 +77,20 @@ public class ClaudioChatOpenAiConfig {
             entityManager,
             dialectHelper);
 
-    // Diagnostic log to confirm detection.
-    for (Method method : tools.getClass().getDeclaredMethods()) {
-      if (method.isAnnotationPresent(Tool.class)) {
-        logger.debug("-> Tool successfully registered: {}", method.getName());
-      }
-    }
+    TablesTools tablesTools =
+        new TablesTools(
+            getTablesOverview, transactionTemplate, objectMapper, entityManager, dialectHelper);
+
+    MenuTools menuTools =
+        new MenuTools(
+            getCategory,
+            getItem,
+            getPromotions,
+            getCombos,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper);
 
     return AiServices.builder(ClaudioService.class)
         .chatLanguageModel(
@@ -79,7 +101,7 @@ public class ClaudioChatOpenAiConfig {
                 .logRequests(true)
                 .logResponses(true)
                 .build())
-        .tools(tools)
+        .tools(reportTools, feedbackTools, tablesTools, menuTools)
         .chatMemoryProvider(chatId -> MessageWindowChatMemory.withMaxMessages(20))
         .systemMessageProvider(
             chatId ->
@@ -134,43 +156,23 @@ Você deve usar tools sempre que a pergunta envolver:
 
 ## 🚨 REGRAS OBRIGATÓRIAS
 
-- Nunca invente dados
-- Nunca responda "vou verificar" ou "um momento"
-- Nunca responda sem usar tools quando dados forem necessários
-- Sempre use os dados retornados pelas tools como fonte única da verdade
+- Nunca invente dados.
+- Responda o que foi perguntado de forma direta, sem introduções ou resumos.
+- Nunca responda "vou verificar" ou "um momento".
+- Sempre use as tools como fonte única da verdade.
 
-Se não houver dados suficientes:
-- informe claramente
-- ou peça mais detalhes ao usuário
-
----
-
-## 📊 FORMATO DE RESPOSTA (ANÁLISE)
-
-Quando responder com dados, sempre estruturar:
-
-### 📊 Summary
-(visão geral objetiva)
-
-### 👍 Positive Points
-- ...
-
-### ⚠️ Issues / Attention Points
-- ...
-
-### 💡 Recommendations
-- ações práticas e acionáveis
+Se não houver dados suficientes, informe claramente.
 
 ---
 
 ## 🧾 ESTILO DE RESPOSTA
 
-- Profissional, mas acessível
-- Use <b>negrito</b> para destaques importantes
-- Use <code>código</code> para valores ou dados técnicos
-- Use listas com bullet points (•)
-- NUNCA use markdown como * ou _
-- Seja orientado a insights, não apenas dados
+- Seja direto ao ponto. Responda o que foi perguntado sem introduções longas ou resumos desnecessários.
+- Profissional, conciso e orientado a insights.
+- Use <b>negrito</b> para destaques importantes.
+- Use <code>código</code> para valores ou dados técnicos.
+- Use listas com bullet points (•) quando necessário.
+- NUNCA use markdown como * ou _.
 
 ---
 

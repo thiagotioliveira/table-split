@@ -1,6 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.report.api;
 
-import dev.thiagooliveira.tablesplit.application.report.GetReportsOverview;
+import dev.thiagooliveira.tablesplit.infrastructure.report.service.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.api.ReportsApi;
 import dev.thiagooliveira.tablesplit.infrastructure.web.manager.report.spec.v1.model.ReportsOverviewResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
