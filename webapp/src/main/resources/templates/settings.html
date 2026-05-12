@@ -1788,6 +1788,42 @@
       });
 
     });
+
+    // Theme Change Cache Clearing Logic
+    (function() {
+      const themeSelector = document.getElementById('themeSelector');
+      const themeForm = themeSelector ? themeSelector.closest('form') : null;
+      
+      if (themeForm) {
+        // Captura valores iniciais
+        const getThemeState = () => {
+          const colors = Array.from(themeForm.querySelectorAll('#customColorsSection input')).map(i => i.value).join('|');
+          return `${themeSelector.value}_${colors}`;
+        };
+        
+        const initialThemeState = getThemeState();
+
+        themeForm.addEventListener('submit', () => {
+          if (getThemeState() !== initialThemeState) {
+            localStorage.setItem('pendingThemeCacheClear', 'true');
+          }
+        });
+      }
+
+      // Ao carregar a página, verifica se houve mudança salva com sucesso
+      document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('pendingThemeCacheClear') === 'true') {
+          const successAlert = document.getElementById('successAlert');
+          if (successAlert && !successAlert.classList.contains('hidden')) {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+              console.log('[Settings] Theme changed and saved, dynamic cache cleared.');
+            }
+          }
+          localStorage.removeItem('pendingThemeCacheClear');
+        }
+      });
+    })();
   </script>
 
 </body>
