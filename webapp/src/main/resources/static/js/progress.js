@@ -99,12 +99,26 @@
                     window.location.href = '/login?timeout=true';
                     return;
                 }
+                if (this.status === 403) {
+                    console.warn('[Progress] 403 detectado. Possível token CSRF expirado. Limpando cache e recarregando...');
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+                    }
+                    setTimeout(() => window.location.reload(), 200);
+                    return;
+                }
                 ProgressBar.finish();
             });
         } else {
-            // Mesmo em polling, se der 401 temos que redirecionar
+            // Mesmo em polling, se der 401 ou 403 temos que tratar
             this.addEventListener('loadend', () => {
                 if (this.status === 401) window.location.href = '/login?timeout=true';
+                if (this.status === 403) {
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+                    }
+                    setTimeout(() => window.location.reload(), 200);
+                }
             });
         }
         
@@ -122,6 +136,16 @@
             if (response.status === 401 || (response.redirected && response.url.includes('/login'))) {
                 window.location.href = '/login?timeout=true';
             }
+            
+            // Se o status for 403, pode ser token CSRF expirado por causa do cache do Service Worker
+            if (response.status === 403) {
+                console.warn('[Progress] 403 detectado no Fetch. Limpando cache e recarregando...');
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+                }
+                setTimeout(() => window.location.reload(), 200);
+            }
+            
             return response;
         });
 
