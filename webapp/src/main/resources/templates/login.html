@@ -167,9 +167,16 @@
       }
     }
     
-    // Clear Service Worker dynamic cache on login page to ensure fresh state
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+    // Clear Service Worker dynamic cache only if app version changed to ensure fresh state after updates
+    const currentAppVersion = "[[${appVersion}]]";
+    const lastSeenVersion = localStorage.getItem('app_version');
+    
+    if (currentAppVersion !== lastSeenVersion) {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+            console.log('App version updated from ' + lastSeenVersion + ' to ' + currentAppVersion + '. Clearing dynamic cache.');
+        }
+        localStorage.setItem('app_version', currentAppVersion);
     }
 /*
     function handleLogin(event) {
