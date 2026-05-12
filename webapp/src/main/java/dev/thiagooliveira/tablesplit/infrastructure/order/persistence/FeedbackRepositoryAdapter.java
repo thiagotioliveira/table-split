@@ -76,7 +76,8 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
                 return cb.or(
                     cb.like(cb.lower(customersJoin.get("name")), pattern),
                     cb.like(cb.lower(root.get("comment")), pattern),
-                    cb.like(cb.lower(orderJoin.get("id").as(String.class)), pattern));
+                    cb.like(
+                        cb.lower(cb.concat(orderJoin.get("id").as(String.class), "")), pattern));
               });
     }
 
