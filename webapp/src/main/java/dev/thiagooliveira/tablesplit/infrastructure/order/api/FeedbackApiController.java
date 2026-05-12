@@ -67,7 +67,7 @@ public class FeedbackApiController implements FeedbacksApi {
 
   @Override
   public ResponseEntity<FeedbackListResponse> getFeedbacks(
-      Integer days, Integer page, Integer size) {
+      Integer days, Integer rating, String search, Integer page, Integer size) {
     AccountContext context = getContext();
     ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
 
@@ -75,6 +75,8 @@ public class FeedbackApiController implements FeedbacksApi {
         getPaginatedFeedbacks.execute(
             context.getRestaurant().getId(),
             since,
+            rating,
+            search,
             page != null ? page : 0,
             size != null ? size : 10,
             context.getUser().getLanguage());

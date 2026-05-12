@@ -48,11 +48,48 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
 
   @Override
   public dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> findAll(
-      UUID restaurantId, java.time.ZonedDateTime since, int page, int size) {
+      UUID restaurantId,
+      java.time.ZonedDateTime since,
+      Integer rating,
+      String search,
+      int page,
+      int size) {
+    org.springframework.data.jpa.domain.Specification<OrderFeedbackEntity> spec =
+        org.springframework.data.jpa.domain.Specification.where(
+            (root, query, cb) -> cb.equal(root.get("order").get("restaurantId"), restaurantId));
+
+    if (since != null) {
+      spec = spec.and((root, query, cb) -> cb.greaterThan(root.get("createdAt"), since));
+    }
+
+    if (rating != null) {
+      spec = spec.and((root, query, cb) -> cb.equal(root.get("rating"), rating));
+    }
+
+    if (search != null && !search.isBlank()) {
+      String pattern = "%" + search.toLowerCase() + "%";
+      spec =
+          spec.and(
+              (root, query, cb) -> {
+                var orderJoin = root.join("order");
+                var customersJoin = orderJoin.join("customers");
+                return cb.or(
+                    cb.like(cb.lower(customersJoin.get("name")), pattern),
+                    cb.like(cb.lower(root.get("comment")), pattern),
+                    cb.like(cb.lower(orderJoin.get("id").as(String.class)), pattern));
+              });
+    }
+
+    // Force JOIN FETCH for order, tickets and items to avoid N+1
+    // Note: Specification doesn't easily support JOIN FETCH with pagination in some Hibernate
+    // versions,
+    // but findFeedbacks already uses it. For dynamic specs, we rely on the repository's default
+    // behavior or custom query if needed.
+    // However, findFeedbacks is hardcoded. Let's use the specification with the standard findAll.
+
     org.springframework.data.domain.Page<OrderFeedbackEntity> entityPage =
-        orderFeedbackJpaRepository.findFeedbacks(
-            restaurantId,
-            since,
+        orderFeedbackJpaRepository.findAll(
+            spec,
             org.springframework.data.domain.PageRequest.of(
                 page, size, org.springframework.data.domain.Sort.by("createdAt").descending()));
 

@@ -24,9 +24,15 @@ public class GetPaginatedFeedbacks {
   }
 
   public Pagination<OrderFeedback> execute(
-      UUID restaurantId, ZonedDateTime since, int page, int size, Language language) {
+      UUID restaurantId,
+      ZonedDateTime since,
+      Integer rating,
+      String search,
+      int page,
+      int size,
+      Language language) {
     Pagination<OrderFeedback> pagination =
-        feedbackRepository.findAll(restaurantId, since, page, size);
+        feedbackRepository.findAll(restaurantId, since, rating, search, page, size);
 
     List<UUID> itemIds =
         pagination.items().stream()

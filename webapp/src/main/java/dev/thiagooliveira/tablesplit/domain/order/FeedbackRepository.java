@@ -10,7 +10,12 @@ public interface FeedbackRepository {
   boolean hasFeedback(UUID orderId, UUID customerId);
 
   dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> findAll(
-      UUID restaurantId, java.time.ZonedDateTime since, int page, int size);
+      UUID restaurantId,
+      java.time.ZonedDateTime since,
+      Integer rating,
+      String search,
+      int page,
+      int size);
 
   java.util.List<OrderFeedback> findAllUnpaginated(
       UUID restaurantId, java.time.ZonedDateTime since);

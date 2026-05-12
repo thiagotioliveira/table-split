@@ -377,6 +377,14 @@ paths:
           schema:
             type: integer
             default: 30
+        - name: rating
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
         - name: page
           in: query
           schema:

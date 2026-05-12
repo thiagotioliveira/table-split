@@ -1180,10 +1180,10 @@
     </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar('Reports', ~{::printButton}, false)}"></div>
+<div th:insert="~{components/sidebar :: sidebar('Reports', ~{}, false)}"></div>
 <!-- fragmento local -->
 <div th:remove="all">
-    <div th:fragment="printButton">
+    <div th:fragment="printButton" th:if="${false}">
         <button class="btn btn-outline" onclick="window.print()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 6 2 18 2 18 9"/>
