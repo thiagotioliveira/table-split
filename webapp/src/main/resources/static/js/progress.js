@@ -94,7 +94,18 @@
         
         if (!isPolling) {
             ProgressBar.start();
-            this.addEventListener('loadend', () => ProgressBar.finish());
+            this.addEventListener('loadend', () => {
+                if (this.status === 401) {
+                    window.location.href = '/login?timeout=true';
+                    return;
+                }
+                ProgressBar.finish();
+            });
+        } else {
+            // Mesmo em polling, se der 401 temos que redirecionar
+            this.addEventListener('loadend', () => {
+                if (this.status === 401) window.location.href = '/login?timeout=true';
+            });
         }
         
         return send.apply(this, arguments);
@@ -106,13 +117,21 @@
         const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
         const isPolling = url.includes('sse') || url.includes('count/pending') || url.includes('count');
 
+        const requestPromise = originalFetch.apply(this, arguments).then(response => {
+            // Se o status for 401 ou se fomos redirecionados para o login (Spring Security 302 -> 200 no fetch)
+            if (response.status === 401 || (response.redirected && response.url.includes('/login'))) {
+                window.location.href = '/login?timeout=true';
+            }
+            return response;
+        });
+
         if (!isPolling) {
             ProgressBar.start();
-            return originalFetch.apply(this, arguments).finally(() => {
+            return requestPromise.finally(() => {
                 ProgressBar.finish();
             });
         }
-        return originalFetch.apply(this, arguments);
+        return requestPromise;
     };
 
     // 3. Navegação entre páginas (cliques em links)
