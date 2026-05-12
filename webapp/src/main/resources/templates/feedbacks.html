@@ -320,6 +320,56 @@
             }
         }
 
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .load-more-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--primary-light);
+            border: 1px solid transparent;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .load-more-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .load-more-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .load-more-btn .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .load-more-btn.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Feedback List */
         .feedback-list-card {
             background: var(--card);
@@ -1389,6 +1439,13 @@
                 <div id="feedbackList">
                     <!-- Dynamic Content -->
                 </div>
+
+                <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                    <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">
+                        <div class="spinner"></div>
+                        <span th:text="#{page.feedback.list.load_more}">Carregar Mais</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Sidebar Panels -->
@@ -1488,7 +1545,11 @@
     import { tablesApi } from [[@{/js/api/v1/manager/api-table-bridge.js(v=${appVersion})}]];
 
     let allFeedbacks = [];
+    let currentFeedbacks = [];
     let currentRatingFilter = 'all';
+    let currentPage = 0;
+    let hasMore = false;
+    let isLoading = false;
 
     // Sidebar
     function openSidebar() {
@@ -1518,23 +1579,68 @@
     });
 
     // Load Data
-    async function loadFeedbacks() {
-        // Ativa Skeletons
-        document.querySelectorAll('.feedback-stat-value, .rating-value-large').forEach(el => el.classList.add('skeleton'));
-        showListSkeleton();
+    async function loadFeedbacks(reset = true) {
+        if (isLoading) return;
+        isLoading = true;
 
-        const days = document.getElementById('filterPeriod').value;
+        const daysInput = document.getElementById('filterPeriod').value;
+        const days = daysInput === 'all' ? undefined : daysInput;
+
+        if (reset) {
+            currentPage = 0;
+            currentFeedbacks = [];
+            // Skeletons for stats and list
+            document.querySelectorAll('.feedback-stat-value, .rating-value-large').forEach(el => el.classList.add('skeleton'));
+            showListSkeleton();
+            
+            // Fire overview request in parallel
+            loadOverview(days);
+        }
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) loadMoreBtn.classList.add('loading');
         
         try {
-            const response = await feedbacksApi.getFeedbacks(days === 'all' ? undefined : days);
-            renderDashboard(response);
-            allFeedbacks = response.feedbacks;
-            applyFilters();
+            const response = await feedbacksApi.getFeedbacks(days, currentPage, 10);
+            
+            const newFeedbacks = response.feedbacks;
+            currentFeedbacks = reset ? newFeedbacks : [...currentFeedbacks, ...newFeedbacks];
+            
+            hasMore = response.pagination.hasNext;
+            currentPage++;
+
+            renderFeedbackList(currentFeedbacks, !reset);
+            updateLoadMoreUI();
+
         } catch (error) {
             console.error('Error loading feedbacks:', error);
-            const listContainer = document.getElementById('feedbackList');
-            listContainer.innerHTML = `<div class="error-state">${i18n.error}</div>`;
+            if (reset) {
+                document.getElementById('feedbackList').innerHTML = `<div class="error-state">${i18n.error}</div>`;
+            }
+        } finally {
+            isLoading = false;
+            if (loadMoreBtn) loadMoreBtn.classList.remove('loading');
         }
+    }
+
+    async function loadOverview(days) {
+        try {
+            const response = await feedbacksApi.getFeedbackOverview(days);
+            renderDashboard(response);
+        } catch (error) {
+            console.error('Error loading overview:', error);
+        }
+    }
+
+    async function loadMore() {
+        if (hasMore && !isLoading) {
+            await loadFeedbacks(false);
+        }
+    }
+
+    function updateLoadMoreUI() {
+        const container = document.getElementById('loadMoreContainer');
+        container.style.display = hasMore ? 'flex' : 'none';
     }
 
     function renderDashboard(response) {
@@ -1655,7 +1761,15 @@
             return matchesSearch && matchesRating;
         });
 
-        renderFeedbackList(filtered);
+        // When filtering client-side, we show all matches and hide pagination
+        renderFeedbackList(filtered, false);
+        document.getElementById('loadMoreContainer').style.display = 'none';
+        
+        if (!searchTerm && currentRatingFilter === 'all') {
+            // Restore pagination state if filters are cleared
+            renderFeedbackList(currentFeedbacks, false);
+            updateLoadMoreUI();
+        }
     }
 
     function showListSkeleton() {
@@ -1665,20 +1779,25 @@
         `).join('');
     }
 
-    function renderFeedbackList(feedbacks) {
+    function renderFeedbackList(feedbacks, append = false) {
         const listContainer = document.getElementById('feedbackList');
         
         if (!feedbacks || feedbacks.length === 0) {
-            listContainer.innerHTML = `<div class="empty-state">${i18n.emptyList}</div>`;
-            document.getElementById('feedbackTotalCount').textContent = i18n.feedbackTotalCount.replace('{0}', 0);
+            if (!append) {
+                listContainer.innerHTML = `<div class="empty-state">${i18n.emptyList}</div>`;
+                document.getElementById('feedbackTotalCount').textContent = i18n.feedbackTotalCount.replace('{0}', 0);
+            }
             return;
         }
 
+        if (!append) {
+            listContainer.innerHTML = '';
+        }
+
+        const countToDisplay = append ? feedbacks.slice(-10) : feedbacks;
         document.getElementById('feedbackTotalCount').textContent = i18n.feedbackTotalCount.replace('{0}', feedbacks.length);
 
-        listContainer.innerHTML = '';
-
-        feedbacks.forEach(f => {
+        countToDisplay.forEach(f => {
             const ratingClass = f.rating >= 4.5 ? 'excellent' : f.rating >= 4.0 ? 'good' : f.rating >= 3.0 ? 'average' : 'poor';
             
             const itemChips = (f.items || []).map(item => `
@@ -1876,7 +1995,9 @@
     window.toggleUserMenu = toggleUserMenu;
 
     // Initial Load
-    document.addEventListener('DOMContentLoaded', loadFeedbacks);
+    document.addEventListener('DOMContentLoaded', () => loadFeedbacks(true));
+
+    window.loadMore = loadMore;
 </script>
 </body>
 </html>

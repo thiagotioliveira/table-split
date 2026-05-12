@@ -11,6 +11,8 @@ public class OrderFeedback {
   private Integer rating;
   private String comment;
   private ZonedDateTime createdAt;
+  private String customerName;
+  private java.util.List<FeedbackItem> items;
   private boolean read;
 
   public OrderFeedback() {}
@@ -80,4 +82,22 @@ public class OrderFeedback {
   public void setCreatedAt(ZonedDateTime createdAt) {
     this.createdAt = createdAt;
   }
+
+  public String getCustomerName() {
+    return customerName;
+  }
+
+  public void setCustomerName(String customerName) {
+    this.customerName = customerName;
+  }
+
+  public java.util.List<FeedbackItem> getItems() {
+    return items;
+  }
+
+  public void setItems(java.util.List<FeedbackItem> items) {
+    this.items = items;
+  }
+
+  public static record FeedbackItem(UUID itemId, String name, Integer rating) {}
 }

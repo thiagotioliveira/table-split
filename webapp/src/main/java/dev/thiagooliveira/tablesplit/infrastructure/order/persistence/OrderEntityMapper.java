@@ -202,6 +202,17 @@ public class OrderEntityMapper {
     domain.setComment(entity.getComment());
     domain.setCreatedAt(entity.getCreatedAt());
     domain.setRead(entity.isRead());
+
+    if (entity.getOrder() != null) {
+      domain.setCustomerName(entity.getOrder().getCustomerName(entity.getCustomerId()));
+      domain.setItems(
+          entity.getOrder().getTickets().stream()
+              .flatMap(t -> t.getItems().stream())
+              .filter(
+                  i -> entity.getCustomerId().equals(i.getCustomerId()) && i.getRating() != null)
+              .map(i -> new OrderFeedback.FeedbackItem(i.getItemId(), "Item", i.getRating()))
+              .toList());
+    }
     return domain;
   }
 

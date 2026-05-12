@@ -47,7 +47,27 @@ public class FeedbackRepositoryAdapter implements FeedbackRepository {
   }
 
   @Override
-  public java.util.List<OrderFeedback> findAll(UUID restaurantId, java.time.ZonedDateTime since) {
+  public dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> findAll(
+      UUID restaurantId, java.time.ZonedDateTime since, int page, int size) {
+    org.springframework.data.domain.Page<OrderFeedbackEntity> entityPage =
+        orderFeedbackJpaRepository.findFeedbacks(
+            restaurantId,
+            since,
+            org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by("createdAt").descending()));
+
+    return new dev.thiagooliveira.tablesplit.domain.common.Pagination<>(
+        entityPage.getContent().stream().map(mapper::feedbackToDomain).toList(),
+        entityPage.getNumber(),
+        entityPage.getTotalPages(),
+        entityPage.getTotalElements(),
+        entityPage.getSize(),
+        entityPage.hasNext());
+  }
+
+  @Override
+  public java.util.List<OrderFeedback> findAllUnpaginated(
+      UUID restaurantId, java.time.ZonedDateTime since) {
     return orderFeedbackJpaRepository
         .findAllByOrder_RestaurantIdAndCreatedAtAfterOrderByCreatedAtDesc(restaurantId, since)
         .stream()

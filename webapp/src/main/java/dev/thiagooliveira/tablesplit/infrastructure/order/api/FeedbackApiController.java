@@ -20,20 +20,26 @@ public class FeedbackApiController implements FeedbacksApi {
 
   private final GetFeedbackOverview getFeedbackOverview;
   private final dev.thiagooliveira.tablesplit.domain.order.OrderRepository orderRepository;
+  private final dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository feedbackRepository;
   private final org.springframework.context.MessageSource messageSource;
   private final dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount
       getFeedbackUnreadCount;
+  private final dev.thiagooliveira.tablesplit.application.order.GetPaginatedFeedbacks
+      getPaginatedFeedbacks;
 
   public FeedbackApiController(
       GetFeedbackOverview getFeedbackOverview,
       dev.thiagooliveira.tablesplit.domain.order.OrderRepository orderRepository,
+      dev.thiagooliveira.tablesplit.domain.order.FeedbackRepository feedbackRepository,
       org.springframework.context.MessageSource messageSource,
-      dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount
-          getFeedbackUnreadCount) {
+      dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount getFeedbackUnreadCount,
+      dev.thiagooliveira.tablesplit.application.order.GetPaginatedFeedbacks getPaginatedFeedbacks) {
     this.getFeedbackOverview = getFeedbackOverview;
     this.orderRepository = orderRepository;
+    this.feedbackRepository = feedbackRepository;
     this.messageSource = messageSource;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
+    this.getPaginatedFeedbacks = getPaginatedFeedbacks;
   }
 
   @org.springframework.web.bind.annotation.GetMapping("/feedbacks/count/unread")
@@ -43,7 +49,7 @@ public class FeedbackApiController implements FeedbacksApi {
   }
 
   @Override
-  public ResponseEntity<FeedbackOverviewResponse> getFeedbacks(Integer days) {
+  public ResponseEntity<FeedbackOverviewResponse> getFeedbackOverview(Integer days) {
     AccountContext context = getContext();
     ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
 
@@ -51,13 +57,44 @@ public class FeedbackApiController implements FeedbacksApi {
         getFeedbackOverview.execute(context.getRestaurant().getId(), since);
 
     FeedbackOverviewResponse response = new FeedbackOverviewResponse();
-    response.setFeedbacks(mapFeedbacks(overview.feedbacks(), context.getUser().getLanguage()));
     response.setStats(mapStats(overview));
     response.setDistribution(mapDistribution(overview.distribution()));
     response.setTopRatedItems(mapItemRankings(overview.topRated()));
     response.setNeedAttentionItems(mapItemRankings(overview.needAttention()));
 
     return ResponseEntity.ok(response);
+  }
+
+  @Override
+  public ResponseEntity<FeedbackListResponse> getFeedbacks(
+      Integer days, Integer page, Integer size) {
+    AccountContext context = getContext();
+    ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
+
+    dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> pagination =
+        getPaginatedFeedbacks.execute(
+            context.getRestaurant().getId(),
+            since,
+            page != null ? page : 0,
+            size != null ? size : 10,
+            context.getUser().getLanguage());
+
+    FeedbackListResponse response = new FeedbackListResponse();
+    response.setFeedbacks(mapFeedbacks(pagination.items(), context.getUser().getLanguage()));
+    response.setPagination(mapPagination(pagination));
+
+    return ResponseEntity.ok(response);
+  }
+
+  private PaginationResponse mapPagination(
+      dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> pagination) {
+    PaginationResponse res = new PaginationResponse();
+    res.setCurrentPage(pagination.currentPage());
+    res.setTotalPages(pagination.totalPages());
+    res.setTotalElements((int) pagination.totalElements());
+    res.setSize(pagination.size());
+    res.setHasNext(pagination.hasNext());
+    return res;
   }
 
   private List<OrderFeedbackResponse> mapFeedbacks(
@@ -77,29 +114,24 @@ public class FeedbackApiController implements FeedbacksApi {
                   dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
                       f.getCreatedAt(), messageSource, language));
 
-              orderRepository
-                  .findById(f.getOrderId())
-                  .ifPresent(
-                      order -> {
-                        res.setOrderShortId(order.getId().toString().substring(0, 4).toUpperCase());
-                        res.setCustomerName(order.getCustomerName(f.getCustomerId()));
+              // Optimized: Using the domain object which already contains order details from the
+              // optimized repository query
+              res.setOrderShortId(f.getOrderId().toString().substring(0, 4).toUpperCase());
+              res.setCustomerName(f.getCustomerName());
 
-                        List<FeedbackItemResponse> items =
-                            order.getItems().stream()
-                                .filter(
-                                    i ->
-                                        f.getCustomerId().equals(i.getCustomerId())
-                                            && i.getRating() != null)
-                                .map(
-                                    i -> {
-                                      FeedbackItemResponse itemRes = new FeedbackItemResponse();
-                                      itemRes.setName(i.getName().get(language));
-                                      itemRes.setRating(i.getRating());
-                                      return itemRes;
-                                    })
-                                .toList();
-                        res.setItems(items);
-                      });
+              if (f.getItems() != null) {
+                List<FeedbackItemResponse> items =
+                    f.getItems().stream()
+                        .map(
+                            i -> {
+                              FeedbackItemResponse itemRes = new FeedbackItemResponse();
+                              itemRes.setName(i.name());
+                              itemRes.setRating(i.rating());
+                              return itemRes;
+                            })
+                        .toList();
+                res.setItems(items);
+              }
 
               return res;
             })
@@ -108,28 +140,24 @@ public class FeedbackApiController implements FeedbacksApi {
 
   private FeedbackStats mapStats(GetFeedbackOverview.Overview overview) {
     FeedbackStats stats = new FeedbackStats();
-    double avg =
-        overview.feedbacks().stream().mapToInt(OrderFeedback::getRating).average().orElse(0.0);
+    List<OrderFeedback> allFeedbacks = overview.allFeedbacksForStats();
+
+    double avg = allFeedbacks.stream().mapToInt(OrderFeedback::getRating).average().orElse(0.0);
     stats.setAverageRating(avg);
-    stats.setTotalFeedbacks(overview.feedbacks().size());
-    stats.setPositiveCount(
-        (int) overview.feedbacks().stream().filter(f -> f.getRating() >= 4).count());
-    stats.setNegativeCount(
-        (int) overview.feedbacks().stream().filter(f -> f.getRating() <= 2).count());
+    stats.setTotalFeedbacks(allFeedbacks.size());
+    stats.setPositiveCount((int) allFeedbacks.stream().filter(f -> f.getRating() >= 4).count());
+    stats.setNegativeCount((int) allFeedbacks.stream().filter(f -> f.getRating() <= 2).count());
 
     long itemsRated =
-        overview.feedbacks().stream()
-            .map(f -> f.getOrderId())
-            .distinct()
-            .map(orderRepository::findById)
-            .filter(Optional::isPresent)
-            .flatMap(o -> o.get().getItems().stream())
-            .filter(i -> i.getRating() != null)
+        allFeedbacks.stream()
+            .flatMap(
+                f -> f.getItems() != null ? f.getItems().stream() : java.util.stream.Stream.empty())
+            .filter(i -> i.rating() != null)
             .count();
 
     stats.setTotalItemsRated((int) itemsRated);
-    stats.setRatingTrend(0.3); // Dummy trend
-    stats.setTotalTrend(12.0); // Dummy trend
+    stats.setRatingTrend(0.0); // Trend calculation not implemented yet
+    stats.setTotalTrend(0.0);
     return stats;
   }
 

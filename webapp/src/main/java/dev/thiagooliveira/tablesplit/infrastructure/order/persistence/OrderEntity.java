@@ -139,4 +139,13 @@ public class OrderEntity {
   public void setFeedbacks(List<OrderFeedbackEntity> feedbacks) {
     this.feedbacks = feedbacks;
   }
+
+  public String getCustomerName(java.util.UUID id) {
+    if (id == null) return "Mesa";
+    return customers.stream()
+        .filter(c -> c.getId().equals(id))
+        .map(OrderCustomerEntity::getName)
+        .findFirst()
+        .orElse("Desconhecido");
+  }
 }

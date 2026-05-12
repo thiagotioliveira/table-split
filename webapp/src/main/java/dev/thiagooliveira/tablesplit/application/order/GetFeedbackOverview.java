@@ -16,18 +16,19 @@ public class GetFeedbackOverview {
   }
 
   public Overview execute(UUID restaurantId, ZonedDateTime since) {
-    List<OrderFeedback> feedbacks = feedbackRepository.findAll(restaurantId, since);
+    List<OrderFeedback> allFeedbacksForStats =
+        feedbackRepository.findAllUnpaginated(restaurantId, since);
     Map<Integer, Long> distribution = feedbackRepository.getRatingDistribution(restaurantId, since);
     List<FeedbackRepository.ItemRating> topRated =
         feedbackRepository.getTopRatedItems(restaurantId, since, 5);
     List<FeedbackRepository.ItemRating> needAttention =
         feedbackRepository.getNeedAttentionItems(restaurantId, since, 5);
 
-    return new Overview(feedbacks, distribution, topRated, needAttention);
+    return new Overview(allFeedbacksForStats, distribution, topRated, needAttention);
   }
 
   public record Overview(
-      List<OrderFeedback> feedbacks,
+      List<OrderFeedback> allFeedbacksForStats,
       Map<Integer, Long> distribution,
       List<FeedbackRepository.ItemRating> topRated,
       List<FeedbackRepository.ItemRating> needAttention) {}

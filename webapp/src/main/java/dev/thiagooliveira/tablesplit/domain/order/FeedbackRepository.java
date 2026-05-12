@@ -9,7 +9,11 @@ public interface FeedbackRepository {
 
   boolean hasFeedback(UUID orderId, UUID customerId);
 
-  java.util.List<OrderFeedback> findAll(UUID restaurantId, java.time.ZonedDateTime since);
+  dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> findAll(
+      UUID restaurantId, java.time.ZonedDateTime since, int page, int size);
+
+  java.util.List<OrderFeedback> findAllUnpaginated(
+      UUID restaurantId, java.time.ZonedDateTime since);
 
   java.util.Map<Integer, Long> getRatingDistribution(
       UUID restaurantId, java.time.ZonedDateTime since);

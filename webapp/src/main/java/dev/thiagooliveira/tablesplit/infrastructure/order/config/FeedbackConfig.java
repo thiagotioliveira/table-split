@@ -35,4 +35,13 @@ public class FeedbackConfig {
     return new dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount(
         feedbackRepository);
   }
+
+  @Bean
+  public dev.thiagooliveira.tablesplit.application.order.GetPaginatedFeedbacks
+      getPaginatedFeedbacks(
+          FeedbackRepository feedbackRepository,
+          dev.thiagooliveira.tablesplit.domain.menu.ItemRepository itemRepository) {
+    return new dev.thiagooliveira.tablesplit.application.order.GetPaginatedFeedbacks(
+        feedbackRepository, itemRepository);
+  }
 }
