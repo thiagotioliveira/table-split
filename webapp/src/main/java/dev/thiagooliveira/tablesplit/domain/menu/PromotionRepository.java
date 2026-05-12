@@ -9,6 +9,8 @@ public interface PromotionRepository {
 
   Optional<Promotion> findById(UUID id);
 
+  List<Promotion> findAllById(java.util.Collection<UUID> ids);
+
   List<Promotion> findByRestaurantId(UUID restaurantId);
 
   void deleteById(UUID id);

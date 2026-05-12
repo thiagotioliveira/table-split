@@ -42,18 +42,100 @@ public class OrderRepositoryAdapter implements OrderRepository {
   }
 
   private Order toDomainWithAccount(OrderEntity entity) {
-    Order domain = mapper.toDomain(entity);
-    UUID cachedAccountId =
-        dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(
-            domain.getRestaurantId());
-    if (cachedAccountId != null) {
-      domain.setAccountId(cachedAccountId);
-    } else {
-      this.restaurantJpaRepository
-          .findById(domain.getRestaurantId())
-          .ifPresent(r -> domain.setAccountId(r.getAccountId()));
+    return toDomainList(List.of(entity)).get(0);
+  }
+
+  private List<Order> toDomainList(List<OrderEntity> entities) {
+    if (entities == null || entities.isEmpty()) return java.util.Collections.emptyList();
+
+    List<Order> domains = entities.stream().map(mapper::toDomain).toList();
+
+    // 1. Batch fetch AccountIds
+    java.util.Set<UUID> restaurantIds =
+        domains.stream()
+            .map(dev.thiagooliveira.tablesplit.domain.order.Order::getRestaurantId)
+            .collect(java.util.stream.Collectors.toSet());
+    java.util.Map<UUID, UUID> accountIdMap = new java.util.HashMap<>();
+    java.util.Set<UUID> missingRids = new java.util.HashSet<>();
+
+    for (UUID rid : restaurantIds) {
+      UUID cached =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.getAccountId(rid);
+      if (cached != null) {
+        accountIdMap.put(rid, cached);
+      } else {
+        missingRids.add(rid);
+      }
     }
-    return fillItemNames(domain);
+
+    if (!missingRids.isEmpty()) {
+      restaurantJpaRepository
+          .findAllById(missingRids)
+          .forEach(
+              r -> {
+                accountIdMap.put(r.getId(), r.getAccountId());
+                dev.thiagooliveira.tablesplit.infrastructure.tenant.AccountIdContext.setAccountId(
+                    r.getId(), r.getAccountId());
+              });
+    }
+
+    // 2. Collect all item IDs for batch name lookup
+    java.util.Set<UUID> itemIds = new java.util.HashSet<>();
+    domains.forEach(
+        order -> {
+          order.setAccountId(accountIdMap.get(order.getRestaurantId()));
+          if (order.getTickets() == null) return;
+          order
+              .getTickets()
+              .forEach(
+                  t -> {
+                    if (t.getItems() == null) return;
+                    t.getItems()
+                        .forEach(
+                            i -> {
+                              if (i.getName() == null || i.getName().isEmpty()) {
+                                itemIds.add(i.getItemId());
+                              }
+                            });
+                  });
+        });
+
+    // 3. Batch fetch Item names
+    if (!itemIds.isEmpty()) {
+      java.util.Map<
+              UUID, java.util.Map<dev.thiagooliveira.tablesplit.domain.common.Language, String>>
+          nameMap =
+              itemJpaRepository.findAllById(itemIds).stream()
+                  .collect(
+                      java.util.stream.Collectors.toMap(
+                          ItemEntity::getId,
+                          i ->
+                              i.getName() != null
+                                  ? i.getName().getTranslations()
+                                  : new java.util.HashMap<>()));
+
+      domains.forEach(
+          order -> {
+            if (order.getTickets() == null) return;
+            order
+                .getTickets()
+                .forEach(
+                    t -> {
+                      if (t.getItems() == null) return;
+                      t.getItems()
+                          .forEach(
+                              i -> {
+                                if (i.getName() == null || i.getName().isEmpty()) {
+                                  i.setName(
+                                      nameMap.getOrDefault(
+                                          i.getItemId(), new java.util.HashMap<>()));
+                                }
+                              });
+                    });
+          });
+    }
+
+    return domains;
   }
 
   @Override
@@ -65,9 +147,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
 
   @Override
   public List<Order> findAllByTableIdOrderByOpenedAtDesc(UUID tableId) {
-    return orderJpaRepository.findAllByTableIdOrderByOpenedAtDesc(tableId).stream()
-        .map(this::toDomainWithAccount)
-        .toList();
+    return toDomainList(orderJpaRepository.findAllByTableIdOrderByOpenedAtDesc(tableId));
   }
 
   @Override
@@ -76,9 +156,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
       OrderStatus status,
       java.time.ZonedDateTime start,
       java.time.ZonedDateTime end) {
-    return orderJpaRepository.findAllFiltered(tableId, status, start, end).stream()
-        .map(this::toDomainWithAccount)
-        .toList();
+    return toDomainList(orderJpaRepository.findAllFiltered(tableId, status, start, end));
   }
 
   @Override
@@ -100,19 +178,15 @@ public class OrderRepositoryAdapter implements OrderRepository {
 
   @Override
   public List<Order> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status) {
-    return orderJpaRepository.findAllByRestaurantIdAndStatus(restaurantId, status).stream()
-        .map(this::toDomainWithAccount)
-        .toList();
+    return toDomainList(orderJpaRepository.findAllByRestaurantIdAndStatus(restaurantId, status));
   }
 
   @Override
   public List<Order> findAllByRestaurantIdAndStatusAndClosedAtAfter(
       UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold) {
-    return orderJpaRepository
-        .findAllByRestaurantIdAndStatusAndClosedAtAfter(restaurantId, status, threshold)
-        .stream()
-        .map(this::toDomainWithAccount)
-        .toList();
+    return toDomainList(
+        orderJpaRepository.findAllByRestaurantIdAndStatusAndClosedAtAfter(
+            restaurantId, status, threshold));
   }
 
   @Override
@@ -121,11 +195,9 @@ public class OrderRepositoryAdapter implements OrderRepository {
       OrderStatus status,
       java.time.ZonedDateTime start,
       java.time.ZonedDateTime end) {
-    return orderJpaRepository
-        .findAllByRestaurantIdAndStatusAndClosedAtBetween(restaurantId, status, start, end)
-        .stream()
-        .map(this::toDomainWithAccount)
-        .toList();
+    return toDomainList(
+        orderJpaRepository.findAllByRestaurantIdAndStatusAndClosedAtBetween(
+            restaurantId, status, start, end));
   }
 
   @Override
@@ -151,53 +223,5 @@ public class OrderRepositoryAdapter implements OrderRepository {
       java.time.ZonedDateTime end) {
     return ticketJpaRepository.countByOrderRestaurantIdAndStatusAndCreatedAtBetween(
         restaurantId, status, start, end);
-  }
-
-  private Order fillItemNames(Order order) {
-    if (order == null || order.getTickets() == null) return order;
-
-    java.util.Set<UUID> itemIds = new java.util.HashSet<>();
-    order
-        .getTickets()
-        .forEach(
-            t -> {
-              if (t.getItems() == null) return;
-              t.getItems()
-                  .forEach(
-                      i -> {
-                        if (i.getName() == null || i.getName().isEmpty()) {
-                          itemIds.add(i.getItemId());
-                        }
-                      });
-            });
-
-    if (itemIds.isEmpty()) return order;
-
-    java.util.Map<UUID, java.util.Map<dev.thiagooliveira.tablesplit.domain.common.Language, String>>
-        nameMap =
-            itemJpaRepository.findAllById(itemIds).stream()
-                .collect(
-                    java.util.stream.Collectors.toMap(
-                        ItemEntity::getId,
-                        i ->
-                            i.getName() != null
-                                ? i.getName().getTranslations()
-                                : new java.util.HashMap<>()));
-
-    order
-        .getTickets()
-        .forEach(
-            t -> {
-              if (t.getItems() == null) return;
-              t.getItems()
-                  .forEach(
-                      i -> {
-                        if (i.getName() == null || i.getName().isEmpty()) {
-                          i.setName(nameMap.getOrDefault(i.getItemId(), new java.util.HashMap<>()));
-                        }
-                      });
-            });
-
-    return order;
   }
 }

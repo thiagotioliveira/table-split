@@ -31,6 +31,11 @@ public class PromotionRepositoryAdapter implements PromotionRepository {
   }
 
   @Override
+  public List<Promotion> findAllById(java.util.Collection<UUID> ids) {
+    return repository.findAllById(ids).stream().map(mapper::toDomain).toList();
+  }
+
+  @Override
   public List<Promotion> findByRestaurantId(UUID restaurantId) {
     return repository.findByRestaurantId(restaurantId).stream()
         .map(mapper::toDomain)

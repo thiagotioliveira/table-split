@@ -37,6 +37,11 @@ public class ItemRepositoryAdapter implements ItemRepository {
     return this.itemJpaRepository.findById(id).map(this::toDomainWithAccount);
   }
 
+  @Override
+  public List<Item> findAllById(java.util.Collection<UUID> ids) {
+    return this.itemJpaRepository.findAllById(ids).stream().map(this::toDomainWithAccount).toList();
+  }
+
   private Item toDomainWithAccount(ItemEntity entity) {
     Item item = mapper.toDomain(entity);
     UUID cachedAccountId =

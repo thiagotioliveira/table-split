@@ -248,15 +248,24 @@ public class GetReportsOverview {
 
   private List<CategorySaleResponse> calculateCategorySales(List<Order> orders) {
     Map<String, BigDecimal> salesByCategory = new HashMap<>();
-    Map<UUID, Item> itemCache = new HashMap<>();
+
+    // 1. Collect all unique item IDs
+    java.util.Set<UUID> allItemIds =
+        orders.stream()
+            .flatMap(o -> o.getItems().stream())
+            .map(dev.thiagooliveira.tablesplit.domain.order.TicketItem::getItemId)
+            .collect(java.util.stream.Collectors.toSet());
+
+    // 2. Bulk fetch all items
+    java.util.Map<UUID, Item> itemMap =
+        itemRepository.findAllById(allItemIds).stream()
+            .collect(java.util.stream.Collectors.toMap(Item::getId, Function.identity()));
 
     orders.stream()
         .flatMap(o -> o.getItems().stream())
         .forEach(
             item -> {
-              Item domainItem =
-                  itemCache.computeIfAbsent(
-                      item.getItemId(), id -> itemRepository.findById(id).orElse(null));
+              Item domainItem = itemMap.get(item.getItemId());
               String catName = "Outros";
               if (domainItem != null && domainItem.getCategory() != null) {
                 catName =
@@ -297,7 +306,18 @@ public class GetReportsOverview {
 
   private List<ItemSaleResponse> calculateTopItems(List<Order> orders) {
     Map<UUID, ItemSaleResponse> itemSales = new HashMap<>();
-    Map<UUID, Item> itemCache = new HashMap<>();
+
+    // 1. Collect all unique item IDs
+    java.util.Set<UUID> allItemIds =
+        orders.stream()
+            .flatMap(o -> o.getItems().stream())
+            .map(dev.thiagooliveira.tablesplit.domain.order.TicketItem::getItemId)
+            .collect(java.util.stream.Collectors.toSet());
+
+    // 2. Bulk fetch all items
+    java.util.Map<UUID, Item> itemMap =
+        itemRepository.findAllById(allItemIds).stream()
+            .collect(java.util.stream.Collectors.toMap(Item::getId, Function.identity()));
 
     orders.stream()
         .flatMap(o -> o.getItems().stream())
@@ -307,9 +327,7 @@ public class GetReportsOverview {
                   itemSales.computeIfAbsent(
                       item.getItemId(),
                       id -> {
-                        Item domainItem =
-                            itemCache.computeIfAbsent(
-                                id, itemId -> itemRepository.findById(itemId).orElse(null));
+                        Item domainItem = itemMap.get(id);
                         ItemSaleResponse r = new ItemSaleResponse();
                         r.setItemId(id);
                         r.setName(
@@ -398,6 +416,19 @@ public class GetReportsOverview {
   private List<PromoUsageResponse> calculatePromoUsage(List<Order> orders) {
     Map<UUID, PromoUsageStats> stats = new HashMap<>();
 
+    // 1. Collect all unique promotion IDs
+    java.util.Set<UUID> allPromoIds =
+        orders.stream()
+            .flatMap(o -> o.getItems().stream())
+            .filter(item -> item.getPromotionSnapshot() != null)
+            .map(item -> item.getPromotionSnapshot().promotionId())
+            .collect(java.util.stream.Collectors.toSet());
+
+    // 2. Bulk fetch all promotions
+    java.util.Map<UUID, Promotion> promoMap =
+        promotionRepository.findAllById(allPromoIds).stream()
+            .collect(java.util.stream.Collectors.toMap(Promotion::getId, Function.identity()));
+
     orders.stream()
         .flatMap(o -> o.getItems().stream())
         .filter(item -> item.getPromotionSnapshot() != null)
@@ -410,8 +441,7 @@ public class GetReportsOverview {
                       id -> {
                         PromoUsageStats st = new PromoUsageStats();
                         st.name =
-                            promotionRepository
-                                .findById(id)
+                            Optional.ofNullable(promoMap.get(id))
                                 .map(Promotion::getName)
                                 .orElse("Promoção");
                         return st;

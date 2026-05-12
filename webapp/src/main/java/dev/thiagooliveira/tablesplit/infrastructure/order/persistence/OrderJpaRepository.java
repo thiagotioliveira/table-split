@@ -20,19 +20,21 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
   List<OrderEntity> findAllByTableIdOrderByOpenedAtDesc(UUID tableId);
 
-  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers"})
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers", "payments"})
   List<OrderEntity> findAllByRestaurantIdAndStatus(UUID restaurantId, OrderStatus status);
 
-  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers"})
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers", "payments"})
   List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtAfter(
       UUID restaurantId, OrderStatus status, java.time.ZonedDateTime threshold);
 
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers", "payments"})
   List<OrderEntity> findAllByRestaurantIdAndStatusAndClosedAtBetween(
       UUID restaurantId,
       OrderStatus status,
       java.time.ZonedDateTime start,
       java.time.ZonedDateTime end);
 
+  @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers", "payments"})
   @Query(
       "select o from OrderEntity o where o.tableId = :tableId "
           + "and (:status is null or o.status = :status) "

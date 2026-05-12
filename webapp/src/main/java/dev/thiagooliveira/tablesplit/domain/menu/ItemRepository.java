@@ -9,6 +9,8 @@ public interface ItemRepository {
 
   Optional<Item> findById(UUID id);
 
+  List<Item> findAllById(java.util.Collection<UUID> ids);
+
   Optional<Item> findByIdIncludingDeleted(UUID id);
 
   List<Item> findByRestaurantId(UUID restaurantId);
