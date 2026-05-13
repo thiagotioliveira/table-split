@@ -71,4 +71,38 @@ class OrderTest {
         1,
         table.getDomainEvents().stream().filter(e -> e instanceof TableStatusChangedEvent).count());
   }
+
+  @Test
+  void shouldCloseOrderWhenFullyPaidEvenWithMinorPrecisionDifferences() {
+    // Given
+    // Suppose subtotal is 10.55 and service fee is 10%.
+    // subtotal * 0.1 = 1.055. Rounded to 2 decimals is 1.06.
+    // Total should be 10.55 + 1.06 = 11.61.
+
+    Order order = new Order(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 10);
+
+    // Create an item that results in 10.55 subtotal
+    TicketItem item = new TicketItem();
+    item.setUnitPrice(new java.math.BigDecimal("10.55"));
+    item.setQuantity(1);
+
+    Ticket ticket = new Ticket();
+    ticket.setItems(java.util.List.of(item));
+    order.setTickets(java.util.List.of(ticket));
+
+    // Total is 11.61.
+    // Suppose the frontend has a precision issue and pays 11.609999999999999
+    java.math.BigDecimal almostFullPayment = new java.math.BigDecimal("11.609999999999999");
+
+    Payment payment =
+        new Payment(
+            UUID.randomUUID(), order.getId(), null, almostFullPayment, PaymentMethod.CASH, null);
+
+    // When
+    order.addPayment(payment);
+
+    // Then
+    assertEquals(
+        OrderStatus.CLOSED, order.getStatus(), "Order should be closed due to rounding tolerance");
+  }
 }

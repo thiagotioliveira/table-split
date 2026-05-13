@@ -4102,6 +4102,7 @@
 
 
     function calculateOrderTotal(order) {
+        if (order.total !== undefined && order.total !== null) return order.total;
         if (!order.items) return 0;
         const subtotal = order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
         const fee = (subtotal * (order.serviceFee || 0)) / 100;
@@ -4369,9 +4370,9 @@
         clientsSection.innerHTML = clientsHtml;
 
         // Bill Summary
-        const subtotal = order.items.filter(item => item.statusClass !== 'cancelled').reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-        const fee = (subtotal * (order.serviceFee || 0)) / 100;
-        const total = subtotal + fee;
+        const subtotal = order.subtotal || 0;
+        const fee = order.serviceFeeAmount || 0;
+        const total = order.total || 0;
         const paidAmount = order.payments.reduce((sum, p) => sum + (p.amount || 0), 0);
         orderRemainingAmount = Math.max(0, total - paidAmount);
 
@@ -4550,9 +4551,9 @@
         clientsSection.innerHTML = clientsHtml;
 
         // Update Bill Summary
-        const subtotal = order.items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-        const fee = (subtotal * (order.serviceFee || 0)) / 100;
-        const total = subtotal + fee;
+        const subtotal = order.subtotal || 0;
+        const fee = order.serviceFeeAmount || 0;
+        const total = order.total || 0;
 
         // Try to find the bill summary or create it
         let billSummary = document.querySelector('.bill-summary');

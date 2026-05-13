@@ -48,8 +48,10 @@ public class Order extends AggregateRoot {
           this.tableId, IllegalOrderStatusException.Reason.PAYMENT_NOT_ALLOWED);
     }
 
-    BigDecimal remaining = calculateRemainingAmount();
-    if (payment.getAmount().compareTo(remaining) > 0) {
+    BigDecimal remaining = calculateRemainingAmount().setScale(2, java.math.RoundingMode.HALF_UP);
+    BigDecimal paymentAmount = payment.getAmount().setScale(2, java.math.RoundingMode.HALF_UP);
+
+    if (paymentAmount.compareTo(remaining) > 0) {
       throw new OverpaymentException(this.tableId);
     }
 
@@ -80,7 +82,10 @@ public class Order extends AggregateRoot {
   }
 
   public boolean isFullyPaid() {
-    return calculateRemainingAmount().compareTo(BigDecimal.ZERO) <= 0;
+    return calculateRemainingAmount()
+            .setScale(2, java.math.RoundingMode.HALF_UP)
+            .compareTo(BigDecimal.ZERO)
+        <= 0;
   }
 
   public void addTicket(Ticket ticket) {

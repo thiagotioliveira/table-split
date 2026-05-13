@@ -64,6 +64,8 @@ public abstract class TableApiMapper {
 
     response.setCustomerNames(customerNames);
     response.setTotal(order.calculateTotal().doubleValue());
+    response.setSubtotal(order.calculateSubtotal().doubleValue());
+    response.setServiceFeeAmount(order.feeApplied().doubleValue());
 
     return response;
   }

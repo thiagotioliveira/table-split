@@ -5,8 +5,12 @@ import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Payment;
 import java.math.BigDecimal;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessPayment {
+
+  private static final Logger log = LoggerFactory.getLogger(ProcessPayment.class);
 
   private final OrderRepository orderRepository;
   private final CloseTable closeTable;
@@ -28,6 +32,13 @@ public class ProcessPayment {
             .orElseThrow(
                 () -> new IllegalArgumentException("No active order found for table: " + tableId));
 
+    log.info(
+        "Processing payment for table {}: amount={}, total={}, remaining before payment={}",
+        tableId,
+        amount,
+        order.calculateTotal(),
+        order.calculateRemainingAmount());
+
     Payment payment =
         new Payment(UUID.randomUUID(), order.getId(), customerId, amount, method, note);
     order.processPayment(payment);
@@ -35,7 +46,13 @@ public class ProcessPayment {
     orderRepository.save(order);
 
     if (order.getStatus() == dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED) {
+      log.info("Order for table {} is fully paid. Closing table.", tableId);
       closeTable.execute(order.getId());
+    } else {
+      log.info(
+          "Order for table {} is not yet fully paid. Remaining: {}",
+          tableId,
+          order.calculateRemainingAmount());
     }
 
     return order;

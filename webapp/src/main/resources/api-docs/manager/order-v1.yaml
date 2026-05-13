@@ -754,6 +754,12 @@ components:
         total:
           type: number
           format: double
+        subtotal:
+          type: number
+          format: double
+        serviceFeeAmount:
+          type: number
+          format: double
 
     HistoryPaymentResponse:
       type: object

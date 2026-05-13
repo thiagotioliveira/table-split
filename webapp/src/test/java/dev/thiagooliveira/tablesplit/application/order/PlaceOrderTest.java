@@ -79,7 +79,7 @@ class PlaceOrderTest {
     Order result = placeOrder.execute(createPlaceOrderCommand(ticketItemCommand));
 
     assertNotNull(result);
-    assertEquals(new BigDecimal("102"), result.getItems().get(0).getTotalPrice());
+    assertEquals(new BigDecimal("102.00"), result.getItems().get(0).getTotalPrice());
   }
 
   @Test
@@ -112,7 +112,7 @@ class PlaceOrderTest {
     Order result = placeOrder.execute(createPlaceOrderCommand(ticketItemCommand));
 
     assertNotNull(result);
-    assertEquals(new BigDecimal("85"), result.getItems().get(0).getTotalPrice());
+    assertEquals(new BigDecimal("85.00"), result.getItems().get(0).getTotalPrice());
   }
 
   @Test

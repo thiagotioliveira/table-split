@@ -73,7 +73,7 @@ public class TicketItem {
     } else {
       finalUnitPrice = item.getPrice().add(extra);
     }
-    this.unitPrice = finalUnitPrice;
+    this.unitPrice = finalUnitPrice.setScale(2, java.math.RoundingMode.HALF_UP);
   }
 
   private java.math.BigDecimal calculateExtraPrice(List<TicketItemCustomization> customizations) {
