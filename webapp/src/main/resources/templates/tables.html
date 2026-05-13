@@ -3577,6 +3577,7 @@
 <script th:inline="javascript">
     let orderHistory = /*[[${orderHistory}]]*/ [];
     let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
+    let allTables = [];
     const restaurantId = /*[[${restaurantId}]]*/ null;
     window.restaurantId = restaurantId;
     const zoneId = /*[[${zoneId}]]*/ 'Europe/Lisbon';
@@ -4104,7 +4105,7 @@
         // Update Header
         document.getElementById('activeTableInfo').style.display = 'none';
         document.getElementById('historyViewInfo').style.display = 'block';
-        const tableCod = order.tableId ? (tables.find(t => t.id === order.tableId)?.cod || '??') : '??';
+        const tableCod = order.tableId ? (allTables.find(t => t.id === order.tableId)?.cod || '??') : '??';
         document.getElementById('historyHeaderTitle').textContent = `${i18n.historyTitle} - ${i18n.cardTable.replace('{0}', tableCod)}`;
         
         const openedAt = formatDateTime(order.openedAt);
@@ -6196,6 +6197,7 @@
         try {
             const restaurantId = /*[[${restaurantId}]]*/ '';
             const data = await tablesApi.getTables(restaurantId);
+            allTables = data.tables;
             renderTables(data);
         } catch (e) {
             console.error('Error loading tables:', e);

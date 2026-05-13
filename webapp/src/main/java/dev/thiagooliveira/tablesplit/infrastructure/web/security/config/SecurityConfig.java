@@ -4,6 +4,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantFilter;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.CustomUserDetailsService;
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -181,7 +183,25 @@ public class SecurityConfig {
                     .sessionFixation()
                     .migrateSession()
                     .maximumSessions(1)
-                    .expiredUrl("/login?expired"))
+                    .expiredSessionStrategy(
+                        event -> {
+                          HttpServletRequest request = event.getRequest();
+                          HttpServletResponse response = event.getResponse();
+
+                          String accept = request.getHeader("Accept");
+                          String xRequestedWith = request.getHeader("X-Requested-With");
+
+                          if ((accept != null && accept.contains("text/event-stream"))
+                              || "XMLHttpRequest".equals(xRequestedWith)) {
+                            if (!response.isCommitted()) {
+                              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            }
+                          } else {
+                            if (!response.isCommitted()) {
+                              response.sendRedirect("/login?timeout=true");
+                            }
+                          }
+                        }))
         .exceptionHandling(
             exceptions ->
                 exceptions

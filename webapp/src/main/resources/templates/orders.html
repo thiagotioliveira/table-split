@@ -1169,7 +1169,8 @@
         errorLoadDetails: /*[[#{page.orders.js.error.load_details}]]*/ 'Erro ao carregar detalhes do pedido',
         soundActive: /*[[#{page.orders.header.sound.active}]]*/ 'Som ativo',
         soundMuted: /*[[#{page.orders.header.sound.muted}]]*/ 'Som mudo',
-        ordersTodaySuffix: /*[[#{page.orders.kanban.delivered.today_count_suffix}]]*/ 'pedidos hoje'
+        ordersTodaySuffix: /*[[#{page.orders.kanban.delivered.today_count_suffix}]]*/ 'pedidos hoje',
+        historyEmpty: /*[[#{page.orders.modal.history.empty}]]*/ 'Nenhum pedido encontrado no período selecionado.'
     };
 
     window.openSidebar = openSidebar;
@@ -1863,8 +1864,7 @@
             container.innerHTML = `
           <div class="history-empty">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
-            <p>Nenhum pedido encontrado</p>
-            <p style="font-size: 0.8125rem;">Tente ajustar o filtro de datas</p>
+            <p>${i18n.historyEmpty}</p>
           </div>
         `;
             return;
