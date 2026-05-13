@@ -3632,14 +3632,11 @@
         statusBill: /*[[#{page.tables.js.status.bill}]]*/ 'Bill Requested',
         errorSelectCustomer: /*[[#{page.tables.js.error.select.customer}]]*/ 'Select a customer for payment',
         errorInvalidAmount: /*[[#{page.tables.js.error.invalid.amount}]]*/ 'Inform a valid amount for payment',
-        billSummaryHistoryTitle: /*[[#{page.tables.modal.order.summary.title}]]*/ 'Order Summary (History)',
         billLabelSubtotal: /*[[#{page.tables.bill.label.subtotal}]]*/ 'Subtotal',
         billLabelServiceFee: /*[[#{page.tables.bill.label.service.fee}]]*/ 'Service fee ({0}%)',
         billLabelTotal: /*[[#{page.tables.bill.label.total}]]*/ 'Total',
         paymentsHistoryTitle: /*[[#{page.tables.bill.payments.title}]]*/ 'Payments in History',
         clientOrderHistoryTitle: /*[[#{page.tables.clients.title}]]*/ 'Customers in Order (History)',
-        historyClientsTitle: /*[[#{page.tables.modal.history.clients.title}]]*/ 'Customers in Order (History)',
-        historyPaymentsTitle: /*[[#{page.tables.modal.history.payments.title}]]*/ 'Payments in History',
         noNotifications: /*[[#{page.tables.modal.notifications.empty}]]*/ 'No pending notifications',
         goToTable: /*[[#{page.tables.modal.notifications.go.to.table}]]*/ 'Go to table',
         historyPlaceholderFilter: /*[[#{page.tables.modal.history.placeholder.filter}]]*/ 'Click filter to load history',
@@ -3671,7 +3668,24 @@
         alertFetchError: /*[[#{page.tables.js.alert.fetch.error}]]*/ 'Erro ao buscar dados. Tente novamente.',
         msgTableClosed: /*[[#{alert.table.closed}]]*/ 'Mesa fechada com sucesso!',
         deleteTableTitle: /*[[#{page.tables.modal.delete.table.title('{0}')}]]*/ 'Excluir Mesa {0}',
-        deleteTableBody: /*[[#{page.tables.modal.delete.table.body('{0}')}]]*/ 'Tem a certeza que deseja excluir a {0}?'
+        deleteTableBody: /*[[#{page.tables.modal.delete.table.body('{0}')}]]*/ 'Tem a certeza que deseja excluir a {0}?',
+        quickOpen: /*[[#{page.tables.quick.open}]]*/ 'Abrir Mesa',
+        buttonQr: /*[[#{page.tables.button.qr}]]*/ 'QR Code',
+        quickDelete: /*[[#{page.tables.quick.delete}]]*/ 'Excluir Mesa',
+        clientsTitle: /*[[#{page.tables.clients.title}]]*/ 'Clientes na Mesa',
+        billSummaryTitle: /*[[#{page.tables.bill.summary.title}]]*/ 'Resumo da Conta',
+        billPaymentsTitle: /*[[#{page.tables.bill.payments.title}]]*/ 'Pagamentos Realizados',
+        clientsEmpty: /*[[#{page.tables.clients.empty}]]*/ 'Nenhum pedido feito nesta mesa ainda.',
+        addFor: /*[[#{page.tables.clients.button.add.for('{0}')}]]*/ 'Adicionar pedido para {0}',
+        headerSelectionEmptyTitle: /*[[#{page.tables.header.selection.empty.title}]]*/ 'Selecione uma mesa',
+        headerSelectionEmptySubtitle: /*[[#{page.tables.header.selection.empty.subtitle}]]*/ 'Clique em uma mesa na lista para gerenciá-la',
+        headerStatusOccupied: /*[[#{page.tables.header.status.occupied}]]*/ 'Ocupada',
+        headerStatusFree: /*[[#{page.tables.header.status.free}]]*/ 'Livre',
+        buttonOrderNew: /*[[#{page.tables.button.order.new}]]*/ 'Novo Pedido',
+        buttonHistory: /*[[#{page.tables.button.history}]]*/ 'Histórico',
+        buttonBillView: /*[[#{page.tables.button.bill.view}]]*/ 'Ver Conta',
+        buttonQr: /*[[#{page.tables.button.qr}]]*/ 'QR Code',
+        buttonTableClose: /*[[#{page.tables.button.table.close}]]*/ 'Fechar Mesa'
     };
     window.i18n = i18n;
 
@@ -3894,6 +3908,14 @@
     function openBillModal() {
         document.getElementById('billModal').classList.add('active');
         document.getElementById('billTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
+        const orderIdEl = document.getElementById('billModalOrderId');
+        if (orderIdEl) {
+            orderIdEl.textContent = window.currentOrderId ? `#${window.currentOrderId.substring(0, 4)}` : '';
+            orderIdEl.style.fontSize = '0.9rem';
+            orderIdEl.style.color = 'var(--muted)';
+            orderIdEl.style.fontWeight = '400';
+            orderIdEl.style.marginLeft = '0.5rem';
+        }
     }
 
     function closeBillModal() {
@@ -3908,6 +3930,14 @@
         }
         modal.classList.add('active');
         document.getElementById('closeTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
+        const orderIdEl = document.getElementById('closeTableModalOrderId');
+        if (orderIdEl) {
+            orderIdEl.textContent = window.currentOrderId ? `#${window.currentOrderId.substring(0, 4)}` : '';
+            orderIdEl.style.fontSize = '0.9rem';
+            orderIdEl.style.color = 'var(--muted)';
+            orderIdEl.style.fontWeight = '400';
+            orderIdEl.style.marginLeft = '0.5rem';
+        }
     }
 
     function closeCloseTableModal() {
@@ -4143,11 +4173,299 @@
         refreshContent();
     }
 
+    function renderActiveOrder(order) {
+        const tableDetail = document.getElementById('tableDetail');
+        const quickActions = document.getElementById('quickActionsEmpty');
+        const clientsSection = document.getElementById('clientsSection');
+        const billSummary = document.querySelector('.bill-summary');
+        const headerActions = document.getElementById('headerActions');
+        const activeTableInfo = document.getElementById('activeTableInfo');
+        const activeOrderActions = document.getElementById('activeOrderActions');
+        const historyViewInfo = document.getElementById('historyViewInfo');
+        const historyViewActions = document.getElementById('historyViewActions');
+        let paymentsHistory = document.querySelector('.payments-history');
+
+        // Reset visibility
+        historyViewInfo.style.display = 'none';
+        activeTableInfo.style.display = 'block';
+        historyViewActions.style.display = 'none';
+        activeOrderActions.style.display = 'contents';
+        
+        window.currentOrderId = order ? order.id : null;
+
+        // Update Header Info
+        headerActions.style.display = 'flex';
+        activeTableInfo.innerHTML = `
+            <h2>${i18n.cardTable.replace('{0}', selectedTableCod)}${order ? ` <span style="font-size: 0.9rem; color: var(--muted); font-weight: 400;">#${order.id.substring(0, 4)}</span>` : ''}</h2>
+            <p>
+                <span>${order ? i18n.headerOpenedAt.replace('{0}', formatTime(order.openedAt)) : i18n.headerStatusFree}</span>
+                ${order ? `
+                    <span style="color: var(--muted); font-size: 0.85rem; font-weight: 400;">
+                        <span> • ${i18n.headerStatusActiveNow}</span>
+                    </span>
+                ` : ''}
+            </p>
+        `;
+
+        // Update Header Actions
+        activeOrderActions.innerHTML = `
+            ${order ? `
+                <button class="action-btn primary" id="btnNewOrder" onclick="openOrderModal(selectedTable, selectedTableCod)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    <span>${i18n.buttonOrderNew}</span>
+                </button>
+            ` : ''}
+            <button class="action-btn" onclick="openHistoryModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>${i18n.buttonHistory}</span>
+            </button>
+            ${order ? `
+                <button class="action-btn purple" id="btnViewBill" onclick="openBillModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>${i18n.buttonBillView}</span>
+                </button>
+            ` : ''}
+            <button class="action-btn" onclick="openQrModal(selectedTableCod)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
+                <span>${i18n.buttonQr}</span>
+            </button>
+            ${order ? `
+                <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>${i18n.buttonTableClose}</span>
+                </button>
+            ` : ''}
+        `;
+
+        if (!order) {
+            // Table is free
+            quickActions.style.display = 'grid';
+            clientsSection.style.display = 'none';
+            if (billSummary) billSummary.style.display = 'none';
+            if (paymentsHistory) paymentsHistory.style.display = 'none';
+            
+            quickActions.innerHTML = `
+                <div class="quick-action-card" onclick="openTable()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>${i18n.quickOpen}</span>
+                </div>
+                <div class="quick-action-card" onclick="openQrModal(selectedTableCod)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
+                    <span>${i18n.buttonQr}</span>
+                </div>
+                <div class="quick-action-card" style="color: var(--foreground);" onclick="openDeleteTableModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                    <span>${i18n.quickDelete}</span>
+                </div>
+            `;
+            return;
+        }
+
+        // Table is occupied
+        quickActions.style.display = 'none';
+        clientsSection.style.display = 'block';
+        
+        // Group items by client
+        const clients = {};
+        order.items.forEach(item => {
+            const clientName = item.customerName || i18n.tableLabel;
+            if (!clients[clientName]) clients[clientName] = [];
+            clients[clientName].push(item);
+        });
+
+        let clientsHtml = `
+            <div class="section-header">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    ${i18n.clientsTitle}
+                </h3>
+            </div>
+        `;
+
+        if (Object.keys(clients).length === 0) {
+            clientsHtml += `<div style="padding: 2rem; text-align: center; color: var(--muted);"><p>${i18n.clientsEmpty}</p></div>`;
+        } else {
+            Object.keys(clients).forEach(clientName => {
+                const clientItems = clients[clientName];
+                const subtotal = clientItems
+                    .filter(item => item.statusClass !== 'cancelled')
+                    .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+
+                clientsHtml += `
+                <div class="client-card">
+                    <div class="client-header">
+                        <span class="client-name">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>${clientName}</span>
+                        </span>
+                        <span class="client-subtotal">${formatCurrency(subtotal)}</span>
+                    </div>
+                    <div class="client-orders">
+                        ${clientItems.map(item => `
+                        <div class="order-item ${item.statusClass === 'cancelled' ? 'cancelled' : ''}">
+                            <div class="order-item-info">
+                                <span class="order-qty">${item.quantity}</span>
+                                <div style="display: flex; flex-direction: column;">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="order-item-name">${item.name}</span>
+                                        <span class="order-time" style="font-size: 0.7rem; color: var(--muted); margin-left: 0.5rem;">${formatTimeOnly(item.createdAt)}</span>
+                                    </div>
+                                    ${item.note ? `<div class="order-item-note">${item.note}</div>` : ''}
+                                    ${item.ticketNote && item.ticketNote !== item.note ? `<div class="order-item-note">${item.ticketNote}</div>` : ''}
+                                    ${item.customizationSummary ? `<div class="order-item-note" style="font-size: 0.75rem; color: var(--primary); font-style: italic;">${item.customizationSummary}</div>` : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                                <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="text-align: right;">
+                                        ${item.promotionSnapshot ? `
+                                            <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
+                                                ${formatCurrency(item.promotionSnapshot.originalPrice * item.quantity)}
+                                            </div>
+                                        ` : ''}
+                                        <span class="order-item-price" style="${item.promotionSnapshot ? 'color: var(--green) !important; font-weight: 800;' : ''}">
+                                            ${formatCurrency(item.totalPrice || 0)}
+                                        </span>
+                                    </div>
+                                    ${item.promotionSnapshot ? `
+                                        <div class="promo-badge" style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
+                                            ${item.promotionSnapshot.discountType && item.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(item.promotionSnapshot.discountValue) + '% OFF') : ('-' + formatCurrency(item.promotionSnapshot.discountValue || 0))}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="order-item-status ${item.statusClass || ''}">${item.status || ''}</span>
+                                    <div class="order-item-actions">
+                                        ${item.statusClass !== 'delivered' && item.statusClass !== 'cancelled' ? `
+                                            <button class="order-item-action deliver" title="Marcar como Entregue" onclick="deliverOrderItem('${item.id}', '${item.name}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            </button>
+                                        ` : ''}
+                                        ${item.statusClass === 'delivered' ? `
+                                            <button class="order-item-action reset" title="Voltar para Pendente" onclick="resetToPending('${item.id}', '${item.name}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                            </button>
+                                        ` : ''}
+                                        ${item.statusClass !== 'cancelled' ? `
+                                            <button class="order-item-action cancel" title="Cancelar Item" onclick="openCancelItemModal('${item.id}', '${item.name}', ${item.quantity}, ${item.unitPrice})">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `).join('')}
+                    </div>
+                    <button class="add-order-btn" onclick="openOrderModal(selectedTable, selectedTableCod, '${clientName}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <span>${i18n.addFor.replace('{0}', clientName)}</span>
+                    </button>
+                </div>
+                `;
+            });
+        }
+
+        clientsSection.innerHTML = clientsHtml;
+
+        // Bill Summary
+        const subtotal = order.items.filter(item => item.statusClass !== 'cancelled').reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+        const fee = (subtotal * (order.serviceFee || 0)) / 100;
+        const total = subtotal + fee;
+        const paidAmount = order.payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        orderRemainingAmount = Math.max(0, total - paidAmount);
+
+        let activeBillSummary = document.querySelector('.bill-summary');
+        if (!activeBillSummary) {
+            activeBillSummary = document.createElement('div');
+            activeBillSummary.className = 'bill-summary';
+            tableDetail.appendChild(activeBillSummary);
+        }
+        activeBillSummary.style.display = 'block';
+
+        activeBillSummary.innerHTML = `
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                ${i18n.billSummaryTitle}
+            </h3>
+            <div class="bill-row">
+                <span>${i18n.billLabelSubtotal}</span>
+                <span>${formatCurrency(subtotal)}</span>
+            </div>
+            <div class="bill-row">
+                <span>${i18n.billLabelServiceFee.replace('{0}', order.serviceFee)}</span>
+                <span>${formatCurrency(fee)}</span>
+            </div>
+            <div class="bill-row total">
+                <span>${i18n.billLabelTotal}</span>
+                <span>${formatCurrency(total)}</span>
+            </div>
+        `;
+
+        // Payments History
+        if (order.payments && order.payments.length > 0) {
+            if (!paymentsHistory) {
+                const newPaymentsHistory = document.createElement('div');
+                newPaymentsHistory.className = 'payments-history';
+                tableDetail.appendChild(newPaymentsHistory);
+                paymentsHistory = newPaymentsHistory;
+            }
+            paymentsHistory.style.display = 'block';
+            
+            paymentsHistory.innerHTML = `
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                    ${i18n.billPaymentsTitle}
+                </h3>
+                ${order.payments.map(payment => `
+                <div class="payment-history-item">
+                    <div class="payment-info">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="payment-customer">${order.customerNames[payment.customerId] || i18n.tableLabel}</span>
+                             <span style="font-size: 0.7rem; padding: 2px 6px; background: var(--primary-light); color: var(--primary); border-radius: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                 ${paymentMethods[payment.method]?.icon || ''}
+                                 <span style="line-height: 1;">${paymentMethods[payment.method]?.label || payment.method}</span>
+                             </span>
+                        </div>
+                        <span class="payment-time">${formatTimeOnly(payment.paidAt)}</span>
+                        ${payment.note ? `<div class="payment-note" style="font-size: 0.75rem; font-style: italic; color: var(--muted); margin-top: 4px; padding-left: 0.5rem; border-left: 2px solid var(--border);">${payment.note}</div>` : ''}
+                    </div>
+                    <span class="payment-amount">-${formatCurrency(payment.amount || 0)}</span>
+                </div>
+                `).join('')}
+            `;
+        } else if (paymentsHistory) {
+            paymentsHistory.style.display = 'none';
+        }
+    }
+
     function renderHistoryDetail(order) {
         const tableDetail = document.getElementById('tableDetail');
         tableDetail.classList.add('active');
         tableDetail.style.display = 'block';
         
+        // Update Header
+        const historyHeaderTitle = document.getElementById('historyHeaderTitle');
+        const historyHeaderDates = document.getElementById('historyHeaderDates');
+        const historyViewInfo = document.getElementById('historyViewInfo');
+        const activeTableInfo = document.getElementById('activeTableInfo');
+        const historyViewActions = document.getElementById('historyViewActions');
+        const activeOrderActions = document.getElementById('activeOrderActions');
+
+        historyViewInfo.style.display = 'block';
+        activeTableInfo.style.display = 'none';
+        historyViewActions.style.display = 'flex';
+        activeOrderActions.style.display = 'none';
+
+        if (historyHeaderTitle) {
+            historyHeaderTitle.innerHTML = `${i18n.cardTable.replace('{0}', selectedTableCod)} <span style="font-size: 0.9rem; color: var(--muted); font-weight: 400;">#${order.id.substring(0, 4)}</span>`;
+        }
+        if (historyHeaderDates) {
+            historyHeaderDates.textContent = i18n.historyHeaderSubtitle
+                .replace('{0}', formatTime(order.openedAt))
+                .replace('{1}', formatTime(order.closedAt));
+        }
+
         // Hide quick actions for empty table if any
         const quickActions = document.getElementById('quickActionsEmpty');
         if (quickActions) quickActions.style.display = 'none';
@@ -4168,7 +4486,7 @@
             <div class="section-header">
                 <h3>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    ${i18n.historyClientsTitle}
+                    ${i18n.clientsTitle}
                 </h3>
             </div>
         `;
@@ -4243,11 +4561,12 @@
             billSummary.className = 'bill-summary';
             tableDetail.appendChild(billSummary);
         }
+        billSummary.style.display = 'block';
 
         billSummary.innerHTML = `
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                ${i18n.billSummaryHistoryTitle}
+                ${i18n.billSummaryTitle}
             </h3>
             <div class="bill-row">
                 <span>${i18n.billLabelSubtotal}</span>
@@ -4275,7 +4594,7 @@
             paymentsHistory.innerHTML = `
                 <h3>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-                    ${i18n.historyPaymentsTitle}
+                    ${i18n.billPaymentsTitle}
                 </h3>
                 ${order.payments.map(payment => `
                 <div class="payment-history-item">
@@ -4412,7 +4731,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                <span th:text="#{page.tables.button.order.new}">Novo Pedido</span> - <span id="orderModalTable">Mesa 01</span>
+                <span th:text="#{page.tables.button.order.new}">Novo Pedido</span> - <span id="orderModalTable">Mesa 01</span> <span id="orderModalOrderId"></span>
             </h3>
             <button type="button" class="modal-close" onclick="closeOrderModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4501,7 +4820,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                <span th:text="#{page.tables.modal.bill.title}">Conta</span> - <span id="billTableNumber">Mesa 02</span>
+                <span th:text="#{page.tables.modal.bill.title}">Conta</span> - <span id="billTableNumber">Mesa 02</span> <span id="billModalOrderId"></span>
             </h3>
             <button class="modal-close" onclick="closeBillModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4548,7 +4867,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                <span th:text="#{page.tables.modal.close.title('')}">Fechar</span> <span id="closeTableNumber">Mesa 02</span>
+                <span th:text="#{page.tables.modal.close.title('')}">Fechar</span> <span id="closeTableNumber">Mesa 02</span> <span id="closeTableModalOrderId"></span>
             </h3>
             <button class="modal-close" onclick="closeCloseTableModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -5461,6 +5780,14 @@
         currentTableId = tableId;
         currentTableCod = tableCod;
         document.getElementById('orderModalTable').textContent = i18n.cardTable.replace('{0}', tableCod);
+        const orderIdEl = document.getElementById('orderModalOrderId');
+        if (orderIdEl) {
+            orderIdEl.textContent = window.currentOrderId ? `#${window.currentOrderId.substring(0, 4)}` : '';
+            orderIdEl.style.fontSize = '0.9rem';
+            orderIdEl.style.color = 'var(--muted)';
+            orderIdEl.style.fontWeight = '400';
+            orderIdEl.style.marginLeft = '0.5rem';
+        }
         
         const tableClients = getTableClients();
         orderClients = {};
@@ -6114,31 +6441,35 @@
 
     async function refreshContent() {
         const tableId = selectedTable || '';
-        const url = tableId ? `/tables/${tableId}/content` : '/tables/content';
-        
-        // Parallel fetch for table list (API) and table details (Fragment)
-        const [respFragment, _] = await Promise.all([
-            fetch(url),
-            loadTables()
-        ]);
+        initializeSelectedTable(tableId);
 
-        if (respFragment.ok) {
-            const html = await respFragment.text();
-            
-            // Extract the fragment from the response
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            // If we returned just the fragment, it might be the root element or inside a body
-            const newMainPanel = doc.querySelector('#mainPanel') || (doc.body.firstElementChild?.id === 'mainPanel' ? doc.body.firstElementChild : null);
-            
-            if (newMainPanel) {
-                document.querySelector('#mainPanel').innerHTML = newMainPanel.innerHTML;
-                await refreshState();
-            } else {
-                // If it's just the content (no wrapping div with id)
-                document.querySelector('#mainPanel').innerHTML = html;
-                await refreshState();
+        if (!tableId) {
+            document.getElementById('noTableSelected').style.display = 'flex';
+            document.getElementById('tableDetail').style.display = 'none';
+            await loadTables();
+            return;
+        }
+
+        document.getElementById('noTableSelected').style.display = 'none';
+        document.getElementById('tableDetail').style.display = 'block';
+
+        const url = `/api/v1/manager/tables/${tableId}/active-order`;
+        
+        try {
+            const [resp, _] = await Promise.all([
+                fetch(url),
+                loadTables()
+            ]);
+
+            if (resp.status === 204) {
+                // Table is free
+                renderActiveOrder(null);
+            } else if (resp.ok) {
+                const order = await resp.json();
+                renderActiveOrder(order);
             }
+        } catch (error) {
+            console.error('Error refreshing content:', error);
         }
     }
 

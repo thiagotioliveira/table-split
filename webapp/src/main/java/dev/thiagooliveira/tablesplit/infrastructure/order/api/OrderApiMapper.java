@@ -28,6 +28,7 @@ public abstract class OrderApiMapper {
 
   @Mapping(target = "restaurantId", expression = "java(UUID.fromString(model.getRestaurantId()))")
   @Mapping(target = "id", expression = "java(UUID.fromString(model.getId()))")
+  @Mapping(target = "orderId", expression = "java(UUID.fromString(model.getOrderId()))")
   @Mapping(target = "status", expression = "java(StatusEnum.fromValue(model.getStatus().name()))")
   @Mapping(target = "createdAt", expression = "java(model.getCreatedAt().toOffsetDateTime())")
   @Mapping(target = "total", expression = "java(model.getTotal().doubleValue())")
@@ -75,7 +76,8 @@ public abstract class OrderApiMapper {
         itemModels,
         ticket.calculateTotal(),
         urgent,
-        ticket.getNote());
+        ticket.getNote(),
+        order.getId());
   }
 
   public dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand mapToCommand(

@@ -16,7 +16,7 @@ public class TelegramLongPollingBotImpl extends TelegramLongPollingBot {
       TelegramProperties properties, TelegramUpdateHandler updateHandler) {
     this.properties = properties;
     this.updateHandler = updateHandler;
-    logger.info(
+    logger.debug(
         "TelegramBot (Polling Mode) inicializado no profile DEV. Username: {}",
         properties.getUsername());
   }

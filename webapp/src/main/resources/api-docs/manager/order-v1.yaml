@@ -256,6 +256,29 @@ paths:
         '200':
           description: Table opened successfully
 
+  /tables/{tableId}/active-order:
+    get:
+      tags:
+        - Tables
+      summary: Get active order for a table
+      operationId: getActiveOrder
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful active order retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableOrderHistoryResponse'
+        '204':
+          description: No active order found for the table
+
   /tables/orders/{orderId}/close:
     post:
       tags:
@@ -573,6 +596,11 @@ components:
           type: string
           format: uuid
         shortId:
+          type: string
+        orderId:
+          type: string
+          format: uuid
+        orderShortId:
           type: string
         tableCod:
           type: string

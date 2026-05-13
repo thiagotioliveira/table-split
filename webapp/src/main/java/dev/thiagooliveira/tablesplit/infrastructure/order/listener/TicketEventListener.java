@@ -218,6 +218,7 @@ public class TicketEventListener {
         itemModels,
         ticket.calculateTotal(),
         urgent,
-        ticket.getNote());
+        ticket.getNote(),
+        order.getId());
   }
 }

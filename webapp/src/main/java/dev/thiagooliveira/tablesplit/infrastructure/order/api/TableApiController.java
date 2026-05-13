@@ -107,6 +107,16 @@ public class TableApiController implements TablesApi {
   }
 
   @Override
+  public ResponseEntity<TableOrderHistoryResponse> getActiveOrder(UUID tableId) {
+    var context = getContext();
+    return getOrder
+        .execute(tableId)
+        .map(o -> mapper.mapToOrderHistoryResponse(o, context.getUser().getLanguage()))
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.noContent().build());
+  }
+
+  @Override
   public ResponseEntity<List<TableOrderHistoryResponse>> getTableHistory(
       UUID tableId, String status, java.time.OffsetDateTime start, java.time.OffsetDateTime end) {
     var context = getContext();

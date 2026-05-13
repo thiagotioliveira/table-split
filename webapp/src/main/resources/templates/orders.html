@@ -1078,6 +1078,7 @@
         <div class="modal-header">
             <div style="display: flex; align-items: center;">
                 <h3 id="modalOrderId">Pedido #0042</h3>
+                <span id="modalGroupOrderId" style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem; font-weight: 400;"></span>
                 <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                     <span id="modalTypeText">Mesa</span>
@@ -1438,6 +1439,10 @@
         try {
             const ticket = await window.ordersApi.getTicketById(id);
             document.getElementById('modalOrderId').textContent = i18n.orderIdPrefix + ticket.shortId;
+            const groupOrderIdEl = document.getElementById('modalGroupOrderId');
+            if (groupOrderIdEl) {
+                groupOrderIdEl.textContent = ticket.orderShortId ? `(#${ticket.orderShortId})` : '';
+            }
             document.getElementById('modalTypeText').textContent = ticket.tableCod ? i18n.mesa : i18n.delivery;
             document.getElementById('modalTableOrDelivery').textContent = ticket.tableCod ? i18n.mesa + ' ' + ticket.tableCod : i18n.delivery;
             document.getElementById('modalCustomerName').textContent = ticket.customerName;

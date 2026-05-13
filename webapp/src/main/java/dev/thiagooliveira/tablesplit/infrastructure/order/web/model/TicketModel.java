@@ -11,6 +11,8 @@ public class TicketModel {
   private final String id;
   private final String shortId;
   private final String tableCod;
+  private final String orderId;
+  private final String orderShortId;
   private final String customerName;
   private final TicketStatus status;
   private final String statusClass;
@@ -33,10 +35,13 @@ public class TicketModel {
       List<TicketItemModel> items,
       BigDecimal total,
       boolean urgent,
-      String note) {
+      String note,
+      UUID orderId) {
     this.restaurantId = restaurantId.toString();
     this.id = id.toString();
     this.shortId = id.toString().substring(0, 4).toUpperCase();
+    this.orderId = orderId.toString();
+    this.orderShortId = orderId.toString().substring(0, 4).toUpperCase();
     this.tableCod = tableCod;
     this.customerName = customerName;
     this.status = status;
@@ -104,5 +109,13 @@ public class TicketModel {
 
   public String getNote() {
     return note;
+  }
+
+  public String getOrderId() {
+    return orderId;
+  }
+
+  public String getOrderShortId() {
+    return orderShortId;
   }
 }
