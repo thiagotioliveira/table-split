@@ -16,7 +16,13 @@
     <script th:inline="javascript">
         const currencySymbol = /*[[${currencySymbol}]]*/'';
         const currencyCode = /*[[${currencyCode}]]*/'';
+        const userLanguageLabel = /*[[${userLanguage.label}]]*/ 'pt-BR';
         const restaurantSlug = /*[[${restaurantSlug}]]*/'';
+
+        function formatCurrency(value) {
+            if (value === undefined || value === null) return '';
+            return new Intl.NumberFormat(userLanguageLabel, { style: 'currency', currency: currencyCode }).format(value);
+        }
         const paymentMethods = {
             /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
             "[(${method.name()})]": {
@@ -3425,7 +3431,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                         <span th:text="${client.key.name}">Cliente</span>
                                     </span>
-                                    <span class="client-subtotal" th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientSubtotals.getOrDefault(client.key.id, T(java.math.BigDecimal).ZERO), 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                    <span class="client-subtotal" th:text="${currency.format(clientSubtotals.getOrDefault(client.key.id, T(java.math.BigDecimal).ZERO), userLanguage)}">${currencySymbol} 0,00</span>
                                 </div>
                                 <div class="client-orders">
                                     <div class="order-item" th:each="item : ${client.value}" th:classappend="${item.statusClass == 'cancelled' ? 'cancelled' : ''}">
@@ -3441,17 +3447,17 @@
                                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                                             <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
                                                 <div th:if="${item.promotionSnapshot != null}" class="promo-badge"
-                                                     th:text="${item.promotionSnapshot.discountType() == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotionSnapshot.discountValue(), 0, 0) + '% OFF') : (item.promotionSnapshot.discountType() == 'FIXED_VALUE' ? '-' + currencySymbol + #numbers.formatDecimal(item.promotionSnapshot.discountValue(), 1, 'POINT', 2, 'COMMA') : 'PROMO')}"
+                                                     th:text="${item.promotionSnapshot.discountType() == 'PERCENTAGE' ? (#numbers.formatDecimal(item.promotionSnapshot.discountValue(), 0, 0) + '% OFF') : (item.promotionSnapshot.discountType() == 'FIXED_VALUE' ? '-' + currency.format(item.promotionSnapshot.discountValue(), userLanguage) : 'PROMO')}"
                                                      style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
                                                     PROMO
                                                 </div>
                                                 <div style="text-align: right;">
                                                     <div th:if="${item.promotionSnapshot != null}" style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;" 
-                                                         th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.promotionSnapshot.originalPrice() * item.quantity, 1, 'POINT', 2, 'COMMA')}">Original</div>
+                                                         th:text="${currency.format(item.promotionSnapshot.originalPrice() * item.quantity, userLanguage)}">Original</div>
                                                     <span class="order-item-price" 
                                                           th:class="${item.promotionSnapshot != null ? 'order-item-price' : 'order-item-price'}"
                                                           th:style="${item.promotionSnapshot != null ? 'color: var(--green) !important; font-weight: 800;' : ''}"
-                                                          th:text="${currencySymbol + ' ' + #numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                                          th:text="${currency.format(item.totalPrice, userLanguage)}">${currencySymbol} 0,00</span>
                                                 </div>
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -3494,15 +3500,15 @@
                             </h3>
                             <div class="bill-row">
                                 <span th:text="#{page.tables.bill.label.subtotal}">Subtotal</span>
-                                <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                <span th:text="${currency.format(orderSubtotal, userLanguage)}">${currencySymbol} 0,00</span>
                             </div>
                             <div class="bill-row">
                                 <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
-                                <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                <span th:text="${currency.format(orderServiceFeeAmount, userLanguage)}">${currencySymbol} 0,00</span>
                             </div>
                             <div class="bill-row total">
                                 <span th:text="#{page.tables.bill.label.total}">Total da Mesa</span>
-                                <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                <span th:text="${currency.format(orderTotal, userLanguage)}">${currencySymbol} 0,00</span>
                             </div>
 
                             <div class="payments-history" th:if="${not #lists.isEmpty(payments)}">
@@ -3526,7 +3532,7 @@
                                         </div>
                                     </div>
                                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-                                        <span class="payment-amount" th:text="${'-'+currencySymbol +' '+ #numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}">-$ 0,00</span>
+                                        <span class="payment-amount" th:text="${'-' + currency.format(payment.amount, userLanguage)}">-$ 0,00</span>
                                         <button class="delete-payment-btn" th:data-table-id="${selectedTable}" th:data-payment-id="${payment.id}" onclick="confirmDeletePayment(this)" title="Excluir Pagamento">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                                         </button>
@@ -3534,11 +3540,11 @@
                                 </div>
                                 <div class="bill-row paid">
                                     <span th:text="#{page.tables.bill.label.paid}">Total Pago</span>
-                                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderPaidAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                    <span th:text="${currency.format(orderPaidAmount, userLanguage)}">${currencySymbol} 0,00</span>
                                 </div>
                                 <div class="bill-row remaining">
                                     <span th:text="#{page.tables.bill.label.remaining}">Saldo Restante</span>
-                                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                                    <span th:text="${currency.format(orderRemainingAmount, userLanguage)}">${currencySymbol} 0,00</span>
                                 </div>
                             </div>
                             <button class="close-table-btn" onclick="openCloseTableModal()" th:if="${false}">
@@ -3554,7 +3560,6 @@
 </main>
 
 <script th:inline="javascript">
-    const tables = /*[[${tables}]]*/ [];
     let orderHistory = /*[[${orderHistory}]]*/ [];
     let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
@@ -3843,7 +3848,7 @@
         const modal = document.getElementById('closeTableModal');
         const amountEl = document.getElementById('closeTableRemainingAmount');
         if (amountEl) {
-            amountEl.textContent = `${currencySymbol} ${orderRemainingAmount.toFixed(2).replace('.', ',')}`;
+            amountEl.textContent = formatCurrency(orderRemainingAmount);
         }
         modal.classList.add('active');
         document.getElementById('closeTableNumber').textContent = selectedTable ? i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0')) : '';
@@ -4000,7 +4005,7 @@
                 <td>${formatDate(order.closedAt)}</td>
                 <td>${order.serviceFee}%</td>
                 <td><span class="order-status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
-                <td style="font-weight: 600;">${currencySymbol || 'R$'} ${total.toFixed(2).replace('.', ',')}</td>
+                <td style="font-weight: 600;">${formatCurrency(total)}</td>
             `;
             tr.style.cursor = 'pointer';
             tr.onclick = () => openOrderDetail(order.id);
@@ -4117,7 +4122,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <span>${clientName}</span>
                     </span>
-                    <span class="client-subtotal">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
+                    <span class="client-subtotal">${formatCurrency(subtotal)}</span>
                 </div>
                 <div class="client-orders">
                     ${clientItems.map(item => `
@@ -4136,16 +4141,16 @@
                                 <div style="text-align: right;">
                                     ${item.promotionSnapshot ? `
                                         <div style="font-size: 0.7rem; color: var(--muted); text-decoration: line-through;">
-                                            ${currencySymbol} ${(item.promotionSnapshot.originalPrice * item.quantity).toFixed(2).replace('.', ',')}
+                                            ${formatCurrency(item.promotionSnapshot.originalPrice * item.quantity)}
                                         </div>
                                     ` : ''}
                                     <span class="order-item-price" style="${item.promotionSnapshot ? 'color: var(--green) !important; font-weight: 800;' : ''}">
-                                        ${currencySymbol} ${(item.totalPrice || 0).toFixed(2).replace('.', ',')}
+                                        ${formatCurrency(item.totalPrice || 0)}
                                     </span>
                                 </div>
                                 ${item.promotionSnapshot ? `
                                     <div class="promo-badge" style="position: relative !important; top: 0 !important; right: 0 !important; background: var(--destructive); color: white; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">
-                                        ${item.promotionSnapshot.discountType && item.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(item.promotionSnapshot.discountValue) + '% OFF') : ('-' + currencySymbol + (item.promotionSnapshot.discountValue ? item.promotionSnapshot.discountValue.toFixed(2).replace('.', ',') : '0,00'))}
+                                        ${item.promotionSnapshot.discountType && item.promotionSnapshot.discountType.toUpperCase() === 'PERCENTAGE' ? (Math.round(item.promotionSnapshot.discountValue) + '% OFF') : ('-' + formatCurrency(item.promotionSnapshot.discountValue || 0))}
                                     </div>
                                 ` : ''}
                             </div>
@@ -4180,15 +4185,15 @@
             </h3>
             <div class="bill-row">
                 <span>${i18n.billLabelSubtotal}</span>
-                <span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
+                <span>${formatCurrency(subtotal)}</span>
             </div>
             <div class="bill-row">
                 <span>${i18n.billLabelServiceFee.replace('{0}', order.serviceFee)}</span>
-                <span>${currencySymbol} ${fee.toFixed(2).replace('.', ',')}</span>
+                <span>${formatCurrency(fee)}</span>
             </div>
             <div class="bill-row total">
                 <span>${i18n.billLabelTotal}</span>
-                <span>${currencySymbol} ${total.toFixed(2).replace('.', ',')}</span>
+                <span>${formatCurrency(total)}</span>
             </div>
         `;
 
@@ -4219,7 +4224,7 @@
                         <span class="payment-time">${formatTimeOnly(payment.paidAt)}</span>
                         ${payment.note ? `<div class="payment-note" style="font-size: 0.75rem; font-style: italic; color: var(--muted); margin-top: 4px; padding-left: 0.5rem; border-left: 2px solid var(--border);">${payment.note}</div>` : ''}
                     </div>
-                    <span class="payment-amount">${currencySymbol} ${(payment.amount || 0).toFixed(2).replace('.', ',')}</span>
+                    <span class="payment-amount">${formatCurrency(payment.amount || 0)}</span>
                 </div>
                 `).join('')}
             `;
@@ -4445,21 +4450,21 @@
                              th:text="${#strings.listJoin(client.value.![ (quantity > 1 ? quantity + 'x ' : '') + name + (customizationSummary != null ? ' (' + customizationSummary + ')' : '') ], ', ')}">Itens</div>
                     </div>
                     <div style="font-weight: 600;" 
-                         th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
+                         th:text="${currency.format(clientBalances[client.key], userLanguage)}">${currencySymbol} 0,00</div>
                 </div>
             </div>
             <div class="bill-summary-section">
                 <div class="bill-summary-row">
                     <span>Subtotal</span>
-                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderSubtotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                    <span th:text="${currency.format(orderSubtotal, userLanguage)}">${currencySymbol} 0,00</span>
                 </div>
                 <div class="bill-summary-row">
                     <span th:text="#{page.tables.bill.label.service.fee(${orderServiceFee})}">Taxa de serviço (<span th:text="${orderServiceFee}"></span>%)</span>
-                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderServiceFeeAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                    <span th:text="${currency.format(orderServiceFeeAmount, userLanguage)}">${currencySymbol} 0,00</span>
                 </div>
                 <div class="bill-summary-row total">
                     <span th:text="#{page.tables.bill.label.total}">Total</span>
-                    <span th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderTotal, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                    <span th:text="${currency.format(orderTotal, userLanguage)}">${currencySymbol} 0,00</span>
                 </div>
             </div>
         </div>
@@ -4486,7 +4491,7 @@
         <div class="modal-body">
             <div style="text-align: center; padding: 1rem 0;">
                 <div id="closeTableRemainingAmount" style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;"
-                     th:text="${currencySymbol + ' ' + #numbers.formatDecimal(orderRemainingAmount, 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</div>
+                     th:text="${currency.format(orderRemainingAmount, userLanguage)}">${currencySymbol} 0,00</div>
                 <div style="color: var(--muted);" th:text="#{page.tables.modal.close.label.remaining}">Saldo restante da conta</div>
             </div>
             <div class="form-group">
@@ -4562,7 +4567,7 @@
                         <span th:if="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
                               style="font-size: 0.7rem; padding: 2px 8px; background: #22c55e; color: white; border-radius: 20px; font-weight: 600;" th:text="#{page.tables.js.pago}">PAGO</span>
                         <span th:unless="${clientBalances[client.key].compareTo(T(java.math.BigDecimal).ZERO) <= 0}" 
-                              th:text="${currencySymbol + ' ' + #numbers.formatDecimal(clientBalances[client.key], 1, 'POINT', 2, 'COMMA')}">${currencySymbol} 0,00</span>
+                              th:text="${currency.format(clientBalances[client.key], userLanguage)}">${currencySymbol} 0,00</span>
                     </div>
                 </div>
             </div>
@@ -5079,7 +5084,7 @@
         cancelItemData = { itemId, itemName, maxQty: qty, unitPrice, cancelQty: qty };
 
         document.getElementById('cancelItemName').textContent = itemName;
-        document.getElementById('cancelItemPrice').textContent = `${currencySymbol} ${unitPrice.toFixed(2).replace('.', ',')} cada`;
+        document.getElementById('cancelItemPrice').textContent = `${formatCurrency(unitPrice)} cada`;
         document.getElementById('cancelQtyValue').textContent = cancelItemData.cancelQty;
         document.getElementById('cancelQtyMax').textContent = cancelItemData.maxQty;
         updateCancelTotal();
@@ -5089,7 +5094,7 @@
 
     function updateCancelTotal() {
         const total = cancelItemData.cancelQty * cancelItemData.unitPrice;
-        document.getElementById('cancelTotalValue').textContent = `${currencySymbol} ${total.toFixed(2).replace('.', ',')}`;
+        document.getElementById('cancelTotalValue').textContent = formatCurrency(total);
     }
 
     function adjustCancelQty(delta) {
@@ -5219,7 +5224,7 @@
                     <div class="options-list">
                         ${q.options.map(opt => {
                             const optText = opt.text[lang] || opt.text['pt'] || Object.values(opt.text)[0] || '';
-                            const extraPriceText = opt.extraPrice > 0 ? `+ ${currencySymbol} ${opt.extraPrice.toFixed(2).replace('.', ',')}` : '';
+                            const extraPriceText = opt.extraPrice > 0 ? `+ ${formatCurrency(opt.extraPrice)}` : '';
                             return `
                                 <div class="option-item" 
                                      onclick="toggleQuestionOption(this)" 
@@ -5578,10 +5583,10 @@
             const subtotal = effectivePrice * item.qty;
             const priceHtml = item.originalPrice && item.promotionId
                 ? `<div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                       <span style="text-decoration: line-through; color: var(--muted); font-size: 0.8rem;">${currencySymbol} ${(item.originalPrice * item.qty).toFixed(2).replace('.', ',')}</span>
-                       <span style="color: var(--green); font-weight: 700;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>
+                       <span style="text-decoration: line-through; color: var(--muted); font-size: 0.8rem;">${formatCurrency(item.originalPrice * item.qty)}</span>
+                       <span style="color: var(--green); font-weight: 700;">${formatCurrency(subtotal)}</span>
                    </div>`
-                : `<div style="color: var(--primary); font-weight: 600;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</div>`;
+                : `<div style="color: var(--primary); font-weight: 600;">${formatCurrency(subtotal)}</div>`;
 
             const customizationsHtml = item.customizations ? `
                 <div class="item-questions-summary">
@@ -5664,9 +5669,9 @@
                 const subtotal = effectivePrice * item.qty;
                 clientTotal += subtotal;
                 const priceHtml = item.originalPrice && item.promotionId
-                    ? `<span style="text-decoration: line-through; color: var(--muted); font-size: 0.75rem; margin-right: 0.25rem;">${currencySymbol} ${(item.originalPrice * item.qty).toFixed(2).replace('.', ',')}</span>
-                       <span style="color: var(--green); font-weight: 700;">${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`
-                    : `<span>${currencySymbol} ${subtotal.toFixed(2).replace('.', ',')}</span>`;
+                    ? `<span style="text-decoration: line-through; color: var(--muted); font-size: 0.75rem; margin-right: 0.25rem;">${formatCurrency(item.originalPrice * item.qty)}</span>
+                       <span style="color: var(--green); font-weight: 700;">${formatCurrency(subtotal)}</span>`
+                    : `<span>${formatCurrency(subtotal)}</span>`;
                 
                 const customizationsSummary = item.customizations ? `
                     <div style="font-size: 0.7rem; color: var(--muted); margin-left: 1.5rem; font-style: italic;">
@@ -5691,14 +5696,14 @@
                 <div class="summary-client">
                     <div class="summary-client-header">
                         <span>${client.name}</span>
-                        <span style="color: var(--primary);">${currencySymbol} ${clientTotal.toFixed(2).replace('.', ',')}</span>
+                        <span style="color: var(--primary);">${formatCurrency(clientTotal)}</span>
                     </div>
                     <div class="summary-client-items">${itemsHtml}</div>
                 </div>
             `;
         }).join('');
         
-        document.getElementById('summaryGrandTotal').textContent = `${currencySymbol} ${grandTotal.toFixed(2).replace('.', ',')}`;
+        document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
     }
 
     async function submitOrder() {
@@ -6138,7 +6143,6 @@
     function renderTables(data) {
         const list = document.getElementById('tablesList');
         const filters = document.getElementById('tablesFilterButtons');
-        const currencySymbol = /*[[${currencySymbol}]]*/ '$';
         
         // Update filter counts
         if (filters) {
@@ -6183,7 +6187,7 @@
                     </div>
                     <div class="table-card-info">
                         <span>${statusInfo}</span>
-                        <span class="table-total">${currencySymbol} ${table.balance.toFixed(2).replace('.', ',')}</span>
+                        <span class="table-total">${formatCurrency(table.balance)}</span>
                     </div>
                 </div>
             `;
@@ -6236,7 +6240,6 @@
 
     function renderItems(items) {
         const container = document.getElementById('menuItemsGrid');
-        const currencySymbol = /*[[${currencySymbol}]]*/ '$';
         
         let html = '';
         items.forEach(item => {
@@ -6259,15 +6262,15 @@
                             ${item.promotion.discountType === 'PERCENTAGE' 
                                 ? `${Math.round(item.promotion.discountValue)}% OFF` 
                                 : (item.promotion.discountType === 'FIXED_VALUE' 
-                                    ? `-${currencySymbol} ${item.promotion.discountValue.toFixed(2).replace('.', ',')}` 
+                                    ? `-${formatCurrency(item.promotion.discountValue)}` 
                                     : 'PROMO')}
                         </div>
                     ` : ''}
                     <h4>${item.name}</h4>
                     <div class="menu-item-price">
-                        ${hasPromotion ? `<span class="price-original">${currencySymbol} ${originalPrice.toFixed(2).replace('.', ',')}</span>` : ''}
+                        ${hasPromotion ? `<span class="price-original">${formatCurrency(originalPrice)}</span>` : ''}
                         <span class="${hasPromotion ? 'price-promo' : ''}">
-                            ${currencySymbol} ${price.toFixed(2).replace('.', ',')}
+                            ${formatCurrency(price)}
                         </span>
                     </div>
                 </div>

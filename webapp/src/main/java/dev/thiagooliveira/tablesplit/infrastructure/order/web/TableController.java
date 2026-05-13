@@ -61,12 +61,14 @@ public class TableController {
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
+    model.addAttribute("currency", context.getRestaurant().getCurrency());
     model.addAttribute("orderLoaded", false);
 
     String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
     model.addAttribute("currencySymbol", currencySymbol);
 
     var userLanguage = context.getUser().getLanguage();
+    model.addAttribute("userLanguage", userLanguage);
 
     // Defaults for when no order is active
     model.addAttribute("orderSubtotal", BigDecimal.ZERO);
