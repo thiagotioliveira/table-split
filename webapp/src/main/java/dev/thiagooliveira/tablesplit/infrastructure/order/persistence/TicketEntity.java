@@ -28,6 +28,7 @@ public class TicketEntity {
   private ZonedDateTime createdAt;
 
   private ZonedDateTime readyAt;
+  private ZonedDateTime deliveredAt;
 
   @Column private String note;
 
@@ -79,6 +80,14 @@ public class TicketEntity {
 
   public void setReadyAt(ZonedDateTime readyAt) {
     this.readyAt = readyAt;
+  }
+
+  public ZonedDateTime getDeliveredAt() {
+    return deliveredAt;
+  }
+
+  public void setDeliveredAt(ZonedDateTime deliveredAt) {
+    this.deliveredAt = deliveredAt;
   }
 
   public String getNote() {

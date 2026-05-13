@@ -166,11 +166,17 @@ public class OrderApiController implements OrdersApi {
             ? start.toZonedDateTime().withZoneSameInstant(Time.getZoneId())
             : ZonedDateTime.now(Time.getZoneId()).toLocalDate().atStartOfDay(Time.getZoneId());
 
+    ZonedDateTime deliveryThreshold = ZonedDateTime.now(Time.getZoneId()).minusHours(1);
     List<TicketWithTable> ticketsWithTables =
-        getTickets.execute(context.getRestaurant().getId(), zStart);
+        getTickets.execute(context.getRestaurant().getId(), deliveryThreshold);
 
     List<TicketModel> allTickets =
         ticketsWithTables.stream()
+            .filter(
+                tw ->
+                    tw.ticket().getStatus() != TicketStatus.DELIVERED
+                        || tw.ticket().getDeliveredAt() == null
+                        || tw.ticket().getDeliveredAt().isAfter(deliveryThreshold))
             .map(
                 tw ->
                     mapper.mapToModel(

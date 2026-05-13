@@ -36,7 +36,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID> {
 
   @EntityGraph(attributePaths = {"tickets", "tickets.items", "customers", "payments"})
   @Query(
-      "select o from OrderEntity o where o.tableId = :tableId "
+      "select distinct o from OrderEntity o where o.tableId = :tableId "
           + "and (:status is null or o.status = :status) "
           + "and (cast(:start as timestamp) is null or o.openedAt >= :start) "
           + "and (cast(:end as timestamp) is null or o.openedAt <= :end) "

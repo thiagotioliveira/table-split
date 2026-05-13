@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260513-add-delivered-at-to-tickets
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: tickets
+            columns:
+              - column:
+                  name: delivered_at
+                  type: timestamp with time zone
+        - update:
+            tableName: tickets
+            columns:
+              - column:
+                  name: delivered_at
+                  valueComputed: ready_at
+            where: "status = 'DELIVERED' AND ready_at IS NOT NULL"

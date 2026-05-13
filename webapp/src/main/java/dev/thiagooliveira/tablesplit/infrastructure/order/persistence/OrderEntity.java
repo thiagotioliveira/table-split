@@ -3,9 +3,7 @@ package dev.thiagooliveira.tablesplit.infrastructure.order.persistence;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,10 +34,10 @@ public class OrderEntity {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<PaymentEntity> payments = new ArrayList<>();
+  private Set<PaymentEntity> payments = new HashSet<>();
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderFeedbackEntity> feedbacks = new ArrayList<>();
+  private Set<OrderFeedbackEntity> feedbacks = new HashSet<>();
 
   @ElementCollection
   @CollectionTable(name = "order_customers", joinColumns = @JoinColumn(name = "order_id"))
@@ -116,11 +114,11 @@ public class OrderEntity {
     this.serviceFee = serviceFee;
   }
 
-  public List<PaymentEntity> getPayments() {
+  public Set<PaymentEntity> getPayments() {
     return payments;
   }
 
-  public void setPayments(List<PaymentEntity> payments) {
+  public void setPayments(Set<PaymentEntity> payments) {
     this.payments = payments;
   }
 
@@ -132,11 +130,11 @@ public class OrderEntity {
     this.customers = customers;
   }
 
-  public List<OrderFeedbackEntity> getFeedbacks() {
+  public Set<OrderFeedbackEntity> getFeedbacks() {
     return feedbacks;
   }
 
-  public void setFeedbacks(List<OrderFeedbackEntity> feedbacks) {
+  public void setFeedbacks(Set<OrderFeedbackEntity> feedbacks) {
     this.feedbacks = feedbacks;
   }
 

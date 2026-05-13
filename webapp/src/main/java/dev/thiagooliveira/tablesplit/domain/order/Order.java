@@ -391,6 +391,10 @@ public class Order extends AggregateRoot {
       ticket.setReadyAt(Time.now());
     }
 
+    if (newStatus == TicketStatus.DELIVERED) {
+      ticket.setDeliveredAt(Time.now());
+    }
+
     this.registerEvent(new TicketStatusChangedEvent(this, ticket, newStatus));
   }
 

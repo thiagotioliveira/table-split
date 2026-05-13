@@ -26,6 +26,8 @@ public class GetTickets {
     List<Order> orders =
         new java.util.ArrayList<>(
             orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN));
+    orders.addAll(
+        orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.WAITING));
 
     if (closedAtThreshold != null) {
       orders.addAll(

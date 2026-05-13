@@ -13,6 +13,7 @@ public class Ticket {
   private TicketStatus status;
   private ZonedDateTime createdAt;
   private ZonedDateTime readyAt;
+  private ZonedDateTime deliveredAt;
   private String note;
 
   public Ticket() {
@@ -59,6 +60,9 @@ public class Ticket {
 
   public void setStatus(TicketStatus status) {
     this.status = status;
+    if (this.status == TicketStatus.DELIVERED) {
+      this.deliveredAt = Time.now();
+    }
     if (this.items != null) {
       this.items.stream()
           .filter(item -> !item.isCancelled() && !item.isDelivered())
@@ -80,6 +84,14 @@ public class Ticket {
 
   public void setReadyAt(ZonedDateTime readyAt) {
     this.readyAt = readyAt;
+  }
+
+  public ZonedDateTime getDeliveredAt() {
+    return deliveredAt;
+  }
+
+  public void setDeliveredAt(ZonedDateTime deliveredAt) {
+    this.deliveredAt = deliveredAt;
   }
 
   public String getNote() {
@@ -112,6 +124,9 @@ public class Ticket {
 
       if (atLeastOneDelivered) {
         this.status = TicketStatus.DELIVERED;
+        if (this.deliveredAt == null) {
+          this.deliveredAt = Time.now();
+        }
       } else {
         this.status = TicketStatus.CANCELLED;
       }

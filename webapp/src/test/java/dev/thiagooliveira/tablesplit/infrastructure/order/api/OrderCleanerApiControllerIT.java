@@ -127,7 +127,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
       payment.setAmount(new BigDecimal("31.00"));
       payment.setPaidAt(oldOrder.getClosedAt());
       payment.setMethod(PaymentMethod.CASH);
-      oldOrder.setPayments(Collections.singletonList(payment));
+      oldOrder.setPayments(Collections.singleton(payment));
 
       orderJpaRepository.save(oldOrder);
 

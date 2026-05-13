@@ -939,3 +939,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260426-add-customizations-to-ticket-items.yaml
   - include:
       file: db/changelog/changesets/20260502-add-is-read-to-feedbacks.yaml
+  - include:
+      file: db/changelog/changesets/20260513-add-delivered-at-to-tickets.yaml

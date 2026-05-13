@@ -61,6 +61,8 @@ class GetTicketsTest {
 
     when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN))
         .thenReturn(List.of(openOrder));
+    when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.WAITING))
+        .thenReturn(List.of());
     when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.CLOSED))
         .thenReturn(List.of(closedOrder));
 
@@ -96,6 +98,8 @@ class GetTicketsTest {
 
     when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN))
         .thenReturn(List.of(openOrder));
+    when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.WAITING))
+        .thenReturn(List.of());
     when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.CLOSED))
         .thenReturn(List.of(closedOrder));
 

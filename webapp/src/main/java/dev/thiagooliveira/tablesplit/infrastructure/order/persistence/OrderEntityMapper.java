@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -63,7 +64,7 @@ public class OrderEntityMapper {
     }
     if (domain.getPayments() != null) {
       entity.setPayments(
-          new ArrayList<>(
+          new HashSet<>(
               domain.getPayments().stream()
                   .map(payment -> paymentToEntity(payment, entity))
                   .toList()));
@@ -87,6 +88,7 @@ public class OrderEntityMapper {
     domain.setStatus(entity.getStatus());
     domain.setCreatedAt(entity.getCreatedAt());
     domain.setReadyAt(entity.getReadyAt());
+    domain.setDeliveredAt(entity.getDeliveredAt());
     domain.setNote(entity.getNote());
     if (entity.getItems() != null) {
       domain.setItems(
@@ -102,6 +104,7 @@ public class OrderEntityMapper {
     entity.setStatus(domain.getStatus());
     entity.setCreatedAt(domain.getCreatedAt());
     entity.setReadyAt(domain.getReadyAt());
+    entity.setDeliveredAt(domain.getDeliveredAt());
     entity.setNote(domain.getNote());
     if (domain.getItems() != null) {
       entity.setItems(
