@@ -69,6 +69,8 @@ public class TableController {
 
     var userLanguage = context.getUser().getLanguage();
     model.addAttribute("userLanguage", userLanguage);
+    model.addAttribute(
+        "zoneId", dev.thiagooliveira.tablesplit.infrastructure.timezone.Time.getZoneId().getId());
 
     // Defaults for when no order is active
     model.addAttribute("orderSubtotal", BigDecimal.ZERO);

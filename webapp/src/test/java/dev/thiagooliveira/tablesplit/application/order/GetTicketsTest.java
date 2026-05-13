@@ -11,6 +11,7 @@ import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketItem;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
+import dev.thiagooliveira.tablesplit.domain.order.TicketWithTable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,7 +65,7 @@ class GetTicketsTest {
         .thenReturn(List.of(closedOrder));
 
     // When
-    List<GetTickets.TicketWithTable> results = getTickets.execute(restaurantId, null);
+    List<TicketWithTable> results = getTickets.execute(restaurantId, null);
 
     // Then
     assertEquals(2, results.size());
@@ -99,7 +100,7 @@ class GetTicketsTest {
         .thenReturn(List.of(closedOrder));
 
     // When
-    List<GetTickets.TicketWithTable> results = getTickets.execute(restaurantId, null);
+    List<TicketWithTable> results = getTickets.execute(restaurantId, null);
 
     // Then
     assertEquals(1, results.size());

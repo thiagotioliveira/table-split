@@ -54,6 +54,16 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
       responses:
         '200':
           description: Successful history retrieval
@@ -542,6 +552,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TicketResponse'
+        pagination:
+          $ref: '#/components/schemas/PaginationResponse'
         totalOrders:
           type: integer
         totalRevenue:

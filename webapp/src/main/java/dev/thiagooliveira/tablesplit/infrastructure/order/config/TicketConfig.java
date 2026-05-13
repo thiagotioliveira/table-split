@@ -26,9 +26,8 @@ public class TicketConfig {
   }
 
   @Bean
-  public GetHistoryTickets getHistoryTickets(
-      OrderRepository orderRepository, TableRepository tableRepository) {
-    return new GetHistoryTickets(orderRepository, tableRepository);
+  public GetHistoryTickets getHistoryTickets(OrderRepository orderRepository) {
+    return new GetHistoryTickets(orderRepository);
   }
 
   @Bean

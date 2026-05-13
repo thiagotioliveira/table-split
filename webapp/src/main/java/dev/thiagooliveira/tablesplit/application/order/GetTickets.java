@@ -6,13 +6,12 @@ import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
+import dev.thiagooliveira.tablesplit.domain.order.TicketWithTable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class GetTickets {
-
-  public record TicketWithTable(Ticket ticket, Order order, String tableCod) {}
 
   private final OrderRepository orderRepository;
   private final TableRepository tableRepository;

@@ -676,7 +676,26 @@
 
         .history-order-total {
             font-weight: 600;
-            color: var(--primary);
+            color: var(--foreground);
+        }
+
+        /* Pagination & Loader */
+        .loader-spinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #historyLoadMoreContainer {
+            padding: 1rem 0;
+            border-top: 1px solid var(--border);
         }
 
         .history-empty {
@@ -987,7 +1006,7 @@
                 </div>
                 <div class="more-orders-hint">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                    <span th:text="#{page.orders.kanban.delivered.today_count(${deliveredTodayCount})}">+0 pedidos hoje</span>
+                    <span id="deliveredTodayCountHint" th:text="#{page.orders.kanban.delivered.today_count(${deliveredTodayCount != null ? deliveredTodayCount : 0})}">+0 pedidos hoje</span>
                 </div>
                 <div class="kanban-footer">
                     <button onclick="openHistoryModal()" class="kanban-footer-link">
@@ -1024,21 +1043,30 @@
 
             <div class="history-summary" id="historySummary">
                 <div class="history-summary-item">
-                    <span class="history-summary-value" id="historyTotalOrders">0</span>
+                    <span class="history-summary-value" id="historyTotalOrders">-</span>
                     <span class="history-summary-label" th:text="#{page.orders.modal.history.total_orders}">Pedidos</span>
                 </div>
                 <div class="history-summary-item">
-                    <span class="history-summary-value" id="historyTotalRevenue">${currencySymbol} 0,00</span>
+                    <span class="history-summary-value" id="historyTotalRevenue">-</span>
                     <span class="history-summary-label" th:text="#{page.orders.modal.history.total_revenue}">Faturamento</span>
                 </div>
                 <div class="history-summary-item">
-                    <span class="history-summary-value" id="historyAvgTicket">${currencySymbol} 0,00</span>
+                    <span class="history-summary-value" id="historyAvgTicket">-</span>
                     <span class="history-summary-label" th:text="#{page.orders.modal.history.avg_ticket}">Ticket Médio</span>
                 </div>
             </div>
 
             <div class="history-list" id="historyList">
                 <!-- Orders will be rendered here -->
+            </div>
+
+            <div id="historyLoadMoreContainer" style="text-align: center; display: none;">
+                <button id="historyLoadMoreBtn" class="btn btn-outline btn-sm" onclick="loadMoreHistory()" style="margin: 0 auto;">
+                    [[#{page.orders.modal.history.load_more_btn}]]
+                </button>
+                <div id="historyLoader" style="display: none; justify-content: center; padding: 0.5rem;">
+                    <div class="loader-spinner"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -1140,7 +1168,8 @@
         prepare: /*[[#{page.orders.order_card.actions.prepare}]]*/ 'Preparar',
         errorLoadDetails: /*[[#{page.orders.js.error.load_details}]]*/ 'Erro ao carregar detalhes do pedido',
         soundActive: /*[[#{page.orders.header.sound.active}]]*/ 'Som ativo',
-        soundMuted: /*[[#{page.orders.header.sound.muted}]]*/ 'Som mudo'
+        soundMuted: /*[[#{page.orders.header.sound.muted}]]*/ 'Som mudo',
+        ordersTodaySuffix: /*[[#{page.orders.kanban.delivered.today_count_suffix}]]*/ 'pedidos hoje'
     };
 
     window.openSidebar = openSidebar;
@@ -1157,6 +1186,7 @@
     window.openHistoryModal = openHistoryModal;
     window.closeHistoryModal = closeHistoryModal;
     window.filterHistory = filterHistory;
+    window.loadMoreHistory = loadMoreHistory;
     // Sidebar functions
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
@@ -1226,6 +1256,12 @@
             if (readyBadge) readyBadge.textContent = data.readyCount || 0;
             const deliveredBadge = document.querySelector('button[onclick*="delivered"] .filter-badge');
             if (deliveredBadge) deliveredBadge.textContent = data.deliveredCount || 0;
+
+            const hint = document.getElementById('deliveredTodayCountHint');
+            if (hint) {
+                const count = data.deliveredTodayCount !== undefined ? data.deliveredTodayCount : 0;
+                hint.textContent = `+${count} ${i18n.ordersTodaySuffix}`;
+            }
             return;
         }
 
@@ -1459,6 +1495,17 @@
 
     function formatCurrency(value) {
         return new Intl.NumberFormat(userLanguageLabel, { style: 'currency', currency: currencyCode }).format(value);
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleString(userLanguageLabel, {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
     function renderCustomizationSnapshot(json) {
@@ -1726,7 +1773,11 @@
     function openHistoryModal() {
         // Set default dates (last 7 days)
         const today = new Date();
-        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        today.setHours(23, 59, 59, 999);
+        
+        const weekAgo = new Date();
+        weekAgo.setDate(today.getDate() - 7);
+        weekAgo.setHours(0, 0, 0, 0);
 
         document.getElementById('historyDateEnd').value = toIsoWithTimeZone(today).slice(0, 16);
         document.getElementById('historyDateStart').value = toIsoWithTimeZone(weekAgo).slice(0, 16);
@@ -1743,7 +1794,12 @@
         fetchHistory();
     }
 
+    let historyPage = 0;
+    const historySize = 10;
+    let historyHasNext = false;
+
     async function fetchHistory() {
+        historyPage = 0;
         const startStr = document.getElementById('historyDateStart').value;
         const endStr = document.getElementById('historyDateEnd').value;
 
@@ -1751,19 +1807,59 @@
             const start = startStr ? new Date(startStr).toISOString() : null;
             const end = endStr ? new Date(endStr).toISOString() : null;
 
-            const data = await window.ordersApi.getOrderHistory(start, end);
-            renderHistoryList(data.orders || []);
+            const data = await window.ordersApi.getOrderHistory(start, end, historyPage, historySize);
+            renderHistoryList(data.orders || [], false);
             updateHistorySummary(data);
+
+            historyHasNext = (data.pagination && data.pagination.hasNext) || false;
+            updateLoadMoreButton();
         } catch (err) {
             console.error('Error fetching history:', err);
-            renderHistoryList([]);
+            renderHistoryList([], false);
         }
     }
 
-    function renderHistoryList(orders) {
+    async function loadMoreHistory() {
+        if (!historyHasNext) return;
+
+        historyPage++;
+        const startStr = document.getElementById('historyDateStart').value;
+        const endStr = document.getElementById('historyDateEnd').value;
+
+        const btn = document.getElementById('historyLoadMoreBtn');
+        const loader = document.getElementById('historyLoader');
+        btn.style.display = 'none';
+        loader.style.display = 'flex';
+
+        try {
+            const start = startStr ? new Date(startStr).toISOString() : null;
+            const end = endStr ? new Date(endStr).toISOString() : null;
+
+            const data = await window.ordersApi.getOrderHistory(start, end, historyPage, historySize);
+            renderHistoryList(data.orders || [], true);
+
+            historyHasNext = (data.pagination && data.pagination.hasNext) || false;
+        } catch (err) {
+            console.error('Error loading more history:', err);
+        } finally {
+            loader.style.display = 'none';
+            updateLoadMoreButton();
+        }
+    }
+
+    function updateLoadMoreButton() {
+        const container = document.getElementById('historyLoadMoreContainer');
+        const btn = document.getElementById('historyLoadMoreBtn');
+        if (container && btn) {
+            container.style.display = historyHasNext ? 'block' : 'none';
+            btn.style.display = historyHasNext ? 'inline-block' : 'none';
+        }
+    }
+
+    function renderHistoryList(orders, append = false) {
         const container = document.getElementById('historyList');
 
-        if (orders.length === 0) {
+        if (!append && orders.length === 0) {
             container.innerHTML = `
           <div class="history-empty">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
@@ -1774,7 +1870,7 @@
             return;
         }
 
-        container.innerHTML = orders.map(order => `
+        const html = orders.map(order => `
         <div class="history-order" onclick="viewHistoryOrder('${order.id}')">
           <div class="history-order-info">
             <div class="history-order-id">
@@ -1792,11 +1888,17 @@
             </div>
           </div>
           <div class="history-order-right">
-            <span class="history-order-total">${currencySymbol} ${order.total.toFixed(2).replace('.', ',')}</span>
-            <span style="font-size: 0.75rem; color: var(--muted);">${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span class="history-order-total">${formatCurrency(order.total)}</span>
+            <span style="font-size: 0.75rem; color: var(--muted);">${formatDateTime(order.createdAt)}</span>
           </div>
         </div>
       `).join('');
+
+        if (append) {
+            container.insertAdjacentHTML('beforeend', html);
+        } else {
+            container.innerHTML = html;
+        }
     }
 
     function updateHistorySummary(data) {

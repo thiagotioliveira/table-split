@@ -19,6 +19,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
   private final RestaurantJpaRepository restaurantJpaRepository;
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
   private final TicketJpaRepository ticketJpaRepository;
+  private final TableJpaRepository tableJpaRepository;
   private final OrderEntityMapper mapper;
 
   public OrderRepositoryAdapter(
@@ -27,12 +28,14 @@ public class OrderRepositoryAdapter implements OrderRepository {
       RestaurantJpaRepository restaurantJpaRepository,
       org.springframework.context.ApplicationEventPublisher eventPublisher,
       TicketJpaRepository ticketJpaRepository,
+      TableJpaRepository tableJpaRepository,
       OrderEntityMapper mapper) {
     this.orderJpaRepository = orderJpaRepository;
     this.itemJpaRepository = itemJpaRepository;
     this.restaurantJpaRepository = restaurantJpaRepository;
     this.eventPublisher = eventPublisher;
     this.ticketJpaRepository = ticketJpaRepository;
+    this.tableJpaRepository = tableJpaRepository;
     this.mapper = mapper;
   }
 
@@ -223,5 +226,94 @@ public class OrderRepositoryAdapter implements OrderRepository {
       java.time.ZonedDateTime end) {
     return ticketJpaRepository.countByOrderRestaurantIdAndStatusAndCreatedAtBetween(
         restaurantId, status, start, end);
+  }
+
+  @Override
+  public dev.thiagooliveira.tablesplit.domain.common.Pagination<
+          dev.thiagooliveira.tablesplit.domain.order.TicketWithTable>
+      findHistoryTickets(
+          UUID restaurantId,
+          java.time.ZonedDateTime start,
+          java.time.ZonedDateTime end,
+          int page,
+          int size) {
+
+    org.springframework.data.domain.Pageable pageable =
+        org.springframework.data.domain.PageRequest.of(page, size);
+
+    List<dev.thiagooliveira.tablesplit.domain.order.TicketStatus> statuses =
+        List.of(
+            dev.thiagooliveira.tablesplit.domain.order.TicketStatus.DELIVERED,
+            dev.thiagooliveira.tablesplit.domain.order.TicketStatus.CANCELLED);
+
+    org.springframework.data.domain.Page<TicketEntity> ticketPage =
+        ticketJpaRepository.findHistory(restaurantId, statuses, start, end, pageable);
+
+    // 1. Get unique orders to batch fetch them (with all items, customers, etc)
+    List<OrderEntity> orderEntities =
+        ticketPage.getContent().stream().map(TicketEntity::getOrder).distinct().toList();
+
+    List<Order> orders = toDomainList(orderEntities);
+    java.util.Map<UUID, Order> orderMap =
+        orders.stream()
+            .collect(
+                java.util.stream.Collectors.toMap(
+                    dev.thiagooliveira.tablesplit.domain.order.Order::getId, o -> o));
+
+    // 2. Get table codes
+    java.util.Set<UUID> tableIds =
+        orders.stream()
+            .map(dev.thiagooliveira.tablesplit.domain.order.Order::getTableId)
+            .collect(java.util.stream.Collectors.toSet());
+    java.util.Map<UUID, String> tableCodMap =
+        tableJpaRepository.findAllById(tableIds).stream()
+            .collect(java.util.stream.Collectors.toMap(TableEntity::getId, TableEntity::getCod));
+
+    // 3. Map back to TicketWithTable
+    List<dev.thiagooliveira.tablesplit.domain.order.TicketWithTable> items =
+        ticketPage.getContent().stream()
+            .map(
+                te -> {
+                  Order order = orderMap.get(te.getOrder().getId());
+                  dev.thiagooliveira.tablesplit.domain.order.Ticket ticket =
+                      order.getTickets().stream()
+                          .filter(t -> t.getId().equals(te.getId()))
+                          .findFirst()
+                          .orElseThrow();
+                  String tableCod = tableCodMap.getOrDefault(order.getTableId(), "??");
+                  return new dev.thiagooliveira.tablesplit.domain.order.TicketWithTable(
+                      ticket, order, tableCod);
+                })
+            .toList();
+
+    return new dev.thiagooliveira.tablesplit.domain.common.Pagination<>(
+        items,
+        ticketPage.getNumber(),
+        ticketPage.getTotalPages(),
+        ticketPage.getTotalElements(),
+        ticketPage.getSize(),
+        ticketPage.hasNext());
+  }
+
+  @Override
+  public HistorySummary getHistorySummary(
+      UUID restaurantId, java.time.ZonedDateTime start, java.time.ZonedDateTime end) {
+    List<dev.thiagooliveira.tablesplit.domain.order.TicketStatus> statuses =
+        List.of(
+            dev.thiagooliveira.tablesplit.domain.order.TicketStatus.DELIVERED,
+            dev.thiagooliveira.tablesplit.domain.order.TicketStatus.CANCELLED);
+
+    long totalOrders = ticketJpaRepository.countHistory(restaurantId, statuses, start, end);
+    Double revenue = ticketJpaRepository.sumRevenue(restaurantId, statuses, start, end);
+    java.math.BigDecimal totalRevenue =
+        revenue != null ? java.math.BigDecimal.valueOf(revenue) : java.math.BigDecimal.ZERO;
+
+    java.math.BigDecimal avgTicket =
+        totalOrders == 0
+            ? java.math.BigDecimal.ZERO
+            : totalRevenue.divide(
+                java.math.BigDecimal.valueOf(totalOrders), 2, java.math.RoundingMode.HALF_UP);
+
+    return new HistorySummary(totalOrders, totalRevenue, avgTicket);
   }
 }

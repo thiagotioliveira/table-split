@@ -3,14 +3,11 @@ package dev.thiagooliveira.tablesplit.application.order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
-import dev.thiagooliveira.tablesplit.domain.order.Ticket;
+import dev.thiagooliveira.tablesplit.domain.order.TicketWithTable;
 import java.util.Optional;
 import java.util.UUID;
 
 public class GetTicket {
-
-  public record TicketWithTable(
-      Ticket ticket, dev.thiagooliveira.tablesplit.domain.order.Order order, String tableCod) {}
 
   private final OrderRepository orderRepository;
   private final TableRepository tableRepository;

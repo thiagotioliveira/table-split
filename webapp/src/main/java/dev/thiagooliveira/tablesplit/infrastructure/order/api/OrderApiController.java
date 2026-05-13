@@ -10,6 +10,7 @@ import dev.thiagooliveira.tablesplit.application.order.PlaceOrder;
 import dev.thiagooliveira.tablesplit.application.order.UpdateTicketItemStatus;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
+import dev.thiagooliveira.tablesplit.domain.order.TicketWithTable;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.OrdersApi;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.CancelItemRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.MoveTicketRequest;
@@ -22,8 +23,6 @@ import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -91,7 +90,7 @@ public class OrderApiController implements OrdersApi {
   @Override
   public ResponseEntity<
           dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.HistoryResponse>
-      getOrderHistory(OffsetDateTime start, OffsetDateTime end) {
+      getOrderHistory(OffsetDateTime start, OffsetDateTime end, Integer page, Integer size) {
     AccountContext context = getContext();
 
     ZonedDateTime zStart =
@@ -99,31 +98,41 @@ public class OrderApiController implements OrdersApi {
     ZonedDateTime zEnd =
         end != null ? end.toZonedDateTime().withZoneSameInstant(Time.getZoneId()) : null;
 
-    List<GetTickets.TicketWithTable> history =
-        getHistoryTickets.execute(context.getRestaurant().getId(), zStart, zEnd);
+    int pageValue = page != null ? page : 0;
+    int sizeValue = size != null ? size : 20;
 
-    List<TicketModel> orders =
-        history.stream()
+    dev.thiagooliveira.tablesplit.domain.common.Pagination<
+            dev.thiagooliveira.tablesplit.domain.order.TicketWithTable>
+        pagination =
+            getHistoryTickets.execute(
+                context.getRestaurant().getId(), zStart, zEnd, pageValue, sizeValue);
+
+    dev.thiagooliveira.tablesplit.domain.order.OrderRepository.HistorySummary summary =
+        getHistoryTickets.getSummary(context.getRestaurant().getId(), zStart, zEnd);
+
+    List<TicketResponse> orders =
+        pagination.items().stream()
             .map(
                 tw ->
                     mapper.mapToModel(
                         tw.ticket(), tw.order(), tw.tableCod(), context.getUser().getLanguage()))
+            .map(mapper::mapToTicketResponse)
             .toList();
-
-    BigDecimal totalRevenue =
-        orders.stream().map(TicketModel::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    BigDecimal avgTicket =
-        orders.isEmpty()
-            ? BigDecimal.ZERO
-            : totalRevenue.divide(BigDecimal.valueOf(orders.size()), 2, RoundingMode.HALF_UP);
 
     dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.HistoryResponse response =
         new dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.HistoryResponse()
-            .orders(orders.stream().map(mapper::mapToTicketResponse).toList())
-            .totalOrders(orders.size())
-            .totalRevenue(totalRevenue.doubleValue())
-            .avgTicket(avgTicket.doubleValue());
+            .orders(orders)
+            .pagination(
+                new dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model
+                        .PaginationResponse()
+                    .currentPage(pagination.currentPage())
+                    .totalPages(pagination.totalPages())
+                    .totalElements((int) pagination.totalElements())
+                    .size(pagination.size())
+                    .hasNext(pagination.hasNext()))
+            .totalOrders((int) summary.totalOrders())
+            .totalRevenue(summary.totalRevenue().doubleValue())
+            .avgTicket(summary.avgTicket().doubleValue());
 
     return ResponseEntity.ok(response);
   }
@@ -157,7 +166,7 @@ public class OrderApiController implements OrdersApi {
             ? start.toZonedDateTime().withZoneSameInstant(Time.getZoneId())
             : ZonedDateTime.now(Time.getZoneId()).toLocalDate().atStartOfDay(Time.getZoneId());
 
-    List<GetTickets.TicketWithTable> ticketsWithTables =
+    List<TicketWithTable> ticketsWithTables =
         getTickets.execute(context.getRestaurant().getId(), zStart);
 
     List<TicketModel> allTickets =

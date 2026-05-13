@@ -1128,6 +1128,12 @@
             border-bottom: none;
         }
 
+        .order-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-left: 0.5rem;
+        }
+
         .order-item-info {
             display: flex;
             align-items: center;
@@ -2199,13 +2205,13 @@
             display: flex;
             gap: 1rem;
             margin-bottom: 1.25rem;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             align-items: flex-end;
         }
 
         .history-filters .form-group {
             flex: 1;
-            min-width: 150px;
+            min-width: 120px;
             margin-bottom: 0;
         }
 
@@ -2878,6 +2884,12 @@
         }
 
         .cancel-modal-footer .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .cancel-modal-footer .action-btn {
+            justify-content: center;
+        }
             filter: brightness(1.1);
         }
 
@@ -3437,11 +3449,14 @@
                                     <div class="order-item" th:each="item : ${client.value}" th:classappend="${item.statusClass == 'cancelled' ? 'cancelled' : ''}">
                                         <div class="order-item-info">
                                             <span class="order-qty" th:text="${item.quantity}">1</span>
-                                            <div>
-                                                <span class="order-item-name" th:text="${item.name}">Item</span>
-                                                <div th:if="${item.customizationSummary != null}" class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;" th:text="${item.customizationSummary}">Customizations</div>
+                                            <div style="display: flex; flex-direction: column;">
+                                                <div style="display: flex; align-items: center;">
+                                                    <span class="order-item-name" th:text="${item.name}">Item</span>
+                                                    <span class="order-time" style="font-size: 0.7rem; color: var(--muted); margin-left: 0.5rem;" th:text="${#temporals.format(item.createdAt, 'HH:mm')}">12:00</span>
+                                                </div>
                                                 <div class="order-item-note" th:if="${item.note != null && !item.note.empty}" th:text="${item.note}">Nota</div>
                                                 <div class="order-item-note" th:if="${item.ticketNote != null && !item.ticketNote.empty && item.ticketNote != item.note}" th:text="${item.ticketNote}">Ticket Nota</div>
+                                                <div class="order-item-note" th:if="${item.customizationSummary != null}" th:text="${item.customizationSummary}" style="font-size: 0.75rem; color: var(--primary); font-style: italic;">Customização</div>
                                             </div>
                                         </div>
                                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
@@ -3564,6 +3579,28 @@
     let orderRemainingAmount = /*[[${orderRemainingAmount}]]*/ 0;
     const restaurantId = /*[[${restaurantId}]]*/ null;
     window.restaurantId = restaurantId;
+    const zoneId = /*[[${zoneId}]]*/ 'Europe/Lisbon';
+
+    function formatTime(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleTimeString(userLanguageLabel, { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function toIsoWithTimeZone(date) {
+        const parts = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: zoneId,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).formatToParts(date);
+
+        const getPart = (type) => parts.find(p => p.type === type).value;
+        return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}:${getPart('second')}.000Z`;
+    }
 
     const i18n = {
         cardTable: /*[[#{page.tables.card.table('{0}')}]]*/ 'Table {0}',
@@ -3621,7 +3658,9 @@
         cardStatusOccupied: /*[[#{page.tables.card.status.occupied}]]*/ 'In use',
         cardStatusOccupied: /*[[#{page.tables.card.status.occupied}]]*/ 'In use',
         alertFetchError: /*[[#{page.tables.js.alert.fetch.error}]]*/ 'Erro ao buscar dados. Tente novamente.',
-        msgTableClosed: 'Mesa fechada com sucesso!'
+        msgTableClosed: 'Mesa fechada com sucesso!',
+        deleteTableTitle: /*[[#{page.tables.modal.delete.table.title('{0}')}]]*/ 'Excluir Mesa {0}',
+        deleteTableBody: /*[[#{page.tables.modal.delete.table.body('{0}')}]]*/ 'Tem a certeza que deseja excluir a {0}?'
     };
     window.i18n = i18n;
 
@@ -3823,9 +3862,15 @@
 
     function openDeleteTableModal() {
         if (!selectedTable) return;
-        const label = i18n.cardTable.replace('{0}', String(selectedTableCod).padStart(2, '0'));
-        document.getElementById('deleteTableNumber').textContent = label;
-        document.getElementById('deleteTableNumberBody').textContent = label;
+        const tableCode = String(selectedTableCod || '??').padStart(2, '0');
+        const tableLabel = i18n.cardTable.replace('{0}', tableCode);
+        
+        const titleEl = document.getElementById('deleteTableTitleText');
+        const bodyEl = document.getElementById('deleteTableBodyText');
+        
+        if (titleEl) titleEl.textContent = i18n.deleteTableTitle.replace('{0}', tableCode);
+        if (bodyEl) bodyEl.textContent = i18n.deleteTableBody.replace('{0}', tableLabel);
+        
         document.getElementById('deleteTableModal').classList.add('active');
     }
 
@@ -3949,20 +3994,21 @@
 
         // Set default date range (last 7 days)
         const now = new Date();
+        now.setHours(23, 59, 59, 999);
         const start = new Date();
         start.setDate(now.getDate() - 7);
+        start.setHours(0, 0, 0, 0);
 
         const formatForInput = (date) => {
-            const pad = (n) => String(n).padStart(2, '0');
-            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+            return toIsoWithTimeZone(date).slice(0, 16);
         };
 
-        const endInput = document.getElementById('historyEndDate');
         const startInput = document.getElementById('historyStartDate');
+        const endInput = document.getElementById('historyEndDate');
         const statusInput = document.getElementById('historyStatusFilter');
 
-        if (endInput) endInput.value = formatForInput(now);
         if (startInput) startInput.value = formatForInput(start);
+        if (endInput) endInput.value = formatForInput(now);
         if (statusInput) statusInput.value = 'all';
 
         // Clear table content as requested
@@ -4024,12 +4070,18 @@
     function formatDateTime(dateStr) {
         if (!dateStr) return '-';
         const date = new Date(dateStr);
-        return date.toLocaleString('pt-BR', {
+        return date.toLocaleString(userLanguageLabel, {
             day: '2-digit',
             month: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
         });
+    }
+
+    function formatTimeOnly(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return date.toLocaleTimeString(userLanguageLabel, { hour: '2-digit', minute: '2-digit' });
     }
 
     function getStatusBadge(status) {
@@ -4129,11 +4181,14 @@
                     <div class="order-item ${item.statusClass === 'cancelled' ? 'cancelled' : ''}">
                         <div class="order-item-info">
                             <span class="order-qty">${item.quantity}</span>
-                            <div>
-                                <span class="order-item-name">${item.name}</span>
-                                ${item.customizationSummary ? `<div class="item-customization-summary" style="font-size: 0.75rem; color: var(--muted); margin-top: 0px; margin-bottom: 2px; font-style: italic; line-height: 1.2;">${item.customizationSummary}</div>` : ''}
+                            <div style="display: flex; flex-direction: column;">
+                                <div style="display: flex; align-items: center;">
+                                    <span class="order-item-name">${item.name}</span>
+                                    <span class="order-time" style="font-size: 0.7rem; color: var(--muted); margin-left: 0.5rem;">${formatTime(item.createdAt)}</span>
+                                </div>
                                 ${item.note ? `<div class="order-item-note">${item.note}</div>` : ''}
                                 ${item.ticketNote && item.ticketNote !== item.note ? `<div class="order-item-note">${item.ticketNote}</div>` : ''}
+                                ${item.customizationSummary ? `<div class="order-item-note" style="font-size: 0.75rem; color: var(--primary); font-style: italic;">${item.customizationSummary}</div>` : ''}
                             </div>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
@@ -4236,7 +4291,7 @@
     function formatTimeOnly(dateStr) {
         if (!dateStr) return '';
         const date = new Date(dateStr);
-        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString(userLanguageLabel, { hour: '2-digit', minute: '2-digit' });
     }
 
     function openAllNotificationsModal() {
@@ -4524,7 +4579,7 @@
         <div class="modal-header">
             <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                <span th:text="#{page.tables.modal.delete.table.title('')}">Excluir </span><span id="deleteTableNumber">Mesa</span>
+                <span id="deleteTableTitleText" th:text="${#messages.msg('page.tables.modal.delete.table.title', selectedTableObj?.cod)}">Excluir Mesa 01</span>
             </h3>
             <button class="modal-close" onclick="closeDeleteTableModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -4532,7 +4587,7 @@
         </div>
         <div class="modal-body">
             <p style="color: var(--muted); text-align: center; padding: 0.5rem 0;">
-                <span th:text="#{page.tables.modal.delete.table.body('')}">Tem a certeza que deseja excluir </span><strong id="deleteTableNumberBody">esta mesa</strong>?<br>
+                <span id="deleteTableBodyText" th:text="${#messages.msg('page.tables.modal.delete.table.body', selectedTableObj != null ? #messages.msg('page.tables.card.table', selectedTableObj.cod) : '')}">Tem a certeza que deseja excluir a Mesa 01?</span><br>
             </p>
         </div>
         <div class="modal-footer">
@@ -4644,15 +4699,15 @@
         </div>
         <div class="modal-body">
             <div class="history-filters">
-                <div class="filter-group">
+                <div class="form-group" style="flex: 2;">
                     <label class="form-label" th:text="#{page.tables.modal.history.label.start}">Data Início</label>
-                    <input type="date" id="historyStartDate" class="form-input">
+                    <input type="datetime-local" id="historyStartDate" class="form-input">
                 </div>
-                <div class="filter-group">
+                <div class="form-group" style="flex: 2;">
                     <label class="form-label" th:text="#{page.tables.modal.history.label.end}">Data Fim</label>
-                    <input type="date" id="historyEndDate" class="form-input">
+                    <input type="datetime-local" id="historyEndDate" class="form-input">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="flex: 1; min-width: 100px;">
                     <label>Status</label>
                     <select class="form-input" id="historyStatusFilter">
                         <option value="all">Todos</option>
@@ -4991,6 +5046,7 @@
     }
 
     function filterOrderHistory() {
+        if (!selectedTable) return;
         const start = document.getElementById('historyStartDate').value;
         const end = document.getElementById('historyEndDate').value;
         const status = document.getElementById('historyStatusFilter').value;
@@ -5208,12 +5264,17 @@
         const lang = (currentLang || 'pt').toLowerCase();
         
         container.innerHTML = questions.map(q => {
-            const qTitle = q.title[lang] || q.title['pt'] || Object.values(q.title)[0] || '';
-            const isRequired = q.required || q.min > 0;
+            const qTitle = (typeof q.title === 'object' && q.title !== null) 
+                ? (q.title[lang] || q.title['pt'] || Object.values(q.title)[0] || '')
+                : (q.title || '');
+                
+            const min = q.minSelections || q.min || 0;
+            const max = q.maxSelections || q.max || 0;
+            const isRequired = q.required || min > 0;
             const badgeText = q.type === 'SINGLE' ? i18n.customizationSingle : i18n.customizationMultiple;
             
             return `
-                <div class="question-group" data-question-id="${q.id}" data-type="${q.type}" data-min="${q.min}" data-max="${q.max}" data-title="${qTitle}">
+                <div class="question-group" data-question-id="${q.id}" data-type="${q.type}" data-min="${min}" data-max="${max}" data-title="${qTitle}">
                     <div class="question-header">
                         <div class="question-title">${qTitle}</div>
                         <div class="question-subtitle">
@@ -5223,7 +5284,9 @@
                     </div>
                     <div class="options-list">
                         ${q.options.map(opt => {
-                            const optText = opt.text[lang] || opt.text['pt'] || Object.values(opt.text)[0] || '';
+                            const optText = (typeof opt.text === 'object' && opt.text !== null)
+                                ? (opt.text[lang] || opt.text['pt'] || Object.values(opt.text)[0] || '')
+                                : (opt.text || '');
                             const extraPriceText = opt.extraPrice > 0 ? `+ ${formatCurrency(opt.extraPrice)}` : '';
                             return `
                                 <div class="option-item" 
@@ -5239,7 +5302,7 @@
                             `;
                         }).join('')}
                     </div>
-                    <div class="error-message">${i18n.customizationError} (${q.min})</div>
+                    <div class="error-message">${i18n.customizationError} (${min})</div>
                 </div>
             `;
         }).join('');
@@ -6111,10 +6174,12 @@
             if (jsData.dataset.selectedTable && jsData.dataset.selectedTable !== 'null') {
                 currentTableId = jsData.dataset.selectedTable;
                 selectedTable = jsData.dataset.selectedTable;
+                window.selectedTable = selectedTable;
             }
             if (jsData.dataset.selectedTableCod && jsData.dataset.selectedTableCod !== 'null') {
                 currentTableCod = jsData.dataset.selectedTableCod;
                 selectedTableCod = jsData.dataset.selectedTableCod;
+                window.selectedTableCod = selectedTableCod;
             }
         }
     }
@@ -6299,6 +6364,7 @@
     }
 
     let stompClient = null;
+    refreshState();
     loadTables();
     connect();
 </script>

@@ -35,6 +35,19 @@ public interface OrderRepository {
       java.time.ZonedDateTime start,
       java.time.ZonedDateTime end);
 
+  dev.thiagooliveira.tablesplit.domain.common.Pagination<TicketWithTable> findHistoryTickets(
+      UUID restaurantId,
+      java.time.ZonedDateTime start,
+      java.time.ZonedDateTime end,
+      int page,
+      int size);
+
+  public record HistorySummary(
+      long totalOrders, java.math.BigDecimal totalRevenue, java.math.BigDecimal avgTicket) {}
+
+  HistorySummary getHistorySummary(
+      UUID restaurantId, java.time.ZonedDateTime start, java.time.ZonedDateTime end);
+
   void save(Order order);
 
   void delete(UUID id);
