@@ -55,13 +55,13 @@ public class TelegramConfig {
   @Profile("dev")
   public TelegramBotsApi telegramBotsApi(TelegramLongPollingBotImpl telegramLongPollingBotImpl)
       throws TelegramApiException {
-    logger.info("Configurando TelegramBotsApi para modo Polling (DEV)...");
+    logger.debug("Setting up TelegramBotsApi for Polling mode (DEV)...");
     TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
     try {
       botsApi.registerBot(telegramLongPollingBotImpl);
-      logger.info("Bot de Polling registrado com sucesso!");
+      logger.debug("Polling bot successfully registered!");
     } catch (TelegramApiException e) {
-      logger.error("Erro ao registrar o bot de polling: {}", e.getMessage());
+      logger.error("Error registering polling bot: {}", e.getMessage());
     }
     return botsApi;
   }
@@ -78,7 +78,7 @@ public class TelegramConfig {
       TelegramSender telegramSender, TelegramProperties properties) {
     return args -> {
       if (properties.getBaseUrl() == null || properties.getBaseUrl().isBlank()) {
-        logger.warn("Base URL não configurada. Webhook não será registrado.");
+        logger.warn("Base URL not configured. Webhook will not be registered.");
         return;
       }
       String webhookUrl = properties.getBaseUrl();
@@ -88,13 +88,13 @@ public class TelegramConfig {
               ? properties.getWebhookPath().substring(1)
               : properties.getWebhookPath();
 
-      logger.debug("Registrando Webhook do Telegram: {}", webhookUrl);
+      logger.debug("Registering a Telegram Webhook: {}", webhookUrl);
       try {
         SetWebhook setWebhook = SetWebhook.builder().url(webhookUrl).build();
         telegramSender.execute(setWebhook);
-        logger.info("Webhook registrado com sucesso no Telegram!");
+        logger.info("Webhook successfully registered on Telegram!");
       } catch (TelegramApiException e) {
-        logger.error("Erro ao registrar Webhook: {}", e.getMessage());
+        logger.error("Error registering Webhook: {}", e.getMessage());
       }
     };
   }
