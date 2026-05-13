@@ -147,6 +147,8 @@ public class CustomerTableController {
       model.addAttribute("showEntryModal", true);
       model.addAttribute("tableCode", tableCode);
       model.addAttribute("tableCustomers", tableCustomers);
+      model.addAttribute("userLanguage", Language.fromLocale(locale));
+      model.addAttribute("currency", restaurant.getCurrency());
       return "customer-menu";
     }
 
@@ -192,6 +194,8 @@ public class CustomerTableController {
     model.addAttribute("showEntryModal", false);
     model.addAttribute("tableCode", tableCode);
     model.addAttribute("tableCustomers", tableCustomers);
+    model.addAttribute("userLanguage", Language.fromLocale(locale));
+    model.addAttribute("currency", restaurant.getCurrency());
 
     return "customer-menu";
   }

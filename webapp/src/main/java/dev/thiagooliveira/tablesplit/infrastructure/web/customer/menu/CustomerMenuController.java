@@ -54,6 +54,8 @@ public class CustomerMenuController {
     model.addAttribute("customerMenu", menuModel);
     model.addAttribute(
         "itemTags", dev.thiagooliveira.tablesplit.infrastructure.web.ItemTag.values());
+    model.addAttribute("userLanguage", Language.fromLocale(locale));
+    model.addAttribute("currency", restaurant.getCurrency());
     return "customer-menu";
   }
 }

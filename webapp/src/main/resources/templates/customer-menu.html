@@ -2512,13 +2512,13 @@
                         <h3 class="menu-item-name" th:text="${item.name[#locale.language]}">Bruschetta Italiana</h3>
                         <div class="menu-item-prices">
                             <span class="promo-badge" th:if="${item.promotion != null}" 
-                                  th:text="${item.promotion.discountType == 'PERCENTAGE' ? '-' + #numbers.formatInteger(item.promotion.discountValue, 0) + '%' : '-' + customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.discountValue, 1, 'NONE', 2, 'COMMA')}">-20%</span>
+                                  th:text="${item.promotion.discountType == 'PERCENTAGE' ? '-' + #numbers.formatInteger(item.promotion.discountValue, 0) + '%' : '-' + currency.format(item.promotion.discountValue, userLanguage)}">-20%</span>
                             <th:block th:if="${item.promotion != null}">
-                                <span class="menu-item-price price-original" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'COMMA')}">R$ 28,00</span>
-                                <span class="price-promo" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.promotion.promotionalPrice, 1, 'NONE', 2, 'COMMA')}">R$ 22,40</span>
+                                <span class="menu-item-price price-original" th:text="${currency.format(item.price, userLanguage)}">R$ 28,00</span>
+                                <span class="price-promo" th:text="${currency.format(item.promotion.promotionalPrice, userLanguage)}">R$ 22,40</span>
                             </th:block>
                             <th:block th:unless="${item.promotion != null}">
-                                <span class="menu-item-price" th:text="${customerMenu.restaurant.currency.getSymbol() + ' ' + #numbers.formatDecimal(item.price, 1, 'NONE', 2, 'COMMA')}">R$ 28,00</span>
+                                <span class="menu-item-price" th:text="${currency.format(item.price, userLanguage)}">R$ 28,00</span>
                             </th:block>
                         </div>
                     </div>
@@ -2845,6 +2845,7 @@
             /*[/]*/
         },
         currentLang: /*[[${#locale.language}]]*/'pt',
+        userLanguageLabel: /*[[${userLanguage.label}]]*/ 'pt-BR',
         SERVICE_FEE: /*[[${customerMenu.restaurant.serviceFee}]]*/0.10,
         allTableItems: /*[[${customerMenu.ticketItems}]]*/[],
         hasTable: /*[[${customerMenu.hasTable()}]]*/false,
@@ -3223,7 +3224,7 @@
 
     function formatPrice(value) {
         if (value === undefined || value === null || isNaN(parseFloat(value))) value = 0;
-        return new Intl.NumberFormat('pt-BR', { 
+        return new Intl.NumberFormat(userLanguageLabel, { 
             style: 'currency', 
             currency: currencyCode 
         }).format(value).replace(/\s/g, ' ');
@@ -3806,8 +3807,8 @@
             const subtotalVal = tableSummary.subtotalValue !== undefined ? tableSummary.subtotalValue : tableSummary.subtotal;
             const serviceFeeVal = tableSummary.serviceFeeValue !== undefined ? tableSummary.serviceFeeValue : tableSummary.serviceFee;
             const totalVal = tableSummary.totalValue !== undefined ? tableSummary.totalValue : tableSummary.total;
-            const paidVal = tableSummary.paidValue !== undefined ? tableSummary.paidValue : tableSummary.paid;
-            const remainingVal = tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining;
+            const paidVal = tableSummary.paidAmount !== undefined ? tableSummary.paidAmount : (tableSummary.paidValue !== undefined ? tableSummary.paidValue : tableSummary.paid);
+            const remainingVal = tableSummary.remainingAmount !== undefined ? tableSummary.remainingAmount : (tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining);
 
             if (elSubtotal) elSubtotal.textContent = formatPrice(subtotalVal);
             if (elServiceFee) elServiceFee.textContent = formatPrice(serviceFeeVal);
@@ -3887,7 +3888,7 @@
         if (!elQuickTotal) return;
 
         if (tableSummary) {
-            const remainingVal = tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining;
+            const remainingVal = tableSummary.remainingAmount !== undefined ? tableSummary.remainingAmount : (tableSummary.remainingValue !== undefined ? tableSummary.remainingValue : tableSummary.remaining);
             elQuickTotal.textContent = formatPrice(remainingVal);
         } else {
             // Local fallback
