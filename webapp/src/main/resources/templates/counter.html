@@ -20,20 +20,6 @@
             overflow: hidden;
         }
 
-        @media (max-width: 1024px) {
-            .kiosk-layout {
-                grid-template-columns: 1fr;
-            }
-            .kiosk-cart-panel {
-                display: none;
-            }
-            .kiosk-cart-panel.mobile-open {
-                display: flex;
-                position: fixed;
-                inset: 0;
-                z-index: 100;
-            }
-        }
 
         /* Menu Panel */
         .kiosk-menu-panel {
@@ -1464,6 +1450,20 @@
             .order-type-btn svg {
                 width: 1rem;
                 height: 1rem;
+            }
+        }
+        @media (max-width: 1024px) {
+            .kiosk-layout {
+                grid-template-columns: 1fr;
+            }
+            .kiosk-cart-panel {
+                display: none !important;
+            }
+            .kiosk-cart-panel.mobile-open {
+                display: flex !important;
+                position: fixed;
+                inset: 0;
+                z-index: 100;
             }
         }
     </style>
