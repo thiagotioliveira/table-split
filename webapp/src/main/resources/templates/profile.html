@@ -770,6 +770,8 @@
             if (typeof SidebarManager !== 'undefined') {
                 SidebarManager.clearCache();
             }
+            // Mark for Service Worker cache clear after save
+            localStorage.setItem('pendingLanguageCacheClear', 'true');
         }
 
         // Password visibility toggle
@@ -904,6 +906,7 @@
 
             if (!hasError && typeof SidebarManager !== 'undefined') {
                 SidebarManager.clearCache();
+                localStorage.setItem('pendingLanguageCacheClear', 'true');
             }
             return !hasError;
         }
@@ -1075,7 +1078,21 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', updatePushSwitchState);
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePushSwitchState();
+            
+            // Language Change Cache Clearing Logic
+            if (localStorage.getItem('pendingLanguageCacheClear') === 'true') {
+                const successAlert = document.getElementById('successAlert');
+                if (successAlert && !successAlert.classList.contains('hidden')) {
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ action: 'clear-dynamic-cache' });
+                        console.log('[Profile] Language changed and saved, dynamic cache cleared.');
+                    }
+                }
+                localStorage.removeItem('pendingLanguageCacheClear');
+            }
+        });
     </script>
 </body>
 </html>
