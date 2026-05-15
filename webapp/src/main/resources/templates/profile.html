@@ -764,7 +764,8 @@
             element.querySelector('input').checked = true;
 
             // Save to localStorage
-            localStorage.setItem('userLanguage', lang);
+            const languageToSave = lang || element.getAttribute('data-lang');
+            localStorage.setItem('userLanguage', languageToSave);
 
             //showSuccessAlert();
         }
