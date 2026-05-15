@@ -3383,6 +3383,10 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 <span th:text="#{page.tables.button.history}">Histórico</span>
                             </button>
+                            <button class="action-btn" id="btnTransferTable" onclick="openTransferModal()" th:if="${orderLoaded}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                                <span th:text="#{page.tables.button.transfer}">Transferir</span>
+                            </button>
                             <button class="action-btn purple" id="btnViewBill" onclick="openBillModal()" th:if="${orderLoaded}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                                 <span th:text="#{page.tables.button.bill.view}">Ver Conta</span>
@@ -3686,6 +3690,13 @@
         buttonBillView: /*[[#{page.tables.button.bill.view}]]*/ 'Ver Conta',
         buttonQr: /*[[#{page.tables.button.qr}]]*/ 'QR Code',
         buttonTableClose: /*[[#{page.tables.button.table.close}]]*/ 'Fechar Mesa',
+        buttonTransfer: /*[[#{page.tables.button.transfer}]]*/ 'Transferir',
+        transferModalTitle: /*[[#{page.tables.modal.transfer.title}]]*/ 'Transferir Mesa',
+        transferModalSubtitle: /*[[#{page.tables.modal.transfer.subtitle}]]*/ 'Selecione a mesa de destino para este pedido',
+        transferModalSource: /*[[#{page.tables.modal.transfer.source('{0}')}]]*/ 'Mesa Atual:',
+        transferModalTargetPlaceholder: /*[[#{page.tables.modal.transfer.target.placeholder}]]*/ 'Selecione uma mesa...',
+        transferModalButton: /*[[#{page.tables.modal.transfer.button}]]*/ 'Transferir Agora',
+        alertTableTransferred: /*[[#{alert.table.transferred('{0}')}]]*/ 'Pedido transferido com sucesso para a Mesa {0}!',
         errorPaymentMethodRequired: /*[[#{page.tables.js.error.payment.method.required}]]*/ 'Please select a payment method.'
     };
     window.i18n = i18n;
@@ -4062,6 +4073,67 @@
         document.getElementById('historyModal').classList.remove('active');
     }
 
+    function openTransferModal() {
+        if (!selectedTable) return;
+        
+        const sourceCod = String(selectedTableCod || '??').padStart(2, '0');
+        const sourceCodEl = document.getElementById('transferSourceCod');
+        const sourceLabelEl = document.getElementById('transferSourceLabel');
+        
+        if (sourceCodEl) sourceCodEl.textContent = sourceCod;
+        if (sourceLabelEl) sourceLabelEl.textContent = i18n.cardTable.replace('{0}', sourceCod);
+        
+        const select = document.getElementById('transferTargetSelect');
+        if (select) {
+            select.innerHTML = `<option value="">${i18n.transferModalTargetPlaceholder}</option>`;
+            
+            const availableTables = (allTables || [])
+                .filter(t => t.status === 'AVAILABLE' && t.id !== selectedTable)
+                .sort((a, b) => (a.cod || '').localeCompare(b.cod || ''));
+                
+            availableTables.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.id;
+                option.textContent = i18n.cardTable.replace('{0}', t.cod);
+                select.appendChild(option);
+            });
+        }
+        
+        const modal = document.getElementById('transferTableModal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function closeTransferModal() {
+        const modal = document.getElementById('transferTableModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    async function processTransfer() {
+        const select = document.getElementById('transferTargetSelect');
+        if (!select) return;
+
+        const targetTableId = select.value;
+        if (!targetTableId) {
+            alert(i18n.transferModalTargetPlaceholder);
+            return;
+        }
+
+        const targetTable = allTables.find(t => t.id === targetTableId);
+        const targetCod = targetTable ? targetTable.cod : '??';
+
+        const success = await performAction(`/api/v1/manager/tables/${selectedTable}/transfer`, { targetTableId }, 'POST', true);
+        
+        if (success) {
+            closeTransferModal();
+            // Redirect to the new table
+            selectedTable = targetTableId;
+            selectedTableCod = targetCod;
+            window.history.pushState({}, '', `/manager/tables/${targetTableId}`);
+            await refreshContent();
+            showToast(i18n.alertTableTransferred.replace('{0}', targetCod), 'success');
+        }
+    }
+
 
 
     function renderOrderHistory(orders) {
@@ -4231,6 +4303,12 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="16" y="16" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M10 10h4v4h-4z"/><path d="M10 3v4"/><path d="M21 10h-4"/><path d="M3 14v-4"/><path d="M14 21v-4"/></svg>
                 <span>${i18n.buttonQr}</span>
             </button>
+            ${order ? `
+                <button class="action-btn" id="btnTransferTable" onclick="openTransferModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                    <span>${i18n.buttonTransfer}</span>
+                </button>
+            ` : ''}
             ${order ? `
                 <button class="action-btn success" id="btnCloseTable" onclick="openCloseTableModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -5014,6 +5092,50 @@
                 <button type="button" class="modal-btn" onclick="closeDeletePaymentModal()" th:text="#{page.tables.modal.button.cancel}">Cancelar</button>
                 <button type="button" class="modal-btn" id="btnConfirmDeletePayment" style="background: #ef4444; color: white; border: none;" th:text="#{page.tables.modal.button.delete.confirm}">Sim, Excluir</button>
             </div>
+    </div>
+</div>
+
+<!-- Modal: Transferir Mesa -->
+<div class="modal-overlay" id="transferTableModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                <span th:text="#{page.tables.modal.transfer.title}">Transferir Mesa</span>
+            </h3>
+            <button class="modal-close" onclick="closeTransferModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="background: var(--background-secondary); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid var(--border);">
+                <div style="width: 44px; height: 44px; background: var(--primary); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);">
+                    <span id="transferSourceCod">--</span>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;" th:text="#{page.tables.modal.transfer.source}">Mesa Atual</div>
+                    <div style="font-weight: 700; font-size: 1.1rem;" id="transferSourceLabel">Mesa --</div>
+                </div>
+            </div>
+
+            <p style="margin-bottom: 1.5rem; color: var(--muted); text-align: center;" th:text="#{page.tables.modal.transfer.subtitle}">Selecione a mesa de destino para este pedido</p>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; font-size: 0.95rem; color: var(--foreground);" th:text="#{page.tables.modal.transfer.target}">Mesa de Destino</label>
+                <div style="position: relative;">
+                    <select id="transferTargetSelect" class="form-control" style="width: 100%; padding: 0.875rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--card); color: var(--foreground); appearance: none; cursor: pointer; font-size: 1rem;">
+                        <option value="" th:text="#{page.tables.modal.transfer.target.placeholder}">Selecione uma mesa...</option>
+                    </select>
+                    <div style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--muted);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="background: var(--background-secondary); border-top: 1px solid var(--border); padding: 1.25rem;">
+            <button class="modal-btn" onclick="closeTransferModal()" style="background: var(--card); color: var(--foreground); border: 1px solid var(--border);" th:text="#{button.cancel}">Cancelar</button>
+            <button class="modal-btn primary" onclick="processTransfer()" style="box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);" th:text="#{page.tables.modal.transfer.button}">Transferir Agora</button>
+        </div>
     </div>
 </div>
 

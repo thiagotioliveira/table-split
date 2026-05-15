@@ -37,4 +37,10 @@ public class TableConfig {
   public SyncTableStatus syncTableStatus(TableRepository tableRepository) {
     return new SyncTableStatus(tableRepository);
   }
+
+  @Bean
+  public TransferTable transferTable(
+      TableRepository tableRepository, OrderRepository orderRepository) {
+    return new TransferTable(tableRepository, orderRepository);
+  }
 }

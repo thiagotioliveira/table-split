@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.application.order.DeleteTable;
 import dev.thiagooliveira.tablesplit.application.order.GetOrder;
 import dev.thiagooliveira.tablesplit.application.order.OpenTable;
 import dev.thiagooliveira.tablesplit.application.order.ProcessPayment;
+import dev.thiagooliveira.tablesplit.application.order.TransferTable;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.TablesApi;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.CreateTableRequest;
@@ -37,6 +38,7 @@ public class TableApiController implements TablesApi {
   private final GetOrder getOrder;
   private final ProcessPayment processPayment;
   private final DeletePayment deletePayment;
+  private final TransferTable transferTable;
   private final TableApiMapper mapper;
 
   public TableApiController(
@@ -49,6 +51,7 @@ public class TableApiController implements TablesApi {
       GetOrder getOrder,
       ProcessPayment processPayment,
       DeletePayment deletePayment,
+      TransferTable transferTable,
       TableApiMapper mapper) {
     this.transactionalContext = transactionalContext;
     this.createTable = createTable;
@@ -59,6 +62,7 @@ public class TableApiController implements TablesApi {
     this.getOrder = getOrder;
     this.processPayment = processPayment;
     this.deletePayment = deletePayment;
+    this.transferTable = transferTable;
     this.mapper = mapper;
   }
 
@@ -166,5 +170,14 @@ public class TableApiController implements TablesApi {
         .map(o -> mapper.mapToOrderHistoryResponse(o, context.getUser().getLanguage()))
         .map(ResponseEntity::ok)
         .orElseThrow(() -> new NotFoundException("error.order.not.found"));
+  }
+
+  @Override
+  public ResponseEntity<Void> transferTable(
+      UUID tableId,
+      dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TransferTableRequest
+          request) {
+    transactionalContext.execute(() -> transferTable.execute(tableId, request.getTargetTableId()));
+    return ResponseEntity.noContent().build();
   }
 }

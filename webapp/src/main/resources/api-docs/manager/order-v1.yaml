@@ -378,6 +378,29 @@ paths:
         '200':
           description: Payment processed successfully
 
+  /tables/{tableId}/transfer:
+    post:
+      tags:
+        - Tables
+      summary: Transfer a table order to another table
+      operationId: transferTable
+      parameters:
+        - name: tableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferTableRequest'
+      responses:
+        '204':
+          description: Table transferred successfully
+
   /feedbacks/overview:
     get:
       tags:
@@ -717,6 +740,15 @@ components:
           enum: [CASH, CARD, MB_WAY]
         note:
           type: string
+
+    TransferTableRequest:
+      type: object
+      required:
+        - targetTableId
+      properties:
+        targetTableId:
+          type: string
+          format: uuid
 
     TableOrderHistoryResponse:
       type: object

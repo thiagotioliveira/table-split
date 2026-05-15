@@ -413,6 +413,25 @@ public class Order extends AggregateRoot {
     return this.customers.stream().anyMatch(c -> c.getId().equals(customerId));
   }
 
+  public void transfer(Table sourceTable, Table targetTable) {
+    if (!this.tableId.equals(sourceTable.getId())) {
+      throw new IllegalArgumentException("Source table does not match order table");
+    }
+    if (!targetTable.isAvailable()) {
+      throw new IllegalArgumentException("Target table is not available");
+    }
+
+    this.tableId = targetTable.getId();
+
+    // Target table assumes the source table status (usually OCCUPIED or WAITING)
+    targetTable.setStatus(sourceTable.getStatus());
+    sourceTable.release();
+
+    this.registerEvent(new TableTransferredEvent(this, sourceTable, targetTable));
+    this.registerEvent(new TableStatusChangedEvent(sourceTable));
+    this.registerEvent(new TableStatusChangedEvent(targetTable));
+  }
+
   public UUID getAccountId() {
     return accountId;
   }
