@@ -6310,8 +6310,11 @@
                 const type = payload.type;
                 const data = payload.data;
                 
-                // Handle Table Status Change
-                if (type === 'TABLE_STATUS_CHANGED' || type === 'TICKET_STATUS_CHANGED') {
+                // Handle Table/Order changes
+                if (type === 'TABLE_STATUS_CHANGED' || 
+                    type === 'TICKET_STATUS_CHANGED' || 
+                    type === 'TICKET_CREATED' || 
+                    type === 'TABLE_TRANSFERRED') {
                      updateTableStatus(data);
                 } 
                 // Handle Waiter Call

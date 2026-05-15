@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.order.Ticket;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
 import dev.thiagooliveira.tablesplit.domain.order.event.TableStatusChangedEvent;
+import dev.thiagooliveira.tablesplit.domain.order.event.TableTransferredEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TicketItemStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TicketStatusChangedEvent;
@@ -144,6 +145,20 @@ public class TicketEventListener {
         event.getRestaurantId(),
         "TABLE_STATUS_CHANGED",
         java.util.Map.of("tableId", event.getTableId().toString()));
+  }
+
+  @EventListener
+  public void handleTableTransferred(TableTransferredEvent event) {
+    logger.debug("Handling TableTransferredEvent for restaurant: {}", event.getRestaurantId());
+    broadcast(
+        event.getRestaurantId(),
+        "TABLE_TRANSFERRED",
+        java.util.Map.of(
+            "orderId", event.getOrderId().toString(),
+            "sourceTableId", event.getSourceTableId().toString(),
+            "targetTableId", event.getTargetTableId().toString(),
+            "sourceTableCod", event.getSourceTableCod(),
+            "targetTableCod", event.getTargetTableCod()));
   }
 
   private void broadcast(java.util.UUID restaurantId, String type, Object data) {
