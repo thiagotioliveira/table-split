@@ -48,7 +48,6 @@ public class TableController {
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("currencyCode", context.getRestaurant().getCurrency().name());
     model.addAttribute("currency", context.getRestaurant().getCurrency());
-    model.addAttribute("orderLoaded", false);
 
     String currencySymbol = context.getRestaurant().getCurrency().getSymbol();
     model.addAttribute("currencySymbol", currencySymbol);
@@ -75,6 +74,15 @@ public class TableController {
               .orElseThrow(() -> new NotFoundException("error.table.not.found"));
       model.addAttribute("selectedTableObj", table);
       model.addAttribute("selectedTable", selectedTableId);
+
+      getOrder
+          .execute(selectedTableId)
+          .ifPresent(
+              order -> {
+                model.addAttribute("orderLoaded", true);
+                model.addAttribute("orderTotal", order.calculateTotal());
+                model.addAttribute("orderRemainingAmount", order.calculateRemainingAmount());
+              });
     }
     model.addAttribute("orderHistory", java.util.Collections.emptyList());
 

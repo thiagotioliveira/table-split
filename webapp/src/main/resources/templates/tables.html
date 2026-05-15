@@ -3344,6 +3344,7 @@
                      th:data-order-remaining-amount="${orderRemainingAmount}"
                      th:data-selected-table="${selectedTable}"
                      th:data-selected-table-cod="${selectedTableObj?.cod}"
+                     th:data-order-loaded="${orderLoaded}"
                      style="display: none;"></div>
                 <div class="main-panel-header" id="mainPanelHeader">
                     <div style="display: flex; align-items: center; gap: 1rem;">
@@ -4114,7 +4115,7 @@
 
         const targetTableId = select.value;
         if (!targetTableId) {
-            alert(i18n.transferModalTargetPlaceholder);
+            showToast(i18n.transferModalTargetPlaceholder, 'error');
             return;
         }
 
@@ -4128,7 +4129,7 @@
             // Redirect to the new table
             selectedTable = targetTableId;
             selectedTableCod = targetCod;
-            window.history.pushState({}, '', `/manager/tables/${targetTableId}`);
+            window.history.pushState({}, '', `/tables/${targetTableId}`);
             await refreshContent();
             showToast(i18n.alertTableTransferred.replace('{0}', targetCod), 'success');
         }
@@ -6632,7 +6633,7 @@
             return true;
         } else {
             console.error('Action failed:', await response.text());
-            alert(i18n.alertFetchError);
+            showToast(i18n.alertFetchError, 'error');
             return false;
         }
     }
@@ -6835,9 +6836,14 @@
         }, 4000);
     }
 
+    window.showToast = showToast;
+    
     let stompClient = null;
     refreshState();
     loadTables();
+    if (selectedTable) {
+        refreshContent();
+    }
     connect();
 </script>
 </body>
