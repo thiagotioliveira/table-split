@@ -3685,7 +3685,8 @@
         buttonHistory: /*[[#{page.tables.button.history}]]*/ 'Histórico',
         buttonBillView: /*[[#{page.tables.button.bill.view}]]*/ 'Ver Conta',
         buttonQr: /*[[#{page.tables.button.qr}]]*/ 'QR Code',
-        buttonTableClose: /*[[#{page.tables.button.table.close}]]*/ 'Fechar Mesa'
+        buttonTableClose: /*[[#{page.tables.button.table.close}]]*/ 'Fechar Mesa',
+        errorPaymentMethodRequired: /*[[#{page.tables.js.error.payment.method.required}]]*/ 'Please select a payment method.'
     };
     window.i18n = i18n;
 
@@ -4884,7 +4885,7 @@
                 <label th:text="#{page.tables.modal.payment.method.label}">Método de Pagamento</label>
                 <div class="payment-methods">
                     <div class="payment-method-option" th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}">
-                        <input type="radio" name="closePayMethod" th:id="${'close' + method.name()}" th:value="${method.name()}" th:checked="${method.name() == 'MB_WAY'}">
+                        <input type="radio" name="closePayMethod" th:id="${'close' + method.name()}" th:value="${method.name()}" required>
                         <label th:for="${'close' + method.name()}">
                             <span th:utext="${method.icon}"></span>
                             <span th:text="#{${method.getLabel()}}">Label</span>
@@ -5302,7 +5303,12 @@
         const btn = document.getElementById('confirmCloseBtn');
         const originalText = btn.innerHTML;
         
-        const method = document.querySelector('input[name="closePayMethod"]:checked')?.value || 'CASH';
+        const methodChecked = document.querySelector('input[name="closePayMethod"]:checked');
+        if (!methodChecked) {
+            showToast(i18n.errorPaymentMethodRequired, 'error');
+            return;
+        }
+        const method = methodChecked.value;
         const note = document.getElementById('closeTableNote')?.value || '';
 
         const params = {
