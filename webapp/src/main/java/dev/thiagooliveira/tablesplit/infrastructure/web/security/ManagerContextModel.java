@@ -16,12 +16,8 @@ public class ManagerContextModel {
   private final List<dev.thiagooliveira.tablesplit.infrastructure.web.Module> sidebarModules;
   private final List<dev.thiagooliveira.tablesplit.infrastructure.web.Module> footerModules;
   private final dev.thiagooliveira.tablesplit.domain.account.Plan plan;
-  private final long pendingOrdersCount;
-  private final long waiterCallCount;
-  private final long feedbackCount;
 
-  public ManagerContextModel(
-      Authentication auth, long pendingOrdersCount, long waiterCallCount, long feedbackCount) {
+  public ManagerContextModel(Authentication auth) {
     var account = (AccountContext) auth.getPrincipal();
     var user = account.getUser();
     var restaurant = account.getRestaurant();
@@ -42,21 +38,6 @@ public class ManagerContextModel {
             restaurant.getTheme());
     this.sidebarModules = account.getSidebarModules();
     this.footerModules = account.getFooterModules();
-    this.pendingOrdersCount = pendingOrdersCount;
-    this.waiterCallCount = waiterCallCount;
-    this.feedbackCount = feedbackCount;
-  }
-
-  public long getPendingOrdersCount() {
-    return pendingOrdersCount;
-  }
-
-  public long getWaiterCallCount() {
-    return waiterCallCount;
-  }
-
-  public long getFeedbackCount() {
-    return feedbackCount;
   }
 
   public UserContextModel getUser() {
@@ -117,6 +98,14 @@ public class ManagerContextModel {
 
     public String getEmail() {
       return email;
+    }
+
+    public String getAvatar() {
+      String avatar = "";
+      if (firstName != null && !firstName.isEmpty())
+        avatar += firstName.substring(0, 1).toUpperCase();
+      if (lastName != null && !lastName.isEmpty()) avatar += lastName.substring(0, 1).toUpperCase();
+      return avatar.isEmpty() ? "??" : avatar;
     }
   }
 

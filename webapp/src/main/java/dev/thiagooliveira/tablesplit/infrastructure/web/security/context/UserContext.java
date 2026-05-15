@@ -64,6 +64,18 @@ public class UserContext {
     return role;
   }
 
+  public String getName() {
+    return firstName + " " + lastName;
+  }
+
+  public String getAvatar() {
+    String avatar = "";
+    if (firstName != null && !firstName.isEmpty())
+      avatar += firstName.substring(0, 1).toUpperCase();
+    if (lastName != null && !lastName.isEmpty()) avatar += lastName.substring(0, 1).toUpperCase();
+    return avatar.isEmpty() ? "??" : avatar;
+  }
+
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }

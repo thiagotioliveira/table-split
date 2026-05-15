@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>webapp</artifactId>
-	<version>0.34.5-SNAPSHOT</version>
+	<version>0.34.6-SNAPSHOT</version>
 	<name>webapp</name>
 	<description>TableSplit Web Application</description>
 	<properties/>
@@ -326,6 +326,27 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-manager-context-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/api-docs/manager/context-v1.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<library>spring-boot</library>
+							<apiPackage>dev.thiagooliveira.tablesplit.infrastructure.web.security.api.spec.v1</apiPackage>
+							<modelPackage>dev.thiagooliveira.tablesplit.infrastructure.web.security.api.spec.v1.model</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useRequestMappingOnInterface>true</useRequestMappingOnInterface>
+								<openApiNullable>false</openApiNullable>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -419,6 +440,14 @@
 									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-reports-bridge.js"/>
 									<arg value="reportsApi"/>
 									<arg value="Reports"/>
+								</exec>
+								<exec executable="python3" failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/scripts/generate-api-bridge.py"/>
+									<arg value="${project.basedir}/src/main/resources/api-docs/manager/context-v1.yaml"/>
+									<arg value="/api/v1/account"/>
+									<arg value="${project.basedir}/src/main/resources/static/js/api/v1/manager/api-context-bridge.js"/>
+									<arg value="contextApi"/>
+									<arg value="Context"/>
 								</exec>
 							</target>
 						</configuration>

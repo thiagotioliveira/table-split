@@ -146,6 +146,9 @@
   </footer>
 
   <script>
+    // Clear sidebar context cache to ensure fresh state on login
+    sessionStorage.removeItem('sidebarContext');
+
     function togglePassword() {
       const passwordInput = document.getElementById('password');
       const eyeIcon = document.getElementById('eyeIcon');

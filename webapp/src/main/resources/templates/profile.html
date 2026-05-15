@@ -767,7 +767,9 @@
             const languageToSave = lang || element.getAttribute('data-lang');
             localStorage.setItem('userLanguage', languageToSave);
 
-            //showSuccessAlert();
+            if (typeof SidebarManager !== 'undefined') {
+                SidebarManager.clearCache();
+            }
         }
 
         // Password visibility toggle
@@ -900,7 +902,9 @@
                 return ;
             }*/
 
-            //showSuccessAlert();
+            if (!hasError && typeof SidebarManager !== 'undefined') {
+                SidebarManager.clearCache();
+            }
             return !hasError;
         }
 

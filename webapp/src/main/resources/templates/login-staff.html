@@ -104,6 +104,9 @@
   <script src="/pwa-install.js"></script>
 </body>
 <script>
+  // Clear sidebar context cache to ensure fresh state on login
+  sessionStorage.removeItem('sidebarContext');
+
   function updateSlugPreview() {
     const slug = document.getElementById('slug').value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     document.getElementById('slugPreview').textContent = slug || 'meu-restaurante';
