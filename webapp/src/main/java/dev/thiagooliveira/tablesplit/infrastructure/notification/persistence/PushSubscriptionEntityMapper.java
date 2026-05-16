@@ -4,14 +4,17 @@ import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PushSubscriptionEntityMapper {
 
+  @Mapping(target = "notifyOrderClosed", source = "notifyOrderClosed")
   PushSubscription toDomain(PushSubscriptionEntity entity);
 
+  @Mapping(target = "notifyOrderClosed", source = "notifyOrderClosed")
   PushSubscriptionEntity toEntity(PushSubscription domain);
 
   @AfterMapping

@@ -29,6 +29,7 @@ public class Subscribe {
               sub.setId(existing.getId());
               sub.setNotifyNewOrders(existing.isNotifyNewOrders());
               sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
+              sub.setNotifyOrderClosed(existing.isNotifyOrderClosed());
               repository.save(sub);
             },
             () ->
@@ -54,6 +55,7 @@ public class Subscribe {
               sub.setId(existing.getId());
               sub.setNotifyNewOrders(existing.isNotifyNewOrders());
               sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
+              sub.setNotifyOrderClosed(existing.isNotifyOrderClosed());
               repository.save(sub);
             },
             () ->
