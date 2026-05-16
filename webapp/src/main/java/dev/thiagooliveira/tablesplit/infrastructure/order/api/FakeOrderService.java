@@ -163,7 +163,9 @@ public class FakeOrderService {
                     table.getCod(),
                     List.of(new TicketCommand(null, itemCommands)),
                     restaurant.getServiceFee(),
-                    List.of(new CustomerCommand(customerId, customerName)));
+                    List.of(new CustomerCommand(customerId, customerName)),
+                    customerId,
+                    restaurant.getDefaultLanguage());
 
             Order order = placeOrder.execute(placeOrderCommand);
             logger.debug("Fake order created: {} for table: {}", order.getId(), table.getCod());
@@ -186,7 +188,9 @@ public class FakeOrderService {
                 customerId,
                 order.calculateTotal(),
                 paymentMethod,
-                "Fake payment for demo");
+                "Fake payment for demo",
+                restaurant.getDefaultLanguage(),
+                customerId);
             logger.debug("Fake payment processed for order: {}", order.getId());
 
             // Feedback

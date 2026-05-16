@@ -16,4 +16,18 @@ public interface PushSubscriptionJpaRepository extends JpaRepository<PushSubscri
   List<PushSubscriptionEntity> findAllByStaffIdAndRestaurantId(UUID staffId, UUID restaurantId);
 
   void deleteByEndpoint(String endpoint);
+
+  @org.springframework.data.jpa.repository.Modifying
+  @org.springframework.data.jpa.repository.Query(
+      "UPDATE PushSubscriptionEntity p SET p.language = :language WHERE p.userId = :userId")
+  void updateLanguageByUserId(
+      @org.springframework.data.repository.query.Param("userId") UUID userId,
+      @org.springframework.data.repository.query.Param("language") String language);
+
+  @org.springframework.data.jpa.repository.Modifying
+  @org.springframework.data.jpa.repository.Query(
+      "UPDATE PushSubscriptionEntity p SET p.language = :language WHERE p.staffId = :staffId")
+  void updateLanguageByStaffId(
+      @org.springframework.data.repository.query.Param("staffId") UUID staffId,
+      @org.springframework.data.repository.query.Param("language") String language);
 }

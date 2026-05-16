@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.domain.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -15,12 +16,19 @@ public class PushSubscription {
   private String auth;
   private boolean notifyNewOrders = true;
   private boolean notifyCallWaiter = true;
+  private boolean notifyOrderClosed = true;
+  private Language language = Language.PT;
   private ZonedDateTime createdAt;
 
   public PushSubscription() {}
 
   public static PushSubscription forUser(
-      UUID restaurantId, UUID userId, String endpoint, String p256dh, String auth) {
+      UUID restaurantId,
+      UUID userId,
+      String endpoint,
+      String p256dh,
+      String auth,
+      Language language) {
     PushSubscription sub = new PushSubscription();
     sub.id = UUID.randomUUID();
     sub.restaurantId = restaurantId;
@@ -28,12 +36,18 @@ public class PushSubscription {
     sub.endpoint = endpoint;
     sub.p256dh = p256dh;
     sub.auth = auth;
+    sub.language = language;
     sub.createdAt = Time.now();
     return sub;
   }
 
   public static PushSubscription forStaff(
-      UUID restaurantId, UUID staffId, String endpoint, String p256dh, String auth) {
+      UUID restaurantId,
+      UUID staffId,
+      String endpoint,
+      String p256dh,
+      String auth,
+      Language language) {
     PushSubscription sub = new PushSubscription();
     sub.id = UUID.randomUUID();
     sub.restaurantId = restaurantId;
@@ -41,6 +55,7 @@ public class PushSubscription {
     sub.endpoint = endpoint;
     sub.p256dh = p256dh;
     sub.auth = auth;
+    sub.language = language;
     sub.createdAt = Time.now();
     return sub;
   }
@@ -53,7 +68,8 @@ public class PushSubscription {
       String p256dh,
       String auth,
       boolean notifyNewOrders,
-      boolean notifyCallWaiter) {
+      boolean notifyCallWaiter,
+      boolean notifyOrderClosed) {
     this.id = id;
     this.restaurantId = restaurantId;
     this.userId = userId;
@@ -62,6 +78,7 @@ public class PushSubscription {
     this.auth = auth;
     this.notifyNewOrders = notifyNewOrders;
     this.notifyCallWaiter = notifyCallWaiter;
+    this.notifyOrderClosed = notifyOrderClosed;
     this.createdAt = Time.now();
   }
 
@@ -143,5 +160,21 @@ public class PushSubscription {
 
   public void setNotifyCallWaiter(boolean notifyCallWaiter) {
     this.notifyCallWaiter = notifyCallWaiter;
+  }
+
+  public boolean isNotifyOrderClosed() {
+    return notifyOrderClosed;
+  }
+
+  public void setNotifyOrderClosed(boolean notifyOrderClosed) {
+    this.notifyOrderClosed = notifyOrderClosed;
+  }
+
+  public Language getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(Language language) {
+    this.language = language;
   }
 }

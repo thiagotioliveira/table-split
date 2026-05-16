@@ -19,6 +19,7 @@ public class GetPreferences {
             sub ->
                 Map.of(
                     "notifyNewOrders", sub.isNotifyNewOrders(),
-                    "notifyCallWaiter", sub.isNotifyCallWaiter()));
+                    "notifyCallWaiter", sub.isNotifyCallWaiter(),
+                    "notifyOrderClosed", sub.isNotifyOrderClosed()));
   }
 }

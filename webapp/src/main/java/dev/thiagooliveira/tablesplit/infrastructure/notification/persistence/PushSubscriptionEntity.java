@@ -37,6 +37,12 @@ public class PushSubscriptionEntity {
   @Column(name = "notify_call_waiter", nullable = false)
   private boolean notifyCallWaiter = true;
 
+  @Column(name = "notify_order_closed", nullable = false)
+  private boolean notifyOrderClosed = true;
+
+  @Column(name = "language", length = 5, nullable = false)
+  private String language = "PT";
+
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
@@ -114,11 +120,27 @@ public class PushSubscriptionEntity {
     this.notifyCallWaiter = notifyCallWaiter;
   }
 
+  public boolean isNotifyOrderClosed() {
+    return notifyOrderClosed;
+  }
+
+  public void setNotifyOrderClosed(boolean notifyOrderClosed) {
+    this.notifyOrderClosed = notifyOrderClosed;
+  }
+
   public ZonedDateTime getCreatedAt() {
     return createdAt;
   }
 
   public void setCreatedAt(ZonedDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
   }
 }

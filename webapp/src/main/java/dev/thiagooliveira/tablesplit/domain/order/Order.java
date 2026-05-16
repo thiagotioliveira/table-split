@@ -1,8 +1,10 @@
 package dev.thiagooliveira.tablesplit.domain.order;
 
 import dev.thiagooliveira.tablesplit.domain.common.AggregateRoot;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.common.Time;
 import dev.thiagooliveira.tablesplit.domain.order.event.*;
+import dev.thiagooliveira.tablesplit.domain.order.event.OrderClosedEvent;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class Order extends AggregateRoot {
     return order;
   }
 
-  public void addPayment(Payment payment) {
+  public void addPayment(Payment payment, Language language, UUID initiatedBy) {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
       throw new IllegalOrderStatusException(
           this.tableId, IllegalOrderStatusException.Reason.PAYMENT_NOT_ALLOWED);
@@ -56,9 +58,6 @@ public class Order extends AggregateRoot {
     }
 
     this.payments.add(payment);
-    if (isFullyPaid()) {
-      close();
-    }
   }
 
   public void removePayment(UUID paymentId) {
@@ -116,22 +115,23 @@ public class Order extends AggregateRoot {
         .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
   }
 
-  public void close() {
+  public void close(Language language, UUID initiatedBy) {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
       return;
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = Time.now();
+    this.registerEvent(new OrderClosedEvent(this, null, language, initiatedBy));
   }
 
-  public void close(Table table) {
+  public void close(Table table, Language language, UUID initiatedBy) {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
       return;
     }
     this.status = OrderStatus.CLOSED;
     this.closedAt = Time.now();
     table.release();
-    this.registerEvent(new TableClosedEvent(this, table));
+    this.registerEvent(new OrderClosedEvent(this, table.getCod(), language, initiatedBy));
   }
 
   public void addCustomer(UUID id, String name) {
@@ -278,7 +278,8 @@ public class Order extends AggregateRoot {
                         .allMatch(item -> item.getStatus() == TicketStatus.CANCELLED));
   }
 
-  public void addTicketWithItems(List<TicketItem> items, String note, String tableCod) {
+  public void addTicketWithItems(
+      List<TicketItem> items, String note, String tableCod, UUID initiatedBy, Language language) {
     if (this.status != OrderStatus.OPEN) {
       throw new IllegalOrderStatusException(
           this.tableId, IllegalOrderStatusException.Reason.TICKET_NOT_ALLOWED);
@@ -302,7 +303,7 @@ public class Order extends AggregateRoot {
     this.tickets.add(ticket);
 
     // Register Domain Event
-    this.registerEvent(new TicketCreatedEvent(this, ticket, tableCod));
+    this.registerEvent(new TicketCreatedEvent(this, ticket, tableCod, initiatedBy, language));
   }
 
   public void updateTicketItemStatus(UUID ticketId, UUID itemId, TicketStatus newStatus) {
@@ -403,8 +404,8 @@ public class Order extends AggregateRoot {
     this.registerEvent(new TicketStatusChangedEvent(this, ticket, newStatus));
   }
 
-  public void processPayment(Payment payment) {
-    this.addPayment(payment);
+  public void processPayment(Payment payment, Language language, UUID initiatedBy) {
+    this.addPayment(payment, language, initiatedBy);
     this.registerEvent(new PaymentProcessedEvent(this, payment));
   }
 

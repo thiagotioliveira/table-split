@@ -194,14 +194,15 @@ const PushNotifications = {
         return null;
     },
 
-    async updateTopicPreferences(notifyNewOrders, notifyCallWaiter) {
+    async updateTopicPreferences(notifyNewOrders, notifyCallWaiter, notifyOrderClosed) {
         const subscription = await this.getSubscription();
         if (!subscription) return false;
 
         const data = {
             endpoint: subscription.endpoint,
             notifyNewOrders: notifyNewOrders,
-            notifyCallWaiter: notifyCallWaiter
+            notifyCallWaiter: notifyCallWaiter,
+            notifyOrderClosed: notifyOrderClosed
         };
 
         try {

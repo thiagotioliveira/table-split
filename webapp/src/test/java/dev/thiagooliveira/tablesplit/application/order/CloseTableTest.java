@@ -3,12 +3,14 @@ package dev.thiagooliveira.tablesplit.application.order;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.Table;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TableStatus;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +44,8 @@ class CloseTableTest {
         new dev.thiagooliveira.tablesplit.domain.order.Ticket();
     dev.thiagooliveira.tablesplit.domain.order.TicketItem item =
         new dev.thiagooliveira.tablesplit.domain.order.TicketItem();
+    item.setUnitPrice(BigDecimal.TEN);
+    item.setQuantity(1);
     item.setStatus(dev.thiagooliveira.tablesplit.domain.order.TicketStatus.PENDING);
     ticket.getItems().add(item);
     order.addTicket(ticket);
@@ -49,7 +53,7 @@ class CloseTableTest {
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    Order result = closeTable.execute(orderId);
+    Order result = closeTable.execute(orderId, Language.PT, UUID.randomUUID());
 
     assertEquals(OrderStatus.CLOSED, result.getStatus());
     assertEquals(TableStatus.AVAILABLE, table.getStatus());
@@ -74,7 +78,7 @@ class CloseTableTest {
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    closeTable.execute(orderId);
+    closeTable.execute(orderId, Language.PT, UUID.randomUUID());
 
     assertEquals(TableStatus.AVAILABLE, table.getStatus());
     verify(orderRepository).delete(orderId);
@@ -94,15 +98,17 @@ class CloseTableTest {
         new dev.thiagooliveira.tablesplit.domain.order.Ticket();
     dev.thiagooliveira.tablesplit.domain.order.TicketItem item =
         new dev.thiagooliveira.tablesplit.domain.order.TicketItem();
+    item.setUnitPrice(BigDecimal.TEN);
+    item.setQuantity(1);
     item.setStatus(dev.thiagooliveira.tablesplit.domain.order.TicketStatus.PENDING);
     ticket.getItems().add(item);
     order.addTicket(ticket);
-    order.close();
+    order.close(Language.PT, UUID.randomUUID());
 
     when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
     when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
 
-    Order result = closeTable.execute(orderId);
+    Order result = closeTable.execute(orderId, Language.PT, UUID.randomUUID());
 
     assertEquals(OrderStatus.CLOSED, result.getStatus());
     assertEquals(TableStatus.AVAILABLE, table.getStatus());

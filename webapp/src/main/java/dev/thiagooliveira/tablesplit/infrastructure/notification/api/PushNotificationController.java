@@ -59,9 +59,21 @@ public class PushNotificationController {
     UUID id = context.getUser().getId();
     if (context.getUser().getRole()
         == dev.thiagooliveira.tablesplit.domain.account.Role.RESTAURANT_ADMIN) {
-      subscribe.executeForUser(restaurantId, id, data.endpoint(), data.p256dh(), data.auth());
+      subscribe.executeForUser(
+          restaurantId,
+          id,
+          data.endpoint(),
+          data.p256dh(),
+          data.auth(),
+          context.getUser().getLanguage());
     } else {
-      subscribe.executeForStaff(restaurantId, id, data.endpoint(), data.p256dh(), data.auth());
+      subscribe.executeForStaff(
+          restaurantId,
+          id,
+          data.endpoint(),
+          data.p256dh(),
+          data.auth(),
+          context.getUser().getLanguage());
     }
     return ResponseEntity.ok().build();
   }
@@ -93,7 +105,10 @@ public class PushNotificationController {
   @PostMapping({"/push/preferences", "/preferences"})
   public ResponseEntity<Void> updatePreferences(@RequestBody UpdatePreferencesRequest request) {
     updatePreferences.execute(
-        request.endpoint(), request.notifyNewOrders(), request.notifyCallWaiter());
+        request.endpoint(),
+        request.notifyNewOrders(),
+        request.notifyCallWaiter(),
+        request.notifyOrderClosed());
     return ResponseEntity.ok().build();
   }
 
@@ -102,11 +117,8 @@ public class PushNotificationController {
     AccountContext context = (AccountContext) auth.getPrincipal();
     UUID restaurantId = context.getRestaurant().getId();
     logger.debug("Received test notification request for restaurant: {}", restaurantId);
-    String payload =
-        String.format(
-            "{\"title\": \"Teste TableSplit\", \"body\": \"Push funcionando para o Restaurante: %s\", \"url\": \"/profile\"}",
-            restaurantId);
-    broadcaster.general(restaurantId, payload);
+    String titleKey = "notification.push.test.title";
+    broadcaster.general(restaurantId, titleKey, null, "/profile");
     return ResponseEntity.ok().build();
   }
 

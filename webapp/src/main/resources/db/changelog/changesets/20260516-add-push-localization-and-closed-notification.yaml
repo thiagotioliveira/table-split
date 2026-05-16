@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260516-add-push-localization-and-closed-notification
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: push_subscriptions
+            columns:
+              - column:
+                  name: notify_order_closed
+                  type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: true
+              - column:
+                  name: language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+                  defaultValue: "PT"

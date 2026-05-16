@@ -249,7 +249,9 @@ public class OrderApiController implements OrdersApi {
             table.getRestaurantId(),
             table.getCod(),
             account.getRestaurant().getServiceFee(),
-            request);
+            request,
+            account.getUser().getId(),
+            account.getUser().getLanguage());
 
     transactionalContext.execute(() -> placeOrder.execute(command));
     return ResponseEntity.noContent().build();

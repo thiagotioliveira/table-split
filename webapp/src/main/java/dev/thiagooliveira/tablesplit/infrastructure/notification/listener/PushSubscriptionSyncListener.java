@@ -2,20 +2,23 @@ package dev.thiagooliveira.tablesplit.infrastructure.notification.listener;
 
 import dev.thiagooliveira.tablesplit.domain.account.Module;
 import dev.thiagooliveira.tablesplit.domain.account.event.StaffUpdatedEvent;
+import dev.thiagooliveira.tablesplit.domain.account.event.UserUpdatedEvent;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class StaffUpdatedListener {
+public class PushSubscriptionSyncListener {
 
   private final PushSubscriptionRepository pushSubscriptionRepository;
 
-  public StaffUpdatedListener(PushSubscriptionRepository pushSubscriptionRepository) {
+  public PushSubscriptionSyncListener(PushSubscriptionRepository pushSubscriptionRepository) {
     this.pushSubscriptionRepository = pushSubscriptionRepository;
   }
 
   @EventListener
+  @Transactional
   public void onStaffUpdated(StaffUpdatedEvent event) {
     var removed = event.getRemovedModules();
     if (removed == null || removed.isEmpty()) {
@@ -31,9 +34,15 @@ public class StaffUpdatedListener {
               event.getStaffId(), event.getRestaurantId());
       for (var sub : subscriptions) {
         boolean changed = false;
-        if (removeOrders && sub.isNotifyNewOrders()) {
-          sub.setNotifyNewOrders(false);
-          changed = true;
+        if (removeOrders) {
+          if (sub.isNotifyNewOrders()) {
+            sub.setNotifyNewOrders(false);
+            changed = true;
+          }
+          if (sub.isNotifyOrderClosed()) {
+            sub.setNotifyOrderClosed(false);
+            changed = true;
+          }
         }
         if (removeTables && sub.isNotifyCallWaiter()) {
           sub.setNotifyCallWaiter(false);
@@ -44,5 +53,14 @@ public class StaffUpdatedListener {
         }
       }
     }
+  }
+
+  @EventListener
+  @Transactional
+  public void onUserUpdated(UserUpdatedEvent event) {
+    // Sync language for both userId and staffId linked subscriptions
+    // Since we don't know if the user is a staff or admin here, we try both
+    pushSubscriptionRepository.updateLanguageByUserId(event.getUserId(), event.getLanguage());
+    pushSubscriptionRepository.updateLanguageByStaffId(event.getUserId(), event.getLanguage());
   }
 }

@@ -59,4 +59,16 @@ public class PushSubscriptionRepositoryAdapter implements PushSubscriptionReposi
   public void deleteByEndpoint(String endpoint) {
     this.pushSubscriptionJpaRepository.deleteByEndpoint(endpoint);
   }
+
+  @Override
+  public void updateLanguageByUserId(
+      UUID userId, dev.thiagooliveira.tablesplit.domain.common.Language language) {
+    this.pushSubscriptionJpaRepository.updateLanguageByUserId(userId, language.name());
+  }
+
+  @Override
+  public void updateLanguageByStaffId(
+      UUID staffId, dev.thiagooliveira.tablesplit.domain.common.Language language) {
+    this.pushSubscriptionJpaRepository.updateLanguageByStaffId(staffId, language.name());
+  }
 }

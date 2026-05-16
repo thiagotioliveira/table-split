@@ -10,13 +10,18 @@ public class UpdatePreferences {
     this.repository = repository;
   }
 
-  public void execute(String endpoint, boolean notifyNewOrders, boolean notifyCallWaiter) {
+  public void execute(
+      String endpoint,
+      boolean notifyNewOrders,
+      boolean notifyCallWaiter,
+      boolean notifyOrderClosed) {
     repository
         .findByEndpoint(endpoint)
         .ifPresent(
             sub -> {
               sub.setNotifyNewOrders(notifyNewOrders);
               sub.setNotifyCallWaiter(notifyCallWaiter);
+              sub.setNotifyOrderClosed(notifyOrderClosed);
               repository.save(sub);
             });
   }

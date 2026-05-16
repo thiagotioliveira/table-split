@@ -85,7 +85,9 @@ public abstract class OrderApiMapper {
       String tableCod,
       Integer defaultServiceFee,
       dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PlaceOrderRequest
-          request) {
+          request,
+      java.util.UUID initiatedBy,
+      Language language) {
     return new dev.thiagooliveira.tablesplit.application.order.command.PlaceOrderCommand(
         restaurantId,
         tableCod,
@@ -148,6 +150,8 @@ public abstract class OrderApiMapper {
                         new dev.thiagooliveira.tablesplit.application.order.command.CustomerCommand(
                             c.getId(), c.getName()))
                 .collect(Collectors.toList())
-            : null);
+            : null,
+        initiatedBy,
+        language);
   }
 }

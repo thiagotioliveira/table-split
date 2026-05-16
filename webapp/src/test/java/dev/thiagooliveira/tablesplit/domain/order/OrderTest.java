@@ -2,10 +2,12 @@ package dev.thiagooliveira.tablesplit.domain.order;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.event.TableCreatedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TableOpenedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TableStatusChangedEvent;
 import dev.thiagooliveira.tablesplit.domain.order.event.TicketCreatedEvent;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,8 @@ class OrderTest {
     ticket.setStatus(TicketStatus.PREPARING);
 
     TicketItem item = new TicketItem();
+    item.setUnitPrice(BigDecimal.TEN);
+    item.setQuantity(1);
     item.setStatus(TicketStatus.PREPARING);
     ticket.setItems(List.of(item));
 
@@ -27,7 +31,7 @@ class OrderTest {
 
     Table table = new Table(UUID.randomUUID(), UUID.randomUUID(), "T1");
     // When
-    order.close();
+    order.close(Language.PT, UUID.randomUUID());
 
     // Then
     assertEquals(OrderStatus.CLOSED, order.getStatus());
@@ -49,8 +53,11 @@ class OrderTest {
     Order order = new Order(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 10);
     order.addCustomer(UUID.randomUUID(), "Customer 1");
 
-    List<TicketItem> items = List.of(new TicketItem());
-    order.addTicketWithItems(items, "Note", "T1");
+    TicketItem item = new TicketItem();
+    item.setUnitPrice(BigDecimal.TEN);
+    item.setQuantity(1);
+    List<TicketItem> items = List.of(item);
+    order.addTicketWithItems(items, "Note", "T1", UUID.randomUUID(), Language.PT);
 
     assertEquals(
         1, order.getDomainEvents().stream().filter(e -> e instanceof TicketCreatedEvent).count());
@@ -99,7 +106,8 @@ class OrderTest {
             UUID.randomUUID(), order.getId(), null, almostFullPayment, PaymentMethod.CASH, null);
 
     // When
-    order.addPayment(payment);
+    order.addPayment(payment, Language.PT, UUID.randomUUID());
+    order.close(Language.PT, UUID.randomUUID());
 
     // Then
     assertEquals(

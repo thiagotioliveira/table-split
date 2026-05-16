@@ -941,3 +941,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260502-add-is-read-to-feedbacks.yaml
   - include:
       file: db/changelog/changesets/20260513-add-delivered-at-to-tickets.yaml
+  - include:
+      file: db/changelog/changesets/20260516-add-push-localization-and-closed-notification.yaml

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import dev.thiagooliveira.tablesplit.application.order.command.*;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.menu.DiscountType;
 import dev.thiagooliveira.tablesplit.domain.menu.Item;
 import dev.thiagooliveira.tablesplit.domain.menu.ItemRepository;
@@ -200,7 +201,9 @@ class PlaceOrderTest {
         TABLE_COD,
         List.of(new TicketCommand(null, List.of(items))),
         10,
-        List.of(new CustomerCommand(CUSTOMER_ID, CUSTOMER_NAME)));
+        List.of(new CustomerCommand(CUSTOMER_ID, CUSTOMER_NAME)),
+        CUSTOMER_ID,
+        Language.PT);
   }
 
   private void setupCommonMocks() {

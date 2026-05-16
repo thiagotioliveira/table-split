@@ -30,8 +30,11 @@ public class NotificationConfig {
   }
 
   @Bean
-  public Broadcaster broadcaster(PushSubscriptionRepository repository, PushSender sender) {
-    return new Broadcaster(repository, sender);
+  public Broadcaster broadcaster(
+      PushSubscriptionRepository repository,
+      PushSender sender,
+      org.springframework.context.MessageSource messageSource) {
+    return new Broadcaster(repository, sender, messageSource);
   }
 
   @Bean

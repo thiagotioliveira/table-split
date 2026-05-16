@@ -42,7 +42,7 @@ public class PlaceOrder {
             .orElseGet(() -> openNewSession(table, command));
 
     registerParticipants(order, command);
-    processTickets(order, command, table.getCod());
+    processTickets(order, command, table.getCod(), command.initiatedBy(), command.language());
 
     orderRepository.save(order);
     syncTableStatus.execute(order);
@@ -83,14 +83,19 @@ public class PlaceOrder {
     }
   }
 
-  private void processTickets(Order order, PlaceOrderCommand command, String tableCod) {
+  private void processTickets(
+      Order order,
+      PlaceOrderCommand command,
+      String tableCod,
+      UUID initiatedBy,
+      dev.thiagooliveira.tablesplit.domain.common.Language language) {
     if (command.tickets() == null) return;
 
     for (var ticketCommand : command.tickets()) {
       java.util.List<TicketItem> items =
           ticketCommand.items().stream().map(this::mapToTicketItem).toList();
 
-      order.addTicketWithItems(items, ticketCommand.note(), tableCod);
+      order.addTicketWithItems(items, ticketCommand.note(), tableCod, initiatedBy, language);
     }
   }
 

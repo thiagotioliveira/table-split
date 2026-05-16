@@ -16,14 +16,11 @@ import dev.thiagooliveira.tablesplit.domain.order.event.WaiterCalledEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.notification.SseService;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TicketItemModel;
 import dev.thiagooliveira.tablesplit.infrastructure.order.web.model.TicketModel;
-import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,19 +55,20 @@ public class TicketEventListener {
     logger.debug("Handling TicketCreatedEvent for restaurant: {}", event.getRestaurantId());
     TicketModel model =
         mapToModel(
-            event.getRestaurantId(), event.getTicket(), event.getOrder(), event.getTableCod());
+            event.getRestaurantId(),
+            event.getTicket(),
+            event.getOrder(),
+            event.getTableCod(),
+            event.getLanguage());
 
-    UUID initiatedBy = getCurrentUserId();
+    UUID initiatedBy = event.getInitiatedBy();
 
     broadcast(event.getRestaurantId(), "TICKET_CREATED", model, initiatedBy);
 
     // Send Push Notification
     try {
-      String payload =
-          String.format(
-              "{\"title\": \"Novo Pedido - Mesa %s\", \"body\": \"%s fez um novo pedido\", \"url\": \"/orders\"}",
-              event.getTableCod(), model.getCustomerName());
-      broadcaster.newOrder(event.getRestaurantId(), payload, initiatedBy);
+      broadcaster.newOrder(
+          event.getRestaurantId(), event.getTableCod(), model.getCustomerName(), initiatedBy);
     } catch (Exception e) {
       // Silently fail push if anything goes wrong
     }
@@ -126,6 +124,13 @@ public class TicketEventListener {
 
     // Notify via SSE
     broadcast(event.getRestaurantId(), "WAITER_CALL", eventWithData);
+
+    // Notify via Push
+    try {
+      broadcaster.callWaiter(event.getRestaurantId(), event.getTableCod());
+    } catch (Exception e) {
+      // Silently fail
+    }
   }
 
   @EventListener
@@ -172,35 +177,12 @@ public class TicketEventListener {
             "type", type, "data", data, "initiatedBy", initiatedBy != null ? initiatedBy : ""));
   }
 
-  private Language getCurrentUserLanguage() {
-    try {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      if (auth != null && auth.getPrincipal() instanceof AccountContext context) {
-        return context.getUser().getLanguage();
-      }
-    } catch (Exception e) {
-      // Ignore
-    }
-    return null;
-  }
-
-  private UUID getCurrentUserId() {
-    try {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      if (auth != null && auth.getPrincipal() instanceof AccountContext context) {
-        return context.getUser().getId();
-      }
-    } catch (Exception e) {
-      // Ignore
-    }
-    return null;
-  }
-
   private TicketModel mapToModel(
       java.util.UUID restaurantId,
       Ticket ticket,
       dev.thiagooliveira.tablesplit.domain.order.Order order,
-      String tableCod) {
+      String tableCod,
+      Language language) {
     List<TicketItemModel> itemModels =
         ticket.getItems().stream()
             .map(
@@ -210,7 +192,7 @@ public class TicketEventListener {
                         order.getCustomerName(item.getCustomerId()),
                         ticket.getNote(),
                         ticket.getCreatedAt(),
-                        getCurrentUserLanguage()))
+                        language))
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
@@ -218,7 +200,7 @@ public class TicketEventListener {
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
-            ticket.getCreatedAt(), messageSource, getCurrentUserLanguage());
+            ticket.getCreatedAt(), messageSource, language);
     long minutesAgo = Duration.between(ticket.getCreatedAt(), Time.now()).toMinutes();
     boolean urgent = minutesAgo > 15 && ticket.getStatus() == TicketStatus.PENDING;
 

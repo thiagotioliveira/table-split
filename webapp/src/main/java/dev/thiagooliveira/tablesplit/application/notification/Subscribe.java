@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.notification;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscription;
 import dev.thiagooliveira.tablesplit.domain.notification.PushSubscriptionRepository;
 import java.util.UUID;
@@ -13,13 +14,18 @@ public class Subscribe {
   }
 
   public void executeForUser(
-      UUID restaurantId, UUID userId, String endpoint, String p256dh, String auth) {
+      UUID restaurantId,
+      UUID userId,
+      String endpoint,
+      String p256dh,
+      String auth,
+      Language language) {
     repository
         .findByEndpoint(endpoint)
         .ifPresentOrElse(
             existing -> {
               PushSubscription sub =
-                  PushSubscription.forUser(restaurantId, userId, endpoint, p256dh, auth);
+                  PushSubscription.forUser(restaurantId, userId, endpoint, p256dh, auth, language);
               sub.setId(existing.getId());
               sub.setNotifyNewOrders(existing.isNotifyNewOrders());
               sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
@@ -27,17 +33,24 @@ public class Subscribe {
             },
             () ->
                 repository.save(
-                    PushSubscription.forUser(restaurantId, userId, endpoint, p256dh, auth)));
+                    PushSubscription.forUser(
+                        restaurantId, userId, endpoint, p256dh, auth, language)));
   }
 
   public void executeForStaff(
-      UUID restaurantId, UUID staffId, String endpoint, String p256dh, String auth) {
+      UUID restaurantId,
+      UUID staffId,
+      String endpoint,
+      String p256dh,
+      String auth,
+      Language language) {
     repository
         .findByEndpoint(endpoint)
         .ifPresentOrElse(
             existing -> {
               PushSubscription sub =
-                  PushSubscription.forStaff(restaurantId, staffId, endpoint, p256dh, auth);
+                  PushSubscription.forStaff(
+                      restaurantId, staffId, endpoint, p256dh, auth, language);
               sub.setId(existing.getId());
               sub.setNotifyNewOrders(existing.isNotifyNewOrders());
               sub.setNotifyCallWaiter(existing.isNotifyCallWaiter());
@@ -45,6 +58,7 @@ public class Subscribe {
             },
             () ->
                 repository.save(
-                    PushSubscription.forStaff(restaurantId, staffId, endpoint, p256dh, auth)));
+                    PushSubscription.forStaff(
+                        restaurantId, staffId, endpoint, p256dh, auth, language)));
   }
 }

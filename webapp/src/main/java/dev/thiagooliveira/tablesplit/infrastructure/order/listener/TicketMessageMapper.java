@@ -20,7 +20,8 @@ public class TicketMessageMapper {
                   String name =
                       item.getName()
                           .getOrDefault(
-                              Language.PT, item.getName().getOrDefault(Language.EN, "Item"));
+                              event.getLanguage(),
+                              item.getName().getOrDefault(Language.PT, "Item"));
 
                   return new TicketCreatedMessage.Item(
                       item.getId(),

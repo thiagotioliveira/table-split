@@ -669,6 +669,14 @@
                             <div id="switchNewOrders" class="switch" onclick="toggleNotificationTypes(this)"></div>
                         </div>
 
+                        <div class="form-switch" style="margin-bottom: 1.5rem;" th:if="${user.hasOrdersModule()}">
+                            <div class="form-switch-label">
+                                <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.order.closed}">Order closed notifications</label>
+                                <p th:text="#{notification.order.closed.hint}">Receive alerts when a table is closed after payment</p>
+                            </div>
+                            <div id="switchOrderClosed" class="switch" onclick="toggleNotificationTypes(this)"></div>
+                        </div>
+
                         <div class="form-switch" th:if="${user.hasTablesModule()}">
                             <div class="form-switch-label">
                                 <label class="form-label" style="margin-bottom: 0;" th:text="#{notification.waiter.call}">Call Waiter alerts</label>
@@ -999,6 +1007,7 @@
             const subscription = await PushNotifications.getSubscription();
             const switchOrders = document.getElementById('switchNewOrders');
             const switchWaiter = document.getElementById('switchCallWaiter');
+            const switchOrderClosed = document.getElementById('switchOrderClosed');
 
             if (subscription) {
                 pushSwitch.classList.add('active');
@@ -1015,6 +1024,11 @@
                         if (prefs.notifyCallWaiter !== false) switchWaiter.classList.add('active');
                         else switchWaiter.classList.remove('active');
                     }
+
+                    if (switchOrderClosed) {
+                        if (prefs.notifyOrderClosed !== false) switchOrderClosed.classList.add('active');
+                        else switchOrderClosed.classList.remove('active');
+                    }
                 }
             } else {
                 pushSwitch.classList.remove('active');
@@ -1025,6 +1039,10 @@
                 if (switchWaiter) {
                     switchWaiter.classList.remove('active');
                     switchWaiter.parentElement.style.opacity = '0.5';
+                }
+                if (switchOrderClosed) {
+                    switchOrderClosed.classList.remove('active');
+                    switchOrderClosed.parentElement.style.opacity = '0.5';
                 }
             }
         }
@@ -1039,10 +1057,11 @@
             // Visual optimistic toggle
             el.classList.toggle('active');
 
-            const notifyNewOrders = document.getElementById('switchNewOrders').classList.contains('active');
-            const notifyCallWaiter = document.getElementById('switchCallWaiter').classList.contains('active');
+            const notifyNewOrders = document.getElementById('switchNewOrders')?.classList.contains('active') ?? true;
+            const notifyCallWaiter = document.getElementById('switchCallWaiter')?.classList.contains('active') ?? true;
+            const notifyOrderClosed = document.getElementById('switchOrderClosed')?.classList.contains('active') ?? true;
 
-            const success = await PushNotifications.updateTopicPreferences(notifyNewOrders, notifyCallWaiter);
+            const success = await PushNotifications.updateTopicPreferences(notifyNewOrders, notifyCallWaiter, notifyOrderClosed);
             if (!success) {
                 // Revert if failed
                 el.classList.toggle('active');
@@ -1058,18 +1077,21 @@
                     const success = await PushNotifications.subscribe();
                     if (success) {
                         el.classList.add('active');
-                        document.getElementById('switchNewOrders').parentElement.style.opacity = '1';
-                        document.getElementById('switchCallWaiter').parentElement.style.opacity = '1';
+                        document.getElementById('switchNewOrders')?.parentElement.style.setProperty('opacity', '1');
+                        document.getElementById('switchCallWaiter')?.parentElement.style.setProperty('opacity', '1');
+                        document.getElementById('switchOrderClosed')?.parentElement.style.setProperty('opacity', '1');
                         await updatePushSwitchState(); // reload proper values
                     }
                 } else {
                     const success = await PushNotifications.unsubscribe();
                     if (success) {
                         el.classList.remove('active');
-                        document.getElementById('switchNewOrders').classList.remove('active');
-                        document.getElementById('switchCallWaiter').classList.remove('active');
-                        document.getElementById('switchNewOrders').parentElement.style.opacity = '0.5';
-                        document.getElementById('switchCallWaiter').parentElement.style.opacity = '0.5';
+                        document.getElementById('switchNewOrders')?.classList.remove('active');
+                        document.getElementById('switchCallWaiter')?.classList.remove('active');
+                        document.getElementById('switchOrderClosed')?.classList.remove('active');
+                        document.getElementById('switchNewOrders')?.parentElement.style.setProperty('opacity', '0.5');
+                        document.getElementById('switchCallWaiter')?.parentElement.style.setProperty('opacity', '0.5');
+                        document.getElementById('switchOrderClosed')?.parentElement.style.setProperty('opacity', '0.5');
                     }
                 }
             } catch (error) {

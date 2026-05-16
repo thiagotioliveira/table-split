@@ -126,7 +126,14 @@ class FakeOrderServiceTest {
 
     verify(placeOrder).execute(any(PlaceOrderCommand.class));
     verify(processPayment)
-        .execute(eq(table.getId()), any(UUID.class), eq(new BigDecimal("55")), any(), anyString());
+        .execute(
+            eq(table.getId()),
+            any(UUID.class),
+            eq(new BigDecimal("55")),
+            any(),
+            anyString(),
+            any(Language.class),
+            any(UUID.class));
     verify(submitGeneralFeedback)
         .execute(eq(order.getId()), any(UUID.class), anyInt(), anyString());
     verify(rateItem, atLeastOnce()).execute(any(UUID.class), anyInt());

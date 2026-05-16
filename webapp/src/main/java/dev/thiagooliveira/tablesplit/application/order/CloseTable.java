@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.application.order;
 
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.order.Order;
 import dev.thiagooliveira.tablesplit.domain.order.OrderRepository;
 import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
@@ -15,7 +16,7 @@ public class CloseTable {
     this.orderRepository = orderRepository;
   }
 
-  public Order execute(UUID orderId) {
+  public Order execute(UUID orderId, Language language, UUID initiatedBy) {
     var order =
         this.orderRepository
             .findById(orderId)
@@ -27,12 +28,11 @@ public class CloseTable {
             .orElseThrow(
                 () -> new IllegalArgumentException("Table not found: " + order.getTableId()));
 
-    table.release();
-
     if (order.getTickets().isEmpty()) {
+      table.release();
       this.orderRepository.delete(orderId);
     } else {
-      order.close();
+      order.close(table, language, initiatedBy);
       this.orderRepository.save(order);
     }
 
@@ -41,7 +41,7 @@ public class CloseTable {
     return order;
   }
 
-  public void execute(UUID restaurantId, String tableCod) {
+  public void execute(UUID restaurantId, String tableCod, Language language, UUID initiatedBy) {
     var table =
         this.tableRepository
             .findByRestaurantIdAndCod(restaurantId, tableCod)
@@ -53,12 +53,11 @@ public class CloseTable {
             .orElseThrow(
                 () -> new IllegalArgumentException("No active order for table: " + tableCod));
 
-    table.release();
-
     if (order.getTickets().isEmpty()) {
+      table.release();
       this.orderRepository.delete(order.getId());
     } else {
-      order.close();
+      order.close(table, language, initiatedBy);
       this.orderRepository.save(order);
     }
 

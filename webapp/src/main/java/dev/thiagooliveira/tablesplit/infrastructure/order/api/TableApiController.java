@@ -106,7 +106,11 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<Void> closeOrder(UUID orderId) {
-    transactionalContext.execute(() -> closeTable.execute(orderId));
+    var context = getContext();
+    transactionalContext.execute(
+        () ->
+            closeTable.execute(
+                orderId, context.getUser().getLanguage(), context.getUser().getId()));
     return ResponseEntity.ok().build();
   }
 
@@ -141,6 +145,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<Void> processPayment(UUID tableId, PaymentRequest request) {
+    var context = getContext();
     transactionalContext.execute(
         () ->
             processPayment.execute(
@@ -152,7 +157,9 @@ public class TableApiController implements TablesApi {
                 request.getMethod() != null
                     ? PaymentMethod.valueOf(request.getMethod().name())
                     : PaymentMethod.CASH,
-                request.getNote()));
+                request.getNote(),
+                context.getUser().getLanguage(),
+                context.getUser().getId()));
     return ResponseEntity.ok().build();
   }
 

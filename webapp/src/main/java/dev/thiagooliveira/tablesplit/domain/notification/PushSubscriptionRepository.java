@@ -17,4 +17,10 @@ public interface PushSubscriptionRepository {
   List<PushSubscription> findAllByStaffIdAndRestaurantId(UUID staffId, UUID restaurantId);
 
   void deleteByEndpoint(String endpoint);
+
+  void updateLanguageByUserId(
+      UUID userId, dev.thiagooliveira.tablesplit.domain.common.Language language);
+
+  void updateLanguageByStaffId(
+      UUID staffId, dev.thiagooliveira.tablesplit.domain.common.Language language);
 }
