@@ -227,3 +227,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260501-add-restaurant-theme.yaml
   - include:
       file: db/changelog/changesets/20260503-add-telegram-user-mappings.yaml
+  - include:
+      file: db/changelog/changesets/20260516-add-telegram-language.yaml

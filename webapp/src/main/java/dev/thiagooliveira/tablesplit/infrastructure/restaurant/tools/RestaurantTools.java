@@ -1,10 +1,9 @@
-package dev.thiagooliveira.tablesplit.infrastructure.report.tools;
+package dev.thiagooliveira.tablesplit.infrastructure.restaurant.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.tools.AbstractTools;
-import dev.thiagooliveira.tablesplit.infrastructure.report.service.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import jakarta.persistence.EntityManager;
@@ -12,30 +11,31 @@ import java.util.UUID;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class ReportTools extends AbstractTools {
+public class RestaurantTools extends AbstractTools {
 
-  private final GetReportsOverview getReportsOverview;
+  private final GetRestaurant getRestaurant;
 
-  public ReportTools(
-      GetReportsOverview getReportsOverview,
+  public RestaurantTools(
+      GetRestaurant getRestaurant,
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
       DatabaseDialectHelper dialectHelper,
       MessageSource messageSource) {
     super(transactionTemplate, objectMapper, entityManager, dialectHelper, messageSource);
-    this.getReportsOverview = getReportsOverview;
+    this.getRestaurant = getRestaurant;
   }
 
-  @Tool(
-      "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
-  public String getReportsOverview(
-      @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
+  @Tool("Get restaurant details and information")
+  public String getRestaurantDetails() {
     return executeInTenantContext(
-        "getReportsOverview",
+        "getRestaurantDetails",
         () -> {
           UUID restaurantId = TenantContext.getRestaurantId();
-          return getReportsOverview.execute(restaurantId, days);
+          return getRestaurant
+              .execute(restaurantId)
+              .map(Object.class::cast)
+              .orElse("Restaurant not found.");
         });
   }
 }

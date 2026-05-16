@@ -39,9 +39,16 @@ public class TelegramConfig {
       ClaudioService claudioService,
       TelegramIdentityService identityService,
       TelegramUserMappingJpaRepository mappingRepository,
-      TelegramSender telegramSender) {
+      TelegramSender telegramSender,
+      org.springframework.context.MessageSource messageSource,
+      dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector languageDetector) {
     return new TelegramUpdateHandler(
-        claudioService, identityService, mappingRepository, telegramSender);
+        claudioService,
+        identityService,
+        mappingRepository,
+        telegramSender,
+        messageSource,
+        languageDetector);
   }
 
   @Bean

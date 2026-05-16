@@ -8,6 +8,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class TablesTools extends AbstractTools {
@@ -19,15 +20,16 @@ public class TablesTools extends AbstractTools {
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      DatabaseDialectHelper dialectHelper) {
-    super(transactionTemplate, objectMapper, entityManager, dialectHelper);
+      DatabaseDialectHelper dialectHelper,
+      MessageSource messageSource) {
+    super(transactionTemplate, objectMapper, entityManager, dialectHelper, messageSource);
     this.getTablesOverview = getTablesOverview;
   }
 
   @Tool("Get tables overview, including balance and status")
   public String getTablesOverview() {
     return executeInTenantContext(
-        "getFeedbackOverview",
+        "getTablesOverview",
         () -> {
           UUID restaurantId = TenantContext.getRestaurantId();
           return getTablesOverview.getTables(restaurantId);

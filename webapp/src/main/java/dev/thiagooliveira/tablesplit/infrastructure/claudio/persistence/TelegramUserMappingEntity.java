@@ -24,6 +24,9 @@ public class TelegramUserMappingEntity {
   @Column(name = "role")
   private String role;
 
+  @Column(name = "language", length = 5, nullable = false)
+  private String language = "PT";
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -74,5 +77,13 @@ public class TelegramUserMappingEntity {
 
   public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
   }
 }

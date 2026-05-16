@@ -14,6 +14,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class MenuTools extends AbstractTools {
@@ -31,8 +32,9 @@ public class MenuTools extends AbstractTools {
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      DatabaseDialectHelper dialectHelper) {
-    super(transactionTemplate, objectMapper, entityManager, dialectHelper);
+      DatabaseDialectHelper dialectHelper,
+      MessageSource messageSource) {
+    super(transactionTemplate, objectMapper, entityManager, dialectHelper, messageSource);
     this.getCategory = getCategory;
     this.getItem = getItem;
     this.getPromotions = getPromotions;

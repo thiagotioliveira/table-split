@@ -1,13 +1,16 @@
 package dev.thiagooliveira.tablesplit.infrastructure.claudio.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import jakarta.persistence.EntityManager;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public abstract class AbstractTools {
@@ -17,16 +20,19 @@ public abstract class AbstractTools {
   protected final ObjectMapper objectMapper;
   protected final EntityManager entityManager;
   protected final DatabaseDialectHelper dialectHelper;
+  protected final MessageSource messageSource;
 
   protected AbstractTools(
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      DatabaseDialectHelper dialectHelper) {
+      DatabaseDialectHelper dialectHelper,
+      MessageSource messageSource) {
     this.transactionTemplate = transactionTemplate;
     this.objectMapper = objectMapper;
     this.entityManager = entityManager;
     this.dialectHelper = dialectHelper;
+    this.messageSource = messageSource;
   }
 
   protected void setTenantSchema(String tenant) {
@@ -58,5 +64,10 @@ public abstract class AbstractTools {
             return "Error processing " + toolName + ": " + e.getMessage();
           }
         });
+  }
+
+  protected String getMessage(String key, Language language, Object... args) {
+    Locale locale = language == Language.PT ? Locale.forLanguageTag("pt-PT") : Locale.ENGLISH;
+    return messageSource.getMessage(key, language == Language.PT ? args : args, locale);
   }
 }

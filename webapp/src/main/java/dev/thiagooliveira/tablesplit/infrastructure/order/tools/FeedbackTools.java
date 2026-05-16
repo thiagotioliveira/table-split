@@ -12,6 +12,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import jakarta.persistence.EntityManager;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class FeedbackTools extends AbstractTools {
@@ -25,8 +26,9 @@ public class FeedbackTools extends AbstractTools {
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      DatabaseDialectHelper dialectHelper) {
-    super(transactionTemplate, objectMapper, entityManager, dialectHelper);
+      DatabaseDialectHelper dialectHelper,
+      MessageSource messageSource) {
+    super(transactionTemplate, objectMapper, entityManager, dialectHelper, messageSource);
     this.getFeedbackOverview = getFeedbackOverview;
     this.getFeedbackUnreadCount = getFeedbackUnreadCount;
   }

@@ -1,10 +1,9 @@
-package dev.thiagooliveira.tablesplit.infrastructure.report.tools;
+package dev.thiagooliveira.tablesplit.infrastructure.account.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import dev.thiagooliveira.tablesplit.application.account.GetStaff;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.tools.AbstractTools;
-import dev.thiagooliveira.tablesplit.infrastructure.report.service.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import jakarta.persistence.EntityManager;
@@ -12,30 +11,32 @@ import java.util.UUID;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class ReportTools extends AbstractTools {
+public class StaffTools extends AbstractTools {
 
-  private final GetReportsOverview getReportsOverview;
+  private final GetStaff getStaff;
 
-  public ReportTools(
-      GetReportsOverview getReportsOverview,
+  public StaffTools(
+      GetStaff getStaff,
       TransactionTemplate transactionTemplate,
       ObjectMapper objectMapper,
       EntityManager entityManager,
       DatabaseDialectHelper dialectHelper,
       MessageSource messageSource) {
     super(transactionTemplate, objectMapper, entityManager, dialectHelper, messageSource);
-    this.getReportsOverview = getReportsOverview;
+    this.getStaff = getStaff;
   }
 
-  @Tool(
-      "Get a general overview of the restaurant revenue and sales stats for a specific number of days")
-  public String getReportsOverview(
-      @P("Number of days to look back (e.g., 1 for today/yesterday, 7 for last week)") int days) {
+  @Tool("Get list of staff members and employees")
+  public String getStaffList() {
     return executeInTenantContext(
-        "getReportsOverview",
+        "getStaffList",
         () -> {
           UUID restaurantId = TenantContext.getRestaurantId();
-          return getReportsOverview.execute(restaurantId, days);
+          var staff = getStaff.list(restaurantId);
+          if (staff.isEmpty()) {
+            return "No staff members registered for this restaurant.";
+          }
+          return staff;
         });
   }
 }

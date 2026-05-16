@@ -4,19 +4,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
+import dev.thiagooliveira.tablesplit.application.account.GetStaff;
 import dev.thiagooliveira.tablesplit.application.menu.GetCategory;
 import dev.thiagooliveira.tablesplit.application.menu.GetCombos;
 import dev.thiagooliveira.tablesplit.application.menu.GetItem;
 import dev.thiagooliveira.tablesplit.application.menu.GetPromotions;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackOverview;
 import dev.thiagooliveira.tablesplit.application.order.GetFeedbackUnreadCount;
+import dev.thiagooliveira.tablesplit.application.order.GetTables;
+import dev.thiagooliveira.tablesplit.application.restaurant.GetRestaurant;
+import dev.thiagooliveira.tablesplit.infrastructure.account.tools.StaffTools;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.ClaudioService;
+import dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.tools.MenuTools;
+import dev.thiagooliveira.tablesplit.infrastructure.order.service.GetOrderOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.order.service.GetTablesOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.order.tools.FeedbackTools;
+import dev.thiagooliveira.tablesplit.infrastructure.order.tools.OrdersTools;
 import dev.thiagooliveira.tablesplit.infrastructure.order.tools.TablesTools;
 import dev.thiagooliveira.tablesplit.infrastructure.report.service.GetReportsOverview;
 import dev.thiagooliveira.tablesplit.infrastructure.report.tools.ReportTools;
+import dev.thiagooliveira.tablesplit.infrastructure.restaurant.tools.RestaurantTools;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.DatabaseDialectHelper;
 import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import jakarta.persistence.EntityManager;
@@ -25,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -49,10 +58,15 @@ public class ClaudioChatOpenAiConfig {
       GetFeedbackOverview getFeedbackOverview,
       GetFeedbackUnreadCount getFeedbackUnreadCount,
       GetTablesOverview getTablesOverview,
+      GetOrderOverview getOrderOverview,
+      GetTables getTables,
+      GetRestaurant getRestaurant,
+      GetStaff getStaff,
       PlatformTransactionManager transactionManager,
       ObjectMapper objectMapper,
       EntityManager entityManager,
-      DatabaseDialectHelper dialectHelper) {
+      DatabaseDialectHelper dialectHelper,
+      MessageSource messageSource) {
 
     logger.debug("Initializing ClaudioService...");
 
@@ -66,7 +80,12 @@ public class ClaudioChatOpenAiConfig {
     // We created the tools object DIRECTLY here to avoid Spring Proxies.
     ReportTools reportTools =
         new ReportTools(
-            getReportsOverview, transactionTemplate, objectMapper, entityManager, dialectHelper);
+            getReportsOverview,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper,
+            messageSource);
 
     FeedbackTools feedbackTools =
         new FeedbackTools(
@@ -75,11 +94,27 @@ public class ClaudioChatOpenAiConfig {
             transactionTemplate,
             objectMapper,
             entityManager,
-            dialectHelper);
+            dialectHelper,
+            messageSource);
 
     TablesTools tablesTools =
         new TablesTools(
-            getTablesOverview, transactionTemplate, objectMapper, entityManager, dialectHelper);
+            getTablesOverview,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper,
+            messageSource);
+
+    OrdersTools ordersTools =
+        new OrdersTools(
+            getOrderOverview,
+            getTables,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper,
+            messageSource);
 
     MenuTools menuTools =
         new MenuTools(
@@ -90,7 +125,36 @@ public class ClaudioChatOpenAiConfig {
             transactionTemplate,
             objectMapper,
             entityManager,
-            dialectHelper);
+            dialectHelper,
+            messageSource);
+
+    RestaurantTools restaurantTools =
+        new RestaurantTools(
+            getRestaurant,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper,
+            messageSource);
+
+    StaffTools staffTools =
+        new StaffTools(
+            getStaff,
+            transactionTemplate,
+            objectMapper,
+            entityManager,
+            dialectHelper,
+            messageSource);
+
+    LanguageDetector languageDetector =
+        AiServices.builder(LanguageDetector.class)
+            .chatLanguageModel(
+                OpenAiChatModel.builder()
+                    .apiKey(apiKey)
+                    .modelName("gpt-4o-mini")
+                    .timeout(Duration.ofSeconds(30))
+                    .build())
+            .build();
 
     return AiServices.builder(ClaudioService.class)
         .chatLanguageModel(
@@ -101,7 +165,14 @@ public class ClaudioChatOpenAiConfig {
                 .logRequests(true)
                 .logResponses(true)
                 .build())
-        .tools(reportTools, feedbackTools, tablesTools, menuTools)
+        .tools(
+            reportTools,
+            feedbackTools,
+            tablesTools,
+            ordersTools,
+            menuTools,
+            restaurantTools,
+            staffTools)
         .chatMemoryProvider(chatId -> MessageWindowChatMemory.withMaxMessages(20))
         .systemMessageProvider(
             chatId ->
@@ -144,6 +215,12 @@ Mantenha consistência total de idioma entre pergunta e resposta.
 Sua ÚNICA fonte confiável de dados são as tools do sistema.
 
 Você deve usar tools sempre que a pergunta envolver faturamento, relatórios, métricas, feedbacks, avaliações, categorias, items, mesas ou qualquer dado operacional.
+
+## 🔧 REGRAS PARA ARGUMENTOS DE TOOLS
+
+- IDs (mesas, itens, etc) devem ser SEMPRE strings simples (UUID).
+- NUNCA envie um objeto JSON `{...}` como argumento de uma tool.
+- Idiomas devem ser SEMPRE as strings "PT" ou "EN".
 
 **MUITO IMPORTANTE: Os dados do restaurante mudam em tempo real. Você DEVE SEMPRE chamar a tool correspondente para cada nova pergunta do usuário, mesmo que você já tenha os dados no histórico da conversa. Nunca presuma que os dados anteriores ainda são válidos.**
 
@@ -221,6 +298,18 @@ Inglês:
 - Idioma → sempre respeitar o idioma do usuário
 """
                     .formatted(Time.nowLocalDateTime()))
+        .build();
+  }
+
+  @Bean
+  public LanguageDetector languageDetector(@Value("${spring.ai.openai.api-key:}") String apiKey) {
+    return AiServices.builder(LanguageDetector.class)
+        .chatLanguageModel(
+            OpenAiChatModel.builder()
+                .apiKey(apiKey)
+                .modelName("gpt-4o-mini")
+                .timeout(Duration.ofSeconds(30))
+                .build())
         .build();
   }
 }

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260516-add-telegram-language
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: telegram_user_mappings
+            schemaName: public
+            columns:
+              - column:
+                  name: language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+                  defaultValue: "PT"

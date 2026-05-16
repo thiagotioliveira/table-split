@@ -1,14 +1,17 @@
 package dev.thiagooliveira.tablesplit.infrastructure.claudio.telegram;
 
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.ClaudioService;
+import dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.persistence.TelegramUserMappingEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.persistence.TelegramUserMappingJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Contact;
@@ -22,6 +25,8 @@ public class TelegramUpdateHandler {
   private final TelegramIdentityService identityService;
   private final TelegramUserMappingJpaRepository mappingRepository;
   private final TelegramSender telegramSender;
+  private final MessageSource messageSource;
+  private final LanguageDetector languageDetector;
 
   private enum BotState {
     IDLE,
@@ -38,11 +43,15 @@ public class TelegramUpdateHandler {
       ClaudioService claudioService,
       TelegramIdentityService identityService,
       TelegramUserMappingJpaRepository mappingRepository,
-      TelegramSender telegramSender) {
+      TelegramSender telegramSender,
+      MessageSource messageSource,
+      LanguageDetector languageDetector) {
     this.claudioService = claudioService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
     this.telegramSender = telegramSender;
+    this.messageSource = messageSource;
+    this.languageDetector = languageDetector;
   }
 
   public void onUpdateReceived(Update update) {
@@ -62,6 +71,7 @@ public class TelegramUpdateHandler {
           String slug = text.substring(7).trim().toLowerCase();
           handleSlugLogin(chatId, slug);
         } else {
+          detectLanguage(chatId, text);
           handleTextMessage(chatId, text);
         }
       } else if (message.hasContact()) {
@@ -77,15 +87,14 @@ public class TelegramUpdateHandler {
     Long chatId = callbackQuery.getMessage().getChatId();
 
     if (data.startsWith("confirm_order:")) {
-      telegramSender.sendText(chatId, "✅ Você confirmou o recebimento do pedido!");
+      telegramSender.sendText(chatId, getMessage("telegram.confirm.order", chatId));
     }
   }
 
   private void requestContact(Long chatId) {
     userStates.put(chatId, BotState.AWAITING_CONTACT);
     telegramSender.sendContactRequest(
-        chatId,
-        "Olá! Para começar, por favor clique no botão abaixo para compartilhar seu contato e eu possa identificar você no Table Split.");
+        chatId, getMessage("telegram.welcome.request.contact", chatId));
   }
 
   private void handleContact(Long chatId, Contact contact) {
@@ -100,28 +109,21 @@ public class TelegramUpdateHandler {
       userStates.put(chatId, BotState.IDLE);
       saveMapping(chatId, phone, user);
       telegramSender.sendText(
-          chatId,
-          "Bem-vindo, "
-              + user.name()
-              + "! Você foi identificado como "
-              + user.role()
-              + ". Como posso ajudar hoje?");
+          chatId, getMessage("telegram.welcome.identified", chatId, user.name(), user.role()));
       return;
     }
 
     userStates.put(chatId, BotState.AWAITING_SLUG);
-    telegramSender.sendText(
-        chatId,
-        "Não encontrei você como cliente. Você faz parte da equipe de algum restaurante? Se sim, por favor digite o identificador (slug) do seu restaurante.");
+    telegramSender.sendText(chatId, getMessage("telegram.login.staff.slug.request", chatId));
   }
 
   @Transactional
   public void handleReset(Long chatId) {
     identifiedUsers.remove(chatId);
     userStates.remove(chatId);
-    chatToPhoneMap.remove(chatId);
     mappingRepository.deleteByChatId(chatId);
-    telegramSender.sendText(chatId, "Sua identificação foi removida. Use /start para recomeçar.");
+    chatLocales.remove(chatId);
+    telegramSender.sendText(chatId, getMessage("telegram.reset.success", chatId));
   }
 
   @Transactional
@@ -137,7 +139,7 @@ public class TelegramUpdateHandler {
     }
 
     if (phone == null) {
-      telegramSender.sendText(chatId, "Por favor, compartilhe seu contato primeiro usando /start.");
+      telegramSender.sendText(chatId, getMessage("telegram.login.request.start", chatId));
       return;
     }
 
@@ -146,17 +148,10 @@ public class TelegramUpdateHandler {
     if (staffOpt.isPresent()) {
       var staff = staffOpt.get();
       identifiedUsers.put(chatId, staff);
-      saveMapping(chatId, phone, staff);
       telegramSender.sendText(
-          chatId,
-          "Olá "
-              + staff.name()
-              + "! Você foi identificado como "
-              + staff.role()
-              + ". Como posso ajudar hoje?");
+          chatId, getMessage("telegram.welcome.identified", chatId, staff.name(), staff.role()));
     } else {
-      telegramSender.sendText(
-          chatId, "Não encontrei você na equipe do restaurante '" + slug + "'.");
+      telegramSender.sendText(chatId, getMessage("telegram.login.staff.not_found", chatId, slug));
     }
   }
 
@@ -182,8 +177,8 @@ public class TelegramUpdateHandler {
     entity.setPhone(phone);
     entity.setRestaurantId(user.restaurantId());
     entity.setName(user.name());
-    entity.setRole(user.role());
     mappingRepository.save(entity);
+    chatLocales.put(chatId, getLocale(chatId)); // Ensure it's in sync
   }
 
   private void handleTextMessage(Long chatId, String text) {
@@ -210,18 +205,9 @@ public class TelegramUpdateHandler {
         userStates.put(chatId, BotState.IDLE);
         saveMapping(chatId, phone, staff);
         telegramSender.sendText(
-            chatId,
-            "Excelente! Bem-vindo, "
-                + staff.name()
-                + "! Agora você está identificado como "
-                + staff.role()
-                + ". Como posso ajudar?");
+            chatId, getMessage("telegram.login.staff.success", chatId, staff.name(), staff.role()));
       } else {
-        telegramSender.sendText(
-            chatId,
-            "Desculpe, não encontrei o restaurante com o identificador '"
-                + text
-                + "' ou você não está cadastrado na equipe.");
+        telegramSender.sendText(chatId, getMessage("telegram.login.staff.not_found", chatId, text));
       }
       return;
     }
@@ -232,9 +218,7 @@ public class TelegramUpdateHandler {
     }
 
     if (user == null || user.restaurantId() == null) {
-      telegramSender.sendText(
-          chatId,
-          "Desculpe, não consegui identificar seu restaurante para fornecer informações. Use /start para se identificar.");
+      telegramSender.sendText(chatId, getMessage("telegram.error.no_restaurant", chatId));
       return;
     }
 
@@ -245,11 +229,49 @@ public class TelegramUpdateHandler {
       String response = claudioService.chat(chatId, text);
       telegramSender.sendText(chatId, response);
     } catch (Exception e) {
-      telegramSender.sendText(
-          chatId, "Desculpe, tive um problema ao processar sua mensagem com a IA.");
+      telegramSender.sendText(chatId, getMessage("telegram.error.ai", chatId));
       logger.error("Error in AI chat", e);
     } finally {
       TenantContext.clear();
     }
+  }
+
+  private final Map<Long, Locale> chatLocales = new ConcurrentHashMap<>();
+
+  private Locale getLocale(Long chatId) {
+    return chatLocales.computeIfAbsent(
+        chatId,
+        id ->
+            mappingRepository
+                .findById(id)
+                .map(m -> Locale.forLanguageTag(m.getLanguage()))
+                .orElse(Locale.forLanguageTag("PT")));
+  }
+
+  private void detectLanguage(Long chatId, String text) {
+    if (text == null || text.startsWith("/") || text.length() < 3) return;
+
+    try {
+      String detected = languageDetector.detect(text);
+      if (detected != null && (detected.equals("PT") || detected.equals("EN"))) {
+        Locale locale = Locale.forLanguageTag(detected);
+        chatLocales.put(chatId, locale);
+
+        mappingRepository
+            .findById(chatId)
+            .ifPresent(
+                mapping -> {
+                  mapping.setLanguage(detected);
+                  mappingRepository.save(mapping);
+                });
+        logger.debug("Language detected for chatId {}: {}", chatId, detected);
+      }
+    } catch (Exception e) {
+      logger.warn("Failed to detect language for chatId {}: {}", chatId, e.getMessage());
+    }
+  }
+
+  private String getMessage(String key, Long chatId, Object... args) {
+    return messageSource.getMessage(key, args, getLocale(chatId));
   }
 }
