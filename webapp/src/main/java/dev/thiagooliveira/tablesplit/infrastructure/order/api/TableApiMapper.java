@@ -62,6 +62,17 @@ public abstract class TableApiMapper {
             .map(this::mapToHistoryPaymentResponse)
             .collect(Collectors.toList()));
 
+    response.setCustomers(
+        order.getCustomers().stream()
+            .map(
+                c ->
+                    new dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model
+                            .OrderCustomerResponse()
+                        .id(c.getId())
+                        .name(c.getName())
+                        .total(order.calculateSubtotalByCustomer(c.getId()).doubleValue()))
+            .collect(Collectors.toList()));
+
     response.setCustomerNames(customerNames);
     response.setTotal(order.calculateTotal().doubleValue());
     response.setSubtotal(order.calculateSubtotal().doubleValue());

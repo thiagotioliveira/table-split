@@ -160,8 +160,12 @@ paths:
             schema:
               $ref: '#/components/schemas/PlaceOrderRequest'
       responses:
-        '204':
+        '200':
           description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceOrderResponse'
 
   /orders/items/{itemId}/status:
     post:
@@ -509,6 +513,28 @@ components:
         serviceFee:
           type: integer
 
+    PlaceOrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        shortId:
+          type: string
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketSummary'
+
+    TicketSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        shortId:
+          type: string
+
     TicketRequest:
       type: object
       required:
@@ -779,6 +805,10 @@ components:
           type: object
           additionalProperties:
             type: string
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderCustomerResponse'
         total:
           type: number
           format: double
@@ -983,3 +1013,15 @@ components:
         totalElements: { type: integer }
         size: { type: integer }
         hasNext: { type: boolean }
+
+    OrderCustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        total:
+          type: number
+          format: double

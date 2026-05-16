@@ -154,4 +154,24 @@ public abstract class OrderApiMapper {
         initiatedBy,
         language);
   }
+
+  public dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PlaceOrderResponse
+      mapToPlaceOrderResponse(dev.thiagooliveira.tablesplit.domain.order.Order order) {
+    List<dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TicketSummary>
+        tickets =
+            order.getTickets().stream()
+                .map(
+                    t ->
+                        new dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model
+                                .TicketSummary()
+                            .id(t.getId())
+                            .shortId(t.getId().toString().substring(0, 4).toUpperCase()))
+                .toList();
+
+    return new dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model
+            .PlaceOrderResponse()
+        .id(order.getId())
+        .shortId(order.getId().toString().substring(0, 4).toUpperCase())
+        .tickets(tickets);
+  }
 }

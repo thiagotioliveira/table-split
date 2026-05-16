@@ -17,6 +17,8 @@ public class CounterController {
     var context = (AccountContext) auth.getPrincipal();
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
+    model.addAttribute("userLanguage", context.getUser().getLanguage());
+    model.addAttribute("currency", context.getRestaurant().getCurrency());
     return "counter";
   }
 }

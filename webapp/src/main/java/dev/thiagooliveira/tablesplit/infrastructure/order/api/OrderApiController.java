@@ -15,6 +15,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.OrdersApi;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.CancelItemRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.MoveTicketRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PlaceOrderRequest;
+import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PlaceOrderResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TicketResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TicketsResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.UpdateItemStatusRequest;
@@ -236,7 +237,7 @@ public class OrderApiController implements OrdersApi {
   }
 
   @Override
-  public ResponseEntity<Void> placeOrder(UUID tableId, PlaceOrderRequest request) {
+  public ResponseEntity<PlaceOrderResponse> placeOrder(UUID tableId, PlaceOrderRequest request) {
     AccountContext account = getContext();
 
     var table =
@@ -253,8 +254,10 @@ public class OrderApiController implements OrdersApi {
             account.getUser().getId(),
             account.getUser().getLanguage());
 
-    transactionalContext.execute(() -> placeOrder.execute(command));
-    return ResponseEntity.noContent().build();
+    dev.thiagooliveira.tablesplit.domain.order.Order order =
+        transactionalContext.execute(() -> placeOrder.execute(command));
+
+    return ResponseEntity.ok(mapper.mapToPlaceOrderResponse(order));
   }
 
   @Override

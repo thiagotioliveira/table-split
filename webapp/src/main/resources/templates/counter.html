@@ -71,6 +71,13 @@
             color: white;
         }
 
+        .order-type-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+            pointer-events: none;
+        }
+
         .order-type-btn svg {
             width: 1.125rem;
             height: 1.125rem;
@@ -378,9 +385,17 @@
             margin-bottom: 0.125rem;
         }
 
-        .cart-item-customizations {
+        .cart-item-customizations,
+        .cart-item-observations {
             font-size: 0.6875rem;
             color: var(--muted);
+            line-height: 1.2;
+        }
+
+        .cart-item-observations {
+            color: var(--primary);
+            font-style: italic;
+            margin-top: 0.125rem;
         }
 
         .cart-item-remove {
@@ -743,19 +758,93 @@
             background: var(--primary-light);
         }
 
+        .entry-clients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .entry-client-chip {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .entry-client-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .entry-client-chip.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .entry-clients-divider {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .entry-clients-divider::before,
+        .entry-clients-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 3rem);
+            height: 1px;
+            background: var(--border);
+        }
+
+        .entry-clients-divider::before { left: 0; }
+        .entry-clients-divider::after { right: 0; }
+
+        .question-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .question-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .question-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
         .question-option input {
-            display: none;
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
         }
 
         .option-radio {
-            width: 1.125rem;
-            height: 1.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
             border: 2px solid var(--border);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: all 0.2s;
         }
 
         .question-option.selected .option-radio {
@@ -764,43 +853,49 @@
 
         .option-radio::after {
             content: '';
-            width: 0.5rem;
-            height: 0.5rem;
+            width: 0.625rem;
+            height: 0.625rem;
             background: var(--primary);
             border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s;
+            transform: scale(0);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .question-option.selected .option-radio::after {
-            opacity: 1;
+            transform: scale(1);
         }
 
         .option-checkbox {
-            width: 1.125rem;
-            height: 1.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
             border: 2px solid var(--border);
-            border-radius: 0.25rem;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-        }
-
-        .question-option.selected .option-checkbox {
-            border-color: var(--primary);
-            background: var(--primary);
+            transition: all 0.2s;
+            color: white;
         }
 
         .option-checkbox svg {
-            width: 0.75rem;
-            height: 0.75rem;
-            color: white;
+            width: 0.875rem;
+            height: 0.875rem;
             opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white;
+            display: block !important;
+        }
+
+        .question-option.selected .option-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         .question-option.selected .option-checkbox svg {
             opacity: 1;
+            transform: scale(1);
         }
 
         .option-content {
@@ -1469,7 +1564,7 @@
     </style>
 </head>
 <body>
-<div th:insert="~{components/sidebar :: sidebar('Counter', ~{}, false)}"></div>
+<div th:insert="~{components/sidebar :: sidebar(#{page.counter.header.title}, ~{}, false)}"></div>
 
 <!-- Main Content -->
 <main class="main-content">
@@ -1478,16 +1573,9 @@
         <!-- Menu Panel -->
         <div class="kiosk-menu-panel">
             <!-- Categories -->
-
-            <!-- Categories -->
             <div class="kiosk-categories">
                 <div class="categories-scroll" id="categoriesContainer">
-                    <button class="category-btn active" data-category="all">Todos</button>
-                    <button class="category-btn" data-category="lanches">🍔 Lanches</button>
-                    <button class="category-btn" data-category="pizzas">🍕 Pizzas</button>
-                    <button class="category-btn" data-category="pratos">🍽️ Pratos</button>
-                    <button class="category-btn" data-category="bebidas">🥤 Bebidas</button>
-                    <button class="category-btn" data-category="sobremesas">🍰 Sobremesas</button>
+                    <button class="category-btn active" data-category="all" onclick="filterMenu('all')" th:text="#{page.counter.category.all}">Todas</button>
                 </div>
             </div>
 
@@ -1503,7 +1591,7 @@
         <div class="kiosk-cart-panel" id="cartPanel">
             <div class="cart-header">
                 <h2 class="cart-title">
-                    Seu Pedido
+                    [[#{page.counter.cart.title}]]
                     <span class="cart-count" id="cartCount">0</span>
                 </h2>
                 <button class="cart-close" onclick="closeCart()">
@@ -1513,21 +1601,23 @@
             <div class="cart-items" id="cartItems">
                 <div class="cart-empty" id="cartEmpty">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                    <p>Seu carrinho está vazio</p>
+                    <h3 th:text="#{page.counter.cart.empty.title}">Carrinho Vazio</h3>
+                    <p th:text="#{page.counter.cart.empty.subtitle}">Selecione itens para começar</p>
                 </div>
+                <div id="cartItemsList"></div>
             </div>
             <div class="cart-footer" id="cartFooter" style="display: none;">
                 <div class="cart-subtotal">
-                    <span>Subtotal</span>
+                    <span th:text="#{page.counter.cart.summary.subtotal}">Subtotal</span>
                     <span id="cartSubtotal">[[${currencySymbol}]] 0,00</span>
                 </div>
                 <div class="cart-total">
-                    <span>Total</span>
+                    <span th:text="#{page.counter.payment.step1.total}">Total</span>
                     <span class="cart-total-value" id="cartTotal">[[${currencySymbol}]] 0,00</span>
                 </div>
                 <button class="checkout-btn" onclick="openPayment()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                    Finalizar Pedido
+                    <span th:text="#{page.counter.cart.button.payment}">Pagamento</span>
                 </button>
             </div>
         </div>
@@ -1536,14 +1626,13 @@
 
 <!-- Mobile Cart Button -->
 <button class="mobile-cart-btn" id="mobileCartBtn" onclick="openCart()">
-    <span>
-      <div class="mobile-cart-info">
-        <th:block th:text="#{page.counter.mobile.view_order}">Ver Pedido</th:block>
-        <span>(<span id="mobileCartCount">0</span></span>
-        <th:block th:text="#{page.counter.items}">itens</th:block>)
-      </div>
-      <span id="mobileCartTotal">[[${currencySymbol}]] 0,00</span>
-    </span>
+    <div class="mobile-cart-content" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div class="mobile-cart-info">
+            [[#{page.counter.cart.button.view}]]
+            (<span id="mobileCartCount">0</span> [[#{page.counter.payment.step1.items}]])
+        </div>
+        <span id="mobileCartTotal" class="mobile-cart-total">[[${currencySymbol}]] 0,00</span>
+    </div>
 </button>
 
 <!-- Item Modal -->
@@ -1570,8 +1659,8 @@
                 <button class="modal-qty-btn" onclick="changeModalQty(1)">+</button>
             </div>
             <button class="add-to-cart-btn" onclick="addToCart()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                Adicionar <span id="modalTotalPrice">[[${currencySymbol}]] 0,00</span>
+                <span th:text="#{page.counter.item.modal.add_to_cart}">Adicionar ao Carrinho</span>
+                <span id="modalTotalPrice">[[${currencySymbol}]] 0,00</span>
             </button>
         </div>
     </div>
@@ -1581,7 +1670,7 @@
 <div class="modal-overlay" id="paymentModal">
     <div class="payment-modal">
         <div class="payment-header">
-            <h2 id="paymentModalTitle">Resumo do Pedido</h2>
+            <h2 id="paymentModalTitle" th:text="#{page.counter.payment.step1.title}">Resumo do Pedido</h2>
             <button class="item-modal-close" onclick="closePayment()" style="position: static; background: var(--background-secondary); color: var(--foreground);">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -1592,11 +1681,11 @@
             <div id="paymentStep1" class="payment-step">
                 <div class="payment-summary">
                     <div class="payment-summary-row">
-                        <span>Itens (<span id="paymentItemCount">0</span>)</span>
+                        <span>[[#{page.counter.payment.step1.items}]] (<span id="paymentItemCount">0</span>)</span>
                         <span id="paymentSubtotal">[[${currencySymbol}]] 0,00</span>
                     </div>
                     <div class="payment-summary-row">
-                        <span>Total</span>
+                        <span th:text="#{page.counter.payment.step1.total}">Total</span>
                         <span id="paymentTotal">[[${currencySymbol}]] 0,00</span>
                     </div>
                 </div>
@@ -1607,38 +1696,44 @@
 
             <!-- Step 2: Identification -->
             <div id="paymentStep2" class="payment-step" style="display: none;">
-                <p class="payment-method-label">Como deseja seu pedido?</p>
+                <p class="payment-method-label" th:text="#{page.counter.payment.step2.type_label}">Como deseja seu pedido?</p>
                 <div class="kiosk-controls" style="padding: 0; border: none; margin-bottom: 1.5rem; justify-content: flex-start; background: transparent;">
                     <div class="kiosk-order-type">
                         <button class="order-type-btn active" data-type="local" onclick="setOrderType('local')">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
-                            Comer Aqui
+                            <span th:text="#{page.counter.payment.step2.type.local}">Comer Aqui</span>
                         </button>
-                        <button class="order-type-btn" data-type="takeaway" onclick="setOrderType('takeaway')">
+                        <button class="order-type-btn" data-type="takeaway" onclick="setOrderType('takeaway')" disabled title="Em breve">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                            Levar
+                            <span th:text="#{page.counter.payment.step2.type.takeaway}">Levar</span>
                         </button>
                     </div>
                 </div>
 
                 <div id="customerDetailsForm" class="address-form">
                     <div id="tableSelectionGroup" class="address-field">
-                        <label>Selecione sua Mesa *</label>
+                        <label class="form-label">[[#{page.counter.payment.step2.table_label}]] <span class="required">*</span></label>
                         <select id="tableNumber" style="padding: 0.625rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem; background: var(--card); color: var(--foreground); width: 100%;">
-                            <option value="">Selecione uma mesa</option>
+                            <option value="" th:text="#{page.counter.payment.step2.table_placeholder}">Selecione uma mesa</option>
                             <!-- Tables populated by JS -->
                         </select>
                     </div>
+                    <div id="entryClientsSection" style="display: none; margin-bottom: 1.5rem;">
+                        <div class="form-label" style="margin-bottom: 0.75rem;" th:text="#{page.counter.payment.step2.clients_label}">Clientes na mesa — selecione:</div>
+                        <div class="entry-clients-list" id="entryClientsList"></div>
+                        <div class="entry-clients-divider" th:text="#{page.counter.payment.step2.new_client_label}">ou novo cliente</div>
+                    </div>
+
                     <div class="address-field">
-                        <label>Nome do Cliente *</label>
-                        <input type="text" id="customerName" placeholder="Seu nome">
+                        <label class="form-label">[[#{page.counter.payment.step2.customer_name_label}]] <span class="required">*</span></label>
+                        <input type="text" id="customerName" th:placeholder="#{page.counter.payment.step2.customer_name_label}">
                     </div>
                 </div>
             </div>
 
             <!-- Step 3: Payment Method -->
             <div id="paymentStep3" class="payment-step" style="display: none;">
-                <p class="payment-method-label">Escolha a forma de pagamento</p>
+                <p class="payment-method-label" th:text="#{page.customer.menu.payment.method_label}">Escolha a forma de pagamento</p>
                 <div class="payment-methods">
                     <label class="payment-method selected" data-method="card">
                         <input type="radio" name="payment" value="card" checked>
@@ -1646,7 +1741,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                         </div>
                         <div class="payment-method-info">
-                            <div class="payment-method-name">Cartão de Crédito/Débito</div>
+                            <div class="payment-method-name" th:text="#{payment.method.card}">Cartão de Crédito/Débito</div>
                             <div class="payment-method-desc">Aproximação ou chip</div>
                         </div>
                     </label>
@@ -1657,7 +1752,7 @@
                         </div>
                         <div class="payment-method-info">
                             <div class="payment-method-name">PIX</div>
-                            <div class="payment-method-desc">Pagamento instantâneo</div>
+                            <div class="payment-method-desc" th:text="#{page.counter.payment.instant}">Pagamento instantâneo</div>
                         </div>
                     </label>
                     <label class="payment-method" data-method="cash">
@@ -1666,8 +1761,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
                         </div>
                         <div class="payment-method-info">
-                            <div class="payment-method-name">Dinheiro</div>
-                            <div class="payment-method-desc">Pagar no caixa</div>
+                            <div class="payment-method-name" th:text="#{payment.method.cash}">Dinheiro</div>
+                            <div class="payment-method-desc" th:text="#{page.counter.payment.cash_desc}">Pagar no caixa</div>
                         </div>
                     </label>
                 </div>
@@ -1675,9 +1770,9 @@
         </div>
 
         <div class="payment-footer">
-            <button class="payment-back-btn" id="paymentBackBtn" onclick="prevPaymentStep()">Voltar</button>
+            <button class="payment-back-btn" id="paymentBackBtn" onclick="prevPaymentStep()" th:text="#{page.counter.payment.button.back}">Voltar</button>
             <button class="payment-confirm-btn" id="paymentNextBtn" onclick="nextPaymentStep()">
-                <span>Próximo</span>
+                <span th:text="#{page.counter.payment.button.next}">Próximo</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1rem; height: 1rem;"><path d="m9 18 6-6-6-6"/></svg>
             </button>
         </div>
@@ -1690,25 +1785,25 @@
         <div class="success-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
         </div>
-        <h2 class="success-title">Pedido Confirmado!</h2>
-        <p class="success-text">Seu pedido está sendo preparado</p>
+        <h2 class="success-title" th:text="#{page.counter.success.title}">Pedido Confirmado!</h2>
+        <p class="success-text" th:text="#{page.counter.success.subtitle}">Seu pedido está sendo preparado</p>
         <div class="order-number" id="orderNumber">42</div>
-        <p class="order-number-label">Número do Pedido</p>
+        <p class="order-number-label" th:text="#{page.counter.success.order_number}">Número do Pedido</p>
 
         <div class="success-address" id="successAddress" style="display: none;">
             <div class="success-address-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                Endereço de Entrega
+                <span th:text="#{page.counter.success.address.title}">Endereço de Entrega</span>
             </div>
             <p id="successAddressText"></p>
         </div>
 
         <div class="success-buttons">
-            <button class="print-order-btn" id="printOrderBtn" onclick="printOrder()" style="display: none;">
+            <button th:if="${false}" class="print-order-btn" id="printOrderBtn" onclick="printOrder()" style="display: none;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
                 Imprimir Pedido
             </button>
-            <button class="new-order-btn" onclick="newOrder()">Novo Pedido</button>
+            <button class="new-order-btn" onclick="newOrder()" th:text="#{page.counter.header.new_order}">Novo Pedido</button>
         </div>
     </div>
 </div>
@@ -1718,35 +1813,65 @@
     <div class="print-header">
         <div class="print-logo">TableSplit</div>
         <div class="print-type" id="printOrderType">PARA LEVAR</div>
-        <div class="print-order-number">Pedido #<span id="printOrderNumber">42</span></div>
+        <div class="print-order-number"><span th:text="#{page.counter.print.order_number_label}">Pedido #</span><span id="printOrderNumber">42</span></div>
         <div class="print-date" id="printDate"></div>
     </div>
     <div class="print-address" id="printAddress" style="display: none;">
-        <div class="print-address-title">📍 ENDEREÇO DE ENTREGA:</div>
+        <div class="print-address-title" th:text="#{page.counter.print.address_label}">📍 ENDEREÇO DE ENTREGA:</div>
         <div id="printAddressText"></div>
     </div>
     <div class="print-items" id="printItems"></div>
     <div class="print-total">
-        <span>TOTAL</span>
+        <span th:text="#{page.counter.print.total}">TOTAL</span>
         <span id="printTotal">[[${currencySymbol}]] 0,00</span>
     </div>
     <div class="print-footer">
-        <p>Obrigado pela preferência!</p>
-        <p>TableSplit - Sistema de Pedidos</p>
+        <p th:text="#{page.customer.menu.review.thanks}">Obrigado pela preferência!</p>
+        <p>[[#{app.name}]] - [[#{page.counter.print.system_label}]]</p>
     </div>
 </div>
 
 <!-- Processing Overlay -->
 <div class="processing-overlay" id="processingOverlay">
     <div class="processing-spinner"></div>
-    <p class="processing-text">Processando pagamento...</p>
+    <p class="processing-text" th:text="#{page.counter.payment.processing}">Processando pagamento...</p>
 </div>
 <script type="module" th:inline="javascript">
     import { categoriesApi } from /*[[@{/js/api/v1/manager/api-categories-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-categories-bridge.js';
     import { itemsApi } from /*[[@{/js/api/v1/manager/api-items-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-items-bridge.js';
     import { tablesApi } from /*[[@{/js/api/v1/manager/api-table-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-table-bridge.js';
+    import { ordersApi } from /*[[@{/js/api/v1/manager/api-orders-bridge.js(v=${appVersion})}]]*/ '/js/api/v1/manager/api-orders-bridge.js';
 
     const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
+    const currencyCode = /*[[${currency.name()}]]*/ 'BRL';
+    const userLanguageLabel = /*[[${userLanguage.label}]]*/ 'pt-BR';
+
+    const i18n = {
+        errorLoadingMenu: /*[[#{error.loading.menu}]]*/ 'Erro ao carregar o cardápio. Por favor, tente novamente.',
+        all: /*[[#{page.counter.category.all}]]*/ 'Todas',
+        required: /*[[#{page.menu.item.question.required}]]*/ 'Obrigatório',
+        optional: /*[[#{page.menu.item.question.optional}]]*/ 'Opcional',
+        observations: /*[[#{page.counter.item.modal.observations}]]*/ 'Observações',
+        observationsPlaceholder: /*[[#{page.customer.menu.cart.notes.placeholder}]]*/ 'Ex: sem cebola, bem passado...',
+        pleaseSelect: /*[[#{page.customer.menu.customization.error}]]*/ 'Por favor, selecione:',
+        next: /*[[#{page.counter.payment.button.next}]]*/ 'Próximo',
+        back: /*[[#{page.counter.payment.button.back}]]*/ 'Voltar',
+        cancel: /*[[#{button.cancel}]]*/ 'Cancelar',
+        confirmOrder: /*[[#{page.counter.payment.button.confirm}]]*/ 'Confirmar Pedido',
+        goToPayment: /*[[#{page.counter.payment.button.go_to_payment}]]*/ 'Ir para o Pagamento',
+        orderSummary: /*[[#{page.counter.payment.step1.title}]]*/ 'Resumo do Pedido',
+        yourIdentification: /*[[#{page.counter.payment.step2.title}]]*/ 'Sua Identificação',
+        payment: /*[[#{page.customer.menu.tab.payment}]]*/ 'Pagamento',
+        nameRequired: /*[[#{page.counter.payment.step2.error.name_required}]]*/ 'Por favor, informe seu nome.',
+        tableRequired: /*[[#{page.counter.payment.step2.error.table_required}]]*/ 'Por favor, selecione uma mesa.',
+        takeaway: /*[[#{page.counter.print.type.takeaway}]]*/ 'PARA LEVAR',
+        local: /*[[#{page.counter.print.type.local}]]*/ 'COMER AQUI',
+        table: /*[[#{page.customer.menu.badge.table}]]*/ 'Mesa',
+        client: /*[[#{page.customer.menu.badge.client}]]*/ 'Cliente',
+        thanks: /*[[#{page.customer.menu.review.thanks}]]*/ 'Obrigado pela preferência!',
+        systemOrders: /*[[#{app.name}]]*/ 'TableSplit',
+        errorPlacingOrder: /*[[#{error.order.place.failed}]]*/ 'Erro ao processar o pedido. Por favor, tente novamente.'
+    };
 
     // Global state
     let menuItems = [];
@@ -1760,6 +1885,8 @@
     let tableNumber = '';
     let currentOrderNumber = null;
     let currentPaymentStep = 1;
+    let counterTableId = null;
+    let selectedCustomerId = null;
 
     // Sidebar Functions
     window.openSidebar = function() {
@@ -1814,14 +1941,14 @@
         } catch (error) {
             console.error('Error loading menu:', error);
             if (menuGrid) {
-                menuGrid.innerHTML = '<div class="error-message">Erro ao carregar o cardápio. Por favor, tente novamente.</div>';
+                menuGrid.innerHTML = `<div class="error-message">${i18n.errorLoadingMenu}</div>`;
             }
         }
     }
 
     function renderCategories() {
         const container = document.getElementById('categoriesContainer');
-        let html = `<button class="category-btn active" data-category="all" onclick="filterMenu('all')">Todos</button>`;
+        let html = `<button class="category-btn active" data-category="all" onclick="filterMenu('all')">${i18n.all}</button>`;
         allCategories.forEach(cat => {
             html += `<button class="category-btn" data-category="${cat.id}" onclick="filterMenu('${cat.id}')">${cat.name}</button>`;
         });
@@ -1846,12 +1973,12 @@
             if (promo) {
                 priceHtml = `
                     <div class="menu-item-prices">
-                        <span class="price-original">${formatPrice(item.price)}</span>
-                        <span class="price-promo">${formatPrice(promo.promotionalPrice)}</span>
+                        <span class="price-original">${formatCurrency(item.price)}</span>
+                        <span class="price-promo">${formatCurrency(promo.promotionalPrice)}</span>
                     </div>`;
                 promoBadgeHtml = `<span class="promo-badge">-${promo.discountValue}${promo.discountType === 'PERCENTAGE' ? '%' : ''}</span>`;
             } else {
-                priceHtml = `<span class="menu-item-price">${formatPrice(item.price)}</span>`;
+                priceHtml = `<span class="menu-item-price">${formatCurrency(item.price)}</span>`;
             }
 
             return `
@@ -1889,12 +2016,12 @@
         if (item.promotion) {
             priceContainer.innerHTML = `
                 <div class="item-modal-prices">
-                    <span class="price-original">${formatPrice(item.price)}</span>
-                    <span class="price-promo">${formatPrice(item.promotion.promotionalPrice)}</span>
+                    <span class="price-original">${formatCurrency(item.price)}</span>
+                    <span class="price-promo">${formatCurrency(item.promotion.promotionalPrice)}</span>
                     <span class="modal-promo-badge">-${item.promotion.discountValue}${item.promotion.discountType === 'PERCENTAGE' ? '%' : ''}</span>
                 </div>`;
         } else {
-            priceContainer.innerHTML = `<span class="item-modal-price">${formatPrice(item.price)}</span>`;
+            priceContainer.innerHTML = `<span class="item-modal-price">${formatCurrency(item.price)}</span>`;
         }
         
         document.getElementById('modalQty').textContent = '1';
@@ -1908,18 +2035,18 @@
                     <div class="question-group" data-question-id="${question.id}">
                         <div class="question-label">
                             ${question.title}
-                            ${question.required ? '<span class="question-required">Obrigatório</span>' : '<span class="question-optional">Opcional</span>'}
+                            ${question.required ? `<span class="question-required">${i18n.required}</span>` : `<span class="question-optional">${i18n.optional}</span>`}
                         </div>
                         <div class="question-options">
                             ${question.options.map(option => `
-                                <label class="question-option" data-option-id="${option.id}" onclick="selectOption('${question.id}', '${option.id}', '${question.type.toLowerCase()}', ${option.extraPrice || 0}, '${option.text}')">
+                                <label class="question-option" data-option-id="${option.id}" onclick="selectOption('${question.id}', '${option.id}', '${question.type.toLowerCase()}', ${option.extraPrice || 0}, '${option.text}', '${question.title}')">
                                     <input type="${question.type === 'SINGLE' ? 'radio' : 'checkbox'}" name="question_${question.id}" value="${option.id}">
                                     <div class="${question.type === 'SINGLE' ? 'option-radio' : 'option-checkbox'}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                        ${question.type !== 'SINGLE' ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
                                     </div>
                                     <div class="option-content">
                                         <span class="option-name">${option.text}</span>
-                                        ${(option.extraPrice > 0) ? `<span class="option-price">+ ${formatPrice(option.extraPrice)}</span>` : ''}
+                                        ${(option.extraPrice > 0) ? `<span class="option-price">+ ${formatCurrency(option.extraPrice)}</span>` : ''}
                                     </div>
                                 </label>
                             `).join('')}
@@ -1930,8 +2057,8 @@
         
         html += `
             <div class="question-group">
-                <div class="question-label">Observações<span class="question-optional">Opcional</span></div>
-                <textarea class="observations-input" id="observations" rows="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background-secondary); color: var(--foreground); resize: none;" placeholder="Ex: sem cebola, bem passado..."></textarea>
+                <div class="question-label">${i18n.observations}<span class="question-optional">${i18n.optional}</span></div>
+                <textarea class="observations-input" id="observations" rows="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background-secondary); color: var(--foreground); resize: none;" placeholder="${i18n.observationsPlaceholder}"></textarea>
             </div>`;
         
         body.innerHTML = html;
@@ -1944,9 +2071,9 @@
         currentItem = null;
     };
 
-    window.selectOption = function(questionId, optionId, type, price, name) {
+    window.selectOption = function(questionId, optionId, type, price, name, questionTitle) {
         if (type === 'single') {
-            selectedOptions[questionId] = [{ id: optionId, price, name }];
+            selectedOptions[questionId] = [{ id: optionId, price, name, questionTitle }];
             document.querySelectorAll(`[data-question-id="${questionId}"] .question-option`).forEach(el => el.classList.remove('selected'));
             document.querySelector(`[data-option-id="${optionId}"]`).classList.add('selected');
         } else {
@@ -1957,7 +2084,7 @@
                 selectedOptions[questionId].splice(existingIndex, 1);
                 optionEl.classList.remove('selected');
             } else {
-                selectedOptions[questionId].push({ id: optionId, price, name });
+                selectedOptions[questionId].push({ id: optionId, price, name, questionTitle });
                 optionEl.classList.add('selected');
             }
         }
@@ -1976,12 +2103,12 @@
         let itemTotal = basePrice;
         Object.values(selectedOptions).forEach(options => options.forEach(opt => itemTotal += opt.price));
         const total = itemTotal * currentQty;
-        document.getElementById('modalTotalPrice').textContent = formatPrice(total);
+        document.getElementById('modalTotalPrice').textContent = formatCurrency(total);
     }
 
     // Cart Functions
     window.renderCart = function() {
-        const container = document.getElementById('cartItems');
+        const listContainer = document.getElementById('cartItemsList');
         const empty = document.getElementById('cartEmpty');
         const footer = document.getElementById('cartFooter');
         const countEl = document.getElementById('cartCount');
@@ -1991,18 +2118,25 @@
         const mobileTotalEl = document.getElementById('mobileCartTotal');
         
         const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
-        countEl.textContent = itemCount;
-        mobileCountEl.textContent = itemCount;
+        if (countEl) countEl.textContent = itemCount;
+        if (mobileCountEl) mobileCountEl.textContent = itemCount;
         
+        const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        const formattedTotal = formatCurrency(subtotal);
+
+        if (subtotalEl) subtotalEl.textContent = formattedTotal;
+        if (totalEl) totalEl.textContent = formattedTotal;
+        if (mobileTotalEl) mobileTotalEl.textContent = formattedTotal;
+
         if (cart.length === 0) {
-            empty.style.display = 'block';
-            footer.style.display = 'none';
-            container.innerHTML = empty.outerHTML;
+            if (empty) empty.style.display = 'block';
+            if (footer) footer.style.display = 'none';
+            if (listContainer) listContainer.innerHTML = '';
             return;
         }
         
-        empty.style.display = 'none';
-        footer.style.display = 'block';
+        if (empty) empty.style.display = 'none';
+        if (footer) footer.style.display = 'block';
         
         let html = '';
         cart.forEach((item, index) => {
@@ -2014,6 +2148,7 @@
                         <div class="cart-item-info">
                             <div class="cart-item-name">${item.name}${item.hasPromo ? `<span class="cart-promo-badge">-${item.discountValue}${item.discountType === 'PERCENTAGE' ? '%' : ''}</span>` : ''}</div>
                             ${customizations ? `<div class="cart-item-customizations">${customizations}</div>` : ''}
+                            ${item.observations ? `<div class="cart-item-observations">Obs: ${item.observations}</div>` : ''}
                         </div>
                         <button class="cart-item-remove" onclick="removeFromCart(${index})">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
@@ -2026,18 +2161,14 @@
                             <button class="qty-btn" onclick="updateCartQty(${index}, 1)">+</button>
                         </div>
                         <div>
-                            ${item.hasPromo ? `<span class="cart-price-original">${formatPrice(item.originalPrice * item.qty)}</span>` : ''}
-                            <span class="cart-item-price">${formatPrice(item.totalPrice)}</span>
+                            ${item.hasPromo ? `<span class="cart-price-original">${formatCurrency(item.originalPrice * item.qty)}</span>` : ''}
+                            <span class="cart-item-price">${formatCurrency(item.totalPrice)}</span>
                         </div>
                     </div>
                 </div>`;
         });
         
-        container.innerHTML = html;
-        const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        subtotalEl.textContent = formatPrice(subtotal);
-        totalEl.textContent = formatPrice(subtotal);
-        mobileTotalEl.textContent = formatPrice(subtotal);
+        if (listContainer) listContainer.innerHTML = html;
     };
 
     window.addToCart = function() {
@@ -2046,7 +2177,7 @@
         const requiredQuestions = (currentItem.questions || []).filter(q => q.required);
         for (const question of requiredQuestions) {
             if (!selectedOptions[question.id] || selectedOptions[question.id].length === 0) {
-                alert(`Por favor, selecione: ${question.title}`);
+                alert(`${i18n.pleaseSelect} ${question.title}`);
                 return;
             }
         }
@@ -2101,12 +2232,12 @@
         const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
         const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
         document.getElementById('paymentItemCount').textContent = itemCount;
-        document.getElementById('paymentSubtotal').textContent = formatPrice(total);
-        document.getElementById('paymentTotal').textContent = formatPrice(total);
+        document.getElementById('paymentSubtotal').textContent = formatCurrency(total);
+        document.getElementById('paymentTotal').textContent = formatCurrency(total);
 
         let summaryHtml = '';
         cart.forEach(item => {
-            summaryHtml += `<div class="payment-summary-row" style="border-bottom: 1px dotted var(--border); padding: 0.5rem 0;"><span>${item.qty}x ${item.name}</span><span>${formatPrice(item.totalPrice)}</span></div>`;
+            summaryHtml += `<div class="payment-summary-row" style="border-bottom: 1px dotted var(--border); padding: 0.5rem 0;"><span>${item.qty}x ${item.name}</span><span>${formatCurrency(item.totalPrice)}</span></div>`;
         });
         document.getElementById('paymentItemsList').innerHTML = summaryHtml;
 
@@ -2130,6 +2261,7 @@
         const tableGroup = document.getElementById('tableSelectionGroup');
         if (type === 'local') tableGroup.style.display = 'flex';
         else tableGroup.style.display = 'none';
+        if (typeof currentPaymentStep !== 'undefined' && currentPaymentStep === 2) updateWizardUI();
     };
 
     window.nextPaymentStep = function() {
@@ -2140,11 +2272,15 @@
             tableNumber = document.getElementById('tableNumber').value;
 
             if (!customerName) {
-                alert('Por favor, informe seu nome.');
+                alert(i18n.nameRequired);
                 return;
             }
             if (orderType === 'local' && !tableNumber) {
-                alert('Por favor, selecione uma mesa.');
+                alert(i18n.tableRequired);
+                return;
+            }
+            if (orderType === 'local') {
+                processPayment();
                 return;
             }
             currentPaymentStep = 3;
@@ -2172,60 +2308,119 @@
         const nextBtn = document.getElementById('paymentNextBtn');
         const backBtn = document.getElementById('paymentBackBtn');
 
-        backBtn.textContent = currentPaymentStep === 1 ? 'Cancelar' : 'Voltar';
+        backBtn.textContent = currentPaymentStep === 1 ? i18n.cancel : i18n.back;
+        nextBtn.querySelector('svg')?.style.setProperty('display', currentPaymentStep === 3 ? 'none' : 'block');
 
         if (currentPaymentStep === 1) {
-            title.textContent = 'Resumo do Pedido';
-            nextBtn.querySelector('span').textContent = 'Próximo';
+            title.textContent = i18n.orderSummary;
+            nextBtn.querySelector('span').textContent = i18n.next;
         } else if (currentPaymentStep === 2) {
-            title.textContent = 'Sua Identificação';
-            nextBtn.querySelector('span').textContent = 'Ir para o Pagamento';
+            title.textContent = i18n.yourIdentification;
+            nextBtn.querySelector('span').textContent = orderType === 'local' ? i18n.confirmOrder : i18n.goToPayment;
+            nextBtn.querySelector('svg')?.style.setProperty('display', orderType === 'local' ? 'none' : 'block');
         } else {
-            title.textContent = 'Pagamento';
-            nextBtn.querySelector('span').textContent = 'Confirmar Pedido';
+            title.textContent = i18n.payment;
+            nextBtn.querySelector('span').textContent = i18n.confirmOrder;
         }
     }
 
-    function processPayment() {
+    async function processPayment() {
+        const method = document.querySelector('input[name="payment"]:checked')?.value || 'card';
+        const tableSelect = document.getElementById('tableNumber');
+        const selectedTableId = tableSelect.value;
+        const selectedTableCod = tableSelect.options[tableSelect.selectedIndex]?.dataset.cod || '';
+
+        const targetCustomerId = selectedCustomerId || crypto.randomUUID();
+
+        const orderRequest = {
+            tickets: [{
+                note: '',
+                items: cart.map(item => ({
+                    itemId: item.id,
+                    customerId: targetCustomerId,
+                    quantity: item.qty,
+                    note: item.observations,
+                    promotionId: item.hasPromo ? item.id : null, 
+                    originalPrice: item.originalPrice,
+                    discountType: item.discountType,
+                    discountValue: item.discountValue,
+                    customizations: item.options.reduce((acc, opt) => {
+                        let group = acc.find(g => g.title === opt.questionTitle);
+                        if (!group) {
+                            group = { title: opt.questionTitle, options: [] };
+                            acc.push(group);
+                        }
+                        group.options.push({
+                            optionId: opt.id,
+                            text: opt.name,
+                            extraPrice: opt.price
+                        });
+                        return acc;
+                    }, [])
+                }))
+            }],
+            customers: [{
+                id: targetCustomerId,
+                name: customerName
+            }],
+            serviceFee: 0
+        };
+
         document.getElementById('paymentModal').classList.remove('active');
         document.getElementById('processingOverlay').classList.add('active');
 
-        setTimeout(() => {
+        try {
+            let targetTableId = selectedTableId;
+            if (orderType === 'takeaway' && !targetTableId) {
+                targetTableId = counterTableId;
+            }
+
+            if (!targetTableId) {
+                throw new Error('No table selected and no counter table found.');
+            }
+
+            const response = await ordersApi.placeOrder(targetTableId, orderRequest);
+            
             document.getElementById('processingOverlay').classList.remove('active');
-            currentOrderNumber = Math.floor(Math.random() * 100) + 1;
+            currentOrderNumber = response.shortId;
             document.getElementById('orderNumber').textContent = currentOrderNumber;
 
             const successAddress = document.getElementById('successAddress');
             const printOrderBtn = document.getElementById('printOrderBtn');
+            const successAddressText = document.getElementById('successAddressText');
 
-            const infoText = orderType === 'local' ? `Mesa: ${tableNumber} - Cliente: ${customerName}` : `Cliente: ${customerName}`;
-            document.getElementById('successAddressText').textContent = infoText;
-            successAddress.style.display = 'block';
-            printOrderBtn.style.display = 'flex';
+            const infoText = orderType === 'local' ? `${i18n.table}: ${selectedTableCod} - ${i18n.client}: ${customerName}` : `${i18n.client}: ${customerName}`;
+            if (successAddressText) successAddressText.textContent = infoText;
+            if (successAddress) successAddress.style.display = 'block';
+            if (printOrderBtn) printOrderBtn.style.display = 'flex';
 
             document.getElementById('successModal').classList.add('active');
-        }, 2000);
+        } catch (error) {
+            console.error('Error placing order:', error);
+            document.getElementById('processingOverlay').classList.remove('active');
+            alert(i18n.errorPlacingOrder || 'Erro ao processar o pedido. Por favor, tente novamente.');
+        }
     }
 
     window.printOrder = function() {
         document.getElementById('printOrderNumber').textContent = currentOrderNumber;
-        document.getElementById('printOrderType').textContent = orderType === 'takeaway' ? 'PARA LEVAR' : 'COMER AQUI';
-        document.getElementById('printDate').textContent = new Date().toLocaleString('pt-BR');
+        document.getElementById('printOrderType').textContent = orderType === 'takeaway' ? i18n.takeaway : i18n.local;
+        document.getElementById('printDate').textContent = new Date().toLocaleString(userLanguageLabel);
 
         const printAddress = document.getElementById('printAddress');
         printAddress.style.display = 'block';
-        const infoText = orderType === 'local' ? `Mesa: ${tableNumber} | Cliente: ${customerName}` : `Cliente: ${customerName}`;
+        const infoText = orderType === 'local' ? `${i18n.table}: ${tableNumber} | ${i18n.client}: ${customerName}` : `${i18n.client}: ${customerName}`;
         document.getElementById('printAddressText').textContent = infoText;
 
         const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
         let itemsHtml = '';
         cart.forEach(item => {
-            itemsHtml += `<div class="print-item"><span class="print-item-qty">${item.qty}x</span><span class="print-item-name">${item.name}</span><span class="print-item-price">${formatPrice(item.totalPrice)}</span></div>`;
+            itemsHtml += `<div class="print-item"><span class="print-item-qty">${item.qty}x</span><span class="print-item-name">${item.name}</span><span class="print-item-price">${formatCurrency(item.totalPrice)}</span></div>`;
             if (item.options.length > 0) itemsHtml += `<div class="print-item-options">${item.options.map(o => o.name).join(', ')}</div>`;
             if (item.observations) itemsHtml += `<div class="print-item-options">Obs: ${item.observations}</div>`;
         });
         document.getElementById('printItems').innerHTML = itemsHtml;
-        document.getElementById('printTotal').textContent = formatPrice(total);
+        document.getElementById('printTotal').textContent = formatCurrency(total);
 
         const printArea = document.getElementById('printArea');
         printArea.style.display = 'block';
@@ -2233,11 +2428,34 @@
         setTimeout(() => { printArea.style.display = 'none'; }, 500);
     };
 
+    window.selectEntryClient = function(id, name) {
+        const chip = document.querySelector(`.entry-client-chip[data-id="${id}"]`);
+        if (!chip) return;
+
+        const isSelected = chip.classList.contains('selected');
+
+        document.querySelectorAll('.entry-client-chip').forEach(c => c.classList.remove('selected'));
+
+        if (isSelected) {
+            selectedCustomerId = null;
+            document.getElementById('customerName').value = '';
+        } else {
+            selectedCustomerId = id;
+            document.getElementById('customerName').value = name;
+            chip.classList.add('selected');
+        }
+    };
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat(userLanguageLabel, { style: 'currency', currency: currencyCode }).format(value);
+    }
+
     window.newOrder = function() {
         document.getElementById('successModal').classList.remove('active');
         cart = [];
         customerName = '';
         tableNumber = '';
+        selectedCustomerId = null;
         currentOrderNumber = null;
         window.renderCart();
     };
@@ -2265,8 +2483,38 @@
                 const tablesData = await tablesApi.getTables(restId);
                 const select = document.getElementById('tableNumber');
                 if (select) {
-                    select.innerHTML = '<option value="">Selecione uma mesa</option>' +
-                        tablesData.tables.map(t => `<option value="${t.cod}">${t.cod}</option>`).join('');
+                    const placeholder = /*[[#{page.counter.payment.step2.table_placeholder}]]*/ 'Selecione uma mesa';
+                    select.innerHTML = `<option value="">${placeholder}</option>` +
+                        tablesData.tables.map(t => `<option value="${t.id}" data-cod="${t.cod}">${t.cod}</option>`).join('');
+                    
+                    const balTable = tablesData.tables.find(t => t.cod === 'BAL');
+                    if (balTable) counterTableId = balTable.id;
+
+                    select.addEventListener('change', async function() {
+                        const tableId = this.value;
+                        const clientsSection = document.getElementById('entryClientsSection');
+                        const clientsList = document.getElementById('entryClientsList');
+                        
+                        selectedCustomerId = null;
+                        clientsList.innerHTML = '';
+                        clientsSection.style.display = 'none';
+
+                        if (!tableId || orderType !== 'local') return;
+
+                        try {
+                            const orderData = await tablesApi.getActiveOrder(tableId);
+                            if (orderData && orderData.customers && orderData.customers.length > 0) {
+                                clientsSection.style.display = 'block';
+                                clientsList.innerHTML = orderData.customers.map(c => `
+                                    <div class="entry-client-chip" data-id="${c.id}" onclick="selectEntryClient('${c.id}', '${c.name}')">
+                                        ${c.name}
+                                    </div>
+                                `).join('');
+                            }
+                        } catch (e) {
+                            console.error('Error fetching active order clients:', e);
+                        }
+                    });
                 }
             }
         } catch (e) {

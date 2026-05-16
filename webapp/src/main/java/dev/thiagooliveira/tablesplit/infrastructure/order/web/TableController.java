@@ -136,12 +136,4 @@ public class TableController {
     redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
     return "redirect:/tables";
   }
-
-  public record OrderHistoryPaymentModel(
-      String id,
-      UUID customerId,
-      java.math.BigDecimal amount,
-      java.time.ZonedDateTime paidAt,
-      String method,
-      String note) {}
 }
