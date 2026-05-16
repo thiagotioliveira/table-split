@@ -790,7 +790,7 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             text-align: center;
-            margin-bottom: 0.75rem;
+            /*margin-bottom: 0.75rem;*/
             position: relative;
         }
 
@@ -1388,12 +1388,13 @@
         .processing-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 300;
+            background: color-mix(in srgb, var(--card) 95%, transparent);
+            z-index: 3000;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(4px);
         }
 
         .processing-overlay.active {
@@ -1417,6 +1418,7 @@
         .processing-text {
             font-size: 1.125rem;
             font-weight: 600;
+            color: var(--foreground);
         }
 
         /* Print Styles */
@@ -1718,7 +1720,7 @@
                             <!-- Tables populated by JS -->
                         </select>
                     </div>
-                    <div id="entryClientsSection" style="display: none; margin-bottom: 1.5rem;">
+                    <div id="entryClientsSection" style="display: none;">
                         <div class="form-label" style="margin-bottom: 0.75rem;" th:text="#{page.counter.payment.step2.clients_label}">Clientes na mesa — selecione:</div>
                         <div class="entry-clients-list" id="entryClientsList"></div>
                         <div class="entry-clients-divider" th:text="#{page.counter.payment.step2.new_client_label}">ou novo cliente</div>
@@ -2243,6 +2245,9 @@
 
         document.getElementById('customerName').value = '';
         document.getElementById('tableNumber').value = '';
+        document.getElementById('entryClientsSection').style.display = 'none';
+        document.getElementById('entryClientsList').innerHTML = '';
+        selectedCustomerId = null;
         window.setOrderType('local');
 
         document.getElementById('paymentModal').classList.add('active');
@@ -2452,6 +2457,8 @@
 
     window.newOrder = function() {
         document.getElementById('successModal').classList.remove('active');
+        const cartPanel = document.getElementById('cartPanel');
+        if (cartPanel) cartPanel.classList.remove('mobile-open');
         cart = [];
         customerName = '';
         tableNumber = '';
@@ -2459,6 +2466,7 @@
         currentOrderNumber = null;
         window.renderCart();
     };
+
 
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', function() {

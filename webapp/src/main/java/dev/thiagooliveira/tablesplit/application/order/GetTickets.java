@@ -48,6 +48,7 @@ public class GetTickets {
         results.add(new TicketWithTable(ticket, order, tableCod));
       }
     }
+    results.sort(java.util.Comparator.comparing(t -> t.ticket().getCreatedAt()));
     return results;
   }
 
