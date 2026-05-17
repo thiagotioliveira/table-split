@@ -44,6 +44,10 @@ public class Order extends AggregateRoot {
     return order;
   }
 
+  public static Order takeaway(UUID restaurantId, int serviceFee) {
+    return new Order(UUID.randomUUID(), restaurantId, null, serviceFee);
+  }
+
   public void addPayment(Payment payment, Language language, UUID initiatedBy) {
     if (this.status == OrderStatus.CLOSED || this.status == OrderStatus.CANCELLED) {
       throw new IllegalOrderStatusException(
@@ -140,7 +144,7 @@ public class Order extends AggregateRoot {
   }
 
   public String getCustomerName(UUID id) {
-    if (id == null) return "Mesa";
+    if (id == null) return this.tableId == null ? "Balcão" : "Mesa";
     return customers.stream()
         .filter(c -> c.getId().equals(id))
         .map(OrderCustomer::getName)
@@ -415,6 +419,9 @@ public class Order extends AggregateRoot {
   }
 
   public void transfer(Table sourceTable, Table targetTable) {
+    if (this.tableId == null) {
+      throw new IllegalArgumentException("Cannot transfer a takeaway order");
+    }
     if (!this.tableId.equals(sourceTable.getId())) {
       throw new IllegalArgumentException("Source table does not match order table");
     }

@@ -16,7 +16,7 @@ public class OrderEntity {
   @Column(nullable = false)
   private UUID restaurantId;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private UUID tableId;
 
   @Column(nullable = false)

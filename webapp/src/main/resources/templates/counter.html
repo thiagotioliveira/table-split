@@ -1705,7 +1705,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
                             <span th:text="#{page.counter.payment.step2.type.local}">Comer Aqui</span>
                         </button>
-                        <button class="order-type-btn" data-type="takeaway" onclick="setOrderType('takeaway')" disabled title="Em breve">
+                        <button class="order-type-btn" data-type="takeaway" onclick="setOrderType('takeaway')">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                             <span th:text="#{page.counter.payment.step2.type.takeaway}">Levar</span>
                         </button>
@@ -1728,7 +1728,7 @@
 
                     <div class="address-field">
                         <label class="form-label">[[#{page.counter.payment.step2.customer_name_label}]] <span class="required">*</span></label>
-                        <input type="text" id="customerName" th:placeholder="#{page.counter.payment.step2.customer_name_label}">
+                        <input type="text" id="customerName" th:placeholder="#{page.counter.payment.step2.customer_name_label}" style="text-transform: capitalize;">
                     </div>
                 </div>
             </div>
@@ -1737,34 +1737,17 @@
             <div id="paymentStep3" class="payment-step" style="display: none;">
                 <p class="payment-method-label" th:text="#{page.customer.menu.payment.method_label}">Escolha a forma de pagamento</p>
                 <div class="payment-methods">
-                    <label class="payment-method selected" data-method="card">
-                        <input type="radio" name="payment" value="card" checked>
-                        <div class="payment-method-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                        </div>
+                    <label th:each="method, status : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}" 
+                           class="payment-method" 
+                           th:classappend="${status.first} ? 'selected' : ''" 
+                           th:data-method="${method.name()}">
+                        <input type="radio" name="payment" th:value="${method.name()}" th:checked="${status.first}">
+                        <div class="payment-method-icon" th:utext="${method.icon}"></div>
                         <div class="payment-method-info">
-                            <div class="payment-method-name" th:text="#{payment.method.card}">Cartão de Crédito/Débito</div>
-                            <div class="payment-method-desc">Aproximação ou chip</div>
-                        </div>
-                    </label>
-                    <label class="payment-method" data-method="pix">
-                        <input type="radio" name="payment" value="pix">
-                        <div class="payment-method-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15h0M7 9h0M17 15h0M17 9h0M12 12h0M3 12h0M21 12h0M12 3h0M12 21h0"/><rect width="20" height="20" x="2" y="2" rx="2"/></svg>
-                        </div>
-                        <div class="payment-method-info">
-                            <div class="payment-method-name">PIX</div>
-                            <div class="payment-method-desc" th:text="#{page.counter.payment.instant}">Pagamento instantâneo</div>
-                        </div>
-                    </label>
-                    <label class="payment-method" data-method="cash">
-                        <input type="radio" name="payment" value="cash">
-                        <div class="payment-method-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
-                        </div>
-                        <div class="payment-method-info">
-                            <div class="payment-method-name" th:text="#{payment.method.cash}">Dinheiro</div>
-                            <div class="payment-method-desc" th:text="#{page.counter.payment.cash_desc}">Pagar no caixa</div>
+                            <div class="payment-method-name" th:text="#{${method.getLabel()}}">Label</div>
+                            <div class="payment-method-desc" th:if="${method.name() == 'CARD'}">Aproximação ou chip</div>
+                            <div class="payment-method-desc" th:if="${method.name() == 'MB_WAY'}" th:text="#{page.counter.payment.instant}">Pagamento instantâneo</div>
+                            <div class="payment-method-desc" th:if="${method.name() == 'CASH'}" th:text="#{page.counter.payment.cash_desc}">Pagar no caixa</div>
                         </div>
                     </label>
                 </div>
@@ -1847,6 +1830,15 @@
     const currencySymbol = /*[[${currencySymbol}]]*/ 'R$';
     const currencyCode = /*[[${currency.name()}]]*/ 'BRL';
     const userLanguageLabel = /*[[${userLanguage.label}]]*/ 'pt-BR';
+
+    const paymentMethods = {
+        /*[# th:each="method : ${T(dev.thiagooliveira.tablesplit.infrastructure.web.PaymentMethod).values()}"]*/
+        "[(${method.name()})]": {
+            label: [[#{${method.getLabel()}}]],
+            icon: `[(${method.getIcon()})]`
+        },
+        /*[/]*/
+    };
 
     const i18n = {
         errorLoadingMenu: /*[[#{error.loading.menu}]]*/ 'Erro ao carregar o cardápio. Por favor, tente novamente.',
@@ -2330,7 +2322,7 @@
     }
 
     async function processPayment() {
-        const method = document.querySelector('input[name="payment"]:checked')?.value || 'card';
+        const method = document.querySelector('input[name="payment"]:checked')?.value || 'CARD';
         const tableSelect = document.getElementById('tableNumber');
         const selectedTableId = tableSelect.value;
         const selectedTableCod = tableSelect.options[tableSelect.selectedIndex]?.dataset.cod || '';
@@ -2367,24 +2359,28 @@
             customers: [{
                 id: targetCustomerId,
                 name: customerName
-            }],
-            serviceFee: 0
+            }]
         };
+
+        if (orderType === 'takeaway') {
+            orderRequest.paymentMethod = method;
+            orderRequest.paymentNote = 'Pedido Balcão';
+        }
 
         document.getElementById('paymentModal').classList.remove('active');
         document.getElementById('processingOverlay').classList.add('active');
 
         try {
-            let targetTableId = selectedTableId;
-            if (orderType === 'takeaway' && !targetTableId) {
-                targetTableId = counterTableId;
+            let response;
+            if (orderType === 'takeaway') {
+                response = await ordersApi.placeTakeawayOrder(orderRequest);
+            } else {
+                let targetTableId = selectedTableId;
+                if (!targetTableId) {
+                    throw new Error('No table selected.');
+                }
+                response = await ordersApi.placeOrder(targetTableId, orderRequest);
             }
-
-            if (!targetTableId) {
-                throw new Error('No table selected and no counter table found.');
-            }
-
-            const response = await ordersApi.placeOrder(targetTableId, orderRequest);
             
             document.getElementById('processingOverlay').classList.remove('active');
             currentOrderNumber = response.shortId;
@@ -2479,6 +2475,19 @@
     document.querySelectorAll('.modal-overlay').forEach(modal => {
         modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
     });
+
+    const customerNameInput = document.getElementById('customerName');
+    if (customerNameInput) {
+        customerNameInput.addEventListener('input', function() {
+            let start = this.selectionStart;
+            let end = this.selectionEnd;
+            this.value = this.value.split(/(\s+)/).map(word => {
+                if (word.trim().length === 0) return word;
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join('');
+            this.setSelectionRange(start, end);
+        });
+    }
 
     function formatPrice(value) { return `${currencySymbol} ` + value.toFixed(2).replace('.', ','); }
 

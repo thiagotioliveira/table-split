@@ -12,6 +12,9 @@ public class SyncTableStatus {
   }
 
   public void execute(Order order) {
+    if (order.getTableId() == null) {
+      return;
+    }
     var table = this.tableRepository.findById(order.getTableId()).orElseThrow();
 
     table.syncStatus(order.getStatus());

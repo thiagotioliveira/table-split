@@ -142,7 +142,7 @@ public abstract class OrderApiMapper {
                                             : null))
                             .collect(Collectors.toList())))
             .collect(Collectors.toList()),
-        request.getServiceFee() != null ? request.getServiceFee() : defaultServiceFee,
+        defaultServiceFee,
         request.getCustomers() != null
             ? request.getCustomers().stream()
                 .map(
@@ -152,7 +152,12 @@ public abstract class OrderApiMapper {
                 .collect(Collectors.toList())
             : null,
         initiatedBy,
-        language);
+        language,
+        request.getPaymentMethod() != null
+            ? dev.thiagooliveira.tablesplit.domain.order.PaymentMethod.valueOf(
+                request.getPaymentMethod().name())
+            : null,
+        request.getPaymentNote());
   }
 
   public dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.PlaceOrderResponse

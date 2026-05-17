@@ -7,7 +7,7 @@ public class OverpaymentException extends DomainException {
   private final UUID tableId;
 
   public OverpaymentException(UUID tableId) {
-    super("Overpayment detected on table: " + tableId);
+    super("Overpayment detected" + (tableId != null ? " on table: " + tableId : ""));
     this.tableId = tableId;
   }
 

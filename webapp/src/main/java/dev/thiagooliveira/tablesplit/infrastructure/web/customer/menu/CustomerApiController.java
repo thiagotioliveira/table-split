@@ -237,7 +237,9 @@ public class CustomerApiController implements CustomerMenuApi {
             request.getTickets() != null && !request.getTickets().isEmpty()
                 ? request.getTickets().get(0).getCustomerId()
                 : null, // initiatedBy
-            Language.fromLocale(org.springframework.context.i18n.LocaleContextHolder.getLocale()));
+            Language.fromLocale(org.springframework.context.i18n.LocaleContextHolder.getLocale()),
+            null,
+            null);
 
     transactionalContext.execute(() -> placeOrder.execute(command));
     return ResponseEntity.ok().build();

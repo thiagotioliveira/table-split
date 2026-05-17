@@ -1078,7 +1078,6 @@
         <div class="modal-header">
             <div style="display: flex; align-items: center;">
                 <h3 id="modalOrderId">Pedido #0042</h3>
-                <span id="modalGroupOrderId" style="font-size: 0.85rem; color: var(--muted); margin-left: 0.5rem; font-weight: 400;"></span>
                 <span id="modalOrderType" class="order-type-badge dine-in" style="margin-left: 0.75rem;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                     <span id="modalTypeText">Mesa</span>
@@ -1089,10 +1088,13 @@
             </button>
         </div>
         <div class="modal-body">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
                 <div>
                     <p id="modalTableOrDelivery" style="font-weight: 600;">Mesa 2</p>
                     <p id="modalCustomerName" style="font-size: 0.875rem; color: var(--muted);">Maria Silva</p>
+                    <p id="modalGroupOrderInfo" style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; display: none;">
+                        <span th:text="#{page.orders.modal.detail.group_order_id_label}">Id do Pedido / Order</span>: <span id="modalGroupOrderIdValue" style="font-weight: 600; color: var(--foreground);"></span>
+                    </p>
                 </div>
                 <div style="text-align: right;">
                     <p id="modalOrderTime" style="font-size: 0.875rem; color: var(--muted);">12:45</p>
@@ -1361,7 +1363,9 @@
             <div class="order-card ${urgentClass}" data-ticket-id="${ticket.id}" data-status="${ticket.status}" data-type="${type}">
                 <div class="order-header">
                     <div class="order-table">
-                        <div class="order-table-number">${ticket.tableCod || '?'}</div>
+                        <div class="order-table-number" style="${ticket.tableCod ? '' : 'background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed;'}">
+                            ${ticket.tableCod || `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><path d="M12 12v4"/></svg>`}
+                        </div>
                         <div class="order-info">
                             <span class="order-customer">${ticket.customerName}</span>
                             <span class="order-time ${urgentClass}">${ticket.timeAgo}${urgentBadge}</span>
@@ -1439,14 +1443,28 @@
         try {
             const ticket = await window.ordersApi.getTicketById(id);
             document.getElementById('modalOrderId').textContent = i18n.orderIdPrefix + ticket.shortId;
-            const groupOrderIdEl = document.getElementById('modalGroupOrderId');
-            if (groupOrderIdEl) {
-                groupOrderIdEl.textContent = ticket.orderShortId ? `(#${ticket.orderShortId})` : '';
+            const groupOrderInfoEl = document.getElementById('modalGroupOrderInfo');
+            const groupOrderIdValueEl = document.getElementById('modalGroupOrderIdValue');
+            if (groupOrderInfoEl && groupOrderIdValueEl) {
+                if (ticket.orderShortId) {
+                    groupOrderIdValueEl.textContent = '#' + ticket.orderShortId;
+                    groupOrderInfoEl.style.display = 'block';
+                } else {
+                    groupOrderInfoEl.style.display = 'none';
+                }
             }
-            document.getElementById('modalTypeText').textContent = ticket.tableCod ? i18n.mesa : i18n.delivery;
+            const typeBadge = document.getElementById('modalOrderType');
+            if (ticket.tableCod) {
+                typeBadge.className = 'order-type-badge dine-in';
+                typeBadge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg><span id="modalTypeText">${i18n.mesa}</span>`;
+            } else {
+                typeBadge.className = 'order-type-badge delivery';
+                typeBadge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-4 4-4-4"></path><path d="M12 12v4"></path></svg><span id="modalTypeText">${i18n.delivery}</span>`;
+            }
+
             document.getElementById('modalTableOrDelivery').textContent = ticket.tableCod ? i18n.mesa + ' ' + ticket.tableCod : i18n.delivery;
             document.getElementById('modalCustomerName').textContent = ticket.customerName;
-            document.getElementById('modalOrderTime').textContent = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('modalOrderTime').textContent = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
             
             const noteContainer = document.getElementById('modalOrderNoteContainer');
             if (ticket.note && ticket.note.trim() !== '') {
@@ -1694,7 +1712,9 @@
             <div class="order-card ${ticket.urgent ? 'urgent' : ''}" data-ticket-id="${ticket.id}" data-status="${ticket.status}">
                 <div class="order-header">
                     <div class="order-table">
-                        <div class="order-table-number">${ticket.tableCod}</div>
+                        <div class="order-table-number" style="${ticket.tableCod ? '' : 'background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed;'}">
+                            ${ticket.tableCod || `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><path d="M12 12v4"/></svg>`}
+                        </div>
                         <div class="order-info">
                             <span class="order-customer">${ticket.customerName}</span>
                             <span class="order-time ${ticket.urgent ? 'urgent' : ''}">${ticket.timeAgo}${ticket.urgent ? ' ⚠️' : ''}</span>
@@ -1881,7 +1901,7 @@
             <div class="history-order-id">
               #${order.shortId}
               <span class="order-type-badge ${order.tableCod ? 'dine-in' : 'delivery'}" style="font-size: 0.6875rem; padding: 0.125rem 0.375rem;">
-                ${order.tableCod ? 'Mesa ' + order.tableCod : 'Delivery'}
+                ${order.tableCod ? 'Mesa ' + order.tableCod : i18n.delivery}
               </span>
               ${order.status === STATUS_CANCELLED ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 0.6875rem; padding: 0.125rem 0.375rem;">Cancelado</span>' : ''}
             </div>

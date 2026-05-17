@@ -91,4 +91,5 @@ nb-configuration.xml
 *.log
 
 .gemini
+.ai
 webapp/src/main/resources/static/js/api/

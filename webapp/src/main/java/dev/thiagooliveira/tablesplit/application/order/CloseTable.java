@@ -22,21 +22,30 @@ public class CloseTable {
             .findById(orderId)
             .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
 
-    var table =
-        this.tableRepository
-            .findById(order.getTableId())
-            .orElseThrow(
-                () -> new IllegalArgumentException("Table not found: " + order.getTableId()));
+    if (order.getTableId() != null) {
+      var table =
+          this.tableRepository
+              .findById(order.getTableId())
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Table not found: " + order.getTableId()));
 
-    if (order.getTickets().isEmpty()) {
-      table.release();
-      this.orderRepository.delete(orderId);
+      if (order.getTickets().isEmpty()) {
+        table.release();
+        this.orderRepository.delete(orderId);
+      } else {
+        order.close(table, language, initiatedBy);
+        this.orderRepository.save(order);
+      }
+
+      this.tableRepository.save(table);
     } else {
-      order.close(table, language, initiatedBy);
-      this.orderRepository.save(order);
+      if (order.getTickets().isEmpty()) {
+        this.orderRepository.delete(orderId);
+      } else {
+        order.close(language, initiatedBy);
+        this.orderRepository.save(order);
+      }
     }
-
-    this.tableRepository.save(table);
 
     return order;
   }

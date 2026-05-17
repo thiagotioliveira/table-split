@@ -165,7 +165,9 @@ public class FakeOrderService {
                     restaurant.getServiceFee(),
                     List.of(new CustomerCommand(customerId, customerName)),
                     customerId,
-                    restaurant.getDefaultLanguage());
+                    restaurant.getDefaultLanguage(),
+                    null,
+                    null);
 
             Order order = placeOrder.execute(placeOrderCommand);
             logger.debug("Fake order created: {} for table: {}", order.getId(), table.getCod());

@@ -167,6 +167,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/PlaceOrderResponse'
 
+  /orders/takeaway/place:
+    post:
+      tags:
+        - Orders
+      summary: Place a new takeaway order
+      operationId: placeTakeawayOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+      responses:
+        '200':
+          description: Takeaway order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceOrderResponse'
+
   /orders/items/{itemId}/status:
     post:
       tags:
@@ -510,8 +530,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomerRequest'
-        serviceFee:
-          type: integer
+        paymentMethod:
+          type: string
+          enum: [CASH, CARD, MB_WAY]
+        paymentNote:
+          type: string
 
     PlaceOrderResponse:
       type: object

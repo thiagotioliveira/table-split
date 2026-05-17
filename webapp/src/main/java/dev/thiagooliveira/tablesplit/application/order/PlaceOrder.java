@@ -34,6 +34,40 @@ public class PlaceOrder {
   }
 
   public Order execute(PlaceOrderCommand command) {
+    if (command.tableCod() == null) {
+      Order takeawayOrder =
+          Order.takeaway(
+              command.restaurantId(), command.serviceFee() != null ? command.serviceFee() : 0);
+      registerParticipants(takeawayOrder, command);
+      processTickets(takeawayOrder, command, null, command.initiatedBy(), command.language());
+
+      if (command.paymentMethod() != null) {
+        java.math.BigDecimal total = takeawayOrder.calculateTotal();
+        UUID customerId = null;
+        if (command.customers() != null && !command.customers().isEmpty()) {
+          customerId = command.customers().get(0).id();
+        } else if (command.initiatedBy() != null) {
+          customerId = command.initiatedBy();
+        } else {
+          customerId = UUID.randomUUID();
+        }
+        Payment payment =
+            new Payment(
+                UUID.randomUUID(),
+                takeawayOrder.getId(),
+                customerId,
+                total,
+                command.paymentMethod(),
+                command.paymentNote());
+        takeawayOrder.processPayment(payment, command.language(), command.initiatedBy());
+        takeawayOrder.close(command.language(), command.initiatedBy());
+        takeawayOrder.setClosedAt(takeawayOrder.getOpenedAt());
+      }
+
+      orderRepository.save(takeawayOrder);
+      return takeawayOrder;
+    }
+
     Table table = getOrCreateTable(command);
 
     Order order =

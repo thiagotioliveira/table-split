@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260517-make-order-table-id-nullable
+      author: thiagooliveira
+      changes:
+        - dropNotNullConstraint:
+            tableName: orders
+            columnName: table_id
+            columnDataType: uuid

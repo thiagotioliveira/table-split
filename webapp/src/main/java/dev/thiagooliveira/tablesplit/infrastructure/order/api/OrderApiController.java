@@ -261,6 +261,25 @@ public class OrderApiController implements OrdersApi {
   }
 
   @Override
+  public ResponseEntity<PlaceOrderResponse> placeTakeawayOrder(PlaceOrderRequest request) {
+    AccountContext account = getContext();
+
+    var command =
+        mapper.mapToCommand(
+            account.getRestaurant().getId(),
+            null, // No tableCod
+            account.getRestaurant().getServiceFee(),
+            request,
+            account.getUser().getId(),
+            account.getUser().getLanguage());
+
+    dev.thiagooliveira.tablesplit.domain.order.Order order =
+        transactionalContext.execute(() -> placeOrder.execute(command));
+
+    return ResponseEntity.ok(mapper.mapToPlaceOrderResponse(order));
+  }
+
+  @Override
   public ResponseEntity<Void> updateItemStatus(UUID itemId, UpdateItemStatusRequest request) {
     transactionalContext.execute(
         () ->

@@ -43,7 +43,9 @@ public class GetTickets {
     List<TicketWithTable> results = new ArrayList<>();
     for (Order order : orders) {
       String tableCod =
-          tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
+          order.getTableId() == null
+              ? null
+              : tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
       for (Ticket ticket : order.getTickets()) {
         results.add(new TicketWithTable(ticket, order, tableCod));
       }

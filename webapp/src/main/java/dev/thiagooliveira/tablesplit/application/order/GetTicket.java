@@ -23,7 +23,12 @@ public class GetTicket {
         .flatMap(
             order -> {
               String tableCod =
-                  tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
+                  order.getTableId() == null
+                      ? null
+                      : tableRepository
+                          .findById(order.getTableId())
+                          .map(Table::getCod)
+                          .orElse("??");
               return order.getTickets().stream()
                   .filter(t -> t.getId().equals(ticketId))
                   .findFirst()

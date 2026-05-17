@@ -196,7 +196,8 @@ public class TicketEventListener {
             .toList();
 
     String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
-    if (customerName == null || customerName.isBlank()) customerName = "Mesa " + tableCod;
+    if (customerName == null || customerName.isBlank())
+      customerName = tableCod != null ? "Mesa " + tableCod : "Balcão";
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(

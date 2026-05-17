@@ -11,4 +11,6 @@ public record PlaceOrderCommand(
     Integer serviceFee,
     List<CustomerCommand> customers,
     UUID initiatedBy,
-    Language language) {}
+    Language language,
+    dev.thiagooliveira.tablesplit.domain.order.PaymentMethod paymentMethod,
+    String paymentNote) {}

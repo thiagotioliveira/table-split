@@ -943,3 +943,5 @@ databaseChangeLog:
       file: db/changelog/changesets/20260513-add-delivered-at-to-tickets.yaml
   - include:
       file: db/changelog/changesets/20260516-add-push-localization-and-closed-notification.yaml
+  - include:
+      file: db/changelog/changesets/20260517-make-order-table-id-nullable.yaml

@@ -264,6 +264,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
     java.util.Set<UUID> tableIds =
         orders.stream()
             .map(dev.thiagooliveira.tablesplit.domain.order.Order::getTableId)
+            .filter(java.util.Objects::nonNull)
             .collect(java.util.stream.Collectors.toSet());
     java.util.Map<UUID, String> tableCodMap =
         tableJpaRepository.findAllById(tableIds).stream()
@@ -280,7 +281,10 @@ public class OrderRepositoryAdapter implements OrderRepository {
                           .filter(t -> t.getId().equals(te.getId()))
                           .findFirst()
                           .orElseThrow();
-                  String tableCod = tableCodMap.getOrDefault(order.getTableId(), "??");
+                  String tableCod =
+                      order.getTableId() == null
+                          ? null
+                          : tableCodMap.getOrDefault(order.getTableId(), "??");
                   return new dev.thiagooliveira.tablesplit.domain.order.TicketWithTable(
                       ticket, order, tableCod);
                 })

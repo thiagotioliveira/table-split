@@ -180,6 +180,37 @@ class PlaceOrderTest {
     verify(orderRepository).save(order);
   }
 
+  @Test
+  void shouldPlaceTakeawayOrderAndProcessPaymentAndClose() {
+    when(itemRepository.findById(ITEM_ID)).thenReturn(Optional.of(item));
+
+    PlaceOrderCommand command =
+        new PlaceOrderCommand(
+            RESTAURANT_ID,
+            null, // Takeaway
+            List.of(new TicketCommand(null, List.of(createDefaultTicketItemCommand(1)))),
+            10,
+            List.of(new CustomerCommand(CUSTOMER_ID, CUSTOMER_NAME)),
+            CUSTOMER_ID,
+            Language.PT,
+            dev.thiagooliveira.tablesplit.domain.order.PaymentMethod.CARD,
+            "Pedido Balcão");
+
+    Order result = placeOrder.execute(command);
+
+    assertNotNull(result);
+    assertNull(result.getTableId());
+    assertEquals(dev.thiagooliveira.tablesplit.domain.order.OrderStatus.CLOSED, result.getStatus());
+    assertNotNull(result.getClosedAt());
+    assertEquals(result.getOpenedAt(), result.getClosedAt());
+    assertEquals(1, result.getPayments().size());
+    assertEquals(new BigDecimal("110.00"), result.getPayments().get(0).getAmount());
+    assertEquals(
+        dev.thiagooliveira.tablesplit.domain.order.PaymentMethod.CARD,
+        result.getPayments().get(0).getMethod());
+    verify(orderRepository).save(result);
+  }
+
   // Helper Methods
 
   private Item createDefaultItem() {
@@ -203,7 +234,9 @@ class PlaceOrderTest {
         10,
         List.of(new CustomerCommand(CUSTOMER_ID, CUSTOMER_NAME)),
         CUSTOMER_ID,
-        Language.PT);
+        Language.PT,
+        null,
+        null);
   }
 
   private void setupCommonMocks() {

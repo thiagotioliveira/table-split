@@ -15,7 +15,7 @@ public class IllegalOrderStatusException extends DomainException {
   private final Reason reason;
 
   public IllegalOrderStatusException(UUID tableId, Reason reason) {
-    super("Illegal order status: " + reason);
+    super("Illegal order status: " + reason + (tableId != null ? " for table " + tableId : ""));
     this.tableId = tableId;
     this.reason = reason;
   }
