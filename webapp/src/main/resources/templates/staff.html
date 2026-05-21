@@ -613,6 +613,7 @@
       </div>
       <div class="modal-body">
         <form id="userForm" method="post" onsubmit="saveUser(event)">
+          <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" id="userId" name="id" value="">
           
           <div class="form-row">
@@ -707,7 +708,9 @@
           <p class="delete-confirm-name" id="deleteUserName">João Carlos</p>
           <p class="delete-confirm-text" th:text="#{page.staff.modal.delete.text}">Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.</p>
         </div>
-        <form id="deleteForm" method="post" style="display: none;"></form>
+        <form id="deleteForm" method="post" style="display: none;">
+          <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeDeleteModal()" th:text="#{page.staff.form.button.cancel}">Cancelar</button>
