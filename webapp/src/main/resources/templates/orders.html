@@ -1683,10 +1683,8 @@
     }
 
     function handleStatusChange(event) {
-        const card = document.querySelector(`.order-card[data-ticket-id="${event.ticketId}"]`);
-        /*if (card) {
-            window.location.reload(); 
-        }*/
+        console.log('Status change received:', event);
+        loadOrders();
     }
 
 
