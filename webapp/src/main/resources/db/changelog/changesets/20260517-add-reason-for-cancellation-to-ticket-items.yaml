@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260517-add-reason-for-cancellation-to-ticket-items
+      author: thiagooliveira
+      changes:
+        - addColumn:
+            tableName: ticket_items
+            columns:
+              - column:
+                  name: reason_for_cancellation
+                  type: varchar(100)

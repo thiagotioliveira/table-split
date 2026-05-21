@@ -281,10 +281,14 @@ public class OrderRepositoryAdapter implements OrderRepository {
                           .filter(t -> t.getId().equals(te.getId()))
                           .findFirst()
                           .orElseThrow();
-                  String tableCod =
-                      order.getTableId() == null
-                          ? null
-                          : tableCodMap.getOrDefault(order.getTableId(), "??");
+                  String tableCod = null;
+                  if (order.getTableId() != null) {
+                    tableCod = tableCodMap.get(order.getTableId());
+                    if (tableCod == null) {
+                      throw new IllegalStateException(
+                          "Table not found for ID: " + order.getTableId());
+                    }
+                  }
                   return new dev.thiagooliveira.tablesplit.domain.order.TicketWithTable(
                       ticket, order, tableCod);
                 })

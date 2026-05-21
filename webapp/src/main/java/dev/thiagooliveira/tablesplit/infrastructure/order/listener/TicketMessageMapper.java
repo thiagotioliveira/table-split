@@ -10,6 +10,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class TicketMessageMapper {
 
+  @org.springframework.beans.factory.annotation.Autowired
+  protected org.springframework.context.MessageSource messageSource;
+
+  protected String resolveCustomerName(
+      dev.thiagooliveira.tablesplit.domain.order.Order order,
+      java.util.UUID customerId,
+      Language userLanguage) {
+
+    java.util.Optional<String> nameOpt = order.getCustomerName(customerId);
+    if (nameOpt.isPresent()) {
+      return nameOpt.get();
+    }
+
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+
+    if (customerId == null) {
+      if (order.getTableId() == null) {
+        return messageSource.getMessage("customer.anonymous.takeaway", null, "Balcão", locale);
+      } else {
+        return messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
+      }
+    } else {
+      return messageSource.getMessage("customer.anonymous.unknown", null, "Desconhecido", locale);
+    }
+  }
+
   public TicketCreatedMessage toMessage(TicketCreatedEvent event) {
     Ticket ticket = event.getTicket();
 
@@ -37,13 +66,10 @@ public class TicketMessageMapper {
     return new TicketCreatedMessage(
         ticket.getId(),
         event.getTableCod(),
-        event
-            .getOrder()
-            .getCustomerName(
-                ticket
-                    .getItems()
-                    .get(0)
-                    .getCustomerId()), // Passing the customer ID from the first item
+        resolveCustomerName(
+            event.getOrder(),
+            ticket.getItems().isEmpty() ? null : ticket.getItems().get(0).getCustomerId(),
+            event.getLanguage()),
         ticket.getNote(),
         items,
         ticket.calculateTotal(),

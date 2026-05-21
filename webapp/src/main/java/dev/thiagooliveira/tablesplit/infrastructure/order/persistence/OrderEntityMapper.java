@@ -131,6 +131,11 @@ public class OrderEntityMapper {
     domain.setRating(entity.getRating());
     domain.setStatus(entity.getStatus());
     domain.setCustomizations(entity.getCustomizations());
+    if (entity.getReasonForCancellation() != null) {
+      domain.setCancellationReason(
+          dev.thiagooliveira.tablesplit.domain.order.CancellationReason.valueOf(
+              entity.getReasonForCancellation()));
+    }
     if (entity.getDiscountType() != null) {
       domain.setPromotionSnapshot(
           new TicketItem.PromotionSnapshot(
@@ -154,6 +159,9 @@ public class OrderEntityMapper {
     entity.setRating(domain.getRating());
     entity.setStatus(domain.getStatus());
     entity.setCustomizations(domain.getCustomizations());
+    if (domain.getCancellationReason() != null) {
+      entity.setReasonForCancellation(domain.getCancellationReason().name());
+    }
     if (domain.getPromotionSnapshot() != null) {
       var snapshot = domain.getPromotionSnapshot();
       entity.setPromotionId(snapshot.promotionId());
@@ -207,7 +215,8 @@ public class OrderEntityMapper {
     domain.setRead(entity.isRead());
 
     if (entity.getOrder() != null) {
-      domain.setCustomerName(entity.getOrder().getCustomerName(entity.getCustomerId()));
+      domain.setCustomerName(
+          entity.getOrder().getCustomerName(entity.getCustomerId()).orElse(null));
       domain.setItems(
           entity.getOrder().getTickets().stream()
               .flatMap(t -> t.getItems().stream())

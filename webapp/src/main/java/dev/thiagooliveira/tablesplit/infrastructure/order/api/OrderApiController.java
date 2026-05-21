@@ -79,12 +79,13 @@ public class OrderApiController implements OrdersApi {
 
   @Override
   public ResponseEntity<Void> cancelTicketItem(CancelItemRequest cancelItemRequest) {
+    java.util.Optional<dev.thiagooliveira.tablesplit.domain.order.CancellationReason> reasonOpt =
+        java.util.Optional.ofNullable(mapper.mapReason(cancelItemRequest.getReason()));
+
     transactionalContext.execute(
         () ->
             cancelTicketItem.execute(
-                cancelItemRequest.getItemId(),
-                cancelItemRequest.getQuantity(),
-                cancelItemRequest.getReason()));
+                cancelItemRequest.getItemId(), cancelItemRequest.getQuantity(), reasonOpt));
     return ResponseEntity.noContent().build();
   }
 

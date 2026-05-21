@@ -28,7 +28,10 @@ public class GetTicket {
                       : tableRepository
                           .findById(order.getTableId())
                           .map(Table::getCod)
-                          .orElse("??");
+                          .orElseThrow(
+                              () ->
+                                  new IllegalStateException(
+                                      "Table not found for ID: " + order.getTableId()));
               return order.getTickets().stream()
                   .filter(t -> t.getId().equals(ticketId))
                   .findFirst()

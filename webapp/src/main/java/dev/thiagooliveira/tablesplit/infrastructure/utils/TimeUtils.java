@@ -49,7 +49,7 @@ public class TimeUtils {
 
     java.util.Locale locale =
         language != null
-            ? java.util.Locale.forLanguageTag(language.name().toLowerCase())
+            ? java.util.Locale.forLanguageTag(language.getLabel())
             : org.springframework.context.i18n.LocaleContextHolder.getLocale();
 
     if (days > 0) {

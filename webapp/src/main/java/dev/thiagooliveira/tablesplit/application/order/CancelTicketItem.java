@@ -12,7 +12,10 @@ public class CancelTicketItem {
     this.orderRepository = orderRepository;
   }
 
-  public void execute(UUID itemId, int quantityToCancel, String reason) {
+  public void execute(
+      UUID itemId,
+      int quantityToCancel,
+      java.util.Optional<dev.thiagooliveira.tablesplit.domain.order.CancellationReason> reason) {
     Order order =
         orderRepository
             .findByTicketItemId(itemId)

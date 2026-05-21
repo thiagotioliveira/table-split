@@ -138,12 +138,11 @@ public class OrderEntity {
     this.feedbacks = feedbacks;
   }
 
-  public String getCustomerName(java.util.UUID id) {
-    if (id == null) return "Mesa";
+  public java.util.Optional<String> getCustomerName(java.util.UUID id) {
+    if (id == null) return java.util.Optional.empty();
     return customers.stream()
         .filter(c -> c.getId().equals(id))
         .map(OrderCustomerEntity::getName)
-        .findFirst()
-        .orElse("Desconhecido");
+        .findFirst();
   }
 }

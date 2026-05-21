@@ -1730,6 +1730,10 @@
                         <label class="form-label">[[#{page.counter.payment.step2.customer_name_label}]] <span class="required">*</span></label>
                         <input type="text" id="customerName" th:placeholder="#{page.counter.payment.step2.customer_name_label}" style="text-transform: capitalize;">
                     </div>
+                    <div class="address-field" style="margin-top: 1rem;">
+                        <label class="form-label">[[#{page.counter.order.modal.observations}]]</label>
+                        <textarea id="orderNote" th:placeholder="#{page.counter.order.modal.observations.placeholder}" rows="3" style="padding: 0.625rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem; background: var(--card); color: var(--foreground); width: 100%; resize: vertical; font-family: inherit;"></textarea>
+                    </div>
                 </div>
             </div>
 
@@ -1847,6 +1851,8 @@
         optional: /*[[#{page.menu.item.question.optional}]]*/ 'Opcional',
         observations: /*[[#{page.counter.item.modal.observations}]]*/ 'Observações',
         observationsPlaceholder: /*[[#{page.customer.menu.cart.notes.placeholder}]]*/ 'Ex: sem cebola, bem passado...',
+        observationsOrder: /*[[#{page.counter.order.modal.observations}]]*/ 'Observações',
+        observationsPlaceholderOrder: /*[[#{page.counter.order.modal.observations.placeholder}]]*/ 'Ex: sem cebola, bem passado...',
         pleaseSelect: /*[[#{page.customer.menu.customization.error}]]*/ 'Por favor, selecione:',
         next: /*[[#{page.counter.payment.button.next}]]*/ 'Próximo',
         back: /*[[#{page.counter.payment.button.back}]]*/ 'Voltar',
@@ -2192,6 +2198,7 @@
             basePrice, 
             originalPrice: currentItem.price,
             hasPromo: !!currentItem.promotion, 
+            promotionId: currentItem.promotion ? currentItem.promotion.promotionId : null,
             discountValue: currentItem.promotion ? currentItem.promotion.discountValue : 0,
             discountType: currentItem.promotion ? currentItem.promotion.discountType : '',
             unitPrice: itemPrice, 
@@ -2237,6 +2244,8 @@
 
         document.getElementById('customerName').value = '';
         document.getElementById('tableNumber').value = '';
+        const orderNoteEl = document.getElementById('orderNote');
+        if (orderNoteEl) orderNoteEl.value = '';
         document.getElementById('entryClientsSection').style.display = 'none';
         document.getElementById('entryClientsList').innerHTML = '';
         selectedCustomerId = null;
@@ -2328,16 +2337,17 @@
         const selectedTableCod = tableSelect.options[tableSelect.selectedIndex]?.dataset.cod || '';
 
         const targetCustomerId = selectedCustomerId || crypto.randomUUID();
+        const note = document.getElementById('orderNote')?.value || '';
 
         const orderRequest = {
             tickets: [{
-                note: '',
+                note: note,
                 items: cart.map(item => ({
                     itemId: item.id,
                     customerId: targetCustomerId,
                     quantity: item.qty,
                     note: item.observations,
-                    promotionId: item.hasPromo ? item.id : null, 
+                    promotionId: item.hasPromo ? item.promotionId : null, 
                     originalPrice: item.originalPrice,
                     discountType: item.discountType,
                     discountValue: item.discountValue,

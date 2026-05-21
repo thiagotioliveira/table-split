@@ -51,6 +51,9 @@ public class TicketItemEntity {
   private java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
       customizations;
 
+  @Column(name = "reason_for_cancellation")
+  private String reasonForCancellation;
+
   public TicketItemEntity() {}
 
   public UUID getId() {
@@ -166,5 +169,13 @@ public class TicketItemEntity {
       java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
           customizations) {
     this.customizations = customizations;
+  }
+
+  public String getReasonForCancellation() {
+    return reasonForCancellation;
+  }
+
+  public void setReasonForCancellation(String reasonForCancellation) {
+    this.reasonForCancellation = reasonForCancellation;
   }
 }

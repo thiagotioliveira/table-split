@@ -50,11 +50,52 @@ public class CustomerMenuModel {
                   t.getItems()
                       .forEach(
                           item -> {
+                            java.util.Locale locale =
+                                org.springframework.context.i18n.LocaleContextHolder.getLocale();
+                            String customerName =
+                                activeOrder.getCustomerName(item.getCustomerId()).orElse(null);
+                            if (customerName == null) {
+                              if (item.getCustomerId() == null) {
+                                if (activeOrder.getTableId() == null) {
+                                  customerName =
+                                      messageSource.getMessage(
+                                          "customer.anonymous.takeaway", null, "Balcão", locale);
+                                } else {
+                                  customerName =
+                                      messageSource.getMessage(
+                                          "customer.anonymous.table", null, "Mesa", locale);
+                                }
+                              } else {
+                                customerName =
+                                    messageSource.getMessage(
+                                        "customer.anonymous.unknown", null, "Desconhecido", locale);
+                              }
+                            }
+                            String statusLabel =
+                                messageSource.getMessage(
+                                    "ticket.status." + item.getStatus().name().toLowerCase(),
+                                    null,
+                                    item.getStatus().name(),
+                                    locale);
+                            String statusClass = item.getStatus().name().toLowerCase();
+                            String cancellationReasonLabel = null;
+                            if (item.getCancellationReason() != null) {
+                              cancellationReasonLabel =
+                                  messageSource.getMessage(
+                                      "cancellation.reason."
+                                          + item.getCancellationReason().name().toLowerCase(),
+                                      null,
+                                      item.getCancellationReason().name(),
+                                      locale);
+                            }
                             var ticketItem =
                                 new TicketItemModel(
                                     item,
-                                    activeOrder.getCustomerName(item.getCustomerId()),
-                                    t.getCreatedAt());
+                                    customerName,
+                                    statusLabel,
+                                    statusClass,
+                                    t.getCreatedAt(),
+                                    cancellationReasonLabel);
                             this.ticketItems.add(ticketItem);
                           }));
       activeOrder.getCustomers().stream()

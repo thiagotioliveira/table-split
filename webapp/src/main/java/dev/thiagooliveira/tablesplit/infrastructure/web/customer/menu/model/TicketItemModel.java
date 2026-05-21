@@ -23,8 +23,25 @@ public class TicketItemModel {
 
   private final PromotionSnapshotModel promotionSnapshot;
   private final java.util.List<CustomizationModel> customizations;
+  private final String cancellationReason;
+  private final String cancellationReasonLabel;
 
-  public TicketItemModel(TicketItem item, String customerName, ZonedDateTime createdAt) {
+  public TicketItemModel(
+      TicketItem item,
+      String customerName,
+      String statusLabel,
+      String statusClass,
+      ZonedDateTime createdAt) {
+    this(item, customerName, statusLabel, statusClass, createdAt, null);
+  }
+
+  public TicketItemModel(
+      TicketItem item,
+      String customerName,
+      String statusLabel,
+      String statusClass,
+      ZonedDateTime createdAt,
+      String cancellationReasonLabel) {
     this.id = item.getId().toString();
     this.customerId = item.getCustomerId().toString();
     this.customerName = customerName;
@@ -34,8 +51,8 @@ public class TicketItemModel {
     this.totalPrice = item.getTotalPrice();
     this.note = item.getNote();
     this.status = item.getStatus().name().toLowerCase();
-    this.statusLabel = item.getStatus().getLabel();
-    this.statusClass = item.getStatus().getCssClass();
+    this.statusLabel = statusLabel;
+    this.statusClass = statusClass;
     this.rating = item.getRating();
     this.createdAt = createdAt;
     this.promotionSnapshot =
@@ -46,6 +63,9 @@ public class TicketItemModel {
         item.getCustomizations() != null
             ? item.getCustomizations().stream().map(CustomizationModel::new).toList()
             : java.util.List.of();
+    this.cancellationReason =
+        item.getCancellationReason() != null ? item.getCancellationReason().name() : null;
+    this.cancellationReasonLabel = cancellationReasonLabel;
   }
 
   public String getId() {
@@ -114,6 +134,14 @@ public class TicketItemModel {
 
   public java.util.List<CustomizationModel> getCustomizations() {
     return customizations;
+  }
+
+  public String getCancellationReason() {
+    return cancellationReason;
+  }
+
+  public String getCancellationReasonLabel() {
+    return cancellationReasonLabel;
   }
 
   public static class CustomizationModel {

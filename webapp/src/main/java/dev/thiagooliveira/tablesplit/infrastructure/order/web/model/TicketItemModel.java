@@ -22,6 +22,8 @@ public class TicketItemModel {
   private final java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
       customizations;
   private final String customizationSummary;
+  private final String cancellationReason;
+  private final String cancellationReasonLabel;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private final ZonedDateTime createdAt;
@@ -146,6 +148,47 @@ public class TicketItemModel {
       java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
           customizations,
       String customizationSummary) {
+    this(
+        id,
+        customerId,
+        customerName,
+        name,
+        quantity,
+        unitPrice,
+        totalPrice,
+        note,
+        ticketNote,
+        status,
+        statusClass,
+        rating,
+        createdAt,
+        promotionSnapshot,
+        customizations,
+        customizationSummary,
+        null,
+        null);
+  }
+
+  public TicketItemModel(
+      UUID id,
+      UUID customerId,
+      String customerName,
+      String name,
+      int quantity,
+      BigDecimal unitPrice,
+      BigDecimal totalPrice,
+      String note,
+      String ticketNote,
+      String status,
+      String statusClass,
+      Integer rating,
+      ZonedDateTime createdAt,
+      PromotionInfo promotionSnapshot,
+      java.util.List<dev.thiagooliveira.tablesplit.domain.order.TicketItemCustomization>
+          customizations,
+      String customizationSummary,
+      String cancellationReason,
+      String cancellationReasonLabel) {
     this.id = id;
     this.customerId = customerId;
     this.customerName = customerName;
@@ -162,6 +205,8 @@ public class TicketItemModel {
     this.promotionSnapshot = promotionSnapshot;
     this.customizations = customizations;
     this.customizationSummary = customizationSummary;
+    this.cancellationReason = cancellationReason;
+    this.cancellationReasonLabel = cancellationReasonLabel;
   }
 
   public static TicketItemModel fromDomain(
@@ -169,7 +214,22 @@ public class TicketItemModel {
       String customerName,
       String ticketNote,
       java.time.ZonedDateTime createdAt,
-      dev.thiagooliveira.tablesplit.domain.common.Language userLanguage) {
+      dev.thiagooliveira.tablesplit.domain.common.Language userLanguage,
+      String statusLabel,
+      String statusClass) {
+    return fromDomain(
+        item, customerName, ticketNote, createdAt, userLanguage, statusLabel, statusClass, null);
+  }
+
+  public static TicketItemModel fromDomain(
+      dev.thiagooliveira.tablesplit.domain.order.TicketItem item,
+      String customerName,
+      String ticketNote,
+      java.time.ZonedDateTime createdAt,
+      dev.thiagooliveira.tablesplit.domain.common.Language userLanguage,
+      String statusLabel,
+      String statusClass,
+      String cancellationReasonLabel) {
 
     String itemName =
         item.getName() != null
@@ -193,6 +253,9 @@ public class TicketItemModel {
               snapshot.discountValue());
     }
 
+    String cancellationReason =
+        item.getCancellationReason() != null ? item.getCancellationReason().name() : null;
+
     return new TicketItemModel(
         item.getId(),
         item.getCustomerId(),
@@ -203,13 +266,15 @@ public class TicketItemModel {
         item.getTotalPrice(),
         item.getNote(),
         ticketNote,
-        item.getStatus().getLabel(),
-        item.getStatus().getCssClass(),
+        statusLabel,
+        statusClass,
         item.getRating(),
         createdAt,
         promotionInfo,
         item.getCustomizations(),
-        getCustomizationSummary(item.getCustomizations()));
+        getCustomizationSummary(item.getCustomizations()),
+        cancellationReason,
+        cancellationReasonLabel);
   }
 
   public static String getCustomizationSummary(
@@ -292,6 +357,14 @@ public class TicketItemModel {
 
   public String getCustomizationSummary() {
     return customizationSummary;
+  }
+
+  public String getCancellationReason() {
+    return cancellationReason;
+  }
+
+  public String getCancellationReasonLabel() {
+    return cancellationReasonLabel;
   }
 
   public record PromotionInfo(

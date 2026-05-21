@@ -110,4 +110,26 @@ class GetTicketsTest {
     assertEquals(1, results.size());
     assertEquals(t1.getId(), results.get(0).ticket().getId());
   }
+
+  @Test
+  void shouldThrowExceptionWhenTableNotFound() {
+    // Given
+    UUID tableId = UUID.randomUUID();
+    when(tableRepository.findById(tableId)).thenReturn(Optional.empty());
+
+    Order openOrder = new Order(UUID.randomUUID(), restaurantId, tableId, 10);
+    Ticket t1 = new Ticket();
+    openOrder.setTickets(List.of(t1));
+
+    when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.OPEN))
+        .thenReturn(List.of(openOrder));
+    when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.WAITING))
+        .thenReturn(List.of());
+    when(orderRepository.findAllByRestaurantIdAndStatus(restaurantId, OrderStatus.CLOSED))
+        .thenReturn(List.of());
+
+    // When & Then
+    org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalStateException.class, () -> getTickets.execute(restaurantId, null));
+  }
 }

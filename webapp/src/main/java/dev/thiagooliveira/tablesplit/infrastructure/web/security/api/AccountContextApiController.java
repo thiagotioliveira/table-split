@@ -30,7 +30,7 @@ public class AccountContextApiController implements ContextApi {
   public ResponseEntity<AccountContextResponse> getAccountContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     AccountContext context = (AccountContext) auth.getPrincipal();
-    Locale locale = Locale.forLanguageTag(context.getUser().getLanguage().name());
+    Locale locale = Locale.forLanguageTag(context.getUser().getLanguage().getLabel());
 
     List<ModuleResponse> sidebar = mapModules(context.getSidebarModules(), locale);
     List<ModuleResponse> footer = mapModules(context.getFooterModules(), locale);

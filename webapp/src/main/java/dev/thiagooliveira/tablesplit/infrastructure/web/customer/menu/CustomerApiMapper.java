@@ -19,6 +19,35 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class CustomerApiMapper {
 
+  @org.springframework.beans.factory.annotation.Autowired
+  protected org.springframework.context.MessageSource messageSource;
+
+  protected String resolveCustomerName(
+      Order order, java.util.UUID customerId, String tableCod, Language userLanguage) {
+
+    java.util.Optional<String> nameOpt = order.getCustomerName(customerId);
+    if (nameOpt.isPresent()) {
+      return nameOpt.get();
+    }
+
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+
+    if (customerId == null) {
+      if (order.getTableId() == null) {
+        return messageSource.getMessage("customer.anonymous.takeaway", null, "Balcão", locale);
+      } else {
+        String tableLabel =
+            messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
+        return tableCod != null ? tableLabel + " " + tableCod : tableLabel;
+      }
+    } else {
+      return messageSource.getMessage("customer.anonymous.unknown", null, "Desconhecido", locale);
+    }
+  }
+
   public List<SimpleTicketItem> mapToSimpleTicketItems(Order order, Language lang) {
     if (order == null) return List.of();
     return order.getTickets().stream()
@@ -29,7 +58,9 @@ public abstract class CustomerApiMapper {
                         item -> {
                           SimpleTicketItem dto =
                               mapToSimpleTicketItem(
-                                  item, lang, order.getCustomerName(item.getCustomerId()));
+                                  item,
+                                  lang,
+                                  resolveCustomerName(order, item.getCustomerId(), null, lang));
                           dto.setCreatedAt(t.getCreatedAt().toOffsetDateTime());
                           return dto;
                         }))
@@ -39,13 +70,21 @@ public abstract class CustomerApiMapper {
   @Mapping(target = "name", expression = "java(item.getName().get(lang))")
   @Mapping(target = "totalPrice", expression = "java(item.getTotalPrice().doubleValue())")
   @Mapping(target = "status", expression = "java(item.getStatus().name())")
-  @Mapping(target = "statusLabel", expression = "java(item.getStatus().getLabel())")
+  @Mapping(target = "statusLabel", expression = "java(resolveStatusLabel(item.getStatus(), lang))")
   @Mapping(
       target = "customerId",
       expression = "java(item.getCustomerId() != null ? item.getCustomerId().toString() : null)")
   @Mapping(target = "customerName", source = "customerName")
   @Mapping(target = "customizations", source = "item.customizations")
   @Mapping(target = "rating", source = "item.rating")
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(
+      target = "cancellationReason",
+      expression =
+          "java(item.getCancellationReason() != null ? item.getCancellationReason().name() : null)")
+  @Mapping(
+      target = "cancellationReasonLabel",
+      expression = "java(resolveCancellationReasonLabel(item.getCancellationReason(), lang))")
   protected abstract SimpleTicketItem mapToSimpleTicketItem(
       TicketItem item, Language lang, String customerName);
 
@@ -100,5 +139,27 @@ public abstract class CustomerApiMapper {
     model.setPaidAmount(order.calculatePaidAmount().doubleValue());
     model.setRemainingAmount(order.calculateRemainingAmount().doubleValue());
     return model;
+  }
+
+  protected String resolveStatusLabel(
+      dev.thiagooliveira.tablesplit.domain.order.TicketStatus status, Language lang) {
+    if (status == null) return "";
+    java.util.Locale locale =
+        lang != null
+            ? java.util.Locale.forLanguageTag(lang.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "ticket.status." + status.name().toLowerCase(), null, status.name(), locale);
+  }
+
+  protected String resolveCancellationReasonLabel(
+      dev.thiagooliveira.tablesplit.domain.order.CancellationReason reason, Language lang) {
+    if (reason == null) return null;
+    java.util.Locale locale =
+        lang != null
+            ? java.util.Locale.forLanguageTag(lang.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "cancellation.reason." + reason.name().toLowerCase(), null, reason.name(), locale);
   }
 }

@@ -21,6 +21,7 @@ public class TicketItem {
   private TicketStatus status = TicketStatus.PENDING;
   private PromotionSnapshot promotionSnapshot;
   private List<TicketItemCustomization> customizations;
+  private CancellationReason cancellationReason;
 
   public TicketItem() {}
 
@@ -195,6 +196,14 @@ public class TicketItem {
 
   public boolean isCancelled() {
     return status != null && status.isCancelled();
+  }
+
+  public CancellationReason getCancellationReason() {
+    return cancellationReason;
+  }
+
+  public void setCancellationReason(CancellationReason cancellationReason) {
+    this.cancellationReason = cancellationReason;
   }
 
   public record PromotionSnapshot(

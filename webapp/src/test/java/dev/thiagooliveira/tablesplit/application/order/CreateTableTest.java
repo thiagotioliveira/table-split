@@ -55,6 +55,31 @@ class CreateTableTest {
   }
 
   @Test
+  void shouldCreateTableAndPadSingleDigitCode() {
+    UUID accountId = UUID.randomUUID();
+    UUID restaurantId = UUID.randomUUID();
+    String cod = "2";
+    String expectedCod = "02";
+
+    when(tableRepository.count(restaurantId)).thenReturn(5L);
+    when(tableRepository.findByRestaurantIdAndCod(restaurantId, expectedCod))
+        .thenReturn(Optional.empty());
+    when(tableRepository.findByRestaurantIdAndCodIncludingDeleted(restaurantId, expectedCod))
+        .thenReturn(Optional.empty());
+
+    createTable.execute(accountId, restaurantId, cod);
+
+    ArgumentCaptor<Table> tableCaptor = ArgumentCaptor.forClass(Table.class);
+    verify(tableRepository).save(tableCaptor.capture());
+    verify(planLimitValidator).validate(eq(accountId), eq(PlanLimitType.TABLES), eq(5L));
+
+    Table savedTable = tableCaptor.getValue();
+    assertEquals(expectedCod, savedTable.getCod());
+    assertEquals(restaurantId, savedTable.getRestaurantId());
+    assertNotNull(savedTable.getId());
+  }
+
+  @Test
   void shouldThrowExceptionWhenTableAlreadyExists() {
     UUID accountId = UUID.randomUUID();
     UUID restaurantId = UUID.randomUUID();

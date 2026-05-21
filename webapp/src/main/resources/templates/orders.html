@@ -1348,7 +1348,9 @@
             `;
         }
 
-        const itemsHtml = ticket.items.map(item => `
+        const itemsHtml = ticket.items
+            .filter(item => item.statusClass !== 'cancelled')
+            .map(item => `
             <div class="order-item">
                 <span class="order-item-qty">${item.quantity}x</span>
                 <div style="flex: 1;">
@@ -1498,7 +1500,7 @@
     function renderModalItems(items, readOnly = false) {
         const container = document.getElementById('modalOrderItems');
         container.innerHTML = items.map(item => `
-            <div class="order-detail-item ${item.status === STATUS_CANCELLED ? 'cancelled' : ''}" data-item-id="${item.id}">
+            <div class="order-detail-item ${item.statusClass === 'cancelled' ? 'cancelled' : ''}" data-item-id="${item.id}">
                 <div class="order-detail-item-left">
                     <div class="order-detail-item-info">
                         <span class="order-detail-item-qty">${item.quantity}x</span>
@@ -1691,7 +1693,9 @@
 
 
     function renderTicketCard(ticket) {
-        const itemsHtml = ticket.items.map(item => {
+        const itemsHtml = ticket.items
+            .filter(item => item.statusClass !== 'cancelled')
+            .map(item => {
             const itemName = (item.names && item.names[userLanguage]) || item.name;
             return `
             <div class="order-item">

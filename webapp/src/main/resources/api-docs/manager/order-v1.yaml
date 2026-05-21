@@ -736,6 +736,10 @@ components:
           format: date-time
         customizationSummary:
           type: string
+        cancellationReason:
+          type: string
+        cancellationReasonLabel:
+          type: string
 
     MoveTicketRequest:
       type: object
@@ -762,6 +766,7 @@ components:
           type: integer
         reason:
           type: string
+          enum: [CUSTOMER_GAVE_UP, ORDER_ERROR, OUT_OF_STOCK, OTHER]
 
     CreateTableRequest:
       type: object
@@ -770,7 +775,7 @@ components:
       properties:
         cod:
           type: string
-          pattern: '^[0-9]{2}$'
+          pattern: '^[0-9]+$'
 
     PaymentRequest:
       type: object

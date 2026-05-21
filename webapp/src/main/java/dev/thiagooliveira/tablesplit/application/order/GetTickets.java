@@ -45,7 +45,13 @@ public class GetTickets {
       String tableCod =
           order.getTableId() == null
               ? null
-              : tableRepository.findById(order.getTableId()).map(Table::getCod).orElse("??");
+              : tableRepository
+                  .findById(order.getTableId())
+                  .map(Table::getCod)
+                  .orElseThrow(
+                      () ->
+                          new IllegalStateException(
+                              "Table not found for ID: " + order.getTableId()));
       for (Ticket ticket : order.getTickets()) {
         results.add(new TicketWithTable(ticket, order, tableCod));
       }

@@ -21,6 +21,35 @@ import org.mapstruct.ValueMapping;
 @Mapper(componentModel = "spring")
 public abstract class TableApiMapper {
 
+  @org.springframework.beans.factory.annotation.Autowired
+  protected org.springframework.context.MessageSource messageSource;
+
+  protected String resolveCustomerName(
+      Order order, java.util.UUID customerId, String tableCod, Language userLanguage) {
+
+    java.util.Optional<String> nameOpt = order.getCustomerName(customerId);
+    if (nameOpt.isPresent()) {
+      return nameOpt.get();
+    }
+
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+
+    if (customerId == null) {
+      if (order.getTableId() == null) {
+        return messageSource.getMessage("customer.anonymous.takeaway", null, "Balcão", locale);
+      } else {
+        String tableLabel =
+            messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
+        return tableCod != null ? tableLabel + " " + tableCod : tableLabel;
+      }
+    } else {
+      return messageSource.getMessage("customer.anonymous.unknown", null, "Desconhecido", locale);
+    }
+  }
+
   public TableOrderHistoryResponse mapToOrderHistoryResponse(Order order, Language userLanguage) {
     if (order == null) return null;
 
@@ -29,7 +58,13 @@ public abstract class TableApiMapper {
             .collect(
                 Collectors.toMap(
                     c -> c.getId().toString(), OrderCustomer::getName, (v1, v2) -> v1));
-    customerNames.put("null", "Mesa");
+
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    String tableLabel = messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
+    customerNames.put("null", tableLabel);
 
     TableOrderHistoryResponse response = new TableOrderHistoryResponse();
     response.setId(order.getId().toString());
@@ -51,10 +86,25 @@ public abstract class TableApiMapper {
                                 mapToTicketItemResponse(
                                     TicketItemModel.fromDomain(
                                         item,
-                                        order.getCustomerName(item.getCustomerId()),
+                                        resolveCustomerName(
+                                            order, item.getCustomerId(), null, userLanguage),
                                         t.getNote(),
                                         t.getCreatedAt(),
-                                        userLanguage))))
+                                        userLanguage,
+                                        resolveStatusLabel(item.getStatus(), userLanguage),
+                                        item.getStatus().name().toLowerCase(),
+                                        resolveCancellationReasonLabel(
+                                            item.getCancellationReason(), userLanguage)))))
+            .sorted(
+                java.util.Comparator.comparing(
+                        TicketItemResponse::getCreatedAt,
+                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
+                    .thenComparing(
+                        TicketItemResponse::getName,
+                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder()))
+                    .thenComparing(
+                        TicketItemResponse::getId,
+                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
             .collect(Collectors.toList()));
 
     response.setPayments(
@@ -120,4 +170,26 @@ public abstract class TableApiMapper {
   @ValueMapping(target = "WAITING_PAYMENT", source = "WAITING")
   public abstract TableResponse.StatusEnum mapStatus(
       dev.thiagooliveira.tablesplit.domain.order.TableStatus status);
+
+  protected String resolveStatusLabel(
+      dev.thiagooliveira.tablesplit.domain.order.TicketStatus status, Language userLanguage) {
+    if (status == null) return "";
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "ticket.status." + status.name().toLowerCase(), null, status.name(), locale);
+  }
+
+  protected String resolveCancellationReasonLabel(
+      dev.thiagooliveira.tablesplit.domain.order.CancellationReason reason, Language userLanguage) {
+    if (reason == null) return null;
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "cancellation.reason." + reason.name().toLowerCase(), null, reason.name(), locale);
+  }
 }

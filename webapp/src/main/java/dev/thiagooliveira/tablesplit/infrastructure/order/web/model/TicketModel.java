@@ -30,6 +30,8 @@ public class TicketModel {
       String tableCod,
       String customerName,
       TicketStatus status,
+      String statusClass,
+      String statusLabel,
       ZonedDateTime createdAt,
       String timeAgo,
       List<TicketItemModel> items,
@@ -45,8 +47,8 @@ public class TicketModel {
     this.tableCod = tableCod;
     this.customerName = customerName;
     this.status = status;
-    this.statusClass = status.getCssClass();
-    this.statusLabel = status.getLabel();
+    this.statusClass = statusClass;
+    this.statusLabel = statusLabel;
     this.createdAt = createdAt;
     this.timeAgo = timeAgo;
     this.items = items;

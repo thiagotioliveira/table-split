@@ -177,6 +177,46 @@ public class TicketEventListener {
             "type", type, "data", data, "initiatedBy", initiatedBy != null ? initiatedBy : ""));
   }
 
+  protected String resolveCustomerName(
+      dev.thiagooliveira.tablesplit.domain.order.Order order,
+      java.util.UUID customerId,
+      String tableCod,
+      Language userLanguage) {
+
+    java.util.Optional<String> nameOpt = order.getCustomerName(customerId);
+    if (nameOpt.isPresent()) {
+      return nameOpt.get();
+    }
+
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+
+    if (customerId == null) {
+      if (order.getTableId() == null) {
+        return messageSource.getMessage("customer.anonymous.takeaway", null, "Balcão", locale);
+      } else {
+        String tableLabel =
+            messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
+        return tableCod != null ? tableLabel + " " + tableCod : tableLabel;
+      }
+    } else {
+      return messageSource.getMessage("customer.anonymous.unknown", null, "Desconhecido", locale);
+    }
+  }
+
+  protected String resolveStatusLabel(
+      dev.thiagooliveira.tablesplit.domain.order.TicketStatus status, Language userLanguage) {
+    if (status == null) return "";
+    java.util.Locale locale =
+        userLanguage != null
+            ? java.util.Locale.forLanguageTag(userLanguage.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "ticket.status." + status.name().toLowerCase(), null, status.name(), locale);
+  }
+
   private TicketModel mapToModel(
       java.util.UUID restaurantId,
       Ticket ticket,
@@ -189,15 +229,19 @@ public class TicketEventListener {
                 item ->
                     TicketItemModel.fromDomain(
                         item,
-                        order.getCustomerName(item.getCustomerId()),
+                        resolveCustomerName(order, item.getCustomerId(), tableCod, language),
                         ticket.getNote(),
                         ticket.getCreatedAt(),
-                        language))
+                        language,
+                        resolveStatusLabel(item.getStatus(), language),
+                        item.getStatus().name().toLowerCase(),
+                        resolveCancellationReasonLabel(item.getCancellationReason(), language)))
             .toList();
 
-    String customerName = itemModels.isEmpty() ? "Cliente" : itemModels.get(0).getCustomerName();
-    if (customerName == null || customerName.isBlank())
-      customerName = tableCod != null ? "Mesa " + tableCod : "Balcão";
+    String customerName = itemModels.isEmpty() ? null : itemModels.get(0).getCustomerName();
+    if (customerName == null || customerName.isBlank()) {
+      customerName = resolveCustomerName(order, null, tableCod, language);
+    }
 
     String timeAgo =
         dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils.timeAgo(
@@ -211,6 +255,8 @@ public class TicketEventListener {
         tableCod,
         customerName,
         ticket.getStatus(),
+        ticket.getStatus().name().toLowerCase(),
+        resolveStatusLabel(ticket.getStatus(), language),
         ticket.getCreatedAt(),
         timeAgo,
         itemModels,
@@ -218,5 +264,16 @@ public class TicketEventListener {
         urgent,
         ticket.getNote(),
         order.getId());
+  }
+
+  private String resolveCancellationReasonLabel(
+      dev.thiagooliveira.tablesplit.domain.order.CancellationReason reason, Language language) {
+    if (reason == null) return null;
+    java.util.Locale locale =
+        language != null
+            ? java.util.Locale.forLanguageTag(language.getLabel())
+            : org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    return messageSource.getMessage(
+        "cancellation.reason." + reason.name().toLowerCase(), null, reason.name(), locale);
   }
 }

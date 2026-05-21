@@ -398,6 +398,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TicketItemCustomizationResponse'
+        cancellationReason:
+          type: string
+        cancellationReasonLabel:
+          type: string
 
     TicketItemCustomizationResponse:
       type: object

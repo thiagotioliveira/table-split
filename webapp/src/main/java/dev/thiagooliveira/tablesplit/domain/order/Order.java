@@ -143,13 +143,12 @@ public class Order extends AggregateRoot {
     this.customers.add(new OrderCustomer(id, name));
   }
 
-  public String getCustomerName(UUID id) {
-    if (id == null) return this.tableId == null ? "Balcão" : "Mesa";
+  public java.util.Optional<String> getCustomerName(UUID id) {
+    if (id == null) return java.util.Optional.empty();
     return customers.stream()
         .filter(c -> c.getId().equals(id))
         .map(OrderCustomer::getName)
-        .findFirst()
-        .orElse("Desconhecido");
+        .findFirst();
   }
 
   public BigDecimal calculateSubtotalByCustomer(UUID customerId) {
@@ -333,7 +332,11 @@ public class Order extends AggregateRoot {
     }
   }
 
-  public void cancelTicketItem(UUID ticketId, UUID itemId, int quantityToCancel, String reason) {
+  public void cancelTicketItem(
+      UUID ticketId,
+      UUID itemId,
+      int quantityToCancel,
+      java.util.Optional<CancellationReason> reason) {
     Ticket ticket =
         this.tickets.stream()
             .filter(t -> t.getId().equals(ticketId))
@@ -349,10 +352,7 @@ public class Order extends AggregateRoot {
 
     if (quantityToCancel >= item.getQuantity()) {
       item.setStatus(TicketStatus.CANCELLED);
-      if (reason != null && !reason.isBlank()) {
-        String note = item.getNote() != null ? item.getNote() : "";
-        item.setNote(note + " (Cancelado: " + reason + ")");
-      }
+      item.setCancellationReason(reason.orElse(null));
       this.registerEvent(
           new TicketItemStatusChangedEvent(this, ticket, item, TicketStatus.CANCELLED));
     } else {
@@ -368,6 +368,7 @@ public class Order extends AggregateRoot {
       cancelledItem.setQuantity(quantityToCancel);
       cancelledItem.setUnitPrice(item.getUnitPrice());
       cancelledItem.setStatus(TicketStatus.CANCELLED);
+      cancelledItem.setCancellationReason(reason.orElse(null));
 
       ticket.getItems().add(cancelledItem);
       this.registerEvent(

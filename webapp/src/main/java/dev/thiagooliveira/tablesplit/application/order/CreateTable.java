@@ -18,6 +18,10 @@ public class CreateTable {
   }
 
   public Table execute(UUID accountId, UUID restaurantId, String cod) {
+    if (cod != null && cod.matches("^[0-9]+$")) {
+      cod = String.format("%02d", Integer.parseInt(cod));
+    }
+
     this.planLimitValidator.validate(
         accountId, PlanLimitType.TABLES, this.tableRepository.count(restaurantId));
 
