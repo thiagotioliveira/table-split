@@ -809,6 +809,80 @@
             font-weight: 600;
             color: var(--muted);
         }
+
+        /* Skeleton Animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, var(--background-secondary) 25%, var(--border) 50%, var(--background-secondary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
+        }
+        .skeleton-text {
+            height: 16px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+        .skeleton-card {
+            min-height: 120px;
+        }
+        .loading-skeleton #welcome-title span,
+        .loading-skeleton #welcome-subtitle,
+        .loading-skeleton #restaurant-name-value,
+        .loading-skeleton #restaurant-address-value,
+        .loading-skeleton #public-link-url {
+            background: linear-gradient(90deg, var(--background-secondary) 25%, var(--border) 50%, var(--background-secondary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
+            color: transparent !important;
+            display: inline-block;
+        }
+        .loading-skeleton #welcome-title span {
+            width: 140px;
+            height: 32px;
+            vertical-align: middle;
+        }
+        .loading-skeleton #welcome-subtitle {
+            width: 280px;
+            height: 18px;
+            margin-top: 8px;
+        }
+        .loading-skeleton #restaurant-name-value {
+            width: 200px;
+            height: 24px;
+        }
+        .loading-skeleton #restaurant-address-value {
+            width: 150px;
+            height: 16px;
+            vertical-align: middle;
+        }
+        .loading-skeleton #restaurant-logo-container {
+            background: linear-gradient(90deg, var(--background-secondary) 25%, var(--border) 50%, var(--background-secondary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        .loading-skeleton #restaurant-logo-container svg,
+        .loading-skeleton #restaurant-logo-container img {
+            visibility: hidden;
+        }
+        .loading-skeleton #public-link-url {
+            width: 220px;
+            height: 16px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 
@@ -821,13 +895,13 @@
         <div class="dashboard-body">
             <!-- Welcome -->
             <div class="welcome-section">
-                <h1><span th:text="#{page.dashboard.welcome}">Hi</span>, <span th:text="${dashboard.user.firstName}">João</span>! 👋</h1>
-                <p th:text="#{page.dashboard.welcome.hint}">Manage your menu and restaurant settings.</p>
+                <h1 id="welcome-title"><span th:text="#{page.dashboard.welcome}">Hi</span>, <span th:text="${context.user.firstName}">João</span>! 👋</h1>
+                <p id="welcome-subtitle" th:text="#{page.dashboard.welcome.hint}">Manage your menu and restaurant settings.</p>
             </div>
 
             <!-- Restaurant Card -->
             <div class="restaurant-card">
-                <div class="restaurant-logo">
+                <div class="restaurant-logo" id="restaurant-logo-container">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
                         <path d="M7 2v20" />
@@ -835,14 +909,14 @@
                     </svg>
                 </div>
                 <div class="restaurant-info">
-                    <h2 class="restaurant-name" th:text="${dashboard.restaurant.name}">Cantina Bella Italia</h2>
+                    <h2 class="restaurant-name" id="restaurant-name-value" th:text="${context.restaurant.name}">Cantina Bella Italia</h2>
                     <div class="restaurant-meta">
                         <span class="restaurant-meta-item">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
-                            <span th:text="${dashboard.restaurant.address}">São Paulo, SP</span>
+                            <span id="restaurant-address-value" th:text="${context.restaurant.address}">São Paulo, SP</span>
                         </span>
                         <span class="restaurant-meta-item" th:if="${false}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -876,7 +950,7 @@
                 </div>
                 <div class="public-link-content">
                     <div class="public-link-label" th:text="#{page.dashboard.label.menu.online}">Seu cardápio está online!</div>
-                    <div class="public-link-url"><span th:text="#{app.domain}">tablesplit.com</span>/@<span th:text="${dashboard.restaurant.slug}"></span></div>
+                    <div class="public-link-url" id="public-link-url"><span id="app-domain-value" th:text="#{app.domain}">tablesplit.com</span>/<span id="restaurant-slug-value">@</span></div>
                 </div>
                 <div class="public-link-actions">
                     <button class="btn-icon" title="Copiar link" onclick="copyLink()">
@@ -905,38 +979,28 @@
                 </svg>
                 Visão Geral - Hoje
             </h2>
-            <div class="stats-row">
-                <div class="stat-card" style="opacity: 0.7;">
-                    <div class="stat-label">Faturamento</div>
-                    <div class="stat-value green">€ 4.587,82</div>
-                    <div class="stat-change up">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m18 15-6-6-6 6" />
-                        </svg>
-                        +12% vs ontem
-                    </div>
+            <div class="stats-row" id="stats-container">
+                <div class="stat-card skeleton-card">
+                    <div class="skeleton" style="width: 50%; height: 14px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 80%; height: 28px; margin-top: 8px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 12px; margin-top: 8px; border-radius: 4px;"></div>
                 </div>
-                <div class="stat-card" style="opacity: 0.7;">
-                    <div class="stat-label">Pedidos</div>
-                    <div class="stat-value highlight">68</div>
-                    <div class="stat-change up">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m18 15-6-6-6 6" />
-                        </svg>
-                        +8% vs ontem
-                    </div>
+                <div class="stat-card skeleton-card">
+                    <div class="skeleton" style="width: 50%; height: 14px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 80%; height: 28px; margin-top: 8px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 12px; margin-top: 8px; border-radius: 4px;"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.category}">Categorias</div>
-                    <div class="stat-value blue" th:text="${dashboard.categories.total}">4</div>
+                <div class="stat-card skeleton-card">
+                    <div class="skeleton" style="width: 60%; height: 14px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 28px; margin-top: 8px; border-radius: 4px;"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items}">Itens</div>
-                    <div class="stat-value purple" th:text="${dashboard.items.total}">18</div>
+                <div class="stat-card skeleton-card">
+                    <div class="skeleton" style="width: 60%; height: 14px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 28px; margin-top: 8px; border-radius: 4px;"></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label" th:text="#{page.dashboard.label.menu.summary.items.active}">Ativos</div>
-                    <div class="stat-value amber" th:text="${dashboard.items.totalActive}">16</div>
+                <div class="stat-card skeleton-card">
+                    <div class="skeleton" style="width: 60%; height: 14px; border-radius: 4px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 28px; margin-top: 8px; border-radius: 4px;"></div>
                 </div>
             </div>
 
@@ -950,139 +1014,32 @@
                 </svg>
                 <span th:text="#{page.dashboard.label.quick.access}">Acesso Rápido</span>
             </h2>
-            <div class="actions-grid">
-                <a href="/menu" class="action-card">
-                    <div class="action-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
-                            <path d="M7 2v20" />
-                            <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
-                        </svg>
+            <div class="actions-grid" id="actions-container">
+                <div class="action-card skeleton-card">
+                    <div class="skeleton" style="width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;"></div>
+                    <div class="action-content" style="width: 100%;">
+                        <div class="skeleton" style="width: 40%; height: 16px; border-radius: 4px; margin-bottom: 8px;"></div>
+                        <div class="skeleton" style="width: 80%; height: 12px; border-radius: 4px;"></div>
                     </div>
-                    <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.menu}">Cardápio</h3>
-                        <p th:text="${dashboard.items.total + ' itens • ' + dashboard.categories.total + ' categorias'}">18 itens • 4 categorias</p>
+                </div>
+                <div class="action-card skeleton-card">
+                    <div class="skeleton" style="width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;"></div>
+                    <div class="action-content" style="width: 100%;">
+                        <div class="skeleton" style="width: 40%; height: 16px; border-radius: 4px; margin-bottom: 8px;"></div>
+                        <div class="skeleton" style="width: 80%; height: 12px; border-radius: 4px;"></div>
                     </div>
-                </a>
-
-                <a href="/promotions" class="action-card">
-                    <div class="action-icon red">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-                            <path d="m9 12 2 2 4-4" />
-                        </svg>
+                </div>
+                <div class="action-card skeleton-card">
+                    <div class="skeleton" style="width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;"></div>
+                    <div class="action-content" style="width: 100%;">
+                        <div class="skeleton" style="width: 40%; height: 16px; border-radius: 4px; margin-bottom: 8px;"></div>
+                        <div class="skeleton" style="width: 80%; height: 12px; border-radius: 4px;"></div>
                     </div>
-                    <div class="action-content">
-                        <h3>Promoções</h3>
-                        <p>Gerencie as promoções do cardápio.</p>
-                    </div>
-                </a>
-
-                <a href="/orders" class="action-card">
-                    <div class="action-icon green">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                            <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z" />
-                            <path d="M12 11h4" />
-                            <path d="M12 16h4" />
-                            <path d="M8 11h.01" />
-                            <path d="M8 16h.01" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.orders}">Pedidos</h3>
-                        <p th:text="#{page.dashboard.label.orders.hint}">Visualize e gerencie os pedidos.</p>
-                    </div>
-                </a>
-
-                <a href="/tables" class="action-card">
-                    <div class="action-icon purple">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M7 7h.01" />
-                            <path d="M17 7h.01" />
-                            <path d="M7 17h.01" />
-                            <path d="M17 17h.01" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.tables}">Mesas</h3>
-                        <p th:text="#{page.dashboard.label.tables.hint}">Gerencie mesas e acessos.</p>
-                    </div>
-                </a>
-
-                <a href="/gallery" class="action-card">
-                    <div class="action-icon pink">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                            <circle cx="9" cy="9" r="2" />
-                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3>Galeria</h3>
-                        <p>Adicione fotos do seu restaurante.</p>
-                    </div>
-                </a>
-
-                <a href="/feedbacks" class="action-card">
-                    <div class="action-icon blue">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            <path d="M12 7v2"></path>
-                            <path d="M12 13h.01"></path>
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3>Feedbacks</h3>
-                        <p>Veja o que os clientes estão achando.</p>
-                    </div>
-                </a>
-
-                <a href="/staff" class="action-card">
-                    <div class="action-icon amber">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3>Equipe</h3>
-                        <p>Adicione funcionários para ter acesso a plataforma.</p>
-                    </div>
-                </a>
-
-                <a href="/reports" class="action-card">
-                    <div class="action-icon blue">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 3v18h18" />
-                            <path d="m19 9-5 5-4-4-3 3" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3>Relatórios</h3>
-                        <p>Tenha uma visão mais detalhada do seu restaurante.</p>
-                    </div>
-                </a>
-
-                <a href="/settings" class="action-card">
-                    <div class="action-icon teal">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    </div>
-                    <div class="action-content">
-                        <h3 th:text="#{page.dashboard.label.settings}">Configurações</h3>
-                        <p th:text="#{page.dashboard.label.settings.hint}">Perfil e preferências.</p>
-                    </div>
-                </a>
+                </div>
             </div>
 
             <!-- Insights Grid -->
-            <div class="insights-grid">
+            <div class="insights-grid" id="insights-container">
                 <!-- Pedidos Insight (Static) -->
                 <div class="insight-card" style="opacity: 0.8;">
                     <div class="insight-header">
@@ -1267,7 +1224,7 @@
                 </div>
 
                 <!-- Cardápio Insight (Itens Recentes - DYNAMIC) -->
-                <div class="insight-card" th:if="${!dashboard.items.list.isEmpty()}">
+                <div class="insight-card">
                     <div class="insight-header">
                         <h3>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1281,20 +1238,19 @@
                     </div>
                     <div class="insight-body">
                         <ul class="recent-list">
-                            <li class="recent-item" th:each="item : ${dashboard.items.list}">
+                            <li class="recent-item">
                                 <div class="insight-item-img">
-                                    <img th:if="${item.imageUrl != null && !item.imageUrl.isEmpty()}" th:src="@{${item.imageUrl}(w=100,h=100,fit='crop')}" alt="">
-                                    <svg th:if="${item.imageUrl == null || item.imageUrl.isEmpty()}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
                                         <circle cx="9" cy="9" r="2" />
                                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                                     </svg>
                                 </div>
                                 <div class="insight-item-info">
-                                    <div class="insight-item-name" th:text="${item.name[#locale.language]}">Lasanha Bolonhesa</div>
-                                    <div class="insight-item-meta" th:text="${item.categoryName[#locale.language]}">Pratos Principais</div>
+                                    <div class="insight-item-name">Lasanha Bolonhesa</div>
+                                    <div class="insight-item-meta">Pratos Principais</div>
                                 </div>
-                                <div class="recent-item-price"><span th:text="${dashboard.restaurant.currencySymbol}"></span> <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}"></span></div>
+                                <div class="recent-item-price"><span>€</span> <span>15,90</span></div>
                             </li>
                         </ul>
                     </div>
@@ -1465,7 +1421,7 @@
 
     <script th:inline="javascript">
         const domain = /*[[${#messages.msg('app.domain')}]]*/ 'tablesplit.app';
-        const restaurant = /*[[${dashboard.restaurant}]]*/ {};
+        const restaurant = /*[[${context.restaurant}]]*/ {};
 
         const i18n = {
             labelLinkCopied: /*[[#{page.dashboard.label.link.copied}]]*/ 'Link Copied',
@@ -1491,6 +1447,11 @@
             alert(i18n.labelLinkCopied);
         }
 
+        // Expose functions globally for layout onclick bindings
+        window.openSidebar = openSidebar;
+        window.closeSidebar = closeSidebar;
+        window.copyLink = copyLink;
+
         function shareLink() {
             if (navigator.share) {
                 navigator.share({
@@ -1502,12 +1463,535 @@
                 copyLink();
             }
         }
+        window.shareLink = shareLink;
 
         // Close user menu when clicking outside
         document.addEventListener('click', function(e) {
             const container = document.getElementById('userMenuContainer');
             if (container && !container.contains(e.target)) {
                 container.classList.remove('open');
+            }
+        });
+    </script>
+
+    <script type="module">
+        import { dashboardApi } from '/js/api/v1/manager/api-dashboard-bridge.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Mostrar skeletons nos insights imediatamente ao carregar
+            const insightsContainer = document.getElementById('insights-container');
+            if (insightsContainer) {
+                insightsContainer.innerHTML = `
+                    <div class="insight-card skeleton-card">
+                        <div class="insight-header">
+                            <div class="skeleton" style="width: 50%; height: 20px; border-radius: 4px;"></div>
+                        </div>
+                        <div class="insight-body">
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="skeleton" style="flex: 1; height: 50px; border-radius: 8px;"></div>
+                                <div class="skeleton" style="flex: 1; height: 50px; border-radius: 8px;"></div>
+                                <div class="skeleton" style="flex: 1; height: 50px; border-radius: 8px;"></div>
+                            </div>
+                            <div class="skeleton" style="width: 100%; height: 40px; border-radius: 4px; margin-bottom: 8px;"></div>
+                            <div class="skeleton" style="width: 100%; height: 40px; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="insight-card skeleton-card">
+                        <div class="insight-header">
+                            <div class="skeleton" style="width: 40%; height: 20px; border-radius: 4px;"></div>
+                        </div>
+                        <div class="insight-body">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;">
+                                <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+                                <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+                                <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+                                <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+                            </div>
+                            <div class="skeleton" style="width: 100%; height: 16px; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="insight-card skeleton-card">
+                        <div class="insight-header">
+                            <div class="skeleton" style="width: 60%; height: 20px; border-radius: 4px;"></div>
+                        </div>
+                        <div class="insight-body">
+                            <div class="skeleton" style="width: 100%; height: 100px; border-radius: 8px; margin-bottom: 16px;"></div>
+                            <div class="skeleton" style="width: 100%; height: 20px; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            try {
+                const data = await dashboardApi.getDashboardWidgets();
+
+                // 2. Atualizar Mensagem de Boas-vindas
+                if (data.welcomeMessage) {
+                    const welcomeTitleEl = document.getElementById('welcome-title');
+                    if (welcomeTitleEl) welcomeTitleEl.innerHTML = data.welcomeMessage;
+                }
+                if (data.welcomeHint) {
+                    const welcomeSubtitleEl = document.getElementById('welcome-subtitle');
+                    if (welcomeSubtitleEl) welcomeSubtitleEl.innerText = data.welcomeHint;
+                }
+
+                // Atualizar Detalhes do Restaurante e Link Público
+                if (data.restaurantCard) {
+                    const rc = data.restaurantCard;
+                    
+                    const nameEl = document.getElementById('restaurant-name-value');
+                    if (nameEl && rc.name) nameEl.innerText = rc.name;
+                    
+                    const addressEl = document.getElementById('restaurant-address-value');
+                    if (addressEl) {
+                        addressEl.innerText = rc.address || '';
+                        // Se não houver endereço cadastrado, ocultamos o item
+                        if (addressEl.parentElement) {
+                            addressEl.parentElement.style.display = rc.address ? 'inline-flex' : 'none';
+                        }
+                    }
+                    
+                    if (rc.logoUrl) {
+                        const logoContainer = document.getElementById('restaurant-logo-container');
+                        if (logoContainer) {
+                            logoContainer.innerHTML = `<img src="${rc.logoUrl}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />`;
+                        }
+                    }
+                    
+                    const domainEl = document.getElementById('app-domain-value');
+                    const domain = domainEl ? domainEl.innerText : 'tablesplit.com';
+                    const publicLinkUrlEl = document.getElementById('public-link-url');
+                    if (publicLinkUrlEl && rc.publicProfileUrl) {
+                        publicLinkUrlEl.innerHTML = `${domain}${rc.publicProfileUrl}`;
+                    }
+                }
+
+                // 3. Atualizar Grade de Estatísticas (Stats Row)
+                const statsContainer = document.getElementById('stats-container');
+                if (statsContainer && data.widgets) {
+                    let statsHtml = '';
+                    const statWidgets = data.widgets.filter(w => w.type === 'STAT');
+                    
+                    statWidgets.forEach(w => {
+                        const content = w.statContent;
+                        if (!content) return;
+
+                        if (w.id === 'billing' || w.id === 'orders') {
+                            const valueClass = content.color || (w.id === 'billing' ? 'green' : 'highlight');
+                            const changeClass = content.trend === 'UP' ? 'up' : (content.trend === 'DOWN' ? 'down' : '');
+                            const trendSvg = content.trend === 'UP'
+                                ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`
+                                : (content.trend === 'DOWN' ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>` : '');
+
+                            statsHtml += `
+                                <div class="stat-card" style="opacity: 0.95;">
+                                    <div class="stat-label">${w.title}</div>
+                                    <div class="stat-value ${valueClass}">${content.value}</div>
+                                    ${content.change ? `
+                                    <div class="stat-change ${changeClass}">
+                                        ${trendSvg}
+                                        ${content.change}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        } else {
+                            let colorClass = content.color || 'blue';
+                            if (!content.color) {
+                                if (w.id === 'items_summary') colorClass = 'purple';
+                                else if (w.id === 'active_items_summary') colorClass = 'amber';
+                            }
+
+                            statsHtml += `
+                                <div class="stat-card">
+                                    <div class="stat-label">${w.title}</div>
+                                    <div class="stat-value ${colorClass}">${content.value}</div>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    if (statsHtml) {
+                        statsContainer.innerHTML = statsHtml;
+                    }
+                }
+
+                // 4. Atualizar Acesso Rápido (Quick Access)
+                const actionsContainer = document.getElementById('actions-container');
+                if (actionsContainer && data.widgets) {
+                    const quickAccessWidget = data.widgets.find(w => w.id === 'quick_access');
+                    if (quickAccessWidget && quickAccessWidget.quickAccessContent) {
+                        let actionsHtml = '';
+                        quickAccessWidget.quickAccessContent.actions?.forEach(item => {
+                            actionsHtml += `
+                                <a href="${item.href}" class="action-card">
+                                    <div class="action-icon ${item.color || ''}">
+                                        ${item.icon}
+                                    </div>
+                                    <div class="action-content">
+                                        <h3>${item.title}</h3>
+                                        <p>${item.subtitle}</p>
+                                    </div>
+                                </a>
+                            `;
+                        });
+                        actionsContainer.innerHTML = actionsHtml;
+                    }
+                }
+
+                // 5. Atualizar Grade de Insights (Widgets Dinâmicos)
+                if (insightsContainer && data.widgets) {
+                    let insightsHtml = '';
+
+                    data.widgets.forEach(w => {
+                        if (w.type === 'STAT' || w.id === 'quick_access') return;
+
+                        let cardHtml = '';
+
+                        if (w.type === 'GROUPED_STATUS' && w.id === 'ongoing_orders') {
+                            const content = w.groupedStatusContent;
+                            if (!content) return;
+
+                            let groupsHtml = '';
+                            content.statusGroups?.forEach(g => {
+                                let bgColor = g.bg || 'rgba(245, 158, 11, 0.1)';
+                                let textColor = g.color || '#f59e0b';
+
+                                groupsHtml += `
+                                    <div style="flex: 1; text-align: center; padding: 0.75rem; background: ${bgColor}; border-radius: 8px;">
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: ${textColor};">${g.count}</div>
+                                        <div style="font-size: 0.75rem; color: var(--muted);">${g.label}</div>
+                                    </div>
+                                `;
+                            });
+
+                            let itemsHtml = '';
+                            if (content.items && content.items.length > 0) {
+                                content.items?.forEach(item => {
+                                    let dotColor = 'amber';
+                                    if (item.status === 'PREPARING') dotColor = 'blue';
+                                    else if (item.status === 'READY') dotColor = 'green';
+
+                                    itemsHtml += `
+                                        <li class="insight-item">
+                                            <span class="status-dot ${dotColor}"></span>
+                                            <div class="insight-item-info">
+                                                <div class="insight-item-name">${item.title}</div>
+                                                <div class="insight-item-meta">${item.meta}</div>
+                                            </div>
+                                            <div class="insight-item-value">${item.value}</div>
+                                        </li>
+                                    `;
+                                });
+                            } else {
+                                itemsHtml = `<div style="text-align: center; width: 100%; padding: 2rem 0; color: var(--muted); font-size: 0.8125rem;">Nenhum pedido em andamento no momento</div>`;
+                            }
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                                <path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z" />
+                                            </svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/orders" class="btn btn-ghost">Ver todos</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                            ${groupsHtml}
+                                        </div>
+                                        <ul class="insight-list">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        else if (w.type === 'GRID_STATUS' && w.id === 'table_status') {
+                            const content = w.gridStatusContent;
+                            if (!content) return;
+
+                            const cells = content.items || [];
+                            let gridHtml = '';
+                            cells.forEach(c => {
+                                let statusClass = 'free';
+                                if (c.status === 'OCCUPIED') statusClass = 'occupied';
+                                else if (c.status === 'WAITING') statusClass = 'reserved';
+
+                                gridHtml += `<div class="table-mini ${statusClass}">${c.code}</div>`;
+                            });
+
+                            const counts = { AVAILABLE: 0, WAITING: 0, OCCUPIED: 0 };
+                            cells.forEach(c => {
+                                if (counts[c.status] !== undefined) {
+                                    counts[c.status]++;
+                                }
+                            });
+                            const legends = [
+                                { status: 'AVAILABLE', label: 'Disponível', count: counts.AVAILABLE },
+                                { status: 'WAITING', label: 'Aguardando', count: counts.WAITING },
+                                { status: 'OCCUPIED', label: 'Ocupada', count: counts.OCCUPIED }
+                            ];
+
+                            let legendsHtml = '';
+                            legends.forEach(l => {
+                                let colorClass = 'free';
+                                if (l.status === 'OCCUPIED') colorClass = 'occupied';
+                                else if (l.status === 'WAITING') colorClass = 'reserved';
+
+                                legendsHtml += `
+                                    <div class="legend-item">
+                                        <span class="legend-dot ${colorClass}"></span>
+                                        ${l.label} (${l.count})
+                                    </div>
+                                `;
+                            });
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect width="18" height="18" x="3" y="3" rx="2" />
+                                                <path d="M7 7h.01" />
+                                                <path d="M17 7h.01" />
+                                                <path d="M7 17h.01" />
+                                                <path d="M17 17h.01" />
+                                            </svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/tables" class="btn btn-ghost">Gerenciar</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <div class="tables-mini-grid">
+                                            ${gridHtml}
+                                        </div>
+                                        <div class="tables-legend">
+                                            ${legendsHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        else if (w.type === 'LIST' && w.id === 'active_promotions') {
+                            const content = w.listContent;
+                            if (!content) return;
+
+                            let itemsHtml = '';
+                            if (content.items && content.items.length > 0) {
+                                content.items?.forEach(item => {
+                                    itemsHtml += `
+                                        <li class="insight-item">
+                                            <div class="insight-item-info">
+                                                <div class="insight-item-name" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                                    ${item.title}
+                                                    ${item.badge ? `<span class="promo-badge">${item.badge}</span>` : ''}
+                                                </div>
+                                                <div class="insight-item-meta" style="margin-top: 0.25rem;">${item.meta || ''}</div>
+                                            </div>
+                                            <div class="insight-item-value ${item.valueColor || 'green'}">${item.value}</div>
+                                        </li>
+                                    `;
+                                });
+                            } else {
+                                itemsHtml = `<div style="text-align: center; width: 100%; padding: 2rem 0; color: var(--muted); font-size: 0.8125rem;">Nenhuma promoção ativa hoje</div>`;
+                            }
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/promotions" class="btn btn-ghost">Ver todas</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <ul class="insight-list">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        else if (w.type === 'LIST' && (w.id === 'top_items' || w.id === 'recent_items')) {
+                            const content = w.listContent;
+                            if (!content) return;
+
+                            let itemsHtml = '';
+                            if (content.items && content.items.length > 0) {
+                                content.items?.forEach(item => {
+                                    let imgHtml = '';
+                                    if (item.imageUrl) {
+                                        imgHtml = `<img src="${item.imageUrl}" alt="">`;
+                                    } else {
+                                        imgHtml = `
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:100%;height:100%;padding:4px;box-sizing:border-box;">
+                                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                                                <circle cx="9" cy="9" r="2" />
+                                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                                            </svg>
+                                        `;
+                                    }
+
+                                    itemsHtml += `
+                                        <li class="insight-item">
+                                            <div class="insight-item-img">
+                                                ${imgHtml}
+                                            </div>
+                                            <div class="insight-item-info">
+                                                <div class="insight-item-name">${item.title}</div>
+                                                <div class="insight-item-meta">${item.meta || ''}</div>
+                                            </div>
+                                            <div class="${w.id === 'recent_items' ? 'recent-item-price' : 'insight-item-value'}">${item.value}</div>
+                                        </li>
+                                    `;
+                                });
+                            } else {
+                                itemsHtml = `<div style="text-align: center; width: 100%; padding: 2rem 0; color: var(--muted); font-size: 0.8125rem;">Nenhum item cadastrado</div>`;
+                            }
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                                                <path d="M7 2v20" />
+                                                <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+                                            </svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/menu" class="btn btn-ghost">Ver cardápio</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <ul class="insight-list">
+                                            ${itemsHtml}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        else if (w.type === 'GALLERY' && w.id === 'gallery') {
+                            const content = w.galleryContent;
+                            if (!content) return;
+
+                            let gridHtml = '';
+                            if (content.images && content.images.length > 0) {
+                                content.images?.forEach((item, idx) => {
+                                    if (idx < 5) {
+                                        gridHtml += `
+                                            <div class="gallery-mini-item">
+                                                <img src="${item.imageUrl}" alt="">
+                                            </div>
+                                        `;
+                                    }
+                                });
+
+                                if (content.totalCount > 5) {
+                                    gridHtml += `
+                                        <div class="gallery-mini-item more">
+                                            +${content.totalCount - 5}
+                                        </div>
+                                    `;
+                                }
+                            } else {
+                                gridHtml = `<div style="text-align: center; grid-column: span 3; padding: 2rem 0; color: var(--muted); font-size: 0.8125rem;">Nenhuma foto na galeria</div>`;
+                            }
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/gallery" class="btn btn-ghost">Ver galeria</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <div class="gallery-mini-grid">
+                                            ${gridHtml}
+                                        </div>
+                                        <div style="margin-top: 1rem; display: flex; justify-content: space-between; font-size: 0.8125rem;">
+                                            <span style="color: var(--muted);">${content.totalCount} fotos no total</span>
+                                            <span style="color: var(--green);">${content.newThisWeekCount} novas esta semana</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        else if (w.type === 'WEEKLY_REVENUE' && w.id === 'weekly_revenue') {
+                            const content = w.weeklyRevenueContent;
+                            if (!content) return;
+
+                            const maxVal = Math.max(...(content.chartData?.map(b => b.value || 0) || []), 1);
+
+                            let barsHtml = '';
+                            content.chartData?.forEach(b => {
+                                const heightPercentage = Math.round(((b.value || 0) / maxVal) * 100);
+                                barsHtml += `<div class="mini-chart-bar ${b.highlight ? 'highlight' : ''}" style="height: ${heightPercentage}%;" title="${b.label}: ${b.value}"></div>`;
+                            });
+
+                            let labelsHtml = '';
+                            content.chartData?.forEach(b => {
+                                labelsHtml += `<span>${b.label}</span>`;
+                            });
+
+                            let trendClass = 'neutral';
+                            let trendSvg = '';
+                            if (content.trend === 'UP') {
+                                trendClass = 'up';
+                                trendSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`;
+                            } else if (content.trend === 'DOWN') {
+                                trendClass = 'down';
+                                trendSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+                            }
+
+                            cardHtml = `
+                                <div class="insight-card">
+                                    <div class="insight-header">
+                                        <h3>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                            ${w.title}
+                                        </h3>
+                                        <a href="/reports" class="btn btn-ghost">Ver relatórios</a>
+                                    </div>
+                                    <div class="insight-body">
+                                        <div class="mini-chart">
+                                            ${barsHtml}
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem;">
+                                            ${labelsHtml}
+                                        </div>
+                                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                                <span style="font-size: 0.8125rem; color: var(--muted);">Total da semana</span>
+                                                <span style="font-size: 1rem; font-weight: 700; color: var(--green);">${content.totalAmount}</span>
+                                            </div>
+                                            <div class="stat-change ${trendClass}" style="justify-content: flex-end;">
+                                                ${trendSvg}
+                                                ${content.change}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        if (cardHtml) {
+                            insightsHtml += cardHtml;
+                        }
+                    });
+
+                    if (insightsHtml) {
+                        insightsContainer.innerHTML = insightsHtml;
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load dashboard widgets:', err);
             }
         });
     </script>

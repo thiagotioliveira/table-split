@@ -3,6 +3,12 @@ cloudinary:
 app:
   register:
     enabled: false
+  dashboard:
+    executor:
+      core-pool-size: 6
+      max-pool-size: 12
+      queue-capacity: 30
+      thread-name-prefix: dashboard-prod-pool-
 telegram:
   bot:
     base-url: https://www.tablesplit.app/

@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class ItemRepositoryAdapter implements ItemRepository {
 
   private final ItemJpaRepository itemJpaRepository;
@@ -119,6 +121,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
+  @Transactional
   public Item save(Item item) {
     Item savedItem = mapper.toDomain(this.itemJpaRepository.save(mapper.toEntity(item)));
 
@@ -136,6 +139,7 @@ public class ItemRepositoryAdapter implements ItemRepository {
   }
 
   @Override
+  @Transactional
   public void delete(UUID itemId) {
     var item = findByIdIncludingDeleted(itemId).orElseThrow();
     item.delete();

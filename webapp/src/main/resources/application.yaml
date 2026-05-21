@@ -109,6 +109,12 @@ app:
     public-key:
     private-key:
     subject: mailto:info@tablesplit.app
+  dashboard:
+    executor:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 10
+      thread-name-prefix: dashboard-pool-
 
 logging:
   level:

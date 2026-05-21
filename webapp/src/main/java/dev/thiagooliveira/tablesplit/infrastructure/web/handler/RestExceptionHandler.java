@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(annotations = RestController.class)
 public class RestExceptionHandler {
 
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(RestExceptionHandler.class);
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiErrorResponse> handleValidationException(
       MethodArgumentNotValidException ex) {
@@ -84,6 +87,7 @@ public class RestExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
+    log.error("Unhandled exception in API request: ", ex);
     ApiErrorResponse errorResponse =
         new ApiErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),

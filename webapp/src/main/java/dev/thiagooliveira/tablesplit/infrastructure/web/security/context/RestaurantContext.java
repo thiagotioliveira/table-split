@@ -11,6 +11,7 @@ public class RestaurantContext {
   private final UUID id;
   private String name;
   private String slug;
+  private String address;
   private Currency currency;
   private int serviceFee;
   private List<Language> customerLanguages;
@@ -21,6 +22,7 @@ public class RestaurantContext {
     this.id = restaurant.getId();
     this.name = restaurant.getName();
     this.slug = restaurant.getSlug();
+    this.address = restaurant.getAddress();
     this.currency = restaurant.getCurrency();
     this.serviceFee = restaurant.getServiceFee();
     this.customerLanguages = restaurant.getCustomerLanguages();
@@ -86,5 +88,13 @@ public class RestaurantContext {
 
   public void setTheme(ThemeContext theme) {
     this.theme = theme;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
   }
 }

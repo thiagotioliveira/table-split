@@ -29,6 +29,8 @@ public class ManagerContextModel {
         new RestaurantContextModel(
             restaurant.getId(),
             restaurant.getName(),
+            restaurant.getSlug(),
+            restaurant.getAddress(),
             restaurant.getCurrency(),
             restaurant.getCustomerLanguages().stream()
                 .map(
@@ -112,6 +114,8 @@ public class ManagerContextModel {
   public static class RestaurantContextModel {
     private final UUID id;
     private final String name;
+    private final String slug;
+    private final String address;
     private final Currency currency;
     private final List<Language> customerLanguages;
     private final ThemeContext theme;
@@ -119,11 +123,15 @@ public class ManagerContextModel {
     public RestaurantContextModel(
         UUID id,
         String name,
+        String slug,
+        String address,
         Currency currency,
         List<Language> customerLanguages,
         ThemeContext theme) {
       this.id = id;
       this.name = name;
+      this.slug = slug;
+      this.address = address;
       this.currency = currency;
       this.customerLanguages = customerLanguages;
       this.theme = theme;
@@ -135,6 +143,14 @@ public class ManagerContextModel {
 
     public String getName() {
       return name;
+    }
+
+    public String getSlug() {
+      return slug;
+    }
+
+    public String getAddress() {
+      return address;
     }
 
     public Currency getCurrency() {

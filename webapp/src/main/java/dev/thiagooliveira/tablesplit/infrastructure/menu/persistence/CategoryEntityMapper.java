@@ -25,6 +25,8 @@ public interface CategoryEntityMapper {
 
   default Map<dev.thiagooliveira.tablesplit.domain.common.Language, String> mapName(
       CategoryEntity entity) {
-    return entity.getName() != null ? entity.getName().getTranslations() : new HashMap<>();
+    return entity.getName() != null
+        ? new HashMap<>(entity.getName().getTranslations())
+        : new HashMap<>();
   }
 }

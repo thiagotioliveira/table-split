@@ -26,14 +26,17 @@ public class ItemEntityMapper {
         .getCategory()
         .setName(
             entity.getCategory().getName() != null
-                ? entity.getCategory().getName().getTranslations()
+                ? new HashMap<>(entity.getCategory().getName().getTranslations())
                 : new HashMap<>());
     domain.getCategory().setRestaurantId(entity.getCategory().getRestaurantId());
     domain.getCategory().setOrder(entity.getCategory().getNumOrder());
-    domain.setName(entity.getName() != null ? entity.getName().getTranslations() : new HashMap<>());
+    domain.setName(
+        entity.getName() != null
+            ? new HashMap<>(entity.getName().getTranslations())
+            : new HashMap<>());
     domain.setDescription(
         entity.getDescription() != null
-            ? entity.getDescription().getTranslations()
+            ? new HashMap<>(entity.getDescription().getTranslations())
             : new HashMap<>());
     domain.setPrice(entity.getPrice());
     domain.setAvailable(entity.isActive());

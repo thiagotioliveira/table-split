@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: Manager Dashboard Widgets API
+  description: API for retrieving dynamic and concurrently-computed widgets in the TableSplit Manager dashboard.
+  version: 1.0.0
+servers:
+  - url: /api/v1/manager/dashboard
+    description: v1 API for Manager Dashboard module
+
+tags:
+  - name: Dashboard
+    description: Dashboard widget operations
+
+paths:
+  /widgets:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dynamic dashboard widgets
+      operationId: getDashboardWidgets
+      responses:
+        '200':
+          description: Successful dashboard widgets retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardWidgetsResponse'
+
+components:
+  schemas:
+    DashboardWidgetsResponse:
+      type: object
+      properties:
+        welcomeMessage:
+          type: string
+        welcomeHint:
+          type: string
+        restaurantCard:
+          $ref: '#/components/schemas/RestaurantCardResponse'
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardWidgetResponse'
+
+    RestaurantCardResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        logoUrl:
+          type: string
+        publicProfileUrl:
+          type: string
+        currencySymbol:
+          type: string
+
+    DashboardWidgetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [STAT, LIST, GROUPED_STATUS, GRID_STATUS, GALLERY, WEEKLY_REVENUE, QUICK_ACCESS]
+        title:
+          type: string
+        size:
+          type: string
+          enum: [SMALL, MEDIUM, LARGE]
+        icon:
+          type: string
+        order:
+          type: integer
+        statContent:
+          $ref: '#/components/schemas/StatWidgetContent'
+        listContent:
+          $ref: '#/components/schemas/ListWidgetContent'
+        groupedStatusContent:
+          $ref: '#/components/schemas/GroupedStatusWidgetContent'
+        gridStatusContent:
+          $ref: '#/components/schemas/GridStatusWidgetContent'
+        galleryContent:
+          $ref: '#/components/schemas/GalleryWidgetContent'
+        weeklyRevenueContent:
+          $ref: '#/components/schemas/WeeklyRevenueWidgetContent'
+        quickAccessContent:
+          $ref: '#/components/schemas/QuickAccessWidgetContent'
+
+    StatWidgetContent:
+      type: object
+      properties:
+        value:
+          type: string
+        change:
+          type: string
+        trend:
+          type: string
+          enum: [UP, DOWN, NEUTRAL]
+        comparisonLabel:
+          type: string
+        color:
+          type: string
+
+    ListWidgetContent:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListWidgetItem'
+
+    ListWidgetItem:
+      type: object
+      properties:
+        title:
+          type: string
+        badge:
+          type: string
+        meta:
+          type: string
+        value:
+          type: string
+        valueColor:
+          type: string
+        imageUrl:
+          type: string
+
+    GroupedStatusWidgetContent:
+      type: object
+      properties:
+        statusGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusGroupItem'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupedStatusItem'
+
+    StatusGroupItem:
+      type: object
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+        color:
+          type: string
+        bg:
+          type: string
+
+    GroupedStatusItem:
+      type: object
+      properties:
+        title:
+          type: string
+        meta:
+          type: string
+        value:
+          type: string
+        status:
+          type: string
+
+    GridStatusWidgetContent:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GridStatusItem'
+
+    GridStatusItem:
+      type: object
+      properties:
+        code:
+          type: string
+        status:
+          type: string
+          enum: [AVAILABLE, WAITING, OCCUPIED]
+
+    GalleryWidgetContent:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/GalleryImageItem'
+        totalCount:
+          type: integer
+        newThisWeekCount:
+          type: integer
+
+    GalleryImageItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        imageUrl:
+          type: string
+
+    WeeklyRevenueWidgetContent:
+      type: object
+      properties:
+        chartData:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeeklyRevenueChartPoint'
+        totalAmount:
+          type: string
+        change:
+          type: string
+        trend:
+          type: string
+          enum: [UP, DOWN, NEUTRAL]
+
+    WeeklyRevenueChartPoint:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+          format: double
+        highlight:
+          type: boolean
+
+    QuickAccessWidgetContent:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickAccessActionItem'
+
+    QuickAccessActionItem:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        href:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string

@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
 // Páginas para cache dinâmico
 // Páginas que são apenas "shells" e carregam dados via AJAX (Estratégia: Stale-While-Revalidate para load instantâneo)
 const AJAX_DRIVEN_PAGES = [
+  '/dashboard',
   '/feedbacks',
   '/reports',
   '/counter',
@@ -27,7 +28,6 @@ const AJAX_DRIVEN_PAGES = [
 
 // Páginas que dependem do modelo do servidor/Thymeleaf (Estratégia: Network First para garantir dados frescos)
 const SSR_PAGES = [
-  '/dashboard',
   '/menu',
   '/gallery',
   '/reservations',

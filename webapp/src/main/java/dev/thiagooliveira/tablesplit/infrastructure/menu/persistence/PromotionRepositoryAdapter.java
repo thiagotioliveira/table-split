@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 public class PromotionRepositoryAdapter implements PromotionRepository {
 
   private final PromotionJpaRepository repository;
@@ -21,6 +23,7 @@ public class PromotionRepositoryAdapter implements PromotionRepository {
   }
 
   @Override
+  @Transactional
   public Promotion save(Promotion promotion) {
     return mapper.toDomain(repository.save(mapper.toEntity(promotion)));
   }
@@ -43,6 +46,7 @@ public class PromotionRepositoryAdapter implements PromotionRepository {
   }
 
   @Override
+  @Transactional
   public void deleteById(UUID id) {
     repository.deleteById(id);
   }
