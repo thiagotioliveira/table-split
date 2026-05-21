@@ -177,8 +177,7 @@ public class FakeOrderService {
                 .getTickets()
                 .forEach(
                     t -> {
-                      t.getItems().forEach(item -> item.setStatus(TicketStatus.DELIVERED));
-                      t.recalculateStatus();
+                      order.moveTicket(t.getId(), TicketStatus.DELIVERED);
                     });
             orderRepository.save(order);
 
