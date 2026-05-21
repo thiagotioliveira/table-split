@@ -24,6 +24,9 @@ public abstract class TableApiMapper {
   @org.springframework.beans.factory.annotation.Autowired
   protected org.springframework.context.MessageSource messageSource;
 
+  @org.springframework.beans.factory.annotation.Autowired
+  protected dev.thiagooliveira.tablesplit.domain.order.TableRepository tableRepository;
+
   protected String resolveCustomerName(
       Order order, java.util.UUID customerId, String tableCod, Language userLanguage) {
 
@@ -66,9 +69,15 @@ public abstract class TableApiMapper {
     String tableLabel = messageSource.getMessage("customer.anonymous.table", null, "Mesa", locale);
     customerNames.put("null", tableLabel);
 
+    String tableCod = null;
+    if (order.getTableId() != null) {
+      tableCod = tableRepository.findById(order.getTableId()).map(Table::getCod).orElse(null);
+    }
+
     TableOrderHistoryResponse response = new TableOrderHistoryResponse();
     response.setId(order.getId().toString());
     response.setTableId(order.getTableId().toString());
+    response.setTableCod(tableCod);
     response.setServiceFee(order.getServiceFee());
     response.setStatus(order.getStatus().name());
     response.setOpenedAt(order.getOpenedAt().toOffsetDateTime());
@@ -76,6 +85,7 @@ public abstract class TableApiMapper {
       response.setClosedAt(order.getClosedAt().toOffsetDateTime());
     }
 
+    final String finalTableCod = tableCod;
     response.setItems(
         order.getTickets().stream()
             .flatMap(
@@ -87,7 +97,10 @@ public abstract class TableApiMapper {
                                     TicketItemModel.fromDomain(
                                         item,
                                         resolveCustomerName(
-                                            order, item.getCustomerId(), null, userLanguage),
+                                            order,
+                                            item.getCustomerId(),
+                                            finalTableCod,
+                                            userLanguage),
                                         t.getNote(),
                                         t.getCreatedAt(),
                                         userLanguage,

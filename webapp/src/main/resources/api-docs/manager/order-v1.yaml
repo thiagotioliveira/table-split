@@ -811,6 +811,8 @@ components:
           type: string
         tableId:
           type: string
+        tableCod:
+          type: string
         serviceFee:
           type: integer
         status:
