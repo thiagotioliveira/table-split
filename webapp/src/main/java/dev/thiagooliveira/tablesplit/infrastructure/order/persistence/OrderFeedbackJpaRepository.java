@@ -24,9 +24,17 @@ public interface OrderFeedbackJpaRepository
       java.time.ZonedDateTime since,
       org.springframework.data.domain.Pageable pageable);
 
+  @org.springframework.data.jpa.repository.Query(
+      "SELECT DISTINCT f FROM OrderFeedbackEntity f "
+          + "LEFT JOIN FETCH f.order o "
+          + "LEFT JOIN FETCH o.tickets t "
+          + "LEFT JOIN FETCH t.items i "
+          + "WHERE o.restaurantId = :restaurantId AND f.createdAt > :since "
+          + "ORDER BY f.createdAt DESC")
   java.util.List<OrderFeedbackEntity>
       findAllByOrder_RestaurantIdAndCreatedAtAfterOrderByCreatedAtDesc(
-          UUID restaurantId, java.time.ZonedDateTime since);
+          @org.springframework.data.repository.query.Param("restaurantId") UUID restaurantId,
+          @org.springframework.data.repository.query.Param("since") java.time.ZonedDateTime since);
 
   @org.springframework.data.jpa.repository.Query(
       "SELECT f.rating, COUNT(f) FROM OrderFeedbackEntity f WHERE f.order.restaurantId = :restaurantId AND f.createdAt > :since GROUP BY f.rating")
