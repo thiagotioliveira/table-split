@@ -27,4 +27,22 @@ public enum Language {
     }
     return EN;
   }
+
+  public static Locale toLocale(Language language) {
+    if (language == PT) {
+      return Locale.of("pt", "PT");
+    }
+    return Locale.ENGLISH;
+  }
+
+  public static Locale toLocale(String languageStr) {
+    if (languageStr == null) {
+      return Locale.ENGLISH;
+    }
+    try {
+      return toLocale(Language.valueOf(languageStr.toUpperCase()));
+    } catch (Exception e) {
+      return Locale.ENGLISH;
+    }
+  }
 }

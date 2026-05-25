@@ -116,6 +116,7 @@ public class SecurityConfig {
                       "/login",
                       "/forgot-password",
                       "/login-staff",
+                      "/login-staff/set-password",
                       "/register",
                       "/register/verify",
                       "/register/resend",

@@ -27,6 +27,7 @@ public class StaffModel {
 
   private boolean enabled = true;
 
+  @jakarta.validation.constraints.NotEmpty(message = "error.staff.modules.required")
   private Set<Module> modules = new HashSet<>();
 
   public StaffModel() {}

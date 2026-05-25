@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #faf8f5;
+      color: #1a1714;
+      margin: 0;
+      padding: 40px 0;
+    }
+    .card {
+      max-width: 540px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #c9a050; /* Gold */
+      text-align: center;
+      margin-bottom: 30px;
+      letter-spacing: -0.025em;
+    }
+    .welcome-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1714;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #525252;
+      margin-bottom: 20px;
+    }
+    .btn-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background-color: #c9a050;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: #b58d40;
+    }
+    .footer {
+      font-size: 12px;
+      color: #737373;
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid #e5e5e5;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">TableSplit</div>
+    <div class="welcome-title" th:text="#{mail.staff.welcome.title(${restaurantName})}">Bem-vindo ao TableSplit!</div>
+    <p>Olá, <strong th:text="${firstName}">Membro</strong>!</p>
+    <p th:text="#{mail.staff.welcome.body(${restaurantName})}">Você foi adicionado como membro da equipe no TableSplit. Para ativar a sua conta e definir a sua senha pessoal de acesso, por favor clique no botão abaixo:</p>
+    <div class="btn-container">
+      <a class="btn" th:href="${verifyUrl}" th:text="#{mail.staff.welcome.button}">Definir Minha Senha</a>
+    </div>
+    <p th:text="#{mail.staff.welcome.expiry}">Este link de ativação é válido por 24 horas.</p>
+    <div class="footer">
+      © 2026 TableSplit. Todos os direitos reservados.
+    </div>
+  </div>
+</body>
+</html>

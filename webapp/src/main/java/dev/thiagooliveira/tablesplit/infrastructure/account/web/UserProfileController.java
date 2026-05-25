@@ -75,16 +75,14 @@ public class UserProfileController {
     }
     this.transactionalContext.execute(
         () ->
-            this.updatePassword.execute(
-                context.getUser().getId(), userPasswordModel.toCommand(passwordEncoder)));
+            this.updatePassword.execute(context.getUser().getId(), userPasswordModel.toCommand()));
     redirectAttributes.addFlashAttribute(
         "alert", AlertModel.success("alert.user.password.updated"));
     return "redirect:/profile";
   }
 
-  @ExceptionHandler(InfrastructureException.class)
-  public String handleInfrastructureException(
-      InfrastructureException ex, RedirectAttributes redirectAttributes) {
+  @ExceptionHandler({InfrastructureException.class, IllegalArgumentException.class})
+  public String handleException(Exception ex, RedirectAttributes redirectAttributes) {
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.error(ex.getMessage()));
     return "redirect:/profile";

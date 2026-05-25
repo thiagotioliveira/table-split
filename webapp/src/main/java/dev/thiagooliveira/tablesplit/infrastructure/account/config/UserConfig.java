@@ -21,7 +21,9 @@ public class UserConfig {
   }
 
   @Bean
-  public UpdatePassword updatePassword(UserRepository userRepository) {
-    return new UpdatePassword(userRepository);
+  public UpdatePassword updatePassword(
+      UserRepository userRepository,
+      org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+    return new UpdatePassword(userRepository, passwordEncoder);
   }
 }

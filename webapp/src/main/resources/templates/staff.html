@@ -612,50 +612,26 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="userForm" method="post" onsubmit="saveUser(event)">
+        <form id="userForm" method="post" onsubmit="return saveUser(event)">
           <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" id="userId" name="id" value="">
           
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="firstName" th:text="#{page.staff.form.label.firstName}">Primeiro Nome *</label>
+              <label class="form-label" for="firstName"><span th:text="#{page.staff.form.label.firstName}">Primeiro Nome</span> <span class="required">*</span></label>
               <input type="text" id="firstName" name="firstName" class="form-input" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="lastName" th:text="#{page.staff.form.label.lastName}">Último Nome *</label>
+              <label class="form-label" for="lastName"><span th:text="#{page.staff.form.label.lastName}">Último Nome</span> <span class="required">*</span></label>
               <input type="text" id="lastName" name="lastName" class="form-input" required>
             </div>
           </div>
           
           <div class="form-group">
-            <label class="form-label" for="email" th:text="#{page.staff.form.label.email}">E-mail *</label>
+            <label class="form-label" for="email"><span th:text="#{page.staff.form.label.email}">E-mail</span> <span class="required">*</span></label>
             <input type="email" id="email" name="email" class="form-input" required>
           </div>
           
-          <!-- Reset Password Button (only for editing) -->
-          <div class="form-group" id="resetPasswordContainer" style="display: none; margin-bottom: 1.5rem;">
-            <button type="button" class="btn btn-outline btn-sm" onclick="showResetPassword()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-              <span th:text="#{page.staff.form.button.resetPassword}">Redefinir Senha do Usuário</span>
-            </button>
-          </div>
-
-          <!-- Password Section (only for new users or upon reset) -->
-          <div class="form-group" id="passwordSection">
-            <label class="form-label" th:text="#{page.staff.form.label.generatedPassword}">Senha Gerada</label>
-            <div class="password-display">
-              <span class="password-value" id="generatedPassword">********</span>
-              <input type="hidden" id="realPassword" name="password">
-              <button type="button" class="password-copy-btn" onclick="copyPassword()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                <span id="copyBtnText" th:text="#{page.staff.form.button.copy}">Copiar</span>
-              </button>
-            </div>
-            <div class="password-warning">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-              <span th:text="#{page.staff.form.password.warning}">Copie e salve esta senha em local seguro. Ela não poderá ser visualizada novamente após fechar este modal.</span>
-            </div>
-          </div>
           <!-- Status Switch -->
           <div class="form-group">
             <div class="form-switch">
@@ -670,7 +646,7 @@
           
           <!-- Modules -->
           <div class="form-group">
-            <label class="modules-label" th:text="#{page.staff.form.label.modules}">Módulos de Acesso</label>
+            <label class="form-label"><span th:text="#{page.staff.form.label.modules}">Módulos de Acesso</span> <span class="required">*</span></label>
             <div class="modules-grid" id="modulesGrid">
               <label th:each="m : ${availableModules}" class="module-checkbox" th:data-module="${m.name()}">
                 <input type="checkbox" name="modules" th:value="${m.name()}">
@@ -817,26 +793,6 @@
     }
 
     // ============================================
-    // Password Generator
-    // ============================================
-    function generatePassword(length = 12) {
-      const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-      const lowercase = 'abcdefghjkmnpqrstuvwxyz';
-      const numbers = '23456789';
-      const special = '@#$%&*!?';
-      const allChars = uppercase + lowercase + numbers + special;
-      let password = '';
-      password += uppercase[Math.floor(Math.random() * uppercase.length)];
-      password += lowercase[Math.floor(Math.random() * lowercase.length)];
-      password += numbers[Math.floor(Math.random() * numbers.length)];
-      password += special[Math.floor(Math.random() * special.length)];
-      for (let i = password.length; i < length; i++) {
-        password += allChars[Math.floor(Math.random() * allChars.length)];
-      }
-      return password.split('').sort(() => Math.random() - 0.5).join('');
-    }
-
-    // ============================================
     // Modal Functions
     // ============================================
     function openAddModal() {
@@ -847,11 +803,6 @@
       document.getElementById('lastName').value = '';
       document.getElementById('email').value = '';
       
-      currentPassword = generatePassword();
-      document.getElementById('generatedPassword').textContent = currentPassword;
-      document.getElementById('realPassword').value = currentPassword;
-      document.getElementById('passwordSection').style.display = 'block';
-      
       document.querySelectorAll('.module-checkbox input').forEach(cb => {
         cb.checked = false;
         updateModuleCheckboxStyle(cb);
@@ -860,19 +811,8 @@
       document.getElementById('userEnabledSwitch').classList.add('active');
       document.getElementById('userEnabledInput').value = 'true';
       document.getElementById('statusHint').textContent = i18n.statusHintActive;
-
-      document.getElementById('resetPasswordContainer').style.display = 'none';
-      document.getElementById('passwordSection').style.display = 'block';
       
       document.getElementById('userModal').classList.add('active');
-    }
-
-    function showResetPassword() {
-      currentPassword = generatePassword();
-      document.getElementById('generatedPassword').textContent = currentPassword;
-      document.getElementById('realPassword').value = currentPassword;
-      document.getElementById('passwordSection').style.display = 'block';
-      document.getElementById('resetPasswordContainer').style.display = 'none';
     }
 
     function toggleEnabledSwitch(el) {
@@ -895,10 +835,6 @@
       document.getElementById('firstName').value = user.firstName;
       document.getElementById('lastName').value = user.lastName;
       document.getElementById('email').value = user.email;
-      
-      document.getElementById('resetPasswordContainer').style.display = 'block';
-      document.getElementById('passwordSection').style.display = 'none';
-      document.getElementById('realPassword').value = '';
       
       document.querySelectorAll('.module-checkbox input').forEach(cb => {
         cb.checked = user.modules.includes(cb.value);
@@ -938,22 +874,19 @@
     }
 
     function saveUser(event) {
-        // Form will submit naturally to the action set in openAddModal/openEditModal
+      const checkedModules = document.querySelectorAll('.module-checkbox input:checked');
+      if (checkedModules.length === 0) {
+        event.preventDefault();
+        alert("Por favor, selecione pelo menos um módulo de acesso.");
+        return false;
+      }
+      return true;
     }
 
     function confirmDelete() {
       if (deleteUserId) {
         document.getElementById('deleteForm').submit();
       }
-    }
-
-    function copyPassword() {
-      const pwd = document.getElementById('generatedPassword').textContent;
-      navigator.clipboard.writeText(pwd).then(() => {
-          const btnText = document.getElementById('copyBtnText');
-          btnText.textContent = i18n.copied;
-          setTimeout(() => btnText.textContent = i18n.copy, 2000);
-      });
     }
 
     function filterStaff() {

@@ -2,14 +2,21 @@ package dev.thiagooliveira.tablesplit.infrastructure.account.web;
 
 import dev.thiagooliveira.tablesplit.application.account.*;
 import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyRegisteredException;
+import dev.thiagooliveira.tablesplit.domain.account.PendingStaffPassword;
+import dev.thiagooliveira.tablesplit.domain.account.PendingStaffPasswordRepository;
+import dev.thiagooliveira.tablesplit.infrastructure.account.event.PendingStaffPasswordCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.account.web.model.StaffModel;
+import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerController;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
@@ -27,6 +34,8 @@ public class StaffController {
   private final DeleteStaff deleteStaff;
   private final PasswordEncoder passwordEncoder;
   private final TransactionalContext transactionalContext;
+  private final PendingStaffPasswordRepository pendingStaffPasswordRepository;
+  private final ApplicationEventPublisher eventPublisher;
 
   public StaffController(
       GetStaff getStaff,
@@ -34,13 +43,17 @@ public class StaffController {
       UpdateStaff updateStaff,
       DeleteStaff deleteStaff,
       PasswordEncoder passwordEncoder,
-      TransactionalContext transactionalContext) {
+      TransactionalContext transactionalContext,
+      PendingStaffPasswordRepository pendingStaffPasswordRepository,
+      ApplicationEventPublisher eventPublisher) {
     this.getStaff = getStaff;
     this.createStaff = createStaff;
     this.updateStaff = updateStaff;
     this.deleteStaff = deleteStaff;
     this.passwordEncoder = passwordEncoder;
     this.transactionalContext = transactionalContext;
+    this.pendingStaffPasswordRepository = pendingStaffPasswordRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @GetMapping
@@ -65,19 +78,49 @@ public class StaffController {
       @Valid @ModelAttribute("form") StaffModel form,
       BindingResult bindingResult,
       Model model,
+      HttpServletRequest request,
       RedirectAttributes redirectAttributes) {
 
     if (bindingResult.hasErrors()) {
       return list(context, model);
     }
 
+    form.setPassword(UUID.randomUUID().toString());
+
     this.transactionalContext.execute(
-        () ->
-            this.createStaff.execute(
-                form.toCreateCommand(
-                    context.getRestaurant().getId(),
-                    context.getRestaurant().getDefaultLanguage(),
-                    passwordEncoder)));
+        () -> {
+          var staff =
+              this.createStaff.execute(
+                  form.toCreateCommand(
+                      context.getRestaurant().getId(),
+                      context.getRestaurant().getDefaultLanguage(),
+                      passwordEncoder));
+
+          // Generate activation token in tenant schema
+          UUID token = UUID.randomUUID();
+          LocalDateTime expiresAt = Time.nowLocalDateTime().plusHours(24);
+          PendingStaffPassword pending =
+              new PendingStaffPassword(token, staff.getEmail(), expiresAt);
+          pendingStaffPasswordRepository.save(pending);
+
+          // Publish welcome email event
+          String baseUrl =
+              request
+                  .getRequestURL()
+                  .toString()
+                  .replace(request.getRequestURI(), request.getContextPath());
+
+          eventPublisher.publishEvent(
+              new PendingStaffPasswordCreatedEvent(
+                  token,
+                  staff.getEmail(),
+                  staff.getFirstName(),
+                  context.getRestaurant().getName(),
+                  context.getRestaurant().getSlug(),
+                  context.getRestaurant().getDefaultLanguage().name(),
+                  baseUrl));
+          return null;
+        });
 
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("staff.create.success"));
     return "redirect:/staff";

@@ -52,8 +52,11 @@ public class User extends AggregateRoot {
     this.registerEvent(new UserUpdatedEvent(this.accountId, this));
   }
 
-  public void updatePassword(String password) {
-    this.password = password;
+  public void updatePassword(
+      String rawPassword,
+      org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+    PasswordValidator.validate(rawPassword);
+    this.password = passwordEncoder.encode(rawPassword);
     this.registerEvent(new PasswordUpdatedEvent(this.accountId, this.id));
   }
 

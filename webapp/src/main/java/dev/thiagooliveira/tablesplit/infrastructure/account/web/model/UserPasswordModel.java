@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.account.web.model;
 import dev.thiagooliveira.tablesplit.application.account.command.UpdatePasswordCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserPasswordModel {
   @NotBlank private String currentPassword;
@@ -14,8 +13,8 @@ public class UserPasswordModel {
 
   public UserPasswordModel() {}
 
-  public UpdatePasswordCommand toCommand(PasswordEncoder passwordEncoder) {
-    return new UpdatePasswordCommand(passwordEncoder.encode(this.newPassword));
+  public UpdatePasswordCommand toCommand() {
+    return new UpdatePasswordCommand(this.newPassword);
   }
 
   public String getCurrentPassword() {

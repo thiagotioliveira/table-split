@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.thiagooliveira.tablesplit.application.account.CreateAccount;
 import dev.thiagooliveira.tablesplit.application.account.exception.UserAlreadyRegisteredException;
-import dev.thiagooliveira.tablesplit.application.notification.EmailSender;
 import dev.thiagooliveira.tablesplit.application.restaurant.exception.SlugAlreadyExist;
 import dev.thiagooliveira.tablesplit.domain.account.PendingRegistration;
 import dev.thiagooliveira.tablesplit.domain.account.PendingRegistrationRepository;
@@ -16,13 +15,13 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.RestaurantTag;
 import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.CuisineType;
+import dev.thiagooliveira.tablesplit.infrastructure.web.login.event.PendingRegistrationCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.web.login.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.Locale;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +37,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.thymeleaf.TemplateEngine;
 
 @Controller
 @RequestMapping("/register")
@@ -52,12 +50,10 @@ public class RegisterController {
   private final TransactionalContext transactionalContext;
   private final CreateAccount createAccount;
   private final PendingRegistrationRepository pendingRegistrationRepository;
-  private final EmailSender emailSender;
-  private final TemplateEngine templateEngine;
   private final UserRepository userRepository;
   private final ObjectMapper objectMapper;
-  private final MessageSource messageSource;
   private final TextEncryptor textEncryptor;
+  private final ApplicationEventPublisher eventPublisher;
   private final boolean registerEnabled;
 
   @Value("${app.version}")
@@ -69,11 +65,9 @@ public class RegisterController {
       TransactionalContext transactionalContext,
       CreateAccount createAccount,
       PendingRegistrationRepository pendingRegistrationRepository,
-      EmailSender emailSender,
-      TemplateEngine templateEngine,
       UserRepository userRepository,
       ObjectMapper objectMapper,
-      MessageSource messageSource,
+      ApplicationEventPublisher eventPublisher,
       @Value("${app.crypto.secret}") String cryptoSecret,
       @Value("${app.crypto.salt}") String cryptoSalt,
       @Value("${app.register.enabled}") boolean registerEnabled) {
@@ -82,11 +76,9 @@ public class RegisterController {
     this.transactionalContext = transactionalContext;
     this.createAccount = createAccount;
     this.pendingRegistrationRepository = pendingRegistrationRepository;
-    this.emailSender = emailSender;
-    this.templateEngine = templateEngine;
     this.userRepository = userRepository;
     this.objectMapper = objectMapper;
-    this.messageSource = messageSource;
+    this.eventPublisher = eventPublisher;
     this.textEncryptor = Encryptors.text(cryptoSecret, cryptoSalt);
     this.registerEnabled = registerEnabled;
   }
@@ -163,7 +155,7 @@ public class RegisterController {
 
     try {
       String code = generate6DigitCode();
-      java.time.LocalDateTime expiresAt = java.time.LocalDateTime.now().plusMinutes(15);
+      java.time.LocalDateTime expiresAt = Time.nowLocalDateTime().plusMinutes(15);
       String jsonData = objectMapper.writeValueAsString(form);
       String encryptedData = textEncryptor.encrypt(jsonData);
 
@@ -187,27 +179,14 @@ public class RegisterController {
               .getRequestURL()
               .toString()
               .replace(request.getRequestURI(), request.getContextPath());
-      String verifyUrl =
-          baseUrl
-              + "/register/verify?email="
-              + java.net.URLEncoder.encode(
-                  form.getUser().getEmail().trim().toLowerCase(),
-                  java.nio.charset.StandardCharsets.UTF_8);
 
-      java.util.Locale locale =
-          "EN".equalsIgnoreCase(form.getUser().getLanguage())
-              ? java.util.Locale.ENGLISH
-              : java.util.Locale.of("pt", "PT");
-      org.thymeleaf.context.Context context = new org.thymeleaf.context.Context(locale);
-      context.setVariable("firstName", form.getUser().getFirstName());
-      context.setVariable("code", code);
-      context.setVariable("verifyUrl", verifyUrl);
-      String htmlContent = templateEngine.process("mail/verification-email", context);
-
-      String emailSubject =
-          messageSource.getMessage(
-              "mail.verification.subject", null, "Verify your email - TableSplit", locale);
-      this.emailSender.sendHtmlEmail(form.getUser().getEmail(), emailSubject, htmlContent);
+      eventPublisher.publishEvent(
+          new PendingRegistrationCreatedEvent(
+              form.getUser().getEmail().trim().toLowerCase(),
+              code,
+              form.getUser().getFirstName(),
+              form.getUser().getLanguage(),
+              baseUrl));
 
       redirectAttributes.addAttribute("email", form.getUser().getEmail());
       return "redirect:/register/verify";
@@ -304,23 +283,14 @@ public class RegisterController {
                 .getRequestURL()
                 .toString()
                 .replace(request.getRequestURI(), request.getContextPath());
-        String verifyUrl =
-            baseUrl
-                + "/register/verify?email="
-                + java.net.URLEncoder.encode(
-                    email.trim().toLowerCase(), java.nio.charset.StandardCharsets.UTF_8);
 
-        java.util.Locale locale = Locale.forLanguageTag(pending.getLanguage());
-        org.thymeleaf.context.Context context = new org.thymeleaf.context.Context(locale);
-        context.setVariable("firstName", form.getUser().getFirstName());
-        context.setVariable("code", pending.getCode());
-        context.setVariable("verifyUrl", verifyUrl);
-        String htmlContent = templateEngine.process("mail/verification-email", context);
-
-        String emailSubject =
-            messageSource.getMessage(
-                "mail.verification.subject", null, "Verify your email - TableSplit", locale);
-        this.emailSender.sendHtmlEmail(email, emailSubject, htmlContent);
+        eventPublisher.publishEvent(
+            new PendingRegistrationCreatedEvent(
+                email.trim().toLowerCase(),
+                pending.getCode(),
+                form.getUser().getFirstName(),
+                pending.getLanguage(),
+                baseUrl));
 
         redirectAttributes.addFlashAttribute(
             "alert", AlertModel.success("alert.register.code.resent"));

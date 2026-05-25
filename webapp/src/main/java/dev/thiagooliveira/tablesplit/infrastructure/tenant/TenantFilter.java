@@ -36,6 +36,7 @@ public class TenantFilter extends OncePerRequestFilter {
         setTenantContext(restaurantId);
       } else {
         // Handling public routes like /@{slug} or /api/v1/customer/{slug}
+        // Also handles staff login routes that pass slug as a query parameter
         String path = request.getRequestURI();
         if (path != null) {
           String slug = null;
@@ -43,9 +44,11 @@ public class TenantFilter extends OncePerRequestFilter {
             slug = path.substring(2).split("/")[0];
           } else if (path.startsWith("/api/v1/customer/")) {
             slug = path.substring(17).split("/")[0];
+          } else if (path.equals("/login-staff/set-password") || path.equals("/login-staff")) {
+            slug = request.getParameter("slug");
           }
 
-          if (slug != null) {
+          if (slug != null && !slug.isBlank()) {
             getRestaurant.execute(slug).ifPresent(r -> setTenantContext(r.getId()));
           }
         }
