@@ -88,6 +88,14 @@ app:
           - "Comida sem sabor e ambiente barulhento."
   register:
     enabled: true
+  crypto:
+    secret: ${CRYPTO_SECRET:mySecretKey}
+    salt: ${CRYPTO_SALT:deadbeef12345678}
+  mail:
+    resend:
+      api-key: ${RESEND_API_KEY:}
+      from: ${RESEND_MAIL_FROM:noreply@tablesplit.app}
+
   integration:
     rabbit:
       enabled: false
@@ -129,7 +137,7 @@ logging:
       springframework:
         transaction: OFF
         web.servlet: ERROR
-    dev.thiagooliveira: INFO
+    dev.thiagooliveira: DEBUG
     liquibase: OFF
 
 management:

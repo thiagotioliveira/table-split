@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-language-to-pending-registrations
+      author: thiago.oliveira
+      changes:
+        - addColumn:
+            tableName: pending_registrations
+            columns:
+              - column:
+                  name: language
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'PT'

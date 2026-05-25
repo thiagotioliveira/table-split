@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{page.verify.title}">Verificar E-mail - TableSplit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/register.css(v=${appVersion})}">
+  <style>
+    .code-input-container {
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .code-input {
+      font-size: 2.25rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5rem !important;
+      text-align: center !important;
+      text-transform: uppercase;
+      max-width: 260px;
+      margin: 0 auto;
+      padding: 0.5rem 1rem !important;
+      background: var(--background) !important;
+      border: 2px solid var(--border) !important;
+      border-radius: var(--radius);
+      font-family: monospace !important;
+    }
+    .code-input:focus {
+      border-color: var(--primary) !important;
+      background: white !important;
+      box-shadow: 0 0 0 4px rgba(201, 160, 80, 0.15) !important;
+    }
+    .resend-container {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+    .resend-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .resend-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="auth-header">
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+        </svg>
+      </div>
+      <span class="logo-text" th:text="#{app.name}">TableSplit</span>
+    </a>
+  </header>
+
+  <!-- Main -->
+  <main class="auth-main">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <h1 th:text="#{page.verify.header}">Verifique o seu e-mail</h1>
+          <p><span th:text="#{page.verify.sent.info}">Enviamos um código de verificação de 6 dígitos para o e-mail:</span> <br><strong style="color: var(--foreground);" th:text="${email}">usuario@email.com</strong></p>
+        </div>
+
+        <div class="auth-card-body">
+          <div th:replace="~{components/alert :: alert}"></div>
+
+          <form th:action="@{/register/verify}" method="post">
+            <input type="hidden" name="email" th:value="${email}">
+            
+            <div class="form-group code-input-container">
+              <label for="code" style="margin-bottom: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--muted-foreground);" th:text="#{page.verify.input.label}">Digite o código de 6 dígitos</label>
+              <input type="text" id="code" class="form-input code-input" name="code" placeholder="------" maxlength="6" autocomplete="one-time-code" required autofocus oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <span class="btn-content">
+                <span th:text="#{page.verify.button}">Verificar e Criar Conta</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              </span>
+            </button>
+          </form>
+          
+          <div class="resend-container">
+            <span th:text="#{page.verify.resend.prompt}">Não recebeu o e-mail?</span> 
+            <a th:href="@{/register/resend(email=${email})}" class="resend-link" th:text="#{page.verify.resend.link}">Reenviar Código</a>
+          </div>
+        </div>
+
+        <div class="auth-card-footer">
+          <p><a href="/register" th:text="#{page.verify.back}">Voltar para o Cadastro</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="auth-footer">
+    <p th:text="#{app.footer}">&copy; 2026 TableSplit. All rights reserved.</p>
+  </footer>
+</body>
+</html>

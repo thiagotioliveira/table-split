@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import dev.thiagooliveira.tablesplit.domain.account.PendingRegistrationRepository;
 import dev.thiagooliveira.tablesplit.domain.account.UserRepository;
 import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class RegisterControllerIT extends H2IT {
   @Autowired private UserRepository userRepository;
+  @Autowired private PendingRegistrationRepository pendingRegistrationRepository;
 
   @Test
   void shouldReturnRegisterView_whenGettingRegister() throws Exception {
@@ -31,13 +33,16 @@ class RegisterControllerIT extends H2IT {
 
   @Test
   void shouldRegisterUserAndRedirect_whenValidData() throws Exception {
+    String email = "standalone@example.com";
+
+    // 1. Submit Registration Form
     mockMvc
         .perform(
             post("/register")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("user.firstName", "Standalone")
                 .param("user.lastName", "User")
-                .param("user.email", "standalone@example.com")
+                .param("user.email", email)
                 .param("user.phone", "111111111")
                 .param("user.password", "password123")
                 .param("user.language", Language.PT.name())
@@ -55,9 +60,27 @@ class RegisterControllerIT extends H2IT {
                 .param("restaurant.numberOfTables", "10")
                 .param("plan", "PROFESSIONAL"))
         .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/register/verify?email=standalone%40example.com"));
+
+    // 2. Assert User is NOT yet created, but Pending Registration is stored
+    Assertions.assertFalse(userRepository.findByEmail(email).isPresent());
+    var pendingOpt = pendingRegistrationRepository.findByEmail(email);
+    Assertions.assertTrue(pendingOpt.isPresent());
+
+    // 3. Submit correct Code to Verify Page
+    String code = pendingOpt.get().getCode();
+    mockMvc
+        .perform(
+            post("/register/verify")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("email", email)
+                .param("code", code))
+        .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/dashboard"));
 
-    Assertions.assertTrue(userRepository.findByEmail("standalone@example.com").isPresent());
+    // 4. Assert User IS now created in DB
+    Assertions.assertTrue(userRepository.findByEmail(email).isPresent());
+    Assertions.assertFalse(pendingRegistrationRepository.findByEmail(email).isPresent());
   }
 
   @Test
@@ -65,7 +88,7 @@ class RegisterControllerIT extends H2IT {
     String email = "exists@example.com";
     String slug = "exists-restaurant";
 
-    // First registration
+    // 1. First registration submission
     mockMvc
         .perform(
             post("/register")
@@ -90,7 +113,18 @@ class RegisterControllerIT extends H2IT {
                 .param("plan", "PROFESSIONAL"))
         .andExpect(status().is3xxRedirection());
 
-    // Second registration with same email
+    // Verify first registration to write the user in the database
+    var pendingOpt = pendingRegistrationRepository.findByEmail(email);
+    Assertions.assertTrue(pendingOpt.isPresent());
+    mockMvc
+        .perform(
+            post("/register/verify")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("email", email)
+                .param("code", pendingOpt.get().getCode()))
+        .andExpect(status().is3xxRedirection());
+
+    // 2. Second registration submission with same email
     mockMvc
         .perform(
             post("/register")
@@ -112,9 +146,9 @@ class RegisterControllerIT extends H2IT {
                 .param("restaurant.cuisineType", CuisineType.BRAZILIAN.name())
                 .param("restaurant.averagePrice", AveragePrice.PRICE_20_50.name())
                 .param("restaurant.numberOfTables", "1"))
-        .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/register"))
-        .andExpect(flash().attributeExists("alert"));
+        .andExpect(status().isOk())
+        .andExpect(view().name("register"))
+        .andExpect(model().attributeExists("alert"));
   }
 
   @Test
