@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.domain.restaurant.BusinessHours;
+import dev.thiagooliveira.tablesplit.domain.restaurant.Period;
 import dev.thiagooliveira.tablesplit.infrastructure.PostgresIT;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryJpaRepository;
@@ -20,6 +22,9 @@ import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.Resta
 import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +64,16 @@ class FakeOrderApiControllerIT extends PostgresIT {
       // Ensure restaurant is open and has a default language
       RestaurantEntity restaurant = restaurantJpaRepository.findById(restaurantId).orElseThrow();
       restaurant.setDefaultLanguage(Language.PT);
+
+      // Seed 24/7 business hours to make the test time-independent
+      List<BusinessHours> businessHoursList = new ArrayList<>();
+      for (DayOfWeek day : DayOfWeek.values()) {
+        businessHoursList.add(
+            new BusinessHours(
+                day.name().toLowerCase(), false, List.of(new Period("00:00", "23:59"))));
+      }
+      restaurant.setDays(businessHoursList);
+
       restaurantJpaRepository.save(restaurant);
 
       // Create a table

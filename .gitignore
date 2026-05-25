@@ -93,3 +93,4 @@ nb-configuration.xml
 .gemini
 .ai
 webapp/src/main/resources/static/js/api/
+webapp/.env
