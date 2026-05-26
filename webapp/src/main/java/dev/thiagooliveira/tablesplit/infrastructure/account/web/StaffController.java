@@ -5,7 +5,7 @@ import dev.thiagooliveira.tablesplit.application.account.exception.StaffAlreadyR
 import dev.thiagooliveira.tablesplit.domain.account.PendingStaffPassword;
 import dev.thiagooliveira.tablesplit.domain.account.PendingStaffPasswordRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.account.event.PendingStaffPasswordCreatedEvent;
-import dev.thiagooliveira.tablesplit.infrastructure.account.web.model.StaffModel;
+import dev.thiagooliveira.tablesplit.infrastructure.account.web.model.*;
 import dev.thiagooliveira.tablesplit.infrastructure.timezone.Time;
 import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
@@ -62,7 +62,7 @@ public class StaffController {
     model.addAttribute("staffs", staffs.stream().map(StaffModel::new).toList());
     model.addAttribute("availableModules", Module.staffAvailableModules());
     if (!model.containsAttribute("form")) {
-      model.addAttribute("form", new StaffModel());
+      model.addAttribute("form", new CreateStaffModel());
     }
     return "staff";
   }
@@ -75,7 +75,7 @@ public class StaffController {
   @PostMapping("/new")
   public String create(
       @AuthenticationPrincipal AccountContext context,
-      @Valid @ModelAttribute("form") StaffModel form,
+      @Valid @ModelAttribute("form") CreateStaffModel form,
       BindingResult bindingResult,
       Model model,
       HttpServletRequest request,
@@ -141,7 +141,7 @@ public class StaffController {
   @PostMapping("/{id}/edit")
   public String edit(
       @PathVariable UUID id,
-      @Valid @ModelAttribute("form") StaffModel form,
+      @Valid @ModelAttribute("form") UpdateStaffModel form,
       BindingResult bindingResult,
       Model model,
       RedirectAttributes redirectAttributes,

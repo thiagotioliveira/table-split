@@ -801,7 +801,11 @@
       document.getElementById('userId').value = '';
       document.getElementById('firstName').value = '';
       document.getElementById('lastName').value = '';
-      document.getElementById('email').value = '';
+      
+      const emailInput = document.getElementById('email');
+      emailInput.value = '';
+      emailInput.readOnly = false;
+      emailInput.removeAttribute('disabled');
       
       document.querySelectorAll('.module-checkbox input').forEach(cb => {
         cb.checked = false;
@@ -834,7 +838,11 @@
       document.getElementById('userId').value = user.id;
       document.getElementById('firstName').value = user.firstName;
       document.getElementById('lastName').value = user.lastName;
-      document.getElementById('email').value = user.email;
+      
+      const emailInput = document.getElementById('email');
+      emailInput.value = user.email;
+      emailInput.readOnly = true;
+      emailInput.setAttribute('disabled', 'disabled');
       
       document.querySelectorAll('.module-checkbox input').forEach(cb => {
         cb.checked = user.modules.includes(cb.value);

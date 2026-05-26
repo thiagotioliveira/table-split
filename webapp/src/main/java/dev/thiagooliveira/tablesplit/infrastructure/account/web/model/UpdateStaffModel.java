@@ -1,29 +1,42 @@
 package dev.thiagooliveira.tablesplit.infrastructure.account.web.model;
 
+import dev.thiagooliveira.tablesplit.application.account.command.UpdateStaffCommand;
 import dev.thiagooliveira.tablesplit.domain.account.Module;
-import dev.thiagooliveira.tablesplit.domain.account.Staff;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class StaffModel {
+public class UpdateStaffModel {
   private String id;
-  private String firstName;
-  private String lastName;
-  private String email;
+
+  @NotBlank private String firstName;
+
+  @NotBlank private String lastName;
+
   private String phone;
+
+  private String password;
+
   private boolean enabled = true;
+
+  @NotEmpty(message = "error.staff.modules.required")
   private Set<Module> modules = new HashSet<>();
 
-  public StaffModel() {}
+  public UpdateStaffModel() {}
 
-  public StaffModel(Staff staff) {
-    this.id = staff.getId().toString();
-    this.firstName = staff.getFirstName();
-    this.lastName = staff.getLastName();
-    this.email = staff.getEmail();
-    this.phone = staff.getPhone();
-    this.enabled = staff.isEnabled();
-    this.modules = staff.getModules();
+  public UpdateStaffCommand toUpdateCommand(PasswordEncoder passwordEncoder) {
+    return new UpdateStaffCommand(
+        UUID.fromString(id),
+        firstName,
+        lastName,
+        null, // Email is intentionally null because it cannot be updated
+        phone,
+        (password != null && !password.isBlank()) ? passwordEncoder.encode(password) : null,
+        enabled,
+        modules);
   }
 
   // Getters and Setters
@@ -51,20 +64,20 @@ public class StaffModel {
     this.lastName = lastName;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
   public String getPhone() {
     return phone;
   }
 
   public void setPhone(String phone) {
     this.phone = phone;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public boolean isEnabled() {
