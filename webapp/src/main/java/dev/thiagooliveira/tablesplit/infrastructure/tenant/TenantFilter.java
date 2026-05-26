@@ -44,7 +44,9 @@ public class TenantFilter extends OncePerRequestFilter {
             slug = path.substring(2).split("/")[0];
           } else if (path.startsWith("/api/v1/customer/")) {
             slug = path.substring(17).split("/")[0];
-          } else if (path.equals("/login-staff/set-password") || path.equals("/login-staff")) {
+          } else if (path.equals("/login-staff/set-password")
+              || path.equals("/login-staff")
+              || path.equals("/forgot-staff-password")) {
             slug = request.getParameter("slug");
           }
 

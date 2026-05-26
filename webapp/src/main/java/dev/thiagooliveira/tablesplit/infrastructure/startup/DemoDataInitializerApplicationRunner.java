@@ -262,7 +262,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
       this.transactionalContext.execute(
           () -> {
             boolean exists =
-                this.staffRepository.findByEmail("jose@cantinabrasileira.demo").isPresent();
+                this.staffRepository.findByEmail("mail.thiagoti@gmail.com").isPresent();
             if (exists) {
               return null;
             }
@@ -272,7 +272,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                     restaurant.getId(),
                     "José",
                     "Garçom",
-                    "jose@cantinabrasileira.demo",
+                    "mail.thiagoti@gmail.com",
                     "+351 900 000 001",
                     passwordEncoder.encode("Test#123"),
                     Language.PT,

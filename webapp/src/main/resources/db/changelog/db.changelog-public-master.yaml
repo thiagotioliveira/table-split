@@ -233,4 +233,6 @@ databaseChangeLog:
       file: db/changelog/changesets/20260525-add-pending-registrations.yaml
   - include:
       file: db/changelog/changesets/20260525-add-language-to-pending-registrations.yaml
+  - include:
+      file: db/changelog/changesets/20260526-add-pending-user-password-resets.yaml
 

@@ -97,12 +97,12 @@
               <p class="form-error">A senha é obrigatória</p>
             </div>
 
-            <div class="form-options" th:if="${false}">
-              <label class="remember-me">
+            <div class="form-options">
+              <label class="remember-me"  th:if="${false}">
                 <input type="checkbox" id="remember">
                 <span>Lembrar de mim</span>
               </label>
-              <a href="/forgot-password" class="forgot-link">Esqueceu a senha?</a>
+              <a href="/forgot-password" class="forgot-link" th:text="#{page.login.forgot.password}">Esqueceu a senha?</a>
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn">
@@ -134,7 +134,7 @@
 
         <div class="auth-card-footer">
           <p><span th:text="#{page.login.label.without.account}">Don't have an account?</span> <a href="/register" th:text="#{page.login.label.register}">Sign up for free</a></p>
-          <p><span>Are you a staff?</span> <a href="/login-staff">Log in as Staff</a></p>
+          <p><span th:text="#{page.login.staff}">Are you a staff member?</span> <a href="/login-staff" th:text="#{page.login.staff.link}">Log in as Staff</a></p>
         </div>
       </div>
     </div>
