@@ -1,5 +1,6 @@
 package dev.thiagooliveira.tablesplit.infrastructure.account.event;
 
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.ThemeContext;
 import java.util.UUID;
 
 public record PendingStaffPasswordCreatedEvent(
@@ -9,4 +10,5 @@ public record PendingStaffPasswordCreatedEvent(
     String restaurantName,
     String restaurantSlug,
     String defaultLanguage,
-    String baseUrl) {}
+    String baseUrl,
+    ThemeContext theme) {}

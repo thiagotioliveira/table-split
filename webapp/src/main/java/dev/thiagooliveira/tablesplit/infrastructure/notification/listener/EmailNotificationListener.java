@@ -62,6 +62,7 @@ public class EmailNotificationListener {
     context.setVariable("firstName", event.firstName());
     context.setVariable("verifyUrl", activationUrl);
     context.setVariable("restaurantName", event.restaurantName());
+    context.setVariable("theme", event.theme());
 
     String htmlContent = templateEngine.process("mail/staff-welcome-email", context);
     String emailSubject =

@@ -118,7 +118,8 @@ public class StaffController {
                   context.getRestaurant().getName(),
                   context.getRestaurant().getSlug(),
                   context.getRestaurant().getDefaultLanguage().name(),
-                  baseUrl));
+                  baseUrl,
+                  context.getRestaurant().getTheme()));
           return null;
         });
 
