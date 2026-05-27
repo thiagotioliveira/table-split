@@ -1,5 +1,7 @@
 package dev.thiagooliveira.tablesplit.infrastructure.claudio.telegram;
 
+import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
+import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.ClaudioService;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.persistence.TelegramUserMappingEntity;
@@ -27,6 +29,8 @@ public class TelegramUpdateHandler {
   private final TelegramSender telegramSender;
   private final MessageSource messageSource;
   private final LanguageDetector languageDetector;
+  private final RestaurantRepository restaurantRepository;
+  private final AccountRepository accountRepository;
 
   private enum BotState {
     IDLE,
@@ -45,13 +49,17 @@ public class TelegramUpdateHandler {
       TelegramUserMappingJpaRepository mappingRepository,
       TelegramSender telegramSender,
       MessageSource messageSource,
-      LanguageDetector languageDetector) {
+      LanguageDetector languageDetector,
+      RestaurantRepository restaurantRepository,
+      AccountRepository accountRepository) {
     this.claudioService = claudioService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
     this.telegramSender = telegramSender;
     this.messageSource = messageSource;
     this.languageDetector = languageDetector;
+    this.restaurantRepository = restaurantRepository;
+    this.accountRepository = accountRepository;
   }
 
   public void onUpdateReceived(Update update) {
@@ -218,6 +226,25 @@ public class TelegramUpdateHandler {
     }
 
     if (user == null || user.restaurantId() == null) {
+      telegramSender.sendText(chatId, getMessage("telegram.error.no_restaurant", chatId));
+      return;
+    }
+
+    var restaurantOpt = restaurantRepository.findById(user.restaurantId());
+    if (restaurantOpt.isEmpty()) {
+      telegramSender.sendText(chatId, getMessage("telegram.error.no_restaurant", chatId));
+      return;
+    }
+
+    var accountOpt = accountRepository.findById(restaurantOpt.get().getAccountId());
+    if (accountOpt.isEmpty()) {
+      telegramSender.sendText(chatId, getMessage("telegram.error.no_restaurant", chatId));
+      return;
+    }
+
+    var account = accountOpt.get();
+    if (account.getEffectivePlan() != dev.thiagooliveira.tablesplit.domain.account.Plan.PROFESSIONAL
+        || !account.isActive()) {
       telegramSender.sendText(chatId, getMessage("telegram.error.no_restaurant", chatId));
       return;
     }
