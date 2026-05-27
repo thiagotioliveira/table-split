@@ -2,6 +2,8 @@ package dev.thiagooliveira.tablesplit.infrastructure.notification.listener;
 
 import dev.thiagooliveira.tablesplit.application.notification.EmailSender;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
+import dev.thiagooliveira.tablesplit.infrastructure.account.event.AccountCancelledEvent;
+import dev.thiagooliveira.tablesplit.infrastructure.account.event.PendingAccountCancellationCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.account.event.PendingStaffPasswordCreatedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.account.event.StaffPasswordResetRequestedEvent;
 import dev.thiagooliveira.tablesplit.infrastructure.account.event.UserPasswordResetRequestedEvent;
@@ -124,6 +126,42 @@ public class EmailNotificationListener {
             new Object[] {event.restaurantName()},
             "Reset your password - " + event.restaurantName(),
             locale);
+
+    emailSender.sendHtmlEmail(event.email(), emailSubject, htmlContent);
+  }
+
+  @EventListener
+  public void on(PendingAccountCancellationCreatedEvent event) {
+    String verifyUrl = event.baseUrl() + "/account";
+
+    Locale locale = Language.toLocale(event.language());
+
+    Context context = new Context(locale);
+    context.setVariable("firstName", event.firstName());
+    context.setVariable("code", event.code());
+    context.setVariable("verifyUrl", verifyUrl);
+    context.setVariable("restaurantName", event.restaurantName());
+
+    String htmlContent = templateEngine.process("mail/cancellation-email", context);
+    String emailSubject =
+        messageSource.getMessage(
+            "mail.cancellation.subject", null, "Account Cancellation - TableSplit", locale);
+
+    emailSender.sendHtmlEmail(event.email(), emailSubject, htmlContent);
+  }
+
+  @EventListener
+  public void on(AccountCancelledEvent event) {
+    Locale locale = Language.toLocale(event.language());
+
+    Context context = new Context(locale);
+    context.setVariable("firstName", event.firstName());
+    context.setVariable("restaurantName", event.restaurantName());
+
+    String htmlContent = templateEngine.process("mail/account-cancelled-email", context);
+    String emailSubject =
+        messageSource.getMessage(
+            "mail.cancelled.subject", null, "Account Deactivated - TableSplit", locale);
 
     emailSender.sendHtmlEmail(event.email(), emailSubject, htmlContent);
   }

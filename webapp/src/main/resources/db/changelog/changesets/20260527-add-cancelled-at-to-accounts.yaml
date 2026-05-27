@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-cancelled-at-to-accounts
+      author: antigravity
+      changes:
+        - addColumn:
+            tableName: accounts
+            columns:
+              - column:
+                  name: cancelled_at
+                  type: TIMESTAMP

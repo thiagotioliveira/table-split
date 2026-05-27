@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta</title>
+    <title th:text="#{page.account.header.title}">Minha Conta</title>
     <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
     <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
@@ -728,19 +728,19 @@
     <div class="dashboard-body">
         <div th:replace="~{components/alert :: alert}"></div>
         <!-- Payment Alert (conditional) -->
-        <div class="alert-banner warning" id="paymentAlert">
+        <div class="alert-banner warning" id="paymentAlert" th:if="${false}">
             <div class="alert-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
             </div>
             <div class="alert-content">
-                <p class="alert-title">Pagamento Pendente</p>
-                <p class="alert-text">Sua fatura de Janeiro/2024 no valor de R$ 149,90 está pendente. Regularize para evitar interrupção dos serviços.</p>
+                <p class="alert-title" th:text="#{page.account.alert.pending_payment}">Pagamento Pendente</p>
+                <p class="alert-text" th:text="#{page.account.alert.pending_payment.text}">Sua fatura de Janeiro/2024 no valor de R$ 149,90 está pendente. Regularize para evitar interrupção dos serviços.</p>
                 <div class="alert-actions">
                     <button class="btn btn-primary btn-sm" onclick="openPaymentModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                        Pagar Agora
+                        <span th:text="#{page.account.alert.pending_payment.pay_now}">Pagar Agora</span>
                     </button>
-                    <button class="btn btn-ghost btn-sm" onclick="dismissAlert()">Lembrar Depois</button>
+                    <button class="btn btn-ghost btn-sm" onclick="dismissAlert()" th:text="#{page.account.alert.pending_payment.later}">Lembrar Depois</button>
                 </div>
             </div>
         </div>
@@ -753,11 +753,11 @@
                     <div class="account-card-header">
                         <div class="account-card-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                            Plano Atual
+                            <span th:text="#{page.account.plan.title}">Plano Atual</span>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="openUpgradeModal()">
+                        <button class="btn btn-outline btn-sm" onclick="openUpgradeModal()" th:if="${false}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
-                            Upgrade
+                            <span th:text="#{page.account.plan.upgrade}">Upgrade</span>
                         </button>
                     </div>
                     <div class="account-card-body">
@@ -767,24 +767,24 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                                 </div>
                                 <div>
-                                    <div class="plan-name">Plano Profissional</div>
-                                    <div class="plan-price">R$ 149,90/mês</div>
+                                    <div class="plan-name" id="planNameText">Plano Profissional</div>
+                                    <div class="plan-price" th:if="${false}" th:text="#{page.account.plan.price_period('149,90')}">R$ 149,90/mês</div>
                                 </div>
                             </div>
-                            <div class="plan-renewal">
-                                <div class="renewal-label">Próxima renovação</div>
-                                <div class="renewal-date">15/02/2024</div>
+                            <div class="plan-renewal" th:if="${false}">
+                                <div class="renewal-label" th:text="#{page.account.plan.renewal.label}">Próxima renovação</div>
+                                <div class="renewal-date" th:text="#{page.account.plan.renewal.date}">15/02/2024</div>
                             </div>
                         </div>
 
                         <div class="quick-stats">
                             <div class="quick-stat">
-                                <div class="quick-stat-value">1.847</div>
-                                <div class="quick-stat-label">Pedidos este mês</div>
+                                <div class="quick-stat-value" id="statOrders">...</div>
+                                <div class="quick-stat-label" th:text="#{page.account.stats.orders}">Pedidos este mês</div>
                             </div>
                             <div class="quick-stat">
-                                <div class="quick-stat-value">5</div>
-                                <div class="quick-stat-label">Usuários ativos</div>
+                                <div class="quick-stat-value" id="statUsers">...</div>
+                                <div class="quick-stat-label" th:text="#{page.account.stats.users}">Usuários ativos</div>
                             </div>
                         </div>
                     </div>
@@ -795,52 +795,52 @@
                     <div class="account-card-header">
                         <div class="account-card-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            Informações da Conta
+                            <span th:text="#{page.account.info.title}">Informações da Conta</span>
                         </div>
                     </div>
                     <div class="account-card-body">
                         <div class="info-list">
                             <div class="info-item">
-                  <span class="info-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Nome da Conta
-                  </span>
-                                <span class="info-value">Cantina Bella Italia</span>
+                                <span class="info-label">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    <span th:text="#{page.account.info.name}">Nome da Conta</span>
+                                </span>
+                                <span class="info-value" id="infoName">...</span>
                             </div>
                             <div class="info-item">
-                  <span class="info-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                    E-mail Principal
-                  </span>
-                                <span class="info-value">contato@bellaitalia.com.br</span>
+                                <span class="info-label">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                    <span th:text="#{page.account.info.main_email}">E-mail Principal</span>
+                                </span>
+                                <span class="info-value" id="infoMainEmail">...</span>
                             </div>
                             <div class="info-item">
-                  <span class="info-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Data de Cadastro
-                  </span>
-                                <span class="info-value">15/03/2023</span>
+                                <span class="info-label">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <span th:text="#{page.account.info.created_at}">Data de Cadastro</span>
+                                </span>
+                                <span class="info-value" id="infoCreatedAt">...</span>
                             </div>
                             <div class="info-item">
-                  <span class="info-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    ID da Conta
-                  </span>
-                                <span class="info-value" style="font-family: monospace;">ACC-2023-0847</span>
+                                <span class="info-label">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    <span th:text="#{page.account.info.id}">ID da Conta</span>
+                                </span>
+                                <span class="info-value" id="infoId" style="font-family: monospace;">...</span>
                             </div>
                             <div class="info-item">
-                  <span class="info-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    Fuso Horário
-                  </span>
-                                <span class="info-value">America/Sao_Paulo (GMT-3)</span>
+                                <span class="info-label">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    <span th:text="#{page.account.info.timezone}">Fuso Horário</span>
+                                </span>
+                                <span class="info-value" id="infoTimezone">...</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Payment Method -->
-                <div class="account-card" style="margin-bottom: 1.5rem;">
+                <!-- Payment Method (Conditional) -->
+                <div class="account-card" style="margin-bottom: 1.5rem;" th:if="${false}">
                     <div class="account-card-header">
                         <div class="account-card-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -865,7 +865,7 @@
                 </div>
 
                 <!-- Payment History -->
-                <div class="account-card">
+                <div class="account-card" th:if="${false}">
                     <div class="account-card-header">
                         <div class="account-card-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -890,66 +890,15 @@
                                 <td>Plano Profissional - Janeiro/2024</td>
                                 <td>R$ 149,90</td>
                                 <td>
-                      <span class="payment-status pending">
-                        <span class="payment-status-dot"></span>
-                        Pendente
-                      </span>
+                                    <span class="payment-status pending">
+                                        <span class="payment-status-dot"></span>
+                                        Pendente
+                                    </span>
                                 </td>
                                 <td>
                                     <a href="#" class="invoice-link" onclick="openPaymentModal()">
                                         Pagar
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>15/12/2023</td>
-                                <td>Plano Profissional - Dezembro/2023</td>
-                                <td>R$ 149,90</td>
-                                <td>
-                      <span class="payment-status paid">
-                        <span class="payment-status-dot"></span>
-                        Pago
-                      </span>
-                                </td>
-                                <td>
-                                    <a href="#" class="invoice-link">
-                                        INV-2023-1247
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>15/11/2023</td>
-                                <td>Plano Profissional - Novembro/2023</td>
-                                <td>R$ 149,90</td>
-                                <td>
-                      <span class="payment-status paid">
-                        <span class="payment-status-dot"></span>
-                        Pago
-                      </span>
-                                </td>
-                                <td>
-                                    <a href="#" class="invoice-link">
-                                        INV-2023-1158
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>15/10/2023</td>
-                                <td>Plano Profissional - Outubro/2023</td>
-                                <td>R$ 149,90</td>
-                                <td>
-                      <span class="payment-status paid">
-                        <span class="payment-status-dot"></span>
-                        Pago
-                      </span>
-                                </td>
-                                <td>
-                                    <a href="#" class="invoice-link">
-                                        INV-2023-1062
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                                     </a>
                                 </td>
                             </tr>
@@ -962,7 +911,7 @@
             <!-- Sidebar Column -->
             <div>
                 <!-- Usage -->
-                <div class="sidebar-card">
+                <div class="sidebar-card" th:if="${false}">
                     <div class="sidebar-card-header">Uso do Plano</div>
                     <div class="sidebar-card-body">
                         <div class="usage-item">
@@ -974,29 +923,11 @@
                                 <div class="usage-bar-fill low" style="width: 37%;"></div>
                             </div>
                         </div>
-                        <div class="usage-item">
-                            <div class="usage-header">
-                                <span class="usage-label">Usuários</span>
-                                <span class="usage-value">5 / 10</span>
-                            </div>
-                            <div class="usage-bar">
-                                <div class="usage-bar-fill low" style="width: 50%;"></div>
-                            </div>
-                        </div>
-                        <div class="usage-item">
-                            <div class="usage-header">
-                                <span class="usage-label">Armazenamento</span>
-                                <span class="usage-value">2.3 GB / 5 GB</span>
-                            </div>
-                            <div class="usage-bar">
-                                <div class="usage-bar-fill medium" style="width: 46%;"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="sidebar-card">
+                <div class="sidebar-card" th:if="${false}">
                     <div class="sidebar-card-header">Ações Rápidas</div>
                     <div class="sidebar-card-body" style="padding: 0.5rem 1.25rem;">
                         <div class="action-list">
@@ -1005,43 +936,18 @@
                                 Fazer Upgrade
                                 <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                             </a>
-                            <a href="#" class="action-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                                Exportar Dados
-                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                            </a>
-                            <a href="#" class="action-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                                Alterar E-mail
-                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                            </a>
-                            <a href="#" class="action-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                                Dados Fiscais
-                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                            </a>
-                            <a href="#" class="action-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                                Central de Ajuda
-                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                            </a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Danger Zone -->
                 <div class="sidebar-card" style="border-color: rgba(239, 68, 68, 0.3);">
-                    <div class="sidebar-card-header" style="color: var(--destructive);">Zona de Perigo</div>
+                    <div class="sidebar-card-header" style="color: var(--destructive);" th:text="#{page.account.danger.zone}">Zona de Perigo</div>
                     <div class="sidebar-card-body" style="padding: 0.5rem 1.25rem;">
                         <div class="action-list">
-                            <a href="#" class="action-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                Pausar Assinatura
-                                <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                            </a>
-                            <a href="#" class="action-item danger">
+                            <a href="#" class="action-item danger" onclick="openCancelModal()">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                Cancelar Conta
+                                <span th:text="#{page.account.danger.cancel_button}">Cancelar Conta</span>
                                 <svg class="action-item-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                             </a>
                         </div>
@@ -1052,164 +958,49 @@
     </div>
 </main>
 
-<!-- Upgrade Modal -->
-<div id="upgradeModal" class="modal-overlay">
-    <div class="modal" style="max-width: 48rem;">
+<!-- Cancellation Request Modal -->
+<div id="cancelModal" class="modal-overlay">
+    <div class="modal" style="max-width: 28rem;">
         <div class="modal-header">
-            <h3>Escolha seu Plano</h3>
-            <button class="modal-close" onclick="closeUpgradeModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <h3 th:text="#{page.account.cancel.modal.title}">Cancelar Conta</h3>
+            <button class="modal-close" onclick="closeCancelModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
         <div class="modal-body">
-            <div class="plans-grid">
-                <!-- Starter -->
-                <div class="plan-card">
-                    <div class="plan-card-name">Starter</div>
-                    <div class="plan-card-price">
-                        <span class="price-currency">R$</span>
-                        <span class="price-value">79</span>
-                        <span class="price-period">/mês</span>
-                    </div>
-                    <div class="plan-features">
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            1.000 pedidos/mês
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            3 usuários
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            1 GB armazenamento
-                        </div>
-                        <div class="plan-feature disabled">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                            Relatórios avançados
-                        </div>
-                        <div class="plan-feature disabled">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                            Suporte prioritário
-                        </div>
-                    </div>
-                    <button class="btn btn-outline" style="width: 100%;">Fazer Downgrade</button>
-                </div>
-
-                <!-- Profissional (Current) -->
-                <div class="plan-card current">
-                    <span class="plan-badge current">Plano Atual</span>
-                    <div class="plan-card-name">Profissional</div>
-                    <div class="plan-card-price">
-                        <span class="price-currency">R$</span>
-                        <span class="price-value">149</span>
-                        <span class="price-period">/mês</span>
-                    </div>
-                    <div class="plan-features">
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            5.000 pedidos/mês
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            10 usuários
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            5 GB armazenamento
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            Relatórios avançados
-                        </div>
-                        <div class="plan-feature disabled">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                            Suporte prioritário
-                        </div>
-                    </div>
-                    <button class="btn btn-outline" style="width: 100%;" disabled>Plano Atual</button>
-                </div>
-
-                <!-- Enterprise -->
-                <div class="plan-card popular">
-                    <span class="plan-badge popular">Mais Popular</span>
-                    <div class="plan-card-name">Enterprise</div>
-                    <div class="plan-card-price">
-                        <span class="price-currency">R$</span>
-                        <span class="price-value">299</span>
-                        <span class="price-period">/mês</span>
-                    </div>
-                    <div class="plan-features">
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            Pedidos ilimitados
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            Usuários ilimitados
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            20 GB armazenamento
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            Relatórios avançados
-                        </div>
-                        <div class="plan-feature">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                            Suporte prioritário 24/7
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" style="width: 100%;">Fazer Upgrade</button>
-                </div>
-            </div>
+            <p th:text="#{page.account.cancel.modal.body}" style="color: var(--muted); font-size: 0.9375rem; line-height: 1.5; margin-bottom: 1rem;">Tem certeza que deseja cancelar sua conta?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeCancelModal()" th:text="#{page.account.cancel.modal.button.cancel}">Voltar</button>
+            <button type="button" class="btn btn-primary" style="background-color: var(--destructive); border-color: var(--destructive);" onclick="submitCancelRequest()" th:text="#{page.account.cancel.modal.button.confirm}">Confirmar</button>
         </div>
     </div>
 </div>
 
-<!-- Payment Modal -->
-<div id="paymentModal" class="modal-overlay">
+<!-- Cancellation Code Verification Modal -->
+<div id="cancelCodeModal" class="modal-overlay">
     <div class="modal" style="max-width: 28rem;">
         <div class="modal-header">
-            <h3>Pagar Fatura</h3>
-            <button class="modal-close" onclick="closePaymentModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <h3 th:text="#{page.account.cancel.modal.code.title}">Confirmar Cancelamento</h3>
+            <button class="modal-close" onclick="closeCancelCodeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
         <div class="modal-body">
-            <div style="text-align: center; padding: 1rem 0 1.5rem;">
-                <p style="color: var(--muted); margin-bottom: 0.5rem;">Valor a pagar</p>
-                <p style="font-size: 2rem; font-weight: 700; color: var(--primary);">R$ 149,90</p>
-                <p style="font-size: 0.875rem; color: var(--muted);">Plano Profissional - Janeiro/2024</p>
+            <p th:text="#{page.account.cancel.modal.code.body}" style="color: var(--muted); font-size: 0.9375rem; line-height: 1.5; margin-bottom: 1.25rem;">Digite o código de 6 dígitos enviado por e-mail:</p>
+            <div style="margin-bottom: 1.25rem;">
+                <label th:text="#{page.account.cancel.modal.code.label}" style="display: block; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--muted);">Código</label>
+                <input type="text" id="cancelCodeInput" maxlength="6" style="width: 100%; letter-spacing: 4px; font-family: monospace; font-size: 1.25rem; text-align: center; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);" placeholder="123456" />
             </div>
-
-            <div class="payment-method" style="margin-bottom: 1.5rem;">
-                <div class="card-icon">VISA</div>
-                <div class="card-info">
-                    <div class="card-number">•••• •••• •••• 4532</div>
-                    <div class="card-expiry">Expira em 08/2026</div>
-                </div>
-            </div>
-
-            <p style="font-size: 0.8125rem; color: var(--muted); text-align: center;">
-                Ao confirmar, você autoriza a cobrança no cartão cadastrado.
-            </p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-outline" onclick="closePaymentModal()">Cancelar</button>
-            <button type="button" class="btn btn-primary" onclick="processPayment()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                Confirmar Pagamento
-            </button>
+            <button type="button" class="btn btn-outline" onclick="closeCancelCodeModal()" th:text="#{page.account.cancel.modal.button.cancel}">Voltar</button>
+            <button type="button" class="btn btn-primary" style="background-color: var(--destructive); border-color: var(--destructive);" onclick="submitCancelConfirm()" th:text="#{page.account.cancel.modal.code.button.submit}">Confirmar Cancelamento</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ============================================
-    // Sidebar Functions
-    // ============================================
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('active');
@@ -1247,67 +1038,74 @@
         }
     }
 
-    function toggleUserMenu() {
-        document.getElementById('userMenuContainer').classList.toggle('open');
-    }
-
-    document.addEventListener('click', function(e) {
-        const container = document.getElementById('userMenuContainer');
-        if (container && !container.contains(e.target)) {
-            container.classList.remove('open');
-        }
-    });
-
-    // ============================================
-    // Modal Functions
-    // ============================================
-    function openUpgradeModal() {
-        document.getElementById('upgradeModal').classList.add('active');
-    }
-
-    function closeUpgradeModal() {
-        document.getElementById('upgradeModal').classList.remove('active');
-    }
-
-    function openPaymentModal() {
-        document.getElementById('paymentModal').classList.add('active');
-    }
-
-    function closePaymentModal() {
-        document.getElementById('paymentModal').classList.remove('active');
-    }
-
-    // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-            }
-        });
-    });
-
-    // ============================================
-    // Alert Functions
-    // ============================================
-    function dismissAlert() {
-        document.getElementById('paymentAlert').style.display = 'none';
-    }
-
-    // ============================================
-    // Payment Functions
-    // ============================================
-    function processPayment() {
-        // TODO: Integrate with payment provider
-        alert('Processando pagamento...');
-        closePaymentModal();
-        dismissAlert();
-    }
-
-    // ============================================
-    // Initialize
-    // ============================================
     document.addEventListener('DOMContentLoaded', function() {
         initSidebarState();
+    });
+</script>
+
+<script type="module" th:inline="javascript">
+    import { accountApi } from [[@{/js/api/v1/manager/api-account-bridge.js(v=${appVersion})}]];
+
+    async function loadAccountDetails() {
+        try {
+            const data = await accountApi.getAccountDetails();
+            document.getElementById('planNameText').innerText = data.plan === 'STARTER' ? 'Starter' : 'Plano Profissional';
+            document.getElementById('statOrders').innerText = data.ordersThisMonth;
+            document.getElementById('statUsers').innerText = data.activeUsers;
+            document.getElementById('infoName').innerText = data.name;
+            document.getElementById('infoMainEmail').innerText = data.mainEmail;
+            document.getElementById('infoCreatedAt').innerText = data.createdAt;
+            document.getElementById('infoId').innerText = data.id;
+            document.getElementById('infoTimezone').innerText = data.timezone;
+        } catch (error) {
+            console.error('Failed to load account details', error);
+        }
+    }
+
+    window.openCancelModal = function() {
+        document.getElementById('cancelModal').classList.add('active');
+    };
+
+    window.closeCancelModal = function() {
+        document.getElementById('cancelModal').classList.remove('active');
+    };
+
+    window.openCancelCodeModal = function() {
+        document.getElementById('cancelCodeModal').classList.add('active');
+    };
+
+    window.closeCancelCodeModal = function() {
+        document.getElementById('cancelCodeModal').classList.remove('active');
+    };
+
+    window.submitCancelRequest = async function() {
+        try {
+            await accountApi.requestAccountCancellation();
+            closeCancelModal();
+            openCancelCodeModal();
+        } catch (error) {
+            alert('Erro ao solicitar o cancelamento da conta.');
+            console.error(error);
+        }
+    };
+
+    window.submitCancelConfirm = async function() {
+        const code = document.getElementById('cancelCodeInput').value;
+        if (!code || code.trim().length !== 6) {
+            alert('Digite o código de 6 dígitos.');
+            return;
+        }
+        try {
+            await accountApi.confirmAccountCancellation({ code: code.trim() });
+            window.location.reload();
+        } catch (error) {
+            alert('Código incorreto ou expirado. Tente novamente.');
+            console.error(error);
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAccountDetails();
     });
 </script>
 </body>

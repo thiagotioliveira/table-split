@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{mail.cancelled.subject}">Account Deactivated - TableSplit</title>
+</head>
+<body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #faf8f5; color: #1a1714; margin: 0; padding: 0; -webkit-font-smoothing: antialiased;">
+
+  <div style="width: 100%; background-color: #faf8f5; padding: 40px 0;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(26,23,20,0.03); border: 1px solid #f0edf0;">
+
+      <h1 style="font-size: 22px; font-weight: 600; color: #4a4744; text-align: center; margin-bottom: 20px;"
+          th:text="#{mail.cancelled.header}">Account Deactivated</h1>
+
+      <p style="font-size: 15px; line-height: 1.6; color: #1a1714; margin-bottom: 25px; text-align: center;"
+          th:text="#{mail.cancelled.greeting(${firstName})}">Hello, User!</p>
+
+      <p style="font-size: 15px; line-height: 1.6; color: #4a4744; margin-bottom: 25px; text-align: justify;"
+         th:text="#{mail.cancelled.instruction(${restaurantName})}">Your account has been deactivated. You have a 1-month grace period before all data is permanently deleted. Contact our support team if you need any clarification.</p>
+
+      <div style="border-top: 1px solid #f0edf0; margin: 30px 0;"></div>
+
+      <div style="font-size: 12px; color: #8a8784; text-align: center; line-height: 1.5;">
+        <p th:text="#{mail.cancelled.footer}">© 2026 TableSplit. All rights reserved.</p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

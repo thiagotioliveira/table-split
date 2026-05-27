@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Manager Account Management API
+  description: API for retrieving account details and handling cancellation.
+  version: 1.0.0
+servers:
+  - url: /api/v1/account
+    description: v1 API for Manager Account
+
+tags:
+  - name: Account
+    description: Account operations
+
+paths:
+  /:
+    get:
+      tags:
+        - Account
+      summary: Get account details
+      operationId: getAccountDetails
+      responses:
+        '200':
+          description: Successful account details retrieval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDetailsResponse'
+
+  /cancel/request:
+    post:
+      tags:
+        - Account
+      summary: Request account cancellation and send email with code
+      operationId: requestAccountCancellation
+      responses:
+        '200':
+          description: Cancellation code successfully generated and sent
+
+  /cancel/confirm:
+    post:
+      tags:
+        - Account
+      summary: Confirm account cancellation with the 6-digit code
+      operationId: confirmAccountCancellation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmCancellationRequest'
+      responses:
+        '200':
+          description: Account successfully cancelled
+
+components:
+  schemas:
+    AccountDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        plan:
+          type: string
+        name:
+          type: string
+        mainEmail:
+          type: string
+        createdAt:
+          type: string
+        timezone:
+          type: string
+        ordersThisMonth:
+          type: integer
+        activeUsers:
+          type: integer
+
+    ConfirmCancellationRequest:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string

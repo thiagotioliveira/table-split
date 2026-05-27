@@ -52,4 +52,32 @@ public class AccountConfig {
   public GetAccount getAccount(AccountRepository accountRepository) {
     return new GetAccount(accountRepository);
   }
+
+  @Bean
+  public CancelAccount cancelAccount(
+      AccountRepository accountRepository,
+      dev.thiagooliveira.tablesplit.domain.account.PendingAccountCancellationRepository
+          pendingAccountCancellationRepository,
+      UserRepository userRepository,
+      dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository restaurantRepository,
+      StaffRepository staffRepository,
+      UserSessionInvalidator sessionInvalidator) {
+    return new CancelAccount(
+        accountRepository,
+        pendingAccountCancellationRepository,
+        userRepository,
+        restaurantRepository,
+        staffRepository,
+        sessionInvalidator);
+  }
+
+  @Bean
+  public RequestAccountCancellation requestAccountCancellation(
+      UserRepository userRepository,
+      dev.thiagooliveira.tablesplit.domain.account.PendingAccountCancellationRepository
+          pendingAccountCancellationRepository,
+      org.springframework.context.ApplicationEventPublisher eventPublisher) {
+    return new RequestAccountCancellation(
+        userRepository, pendingAccountCancellationRepository, eventPublisher);
+  }
 }

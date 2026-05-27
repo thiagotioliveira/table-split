@@ -235,4 +235,7 @@ databaseChangeLog:
       file: db/changelog/changesets/20260525-add-language-to-pending-registrations.yaml
   - include:
       file: db/changelog/changesets/20260526-add-pending-user-password-resets.yaml
-
+  - include:
+      file: db/changelog/changesets/20260527-add-pending-account-cancellations.yaml
+  - include:
+      file: db/changelog/changesets/20260527-add-cancelled-at-to-accounts.yaml

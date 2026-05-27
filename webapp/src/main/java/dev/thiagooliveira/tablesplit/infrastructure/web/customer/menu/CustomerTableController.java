@@ -219,9 +219,23 @@ public class CustomerTableController {
   }
 
   private Restaurant getRestaurantBySlug(String slug) {
-    return getRestaurant
-        .execute(slug)
-        .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+    var restaurant =
+        getRestaurant
+            .execute(slug)
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+
+    var account =
+        getAccount
+            .execute(restaurant.getAccountId())
+            .orElseThrow(() -> new NotFoundException("error.restaurant.not.found"));
+
+    if (account.getStatus() != dev.thiagooliveira.tablesplit.domain.account.AccountStatus.ACTIVE
+        && account.getStatus()
+            != dev.thiagooliveira.tablesplit.domain.account.AccountStatus.TRIAL) {
+      throw new NotFoundException("error.restaurant.not.found");
+    }
+
+    return restaurant;
   }
 
   @ExceptionHandler(dev.thiagooliveira.tablesplit.domain.order.TableSessionClosedException.class)

@@ -12,6 +12,10 @@ public class Time {
     Time.zoneId = zoneId;
   }
 
+  public static ZoneId getZoneId() {
+    return zoneId;
+  }
+
   public static ZonedDateTime now() {
     return ZonedDateTime.now(zoneId);
   }

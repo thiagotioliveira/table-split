@@ -154,7 +154,9 @@ public class RegisterController {
     }
 
     try {
-      String code = generate6DigitCode();
+      String code =
+          dev.thiagooliveira.tablesplit.infrastructure.utils.VerificationCodeGenerator
+              .generate6DigitCode();
       java.time.LocalDateTime expiresAt = Time.nowLocalDateTime().plusMinutes(15);
       String jsonData = objectMapper.writeValueAsString(form);
       String encryptedData = textEncryptor.encrypt(jsonData);
@@ -304,12 +306,6 @@ public class RegisterController {
     }
     redirectAttributes.addAttribute("email", email);
     return "redirect:/register/verify";
-  }
-
-  private String generate6DigitCode() {
-    java.util.Random random = new java.util.Random();
-    int code = 100000 + random.nextInt(900000);
-    return String.valueOf(code);
   }
 
   @ExceptionHandler(UserAlreadyRegisteredException.class)

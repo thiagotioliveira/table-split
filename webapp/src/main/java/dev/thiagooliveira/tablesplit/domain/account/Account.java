@@ -13,6 +13,7 @@ public class Account extends AggregateRoot {
   private AccountStatus status = AccountStatus.ACTIVE;
   private OffsetDateTime trialStartedAt;
   private OffsetDateTime trialEndsAt;
+  private OffsetDateTime cancelledAt;
 
   public static Account create(
       UUID id,
@@ -34,6 +35,11 @@ public class Account extends AggregateRoot {
     this.status = AccountStatus.TRIAL;
     this.trialStartedAt = Time.nowOffset();
     this.trialEndsAt = trialStartedAt.plusDays(30);
+  }
+
+  public void cancel() {
+    this.status = AccountStatus.CANCELLED;
+    this.cancelledAt = Time.nowOffset();
   }
 
   public UUID getId() {
@@ -107,5 +113,13 @@ public class Account extends AggregateRoot {
 
   public UUID getAccountId() {
     return id;
+  }
+
+  public OffsetDateTime getCancelledAt() {
+    return cancelledAt;
+  }
+
+  public void setCancelledAt(OffsetDateTime cancelledAt) {
+    this.cancelledAt = cancelledAt;
   }
 }

@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-pending-account-cancellations-table
+      author: thiago.oliveira
+      changes:
+        - createTable:
+            tableName: pending_account_cancellations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

@@ -21,6 +21,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -188,6 +190,7 @@ public class SecurityConfig {
                     .sessionFixation()
                     .migrateSession()
                     .maximumSessions(1)
+                    .sessionRegistry(sessionRegistry())
                     .expiredSessionStrategy(
                         event -> {
                           HttpServletRequest request = event.getRequest();
@@ -216,6 +219,11 @@ public class SecurityConfig {
                     .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
     return http.build();
+  }
+
+  @Bean
+  public SessionRegistry sessionRegistry() {
+    return new SessionRegistryImpl();
   }
 
   @Bean

@@ -28,6 +28,8 @@ public class AccountEntity {
 
   private OffsetDateTime trialEndsAt;
 
+  private OffsetDateTime cancelledAt;
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
@@ -86,5 +88,13 @@ public class AccountEntity {
 
   public void setTrialEndsAt(OffsetDateTime trialEndsAt) {
     this.trialEndsAt = trialEndsAt;
+  }
+
+  public OffsetDateTime getCancelledAt() {
+    return cancelledAt;
+  }
+
+  public void setCancelledAt(OffsetDateTime cancelledAt) {
+    this.cancelledAt = cancelledAt;
   }
 }
