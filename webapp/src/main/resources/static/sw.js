@@ -23,7 +23,8 @@ const AJAX_DRIVEN_PAGES = [
   '/reports',
   '/counter',
   '/orders',
-  '/tables'
+  '/tables',
+  '/account'
 ];
 
 // Páginas que dependem do modelo do servidor/Thymeleaf (Estratégia: Network First para garantir dados frescos)

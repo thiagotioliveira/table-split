@@ -3,7 +3,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.account.web.model;
 import dev.thiagooliveira.tablesplit.application.account.command.UpdateUserCommand;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.UserContext;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -16,7 +15,7 @@ public class UserProfileModel {
   @Size(min = 3, max = 255)
   private String lastName;
 
-  @NotBlank @Email private String email;
+  private String email;
   private String language;
   private java.util.Set<dev.thiagooliveira.tablesplit.domain.account.Module> modules;
 

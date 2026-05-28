@@ -50,6 +50,7 @@ public class UserProfileController {
       @ModelAttribute UserProfileModel userProfileModel,
       RedirectAttributes redirectAttributes) {
     var context = (AccountContext) auth.getPrincipal();
+    userProfileModel.setEmail(context.getUser().getEmail());
     var command = userProfileModel.toCommand();
     this.transactionalContext.execute(
         () -> this.updateUser.execute(context.getUser().getId(), command));
