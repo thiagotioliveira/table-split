@@ -124,24 +124,9 @@ public class RestaurantModel {
   }
 
   public String getNextOpeningOrClosingHoursDisplay(java.util.Locale locale) {
-    if (nextOpeningOrClosingHours.isEmpty()) {
-      return messageSource.getMessage("page.profile.status.empty", null, locale);
-    }
-
-    java.time.format.DateTimeFormatter formatter =
-        java.time.format.DateTimeFormatter.ofPattern("HH:mm");
-    if (open) {
-      return messageSource.getMessage(
-          "page.profile.status.hours.close",
-          new Object[] {nextOpeningOrClosingHours.get().format(formatter)},
-          locale);
-    } else {
-      String day = nextOpeningOrClosingHours.get().getDayOfWeek().name().toLowerCase();
-      return messageSource.getMessage(
-          "page.profile.status.hours.open",
-          new Object[] {day, nextOpeningOrClosingHours.get().format(formatter)},
-          locale);
-    }
+    return dev.thiagooliveira.tablesplit.infrastructure.utils.TimeUtils
+        .getNextOpeningOrClosingHoursDisplay(
+            open, nextOpeningOrClosingHours, messageSource, locale);
   }
 
   public ThemeContext getTheme() {

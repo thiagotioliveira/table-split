@@ -62,4 +62,30 @@ public class TimeUtils {
       return messageSource.getMessage("time.ago.now", null, locale);
     }
   }
+
+  public static String getNextOpeningOrClosingHoursDisplay(
+      boolean open,
+      java.util.Optional<java.time.ZonedDateTime> nextOpeningOrClosingHours,
+      org.springframework.context.MessageSource messageSource,
+      java.util.Locale locale) {
+    if (nextOpeningOrClosingHours == null || nextOpeningOrClosingHours.isEmpty()) {
+      return messageSource.getMessage("page.profile.status.empty", null, locale);
+    }
+
+    java.time.format.DateTimeFormatter formatter =
+        java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+    if (open) {
+      return messageSource.getMessage(
+          "page.profile.status.hours.close",
+          new Object[] {nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    } else {
+      String dayKey = "day." + nextOpeningOrClosingHours.get().getDayOfWeek().name().toLowerCase();
+      String dayName = messageSource.getMessage(dayKey, null, locale);
+      return messageSource.getMessage(
+          "page.profile.status.hours.open",
+          new Object[] {dayName, nextOpeningOrClosingHours.get().format(formatter)},
+          locale);
+    }
+  }
 }
