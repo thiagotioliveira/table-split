@@ -24,7 +24,12 @@ import org.springframework.context.MessageSource;
     })
 public abstract class OrderApiMapper {
 
-  @Autowired protected MessageSource messageSource;
+  protected MessageSource messageSource;
+
+  @Autowired
+  public void setMessageSource(MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
 
   @Mapping(target = "restaurantId", expression = "java(UUID.fromString(model.getRestaurantId()))")
   @Mapping(target = "id", expression = "java(UUID.fromString(model.getId()))")

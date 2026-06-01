@@ -62,6 +62,7 @@ public class SecurityConfig {
 
   @Bean
   @Order(1)
+  @SuppressWarnings("java:S4502")
   public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/api/system/**")
         .csrf(AbstractHttpConfigurer::disable)
@@ -85,6 +86,7 @@ public class SecurityConfig {
 
   @Bean
   @Order(2)
+  @SuppressWarnings("java:S4502")
   public SecurityFilterChain webSecurityFilterChain(HttpSecurity http, TenantFilter tenantFilter)
       throws Exception {
 

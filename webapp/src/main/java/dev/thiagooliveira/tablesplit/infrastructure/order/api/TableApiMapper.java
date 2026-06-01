@@ -21,11 +21,16 @@ import org.mapstruct.ValueMapping;
 @Mapper(componentModel = "spring")
 public abstract class TableApiMapper {
 
-  @org.springframework.beans.factory.annotation.Autowired
   protected org.springframework.context.MessageSource messageSource;
+  protected dev.thiagooliveira.tablesplit.domain.order.TableRepository tableRepository;
 
   @org.springframework.beans.factory.annotation.Autowired
-  protected dev.thiagooliveira.tablesplit.domain.order.TableRepository tableRepository;
+  public void setDependencies(
+      org.springframework.context.MessageSource messageSource,
+      dev.thiagooliveira.tablesplit.domain.order.TableRepository tableRepository) {
+    this.messageSource = messageSource;
+    this.tableRepository = tableRepository;
+  }
 
   protected String resolveCustomerName(
       Order order, java.util.UUID customerId, String tableCod, Language userLanguage) {

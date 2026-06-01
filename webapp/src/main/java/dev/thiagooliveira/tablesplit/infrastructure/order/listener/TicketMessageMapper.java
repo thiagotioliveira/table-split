@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TicketMessageMapper {
 
-  @org.springframework.beans.factory.annotation.Autowired
-  protected org.springframework.context.MessageSource messageSource;
+  private final org.springframework.context.MessageSource messageSource;
+
+  public TicketMessageMapper(org.springframework.context.MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
 
   protected String resolveCustomerName(
       dev.thiagooliveira.tablesplit.domain.order.Order order,

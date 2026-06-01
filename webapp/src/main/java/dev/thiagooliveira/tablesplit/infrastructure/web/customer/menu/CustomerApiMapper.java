@@ -19,8 +19,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class CustomerApiMapper {
 
-  @org.springframework.beans.factory.annotation.Autowired
   protected org.springframework.context.MessageSource messageSource;
+
+  @org.springframework.beans.factory.annotation.Autowired
+  public void setMessageSource(org.springframework.context.MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
 
   protected String resolveCustomerName(
       Order order, java.util.UUID customerId, String tableCod, Language userLanguage) {
