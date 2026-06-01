@@ -13,7 +13,10 @@ public class ReportController {
   @GetMapping
   public String index(
       org.springframework.security.core.Authentication auth, org.springframework.ui.Model model) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     return "reports";
   }

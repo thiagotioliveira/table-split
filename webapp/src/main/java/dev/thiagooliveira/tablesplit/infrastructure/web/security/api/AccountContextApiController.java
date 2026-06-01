@@ -29,8 +29,14 @@ public class AccountContextApiController implements ContextApi {
   @Override
   public ResponseEntity<AccountContextResponse> getAccountContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    AccountContext context = (AccountContext) auth.getPrincipal();
-    Locale locale = Locale.forLanguageTag(context.getUser().getLanguage().getLabel());
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
+    Locale locale =
+        (context.getUser() != null && context.getUser().getLanguage() != null)
+            ? Locale.forLanguageTag(context.getUser().getLanguage().getLabel())
+            : getLocale();
 
     List<ModuleResponse> sidebar = mapModules(context.getSidebarModules(), locale);
     List<ModuleResponse> footer = mapModules(context.getFooterModules(), locale);

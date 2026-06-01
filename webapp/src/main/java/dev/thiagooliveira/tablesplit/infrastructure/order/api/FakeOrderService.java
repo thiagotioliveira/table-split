@@ -43,6 +43,7 @@ public class FakeOrderService {
   private final SubmitGeneralFeedback submitGeneralFeedback;
   private final RateItem rateItem;
   private final TransactionTemplate transactionTemplate;
+  private final Random random = new java.security.SecureRandom();
 
   @Value("${app.demo.restaurant-id}")
   private String demoRestaurantId;
@@ -108,7 +109,6 @@ public class FakeOrderService {
               return;
             }
 
-            Random random = new Random();
             Table table = availableTables.get(random.nextInt(availableTables.size()));
             String customerName =
                 properties

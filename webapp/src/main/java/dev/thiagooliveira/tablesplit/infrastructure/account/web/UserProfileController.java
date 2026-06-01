@@ -9,7 +9,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalC
 import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerController;
-import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContextResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
@@ -24,22 +24,25 @@ public class UserProfileController {
   private final UpdateUser updateUser;
   private final UpdatePassword updatePassword;
   private final PasswordEncoder passwordEncoder;
+  private final AccountContextResolver accountContextResolver;
 
   public UserProfileController(
       TransactionalContext transactionalContext,
       UpdateUser updateUser,
       UpdatePassword updatePassword,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      AccountContextResolver accountContextResolver) {
     this.transactionalContext = transactionalContext;
     this.updateUser = updateUser;
     this.updatePassword = updatePassword;
     this.passwordEncoder = passwordEncoder;
+    this.accountContextResolver = accountContextResolver;
   }
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    model.addAttribute(
-        "user", new UserProfileModel(((AccountContext) auth.getPrincipal()).getUser()));
+    var context = accountContextResolver.resolve(auth);
+    model.addAttribute("user", new UserProfileModel(context.getUser()));
     model.addAttribute("password", new UserPasswordModel());
     return "profile";
   }
@@ -49,7 +52,7 @@ public class UserProfileController {
       Authentication auth,
       @ModelAttribute UserProfileModel userProfileModel,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     userProfileModel.setEmail(context.getUser().getEmail());
     var command = userProfileModel.toCommand();
     this.transactionalContext.execute(
@@ -69,7 +72,7 @@ public class UserProfileController {
       Authentication auth,
       @ModelAttribute UserPasswordModel userPasswordModel,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     if (!passwordEncoder.matches(
         userPasswordModel.getCurrentPassword(), context.getUser().getPassword())) {
       throw new InfrastructureException("error.invalid.password");

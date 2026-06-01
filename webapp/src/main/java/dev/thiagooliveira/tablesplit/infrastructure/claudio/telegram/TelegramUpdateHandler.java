@@ -7,6 +7,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.persistence.TelegramUserMappingEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.claudio.persistence.TelegramUserMappingJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
+import dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -31,6 +31,7 @@ public class TelegramUpdateHandler {
   private final LanguageDetector languageDetector;
   private final RestaurantRepository restaurantRepository;
   private final AccountRepository accountRepository;
+  private final TransactionalContext transactionalContext;
 
   private enum BotState {
     IDLE,
@@ -51,7 +52,8 @@ public class TelegramUpdateHandler {
       MessageSource messageSource,
       LanguageDetector languageDetector,
       RestaurantRepository restaurantRepository,
-      AccountRepository accountRepository) {
+      AccountRepository accountRepository,
+      TransactionalContext transactionalContext) {
     this.claudioService = claudioService;
     this.identityService = identityService;
     this.mappingRepository = mappingRepository;
@@ -60,6 +62,7 @@ public class TelegramUpdateHandler {
     this.languageDetector = languageDetector;
     this.restaurantRepository = restaurantRepository;
     this.accountRepository = accountRepository;
+    this.transactionalContext = transactionalContext;
   }
 
   public void onUpdateReceived(Update update) {
@@ -125,42 +128,48 @@ public class TelegramUpdateHandler {
     telegramSender.sendText(chatId, getMessage("telegram.login.staff.slug.request", chatId));
   }
 
-  @Transactional
   public void handleReset(Long chatId) {
-    identifiedUsers.remove(chatId);
-    userStates.remove(chatId);
-    mappingRepository.deleteByChatId(chatId);
-    chatLocales.remove(chatId);
-    telegramSender.sendText(chatId, getMessage("telegram.reset.success", chatId));
+    transactionalContext.execute(
+        () -> {
+          identifiedUsers.remove(chatId);
+          userStates.remove(chatId);
+          mappingRepository.deleteByChatId(chatId);
+          chatLocales.remove(chatId);
+          telegramSender.sendText(chatId, getMessage("telegram.reset.success", chatId));
+        });
   }
 
-  @Transactional
   public void handleSlugLogin(Long chatId, String slug) {
-    String phone = chatToPhoneMap.get(chatId);
-    if (phone == null) {
-      // Try to load phone from DB
-      TelegramUserMappingEntity mapping = mappingRepository.findById(chatId).orElse(null);
-      if (mapping != null) {
-        phone = mapping.getPhone();
-        chatToPhoneMap.put(chatId, phone);
-      }
-    }
+    transactionalContext.execute(
+        () -> {
+          String phone = chatToPhoneMap.get(chatId);
+          if (phone == null) {
+            // Try to load phone from DB
+            TelegramUserMappingEntity mapping = mappingRepository.findById(chatId).orElse(null);
+            if (mapping != null) {
+              phone = mapping.getPhone();
+              chatToPhoneMap.put(chatId, phone);
+            }
+          }
 
-    if (phone == null) {
-      telegramSender.sendText(chatId, getMessage("telegram.login.request.start", chatId));
-      return;
-    }
+          if (phone == null) {
+            telegramSender.sendText(chatId, getMessage("telegram.login.request.start", chatId));
+            return;
+          }
 
-    Optional<TelegramIdentityService.IdentifiedUser> staffOpt =
-        identityService.identifyStaffBySlug(slug, phone);
-    if (staffOpt.isPresent()) {
-      var staff = staffOpt.get();
-      identifiedUsers.put(chatId, staff);
-      telegramSender.sendText(
-          chatId, getMessage("telegram.welcome.identified", chatId, staff.name(), staff.role()));
-    } else {
-      telegramSender.sendText(chatId, getMessage("telegram.login.staff.not_found", chatId, slug));
-    }
+          Optional<TelegramIdentityService.IdentifiedUser> staffOpt =
+              identityService.identifyStaffBySlug(slug, phone);
+          if (staffOpt.isPresent()) {
+            var staff = staffOpt.get();
+            identifiedUsers.put(chatId, staff);
+            telegramSender.sendText(
+                chatId,
+                getMessage("telegram.welcome.identified", chatId, staff.name(), staff.role()));
+          } else {
+            telegramSender.sendText(
+                chatId, getMessage("telegram.login.staff.not_found", chatId, slug));
+          }
+        });
   }
 
   private TelegramIdentityService.IdentifiedUser loadFromDb(Long chatId) {

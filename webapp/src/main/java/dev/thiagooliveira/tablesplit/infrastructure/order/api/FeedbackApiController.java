@@ -44,13 +44,13 @@ public class FeedbackApiController implements FeedbacksApi {
 
   @org.springframework.web.bind.annotation.GetMapping("/feedbacks/count/unread")
   public ResponseEntity<Long> getUnreadCount() {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     return ResponseEntity.ok(getFeedbackUnreadCount.execute(context.getRestaurant().getId()));
   }
 
   @Override
   public ResponseEntity<FeedbackOverviewResponse> getFeedbackOverview(Integer days) {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
 
     GetFeedbackOverview.Overview overview =
@@ -68,7 +68,7 @@ public class FeedbackApiController implements FeedbacksApi {
   @Override
   public ResponseEntity<FeedbackListResponse> getFeedbacks(
       Integer days, Integer rating, String search, Integer page, Integer size) {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     ZonedDateTime since = Time.nowZonedDateTime().minusDays(days != null ? days : 30);
 
     dev.thiagooliveira.tablesplit.domain.common.Pagination<OrderFeedback> pagination =
@@ -192,6 +192,10 @@ public class FeedbackApiController implements FeedbacksApi {
 
   protected AccountContext getContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    return (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
+    return context;
   }
 }

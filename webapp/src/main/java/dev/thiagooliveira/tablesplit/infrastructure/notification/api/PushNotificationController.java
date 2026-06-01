@@ -6,6 +6,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.notification.api.model.Subsc
 import dev.thiagooliveira.tablesplit.infrastructure.notification.api.model.UpdatePreferencesRequest;
 import dev.thiagooliveira.tablesplit.infrastructure.notification.api.model.WaiterCallResponse;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContextResolver;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class PushNotificationController {
   private final Broadcaster broadcaster;
   private final ListActiveWaiterCalls listActiveWaiterCalls;
   private final DismissWaiterCall dismissWaiterCall;
+  private final AccountContextResolver accountContextResolver;
 
   public PushNotificationController(
       PushNotificationService pushNotificationService,
@@ -40,7 +42,8 @@ public class PushNotificationController {
       UpdatePreferences updatePreferences,
       Broadcaster broadcaster,
       ListActiveWaiterCalls listActiveWaiterCalls,
-      DismissWaiterCall dismissWaiterCall) {
+      DismissWaiterCall dismissWaiterCall,
+      AccountContextResolver accountContextResolver) {
     this.pushNotificationService = pushNotificationService;
     this.subscribe = subscribe;
     this.unsubscribe = unsubscribe;
@@ -49,11 +52,12 @@ public class PushNotificationController {
     this.broadcaster = broadcaster;
     this.listActiveWaiterCalls = listActiveWaiterCalls;
     this.dismissWaiterCall = dismissWaiterCall;
+    this.accountContextResolver = accountContextResolver;
   }
 
   @PostMapping({"/push/subscribe", "/subscribe"})
   public ResponseEntity<Void> subscribe(Authentication auth, @RequestBody SubscriptionData data) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    AccountContext context = accountContextResolver.resolve(auth);
     UUID restaurantId = context.getRestaurant().getId();
 
     UUID id = context.getUser().getId();
@@ -114,7 +118,7 @@ public class PushNotificationController {
 
   @PostMapping({"/push/test", "/test"})
   public ResponseEntity<Void> sendTest(Authentication auth) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    AccountContext context = accountContextResolver.resolve(auth);
     UUID restaurantId = context.getRestaurant().getId();
     logger.debug("Received test notification request for restaurant: {}", restaurantId);
     String titleKey = "notification.push.test.title";
@@ -124,7 +128,7 @@ public class PushNotificationController {
 
   @GetMapping({"/push/active-calls", "/active-calls"})
   public ResponseEntity<java.util.List<WaiterCallResponse>> getActiveCalls(Authentication auth) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    AccountContext context = accountContextResolver.resolve(auth);
     UUID restaurantId = context.getRestaurant().getId();
 
     java.util.List<WaiterCallResponse> response =
@@ -140,7 +144,7 @@ public class PushNotificationController {
 
   @GetMapping({"/push/calls/count", "/calls/count"})
   public ResponseEntity<Long> getCallsCount(Authentication auth) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    AccountContext context = accountContextResolver.resolve(auth);
     UUID restaurantId = context.getRestaurant().getId();
     long count = listActiveWaiterCalls.execute(restaurantId).size();
     logger.debug("Counting active waiter calls for restaurant {}: {}", restaurantId, count);

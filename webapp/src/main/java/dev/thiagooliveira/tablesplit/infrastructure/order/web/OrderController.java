@@ -22,7 +22,10 @@ public class OrderController {
   }
 
   private void populateModel(Authentication auth, Model model) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
 
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currency", context.getRestaurant().getCurrency());

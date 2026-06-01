@@ -111,9 +111,12 @@ public class DashboardWidgetService {
     // Wait for all futures to complete with a resilient timeout of 3 seconds
     try {
       CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(3, TimeUnit.SECONDS);
-    } catch (Exception e) {
+    } catch (java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
       log.warn(
           "Some dashboard widgets execution timed out or failed to complete: {}", e.getMessage());
+    } catch (InterruptedException e) {
+      log.warn("Dashboard widgets execution was interrupted: {}", e.getMessage());
+      Thread.currentThread().interrupt();
     }
 
     List<DashboardWidgetResponse> widgets =

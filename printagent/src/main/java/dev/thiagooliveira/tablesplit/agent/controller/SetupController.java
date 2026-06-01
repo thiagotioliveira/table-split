@@ -70,17 +70,16 @@ public class SetupController {
 
       var response = restTemplate.postForEntity(url, request, Map.class);
 
-      if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-        Map<String, Object> body = response.getBody();
-
+      var body = response.getBody();
+      if (response.getStatusCode().is2xxSuccessful() && body != null) {
         printAgentConfig.setToken(token);
         printAgentConfig.setPrinter(printer);
-        printAgentConfig.setRestaurantId(body.get("restaurantId").toString());
-        printAgentConfig.setRestaurantName(body.get("restaurantName").toString());
-        printAgentConfig.setRabbitHost(body.get("rabbitHost").toString());
-        printAgentConfig.setRabbitUsername(body.get("rabbitUsername").toString());
-        printAgentConfig.setRabbitPassword(body.get("rabbitPassword").toString());
-        printAgentConfig.setQueueName(body.get("queueName").toString());
+        printAgentConfig.setRestaurantId(java.util.Objects.toString(body.get("restaurantId"), ""));
+        printAgentConfig.setRestaurantName(java.util.Objects.toString(body.get("restaurantName"), ""));
+        printAgentConfig.setRabbitHost(java.util.Objects.toString(body.get("rabbitHost"), ""));
+        printAgentConfig.setRabbitUsername(java.util.Objects.toString(body.get("rabbitUsername"), ""));
+        printAgentConfig.setRabbitPassword(java.util.Objects.toString(body.get("rabbitPassword"), ""));
+        printAgentConfig.setQueueName(java.util.Objects.toString(body.get("queueName"), ""));
         printAgentConfig.setConnected(true);
 
         // Inicia a conexão RabbitMQ dinamicamente

@@ -93,7 +93,7 @@ public class OrderApiController implements OrdersApi {
   public ResponseEntity<
           dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.HistoryResponse>
       getOrderHistory(OffsetDateTime start, OffsetDateTime end, Integer page, Integer size) {
-    AccountContext context = getContext();
+    AccountContext context = java.util.Objects.requireNonNull(getContext());
 
     ZonedDateTime zStart =
         start != null ? start.toZonedDateTime().withZoneSameInstant(Time.getZoneId()) : null;
@@ -141,13 +141,13 @@ public class OrderApiController implements OrdersApi {
 
   @Override
   public ResponseEntity<Long> getPendingCount() {
-    AccountContext context = getContext();
+    AccountContext context = java.util.Objects.requireNonNull(getContext());
     return ResponseEntity.ok(getTickets.countPending(context.getRestaurant().getId()));
   }
 
   @Override
   public ResponseEntity<TicketResponse> getTicketById(UUID id) {
-    AccountContext context = getContext();
+    AccountContext context = java.util.Objects.requireNonNull(getContext());
     return getTicket
         .execute(id)
         .map(
@@ -161,7 +161,7 @@ public class OrderApiController implements OrdersApi {
 
   @Override
   public ResponseEntity<TicketsResponse> getTickets(OffsetDateTime start) {
-    AccountContext context = getContext();
+    AccountContext context = java.util.Objects.requireNonNull(getContext());
 
     ZonedDateTime zStart =
         start != null
@@ -239,7 +239,7 @@ public class OrderApiController implements OrdersApi {
 
   @Override
   public ResponseEntity<PlaceOrderResponse> placeOrder(UUID tableId, PlaceOrderRequest request) {
-    AccountContext account = getContext();
+    AccountContext account = java.util.Objects.requireNonNull(getContext());
 
     var table =
         getTables
@@ -263,7 +263,7 @@ public class OrderApiController implements OrdersApi {
 
   @Override
   public ResponseEntity<PlaceOrderResponse> placeTakeawayOrder(PlaceOrderRequest request) {
-    AccountContext account = getContext();
+    AccountContext account = java.util.Objects.requireNonNull(getContext());
 
     var command =
         mapper.mapToCommand(
@@ -293,6 +293,10 @@ public class OrderApiController implements OrdersApi {
 
   protected AccountContext getContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    return (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
+    return context;
   }
 }

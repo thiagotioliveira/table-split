@@ -46,81 +46,79 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private static final Logger logger =
       LoggerFactory.getLogger(DemoDataInitializerApplicationRunner.class);
 
-  private static final Map<String, String> itemNamePTImageUrl =
-      new HashMap<>() {
-        {
-          put(
-              "Batata-Frita Rústica",
-              "https://receitas123.com/wp-content/uploads/2023/05/batata-rustica-frita.png");
-          put("Dadinhos de Tapioca", "https://f.i.uol.com.br/folha/comida/images/11290453.jpeg");
-          put(
-              "Coxinhas de Frango",
-              "https://www.saborintenso.com/images/receitas/Coxinhas-de-Frango-SI-1.jpg");
-          put(
-              "Bolinho de Bacalhau",
-              "https://www.aquinacozinha.com/wp-content/uploads/2025/04/bolinhos_bacalhau.png");
-          put(
-              "Calabresa Acebolada",
-              "https://cdn.vucasolution.com.br/upload/w_800/https://gryyplgyeyqb.compat.objectstorage.sa-saopaulo-1.oraclecloud.com/vuca-cdn/papitos/arqs/produtos/qvmpt2dhr6fw70mpwk8s.jpg");
-          put(
-              "Provolone à Milanesa",
-              "https://guiadacozinha.com.br/wp-content/uploads/2019/10/provolone-a-milanesa-50584.jpg");
-          put(
-              "Feijoada Completa",
-              "https://canaldareceita.com.br/wp-content/uploads/2025/05/Feijoada-Completa.jpg");
-          put(
-              "Moqueca de Peixe",
-              "https://www.leiliane.com.br/wp-content/uploads/2017/08/moqueca_baiana_1.jpg");
-          put(
-              "Picanha na Brasa",
-              "https://media-cdn.tripadvisor.com/media/photo-s/0b/ee/2e/29/picanha-grelhada-na-brasa.jpg");
-          put(
-              "Baião de Dois",
-              "https://prodcontent.yoki.com.br/wp-content/uploads/2024/09/Baiao-de-dois-800x450-1.jpg");
-          put(
-              "Virado à Paulista",
-              "https://guiadacozinha.com.br/wp-content/uploads/2023/01/virado-a-paulista.jpg");
-          put(
-              "Filé Oswaldo Aranha",
-              "https://live.staticflickr.com/65535/49938386921_29dde11650_b.jpg");
-          put(
-              "Pudim de Leite",
-              "https://www.pingodoce.pt/wp-content/uploads/2016/10/pudimdeleite.jpg");
-          put(
-              "Mousse de Maracujá",
-              "https://cozinha365.com.br/wp-content/uploads/2025/02/Mousse-de-Maracuja-S-500x500.webp");
-          put(
-              "Quindim Tradicional",
-              "https://www.seara.com.br/wp-content/uploads/2025/09/quindim-tradicional-portal-minha-receita.jpg");
-          put(
-              "Romeu e Julieta",
-              "https://receitatodahora.com.br/wp-content/uploads/2024/10/sobremesa-romeu-e-julieta-2809-1200x900.jpg");
-          put(
-              "Caipirinha de Limão",
-              "https://i.panelinha.com.br/i1/bk-8730-blog-caipirinha-de-limao.webp");
-          put(
-              "Guaraná Antarctica",
-              "https://www.madeinmarket.eu/cdn/shop/products/guarana-033-lata-cx-24-unidades.jpg");
-          put(
-              "Água de Coco",
-              "https://conteudo.imguol.com.br/c/entretenimento/d7/2018/03/16/agua-de-coco-1521212503283_v2_4x3.jpg");
-          put(
-              "Chopp Gelado 300ml",
-              "https://coppus.com.br/cdn/shop/products/29d6c13f18e2a0e7c34bd6a331591e94_grande.jpg");
-          put(
-              "Suco de Abacaxi c/ Hortelã",
-              "https://pubimg.band.com.br/files/ef132c71be1be30ed8f2.png");
-          put(
-              "Cerveja Original 600ml",
-              "https://http2.mlstatic.com/D_Q_NP_737048-MLU70736934268_072023-O.webp");
-          put(
-              "Caipivodka de Morango",
-              "https://boozedrinks.pt/wp-content/uploads/2024/03/Design-sem-nome-2024-04-12T115949.946.png");
-          put(
-              "Café Expresso Gourmet",
-              "https://upload.wikimedia.org/wikipedia/commons/2/23/Captura_de_Tela_2017-08-30_%C3%A0s_23.42.42.png");
-        }
-      };
+  private static final Map<String, String> itemNamePTImageUrl;
+
+  static {
+    Map<String, String> map = new HashMap<>();
+    map.put(
+        "Batata-Frita Rústica",
+        "https://receitas123.com/wp-content/uploads/2023/05/batata-rustica-frita.png");
+    map.put("Dadinhos de Tapioca", "https://f.i.uol.com.br/folha/comida/images/11290453.jpeg");
+    map.put(
+        "Coxinhas de Frango",
+        "https://www.saborintenso.com/images/receitas/Coxinhas-de-Frango-SI-1.jpg");
+    map.put(
+        "Bolinho de Bacalhau",
+        "https://www.aquinacozinha.com/wp-content/uploads/2025/04/bolinhos_bacalhau.png");
+    map.put(
+        "Calabresa Acebolada",
+        "https://cdn.vucasolution.com.br/upload/w_800/https://gryyplgyeyqb.compat.objectstorage.sa-saopaulo-1.oraclecloud.com/vuca-cdn/papitos/arqs/produtos/qvmpt2dhr6fw70mpwk8s.jpg");
+    map.put(
+        "Provolone à Milanesa",
+        "https://guiadacozinha.com.br/wp-content/uploads/2019/10/provolone-a-milanesa-50584.jpg");
+    map.put(
+        "Feijoada Completa",
+        "https://canaldareceita.com.br/wp-content/uploads/2025/05/Feijoada-Completa.jpg");
+    map.put(
+        "Moqueca de Peixe",
+        "https://www.leiliane.com.br/wp-content/uploads/2017/08/moqueca_baiana_1.jpg");
+    map.put(
+        "Picanha na Brasa",
+        "https://media-cdn.tripadvisor.com/media/photo-s/0b/ee/2e/29/picanha-grelhada-na-brasa.jpg");
+    map.put(
+        "Baião de Dois",
+        "https://prodcontent.yoki.com.br/wp-content/uploads/2024/09/Baiao-de-dois-800x450-1.jpg");
+    map.put(
+        "Virado à Paulista",
+        "https://guiadacozinha.com.br/wp-content/uploads/2023/01/virado-a-paulista.jpg");
+    map.put(
+        "Filé Oswaldo Aranha", "https://live.staticflickr.com/65535/49938386921_29dde11650_b.jpg");
+    map.put(
+        "Pudim de Leite", "https://www.pingodoce.pt/wp-content/uploads/2016/10/pudimdeleite.jpg");
+    map.put(
+        "Mousse de Maracujá",
+        "https://cozinha365.com.br/wp-content/uploads/2025/02/Mousse-de-Maracuja-S-500x500.webp");
+    map.put(
+        "Quindim Tradicional",
+        "https://www.seara.com.br/wp-content/uploads/2025/09/quindim-tradicional-portal-minha-receita.jpg");
+    map.put(
+        "Romeu e Julieta",
+        "https://receitatodahora.com.br/wp-content/uploads/2024/10/sobremesa-romeu-e-julieta-2809-1200x900.jpg");
+    map.put(
+        "Caipirinha de Limão",
+        "https://i.panelinha.com.br/i1/bk-8730-blog-caipirinha-de-limao.webp");
+    map.put(
+        "Guaraná Antarctica",
+        "https://www.madeinmarket.eu/cdn/shop/products/guarana-033-lata-cx-24-unidades.jpg");
+    map.put(
+        "Água de Coco",
+        "https://conteudo.imguol.com.br/c/entretenimento/d7/2018/03/16/agua-de-coco-1521212503283_v2_4x3.jpg");
+    map.put(
+        "Chopp Gelado 300ml",
+        "https://coppus.com.br/cdn/shop/products/29d6c13f18e2a0e7c34bd6a331591e94_grande.jpg");
+    map.put(
+        "Suco de Abacaxi c/ Hortelã", "https://pubimg.band.com.br/files/ef132c71be1be30ed8f2.png");
+    map.put(
+        "Cerveja Original 600ml",
+        "https://http2.mlstatic.com/D_Q_NP_737048-MLU70736934268_072023-O.webp");
+    map.put(
+        "Caipivodka de Morango",
+        "https://boozedrinks.pt/wp-content/uploads/2024/03/Design-sem-nome-2024-04-12T115949.946.png");
+    map.put(
+        "Café Expresso Gourmet",
+        "https://upload.wikimedia.org/wikipedia/commons/2/23/Captura_de_Tela_2017-08-30_%C3%A0s_23.42.42.png");
+    itemNamePTImageUrl = Collections.unmodifiableMap(map);
+  }
 
   private static final List<String> restaurantImages =
       List.of(
@@ -143,6 +141,9 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
   private final org.springframework.context.ApplicationEventPublisher eventPublisher;
   private final CreateStaff createStaff;
   private final StaffRepository staffRepository;
+
+  @org.springframework.beans.factory.annotation.Value("${demo.password:TableSplitDevPass2026!}")
+  private String demoPassword;
 
   public DemoDataInitializerApplicationRunner(
       TransactionalContext transactionalContext,
@@ -191,7 +192,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                               "Oliveira",
                               "thiago@thiagoti.com",
                               "+351 963 927 952",
-                              passwordEncoder.encode("Test#123"),
+                              passwordEncoder.encode(demoPassword),
                               Language.PT),
                           new CreateRestaurantCommand(
                               "Cantina Brasileira",
@@ -274,7 +275,7 @@ public class DemoDataInitializerApplicationRunner implements ApplicationRunner {
                     "Garçom",
                     "mail.thiagoti@gmail.com",
                     "+351 900 000 001",
-                    passwordEncoder.encode("Test#123"),
+                    passwordEncoder.encode(demoPassword),
                     Language.PT,
                     Set.of(Module.ORDERS, Module.TABLES)));
             return null;

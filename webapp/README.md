@@ -1,3 +1,6 @@
+./mvnw clean verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.token=squ_ab7e35993b95e6144895671daee4cb55cdd6ccc7
+curl -u "squ_ab7e35993b95e6144895671daee4cb55cdd6ccc7" "http://localhost:9000/api/issues/search?resolved=false&ps=500" > sonar_issues.json
+
 # TableSplit
 
 > **A modern, multi-tenant restaurant management platform** — from table management and order tracking to customer-facing menus and real-time notifications.

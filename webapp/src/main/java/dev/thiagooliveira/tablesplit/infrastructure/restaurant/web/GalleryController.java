@@ -12,7 +12,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.AlertModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerController;
-import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContextResolver;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -31,27 +31,29 @@ public class GalleryController {
   private final UploadRestaurantImage uploadRestaurantImage;
   private final DeleteRestaurantImage deleteRestaurantImage;
   private final SetRestaurantCoverImage setRestaurantCoverImage;
+  private final AccountContextResolver accountContextResolver;
 
   public GalleryController(
       TransactionalContext transactionalContext,
       GetRestaurantImages getRestaurantImages,
       UploadRestaurantImage uploadRestaurantImage,
       DeleteRestaurantImage deleteRestaurantImage,
-      SetRestaurantCoverImage setRestaurantCoverImage) {
+      SetRestaurantCoverImage setRestaurantCoverImage,
+      AccountContextResolver accountContextResolver) {
     this.transactionalContext = transactionalContext;
     this.getRestaurantImages = getRestaurantImages;
     this.uploadRestaurantImage = uploadRestaurantImage;
     this.deleteRestaurantImage = deleteRestaurantImage;
     this.setRestaurantCoverImage = setRestaurantCoverImage;
+    this.accountContextResolver = accountContextResolver;
   }
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    ManagerContextModel context = (ManagerContextModel) model.getAttribute("context");
+    ManagerContextModel context = accountContextResolver.resolve(model);
     var restaurantId = context.getRestaurant().getId();
     List<RestaurantImageModel> images =
         getRestaurantImages.execute(restaurantId).stream().map(RestaurantImageModel::new).toList();
-
     model.addAttribute("images", images);
     return "gallery";
   }
@@ -62,10 +64,9 @@ public class GalleryController {
       @RequestParam("file") MultipartFile file,
       @RequestParam(value = "cover", defaultValue = "false") boolean cover,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     var restaurantId = context.getRestaurant().getId();
     var accountId = context.getId();
-
     transactionalContext.execute(
         () -> {
           try {
@@ -80,7 +81,6 @@ public class GalleryController {
             throw new RuntimeException(e);
           }
         });
-
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.gallery.uploaded"));
     return "redirect:/gallery";
   }
@@ -90,13 +90,11 @@ public class GalleryController {
       Authentication auth,
       @PathVariable("imageId") UUID imageId,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
-    var restaurantId = context.getRestaurant().getId();
-    var accountId = context.getId();
-
+    var context = accountContextResolver.resolve(auth);
     transactionalContext.execute(
-        () -> deleteRestaurantImage.execute(accountId, restaurantId, imageId));
-
+        () ->
+            deleteRestaurantImage.execute(
+                context.getId(), context.getRestaurant().getId(), imageId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.gallery.deleted"));
     return "redirect:/gallery";
   }
@@ -107,12 +105,9 @@ public class GalleryController {
       @PathVariable("imageId") UUID imageId,
       @RequestParam(value = "isCover", defaultValue = "true") boolean isCover,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
-    var restaurantId = context.getRestaurant().getId();
-
+    var context = accountContextResolver.resolve(auth);
     transactionalContext.execute(
-        () -> setRestaurantCoverImage.execute(restaurantId, imageId, isCover));
-
+        () -> setRestaurantCoverImage.execute(context.getRestaurant().getId(), imageId, isCover));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.gallery.cover.set"));
     return "redirect:/gallery";
   }

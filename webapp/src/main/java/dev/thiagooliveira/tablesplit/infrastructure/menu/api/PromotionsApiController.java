@@ -81,7 +81,10 @@ public class PromotionsApiController implements PromotionsApi, CombosApi, Coupon
 
   private UUID getRestaurantId() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     return context.getRestaurant().getId();
   }
 
@@ -99,7 +102,11 @@ public class PromotionsApiController implements PromotionsApi, CombosApi, Coupon
           () ->
               updatePromotion.execute(
                   restaurantId, request.getId(), mapper.toUpdatePromotionCommand(request)));
-      return ResponseEntity.ok(mapper.toResponse(getPromotions.findById(request.getId()).get()));
+      return ResponseEntity.ok(
+          mapper.toResponse(
+              getPromotions
+                  .findById(request.getId())
+                  .orElseThrow(() -> new IllegalArgumentException("Promotion not found"))));
     }
   }
 
@@ -136,7 +143,11 @@ public class PromotionsApiController implements PromotionsApi, CombosApi, Coupon
           () ->
               updateCombo.execute(
                   restaurantId, request.getId(), mapper.toUpdateComboCommand(request)));
-      return ResponseEntity.ok(mapper.toResponse(getCombos.findById(request.getId()).get()));
+      return ResponseEntity.ok(
+          mapper.toResponse(
+              getCombos
+                  .findById(request.getId())
+                  .orElseThrow(() -> new IllegalArgumentException("Combo not found"))));
     }
   }
 
@@ -173,7 +184,11 @@ public class PromotionsApiController implements PromotionsApi, CombosApi, Coupon
           () ->
               updateCoupon.execute(
                   restaurantId, request.getId(), mapper.toUpdateCouponCommand(request)));
-      return ResponseEntity.ok(mapper.toResponse(getCoupons.findById(request.getId()).get()));
+      return ResponseEntity.ok(
+          mapper.toResponse(
+              getCoupons
+                  .findById(request.getId())
+                  .orElseThrow(() -> new IllegalArgumentException("Coupon not found"))));
     }
   }
 

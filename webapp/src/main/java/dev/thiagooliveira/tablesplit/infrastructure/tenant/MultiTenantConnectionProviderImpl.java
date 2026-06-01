@@ -15,8 +15,8 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   private static final Logger logger =
       LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 
-  private final DataSource dataSource;
-  private final DatabaseDialectHelper dialectHelper;
+  private final transient DataSource dataSource;
+  private final transient DatabaseDialectHelper dialectHelper;
 
   public MultiTenantConnectionProviderImpl(
       DataSource dataSource, DatabaseDialectHelper dialectHelper) {
@@ -49,7 +49,9 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
   private void setSearchPath(Connection connection, String tenantIdentifier) throws SQLException {
     String sql = dialectHelper.getSetSchemaSql(tenantIdentifier);
     logger.debug("[MultiTenantConnection] Setting schema to: {} (SQL: {})", tenantIdentifier, sql);
-    connection.createStatement().execute(sql);
+    try (java.sql.Statement stmt = connection.createStatement()) {
+      stmt.execute(sql);
+    }
   }
 
   @Override
@@ -57,7 +59,9 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
       throws SQLException {
     try {
       String sql = dialectHelper.getSetSchemaSql("PUBLIC");
-      connection.createStatement().execute(sql);
+      try (java.sql.Statement stmt = connection.createStatement()) {
+        stmt.execute(sql);
+      }
     } catch (SQLException e) {
       // ignore
     }

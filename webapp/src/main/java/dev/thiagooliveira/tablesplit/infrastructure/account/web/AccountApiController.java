@@ -76,7 +76,7 @@ public class AccountApiController implements AccountApi {
 
   @Override
   public ResponseEntity<AccountDetailsResponse> getAccountDetails() {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     UUID accountId = context.getId();
 
     Account account =
@@ -128,7 +128,7 @@ public class AccountApiController implements AccountApi {
 
   @Override
   public ResponseEntity<Void> requestAccountCancellation() {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     UUID accountId = context.getId();
 
     String baseUrl =
@@ -149,7 +149,7 @@ public class AccountApiController implements AccountApi {
   @Override
   public ResponseEntity<Void> confirmAccountCancellation(
       @RequestBody @Valid ConfirmCancellationRequest confirmCancellationRequest) {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     UUID accountId = context.getId();
 
     try {

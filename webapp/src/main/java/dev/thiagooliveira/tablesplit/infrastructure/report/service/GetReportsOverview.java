@@ -46,7 +46,7 @@ public class GetReportsOverview {
   public ReportsOverviewResponse execute(UUID restaurantId, int days) {
     ZonedDateTime end = Time.nowZonedDateTime();
     ZonedDateTime start =
-        end.minusDays(days - 1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        end.minusDays((long) days - 1).withHour(0).withMinute(0).withSecond(0).withNano(0);
     ZonedDateTime prevStart = start.minusDays(days);
 
     // Fetch orders that were either CLOSED in the period OR are currently OPEN but were opened in

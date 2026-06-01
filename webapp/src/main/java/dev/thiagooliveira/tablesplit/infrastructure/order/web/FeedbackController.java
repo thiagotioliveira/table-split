@@ -22,7 +22,10 @@ public class FeedbackController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     markFeedbacksAsRead.execute(context.getRestaurant().getId());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     return "feedbacks";

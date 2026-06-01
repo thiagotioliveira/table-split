@@ -11,7 +11,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.Language;
 import dev.thiagooliveira.tablesplit.infrastructure.web.Module;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerController;
-import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContextResolver;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ public class MenuController {
   private final CreateItem createItem;
   private final DeleteItem deleteItem;
   private final TransactionalContext transactionalContext;
+  private final AccountContextResolver accountContextResolver;
 
   public MenuController(
       GetCategory getCategory,
@@ -47,7 +48,8 @@ public class MenuController {
       UpdateItem updateItem,
       CreateItem createItem,
       DeleteItem deleteItem,
-      TransactionalContext transactionalContext) {
+      TransactionalContext transactionalContext,
+      AccountContextResolver accountContextResolver) {
     this.getCategory = getCategory;
     this.createCategory = createCategory;
     this.updateCategory = updateCategory;
@@ -57,6 +59,7 @@ public class MenuController {
     this.createItem = createItem;
     this.deleteItem = deleteItem;
     this.transactionalContext = transactionalContext;
+    this.accountContextResolver = accountContextResolver;
   }
 
   @GetMapping
@@ -72,7 +75,7 @@ public class MenuController {
       BindingResult bindingResult,
       Model model,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
 
     if (bindingResult.hasErrors()) {
       populateModel(auth, model);
@@ -109,7 +112,7 @@ public class MenuController {
       BindingResult bindingResult,
       Model model,
       RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
 
     if (bindingResult.hasErrors()) {
       populateModel(auth, model);
@@ -150,7 +153,7 @@ public class MenuController {
   @PostMapping("/categories/delete")
   public String deleteCategory(
       Authentication auth, @RequestParam UUID categoryId, RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     this.transactionalContext.execute(
         () ->
             this.deleteCategory.execute(
@@ -163,7 +166,7 @@ public class MenuController {
   @PostMapping("/items/delete")
   public String deleteItem(
       Authentication auth, @RequestParam UUID itemId, RedirectAttributes redirectAttributes) {
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     this.transactionalContext.execute(
         () -> this.deleteItem.execute(context.getId(), context.getRestaurant().getId(), itemId));
     redirectAttributes.addFlashAttribute("alert", AlertModel.success("alert.menu.item.deleted"));
@@ -171,7 +174,7 @@ public class MenuController {
   }
 
   private void populateModel(Authentication auth, Model model) {
-    ManagerContextModel context = (ManagerContextModel) model.getAttribute("context");
+    ManagerContextModel context = accountContextResolver.resolve(model);
     var languages =
         context.getRestaurant().getCustomerLanguages().stream().map(Language::toDomain).toList();
     var categories = this.getCategory.execute(context.getRestaurant().getId(), languages);

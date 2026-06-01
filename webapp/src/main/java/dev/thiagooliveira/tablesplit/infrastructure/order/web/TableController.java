@@ -42,7 +42,10 @@ public class TableController {
   }
 
   private void populateModel(UUID selectedTableId, Authentication auth, Model model) {
-    var context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     model.addAttribute("restaurantSlug", context.getRestaurant().getSlug());
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());

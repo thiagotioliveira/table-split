@@ -18,6 +18,7 @@ import dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu.model.Cuis
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerContextModel;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.ManagerController;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContext;
+import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.AccountContextResolver;
 import dev.thiagooliveira.tablesplit.infrastructure.web.security.context.ThemeContext;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
@@ -38,6 +39,7 @@ public class SettingsController {
   private final GetOrCreateToken getOrCreateToken;
   private final RegenerateToken regenerateToken;
   private final MessageSource messageSource;
+  private final AccountContextResolver accountContextResolver;
 
   public SettingsController(
       TransactionalContext transactionalContext,
@@ -45,18 +47,20 @@ public class SettingsController {
       UpdateRestaurant updateRestaurant,
       GetOrCreateToken getOrCreateToken,
       RegenerateToken regenerateToken,
-      MessageSource messageSource) {
+      MessageSource messageSource,
+      AccountContextResolver accountContextResolver) {
     this.transactionalContext = transactionalContext;
     this.getRestaurant = getRestaurant;
     this.updateRestaurant = updateRestaurant;
     this.getOrCreateToken = getOrCreateToken;
     this.regenerateToken = regenerateToken;
     this.messageSource = messageSource;
+    this.accountContextResolver = accountContextResolver;
   }
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    ManagerContextModel context = (ManagerContextModel) model.getAttribute("context");
+    ManagerContextModel context = accountContextResolver.resolve(model);
     var restaurant = getRestaurant.execute(context.getRestaurant().getId()).orElseThrow();
 
     String printToken =
@@ -75,7 +79,7 @@ public class SettingsController {
   @PostMapping("/regenerate-token")
   public String regenerateToken(
       Authentication auth, Model model, RedirectAttributes redirectAttributes) {
-    ManagerContextModel context = (ManagerContextModel) model.getAttribute("context");
+    ManagerContextModel context = accountContextResolver.resolve(model);
     if (!context.isProfessionalOrHigher()) {
       throw new org.springframework.security.access.AccessDeniedException(
           messageSource.getMessage(
@@ -103,7 +107,7 @@ public class SettingsController {
       model.addAttribute("themeNames", ThemeName.values());
       return "settings";
     }
-    var context = (AccountContext) auth.getPrincipal();
+    var context = accountContextResolver.resolve(auth);
     var restaurant =
         this.transactionalContext.execute(
             () -> updateRestaurant.execute(context.getRestaurant().getId(), form.toCommand()));

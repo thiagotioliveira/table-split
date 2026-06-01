@@ -24,12 +24,16 @@ public class DashboardApiController implements DashboardApi {
 
   private AccountContext getContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    return (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
+    return context;
   }
 
   @Override
   public ResponseEntity<DashboardWidgetsResponse> getDashboardWidgets() {
-    AccountContext context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     var locale = LocaleContextHolder.getLocale();
     if (context.getUser() != null && context.getUser().getLanguage() != null) {
       locale = Locale.forLanguageTag(context.getUser().getLanguage().name().toLowerCase());

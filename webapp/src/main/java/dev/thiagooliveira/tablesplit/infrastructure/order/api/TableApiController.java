@@ -68,21 +68,25 @@ public class TableApiController implements TablesApi {
 
   private AccountContext getContext() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    return (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
+    return context;
   }
 
   @Override
   public ResponseEntity<
           dev.thiagooliveira.tablesplit.infrastructure.order.api.spec.v1.model.TablesResponse>
       getTables(UUID restaurantId) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     var targetId = restaurantId != null ? restaurantId : context.getRestaurant().getId();
     return ResponseEntity.ok(getTablesOverview.getTables(targetId));
   }
 
   @Override
   public ResponseEntity<Void> createTable(CreateTableRequest request) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     transactionalContext.execute(
         () ->
             createTable.execute(
@@ -98,7 +102,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<Void> openTable(UUID tableId) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     transactionalContext.execute(
         () -> openTable.execute(tableId, context.getRestaurant().getServiceFee(), null, null));
     return ResponseEntity.ok().build();
@@ -106,7 +110,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<Void> closeOrder(UUID orderId) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     transactionalContext.execute(
         () ->
             closeTable.execute(
@@ -116,7 +120,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<TableOrderHistoryResponse> getActiveOrder(UUID tableId) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     return getOrder
         .execute(tableId)
         .map(o -> mapper.mapToOrderHistoryResponse(o, context.getUser().getLanguage()))
@@ -127,7 +131,7 @@ public class TableApiController implements TablesApi {
   @Override
   public ResponseEntity<List<TableOrderHistoryResponse>> getTableHistory(
       UUID tableId, String status, java.time.OffsetDateTime start, java.time.OffsetDateTime end) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     dev.thiagooliveira.tablesplit.domain.order.OrderStatus orderStatus = null;
     if (status != null && !status.isEmpty()) {
       orderStatus = dev.thiagooliveira.tablesplit.domain.order.OrderStatus.valueOf(status);
@@ -145,7 +149,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<Void> processPayment(UUID tableId, PaymentRequest request) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     transactionalContext.execute(
         () ->
             processPayment.execute(
@@ -171,7 +175,7 @@ public class TableApiController implements TablesApi {
 
   @Override
   public ResponseEntity<TableOrderHistoryResponse> getOrderDetail(UUID orderId) {
-    var context = getContext();
+    var context = java.util.Objects.requireNonNull(getContext());
     return getOrder
         .findById(orderId)
         .map(o -> mapper.mapToOrderHistoryResponse(o, context.getUser().getLanguage()))

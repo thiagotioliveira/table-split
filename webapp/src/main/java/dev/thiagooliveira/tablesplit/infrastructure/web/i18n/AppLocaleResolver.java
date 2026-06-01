@@ -32,8 +32,7 @@ public class AppLocaleResolver extends SessionLocaleResolver {
       boolean authenticated =
           authentication != null
               && !new AuthenticationTrustResolverImpl().isAnonymous(authentication);
-      if (authenticated) {
-        var context = (AccountContext) authentication.getPrincipal();
+      if (authenticated && authentication.getPrincipal() instanceof AccountContext context) {
         return Locale.forLanguageTag(context.getUser().getLanguage().name());
       } else {
         return requestedLocale;

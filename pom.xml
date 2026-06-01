@@ -31,6 +31,23 @@
 		<openapi-generator-maven-plugin.version>7.11.0</openapi-generator-maven-plugin.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+
+		<!-- SonarQube & JaCoCo Properties -->
+		<sonar.host.url>http://localhost:9000</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.coverage.exclusions>
+			**/config/**/*,
+			**/*Config.java,
+			**/spec/**/*,
+			**/model/**/*,
+			**/persistence/**/*,
+			**/*Mapper*.java,
+			**/*Exception.java,
+			**/infrastructure/**/*,
+			**/printagent/**/*,
+			**/application/**/command/**/*,
+			**/application/**/exception/**/*
+		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencyManagement>
@@ -94,4 +111,49 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>5.0.0.4389</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>**/config/**/*</exclude>
+						<exclude>**/*Config.class</exclude>
+						<exclude>**/spec/**/*</exclude>
+						<exclude>**/model/**/*</exclude>
+						<exclude>**/persistence/**/*</exclude>
+						<exclude>**/*Mapper*.class</exclude>
+						<exclude>**/*Exception.class</exclude>
+						<exclude>**/infrastructure/**/*</exclude>
+						<exclude>**/printagent/**/*</exclude>
+						<exclude>**/application/**/command/**/*</exclude>
+						<exclude>**/application/**/exception/**/*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

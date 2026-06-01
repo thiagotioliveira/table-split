@@ -68,6 +68,6 @@ public abstract class AbstractTools {
 
   protected String getMessage(String key, Language language, Object... args) {
     Locale locale = language == Language.PT ? Locale.forLanguageTag("pt-PT") : Locale.ENGLISH;
-    return messageSource.getMessage(key, language == Language.PT ? args : args, locale);
+    return messageSource.getMessage(key, args, locale);
   }
 }

@@ -14,7 +14,10 @@ public class CounterController {
 
   @GetMapping
   public String index(Authentication auth, Model model) {
-    var context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     model.addAttribute("restaurantId", context.getRestaurant().getId().toString());
     model.addAttribute("currencySymbol", context.getRestaurant().getCurrency().getSymbol());
     model.addAttribute("userLanguage", context.getUser().getLanguage());

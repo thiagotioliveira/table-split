@@ -24,7 +24,10 @@ public class ReportsApiController implements ReportsApi {
   @Override
   public ResponseEntity<ReportsOverviewResponse> getReportsOverview(Integer days) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
 
     return ResponseEntity.ok(
         getReportsOverview.execute(context.getRestaurant().getId(), days != null ? days : 30));

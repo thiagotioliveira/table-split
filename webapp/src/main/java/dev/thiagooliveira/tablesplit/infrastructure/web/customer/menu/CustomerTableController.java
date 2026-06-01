@@ -158,6 +158,8 @@ public class CustomerTableController {
         new jakarta.servlet.http.Cookie("ts_last_order_id", activeOrder.getId().toString());
     orderCookie.setPath("/");
     orderCookie.setMaxAge(60 * 60 * 24); // 24 hours
+    orderCookie.setSecure(true);
+    orderCookie.setHttpOnly(true);
     response.addCookie(orderCookie);
 
     var domainLanguages = java.util.List.of(Language.fromLocale(locale));

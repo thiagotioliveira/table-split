@@ -160,6 +160,8 @@ public class CustomerApiController implements CustomerMenuApi {
             .path("/")
             .maxAge(java.time.Duration.ofDays(7))
             .sameSite("Lax")
+            .secure(true)
+            .httpOnly(true)
             .build();
 
     return ResponseEntity.ok()

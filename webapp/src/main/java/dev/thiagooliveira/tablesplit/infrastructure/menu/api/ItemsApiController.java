@@ -27,7 +27,10 @@ public class ItemsApiController implements ItemsApi {
 
   private UUID getRestaurantId() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    AccountContext context = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext context)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Access denied: User not authenticated");
+    }
     return context.getRestaurant().getId();
   }
 

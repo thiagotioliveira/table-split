@@ -18,7 +18,9 @@ public class ManagerContextModel {
   private final dev.thiagooliveira.tablesplit.domain.account.Plan plan;
 
   public ManagerContextModel(Authentication auth) {
-    var account = (AccountContext) auth.getPrincipal();
+    if (auth == null || !(auth.getPrincipal() instanceof AccountContext account)) {
+      throw new IllegalArgumentException("User is not authenticated or principal is invalid");
+    }
     var user = account.getUser();
     var restaurant = account.getRestaurant();
     this.plan = account.getPlan();

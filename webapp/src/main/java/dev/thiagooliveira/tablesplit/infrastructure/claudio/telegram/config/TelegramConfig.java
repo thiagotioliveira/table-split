@@ -43,7 +43,9 @@ public class TelegramConfig {
       org.springframework.context.MessageSource messageSource,
       dev.thiagooliveira.tablesplit.infrastructure.claudio.LanguageDetector languageDetector,
       RestaurantRepository restaurantRepository,
-      dev.thiagooliveira.tablesplit.domain.account.AccountRepository accountRepository) {
+      dev.thiagooliveira.tablesplit.domain.account.AccountRepository accountRepository,
+      dev.thiagooliveira.tablesplit.infrastructure.transactional.TransactionalContext
+          transactionalContext) {
     return new TelegramUpdateHandler(
         claudioService,
         identityService,
@@ -52,7 +54,8 @@ public class TelegramConfig {
         messageSource,
         languageDetector,
         restaurantRepository,
-        accountRepository);
+        accountRepository,
+        transactionalContext);
   }
 
   @Bean

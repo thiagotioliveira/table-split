@@ -89,6 +89,9 @@ public class PushNotificationService
           logger.error("Error body from provider: {}", errorBody);
         }
       }
+    } catch (InterruptedException e) {
+      logger.error("CRITICAL ERROR: Thread was interrupted in send()", e);
+      Thread.currentThread().interrupt();
     } catch (Exception e) {
       logger.error("CRITICAL ERROR in send()", e);
       if (e.getMessage() != null

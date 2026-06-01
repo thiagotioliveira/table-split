@@ -68,7 +68,7 @@ public class TimeUtils {
       java.util.Optional<java.time.ZonedDateTime> nextOpeningOrClosingHours,
       org.springframework.context.MessageSource messageSource,
       java.util.Locale locale) {
-    if (nextOpeningOrClosingHours == null || nextOpeningOrClosingHours.isEmpty()) {
+    if (nextOpeningOrClosingHours.isEmpty()) {
       return messageSource.getMessage("page.profile.status.empty", null, locale);
     }
 
