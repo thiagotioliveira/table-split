@@ -2,7 +2,6 @@ package dev.thiagooliveira.tablesplit.infrastructure.web.customer.menu;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.AbstractE2ESpringTest;
 import dev.thiagooliveira.tablesplit.infrastructure.E2ETest;
@@ -19,18 +18,17 @@ class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
 
   @Autowired private RestaurantRepository restaurantRepository;
 
-  private Restaurant restaurant;
-
   @BeforeEach
   @Override
   protected void setUp() {
     super.setUp();
-    restaurant = restaurantRepository.findBySlug(professionalAccount.slug()).orElseThrow();
   }
 
   @Test
   @SuppressWarnings("java:S5961")
-  void testCustomerMenuLandingPage() {
+  void testCustomerTryAccessRestaurantProfileWithTableForProfessionalAccount() {
+    var restaurant = restaurantRepository.findBySlug(professionalAccount.slug()).orElseThrow();
+
     String url = getBaseUrl() + "/@" + restaurant.getSlug() + "/table/01";
 
     driver.get(url);
