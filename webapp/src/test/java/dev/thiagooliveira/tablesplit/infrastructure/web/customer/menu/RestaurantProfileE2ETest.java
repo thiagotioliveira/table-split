@@ -28,11 +28,37 @@ class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
   @SuppressWarnings("java:S5961")
   void testCustomerTryAccessRestaurantProfileWithTableForProfessionalAccount() {
     var restaurant = restaurantRepository.findBySlug(professionalAccount.slug()).orElseThrow();
-
     String url = getBaseUrl() + "/@" + restaurant.getSlug() + "/table/01";
-
     driver.get(url);
+    verifyRestaurantProfile(restaurant, "/@" + restaurant.getSlug() + "/table/01/menu");
+  }
 
+  @Test
+  void testCustomerMenuNavigationOnPrimaryActionClick() {
+    String slug = professionalAccount.slug();
+    verifyMenuNavigationOnPrimaryActionClick(
+        getBaseUrl() + "/@" + slug + "/table/01", getBaseUrl() + "/@" + slug + "/table/01/menu");
+  }
+
+  @Test
+  @SuppressWarnings("java:S5961")
+  void testCustomerTryAccessRestaurantProfileForStarterAccount() {
+    var restaurant = restaurantRepository.findBySlug(starterAccount.slug()).orElseThrow();
+    String url = getBaseUrl() + "/@" + restaurant.getSlug();
+    driver.get(url);
+    verifyRestaurantProfile(restaurant, "/@" + restaurant.getSlug() + "/menu");
+  }
+
+  @Test
+  void testCustomerMenuNavigationOnPrimaryActionClickForStarterAccount() {
+    String slug = starterAccount.slug();
+    verifyMenuNavigationOnPrimaryActionClick(
+        getBaseUrl() + "/@" + slug, getBaseUrl() + "/@" + slug + "/menu");
+  }
+
+  private void verifyRestaurantProfile(
+      dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant restaurant,
+      String expectedActionUrl) {
     WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
 
     WebElement actionBtn =
@@ -40,8 +66,7 @@ class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
             org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
                 By.cssSelector("a.action-btn.primary")));
     assertThat(actionBtn).isNotNull();
-    assertThat(actionBtn.getAttribute("href"))
-        .endsWith("/@" + restaurant.getSlug() + "/table/01/menu");
+    assertThat(actionBtn.getAttribute("href")).endsWith(expectedActionUrl);
 
     WebElement restaurantName = driver.findElement(By.cssSelector("h1.restaurant-name"));
     assertThat(restaurantName.getText()).isEqualTo(restaurant.getName());
@@ -109,11 +134,7 @@ class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
     assertThat(mapBtn.getAttribute("href")).contains("google.com/maps");
   }
 
-  @Test
-  void testCustomerMenuNavigationOnPrimaryActionClick() {
-    String slug = professionalAccount.slug();
-    String url = getBaseUrl() + "/@" + slug + "/table/01";
-
+  private void verifyMenuNavigationOnPrimaryActionClick(String url, String expectedUrl) {
     driver.get(url);
 
     WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
@@ -124,7 +145,6 @@ class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
                 By.cssSelector("a.action-btn.primary")));
     actionBtn.click();
 
-    String expectedUrl = getBaseUrl() + "/@" + slug + "/table/01/menu";
     wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlToBe(expectedUrl));
 
     assertThat(driver.getCurrentUrl()).isEqualTo(expectedUrl);

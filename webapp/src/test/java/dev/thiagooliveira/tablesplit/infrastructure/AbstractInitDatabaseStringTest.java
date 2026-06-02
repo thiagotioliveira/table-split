@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,8 +251,8 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
           category.setName(
               LocalizedTextEntity.fromMap(
                   Map.of(
-                      Language.PT, "Entradas " + prefix,
-                      Language.EN, "Starters " + prefix)));
+                      Language.PT, "Entradas",
+                      Language.EN, "Starters")));
           entityManager.persist(category);
 
           ItemEntity item = new ItemEntity();
@@ -262,13 +263,15 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
           item.setName(
               LocalizedTextEntity.fromMap(
                   Map.of(
-                      Language.PT, "Item " + prefix,
-                      Language.EN, prefix + " Item")));
+                      Language.PT, "Batata-Frita Rústica",
+                      Language.EN, "Rustic French Fries")));
           item.setDescription(
               LocalizedTextEntity.fromMap(
                   Map.of(
-                      Language.PT, "Descrição do item",
-                      Language.EN, "Item description")));
+                      Language.PT,
+                          "Batatas rústicas fritas na hora, temperadas com sal marinho e alecrim fresco.",
+                      Language.EN,
+                          "Freshly fried rustic potatoes, seasoned with sea salt and fresh rosemary.")));
           entityManager.persist(item);
 
           if (plan == Plan.PROFESSIONAL) {
@@ -298,14 +301,23 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
   protected record AccountData(
       UUID accountId, UUID restaurantId, String slug, UUID userId, String email) {}
 
-  protected void setTenant(UUID restaurantId) {
-    String tenantId =
-        dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.generateTenantIdentifier(
-            restaurantId);
-    dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(tenantId);
-  }
+  protected class TenentExecution {
+    public static <T> T execute(UUID restaurantId, Supplier<T> supplier) {
+      setTenant(restaurantId);
+      var c = supplier.get();
+      clearTenant();
+      return c;
+    }
 
-  protected void clearTenant() {
-    TenantContext.clear();
+    private static void setTenant(UUID restaurantId) {
+      String tenantId =
+          dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext
+              .generateTenantIdentifier(restaurantId);
+      dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(tenantId);
+    }
+
+    private static void clearTenant() {
+      TenantContext.clear();
+    }
   }
 }

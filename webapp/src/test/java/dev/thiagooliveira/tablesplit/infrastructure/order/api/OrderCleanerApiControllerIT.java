@@ -9,14 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractIntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.order.persistence.*;
 import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
-import dev.thiagooliveira.tablesplit.infrastructure.web.security.CustomUserDetailsService;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -31,7 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @IntegrationTest
-class OrderCleanerApiControllerIT extends AbstractInitDatabaseStringTest {
+class OrderCleanerApiControllerIT extends AbstractIntegrationTest {
 
   @Autowired private JdbcTemplate jdbcTemplate;
 
@@ -41,13 +39,9 @@ class OrderCleanerApiControllerIT extends AbstractInitDatabaseStringTest {
 
   @Autowired private OrderFeedbackJpaRepository feedbackJpaRepository;
 
-  @Autowired private CategoryJpaRepository categoryJpaRepository;
-
   @Autowired private ItemJpaRepository itemJpaRepository;
 
   @Autowired private Environment environment;
-
-  @Autowired private CustomUserDetailsService userDetailsService;
 
   private UUID restaurantId;
   private String tenantSchema;

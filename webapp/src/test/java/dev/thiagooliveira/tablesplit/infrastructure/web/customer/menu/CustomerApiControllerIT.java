@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractIntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepository;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 @IntegrationTest
-class CustomerApiControllerIT extends AbstractInitDatabaseStringTest {
+class CustomerApiControllerIT extends AbstractIntegrationTest {
 
   @Autowired private ItemJpaRepository itemJpaRepository;
 
@@ -28,11 +28,13 @@ class CustomerApiControllerIT extends AbstractInitDatabaseStringTest {
   @Override
   protected void setUp() {
     super.setUp();
-    setTenant(professionalAccount.restaurantId());
     professionalItemId =
-        transactionTemplate.execute(
-            status -> itemJpaRepository.findAll().stream().findFirst().orElseThrow().getId());
-    clearTenant();
+        TenentExecution.execute(
+            professionalAccount.restaurantId(),
+            () ->
+                transactionTemplate.execute(
+                    status ->
+                        itemJpaRepository.findAll().stream().findFirst().orElseThrow().getId()));
   }
 
   protected static final String API_BASE = "/api/v1/customer";

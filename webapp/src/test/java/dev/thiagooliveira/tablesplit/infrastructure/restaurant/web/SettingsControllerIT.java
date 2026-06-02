@@ -19,7 +19,7 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
-import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractIntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.listener.MenuLanguageListener;
 import java.util.UUID;
@@ -31,7 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
-class SettingsControllerIT extends AbstractInitDatabaseStringTest {
+class SettingsControllerIT extends AbstractIntegrationTest {
 
   @Autowired private RestaurantRepository restaurantRepository;
   @Autowired private AccountRepository accountRepository;

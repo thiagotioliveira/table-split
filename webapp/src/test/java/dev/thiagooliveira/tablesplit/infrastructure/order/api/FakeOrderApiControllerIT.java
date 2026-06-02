@@ -6,7 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractIntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.order.persistence.OrderJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @IntegrationTest
-class FakeOrderApiControllerIT extends AbstractInitDatabaseStringTest {
+class FakeOrderApiControllerIT extends AbstractIntegrationTest {
 
   @Autowired private OrderJpaRepository orderJpaRepository;
   @Autowired private FakeOrderService fakeOrderService;

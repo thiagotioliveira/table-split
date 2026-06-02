@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractIntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 @IntegrationTest
-class CustomerTableControllerIT extends AbstractInitDatabaseStringTest {
+class CustomerTableControllerIT extends AbstractIntegrationTest {
 
   @BeforeEach
   @Override
