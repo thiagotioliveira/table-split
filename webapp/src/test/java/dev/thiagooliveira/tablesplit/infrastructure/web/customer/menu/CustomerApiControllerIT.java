@@ -5,167 +5,41 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.domain.account.Account;
-import dev.thiagooliveira.tablesplit.domain.account.AccountRepository;
-import dev.thiagooliveira.tablesplit.domain.account.Plan;
-import dev.thiagooliveira.tablesplit.domain.common.Currency;
-import dev.thiagooliveira.tablesplit.domain.common.Language;
-import dev.thiagooliveira.tablesplit.domain.common.Time;
-import dev.thiagooliveira.tablesplit.domain.order.Table;
-import dev.thiagooliveira.tablesplit.domain.order.TableRepository;
-import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
-import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
-import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.H2IT;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryEntity;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.LocalizedTextEntity;
-import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext;
-import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantProvisioningService;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-class CustomerApiControllerIT extends H2IT {
+@IntegrationTest
+class CustomerApiControllerIT extends AbstractInitDatabaseStringTest {
 
-  private static final String API_BASE = "/api/v1/customer";
-
-  @Autowired private RestaurantRepository restaurantRepository;
-  @Autowired private AccountRepository accountRepository;
-  @Autowired private TableRepository tableRepository;
-  @Autowired private TenantProvisioningService tenantProvisioningService;
-  @Autowired private CategoryJpaRepository categoryJpaRepository;
   @Autowired private ItemJpaRepository itemJpaRepository;
 
-  private Restaurant professionalRestaurant;
-  private Restaurant starterRestaurant;
-  private UUID itemId;
+  @Autowired
+  private org.springframework.transaction.support.TransactionTemplate transactionTemplate;
+
+  private UUID professionalItemId;
 
   @BeforeEach
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-
-    // Professional account + restaurant + table + menu item
-    Account profAccount = new Account();
-    profAccount.setId(UUID.randomUUID());
-    profAccount.setPlan(Plan.PROFESSIONAL);
-    profAccount.setCreatedAt(Time.nowOffset());
-    accountRepository.save(profAccount);
-
-    professionalRestaurant = createRestaurant(profAccount.getId(), "prof-" + UUID.randomUUID());
-    provisionAndAddTable(professionalRestaurant, "01");
-    itemId = seedMenuItem(professionalRestaurant);
-
-    // Starter account + restaurant + table (should be blocked)
-    Account starterAccount = new Account();
-    starterAccount.setId(UUID.randomUUID());
-    starterAccount.setPlan(Plan.STARTER);
-    starterAccount.setCreatedAt(Time.nowOffset());
-    accountRepository.save(starterAccount);
-
-    starterRestaurant = createRestaurant(starterAccount.getId(), "starter-" + UUID.randomUUID());
-    provisionAndAddTable(starterRestaurant, "01");
+    setTenant(professionalAccount.restaurantId());
+    professionalItemId =
+        transactionTemplate.execute(
+            status -> itemJpaRepository.findAll().stream().findFirst().orElseThrow().getId());
+    clearTenant();
   }
 
-  private Restaurant createRestaurant(UUID accountId, String slug) {
-    Restaurant restaurant = new Restaurant();
-    restaurant.setId(UUID.randomUUID());
-    restaurant.setAccountId(accountId);
-    restaurant.setName(slug.replace("-", " "));
-    restaurant.setSlug(slug);
-    restaurant.setEmail(slug + "@test.com");
-    restaurant.setCurrency(Currency.BRL);
-    restaurant.setAveragePrice(AveragePrice.PRICE_20_50);
-    restaurant.setDefaultLanguage(Language.PT);
-    restaurant.setCustomerLanguages(List.of(Language.PT));
-    restaurant.setHashPrimaryColor("#000000");
-    restaurant.setHashAccentColor("#ffffff");
-    restaurantRepository.save(restaurant);
-    return restaurant;
-  }
-
-  private void provisionAndAddTable(Restaurant restaurant, String tableCode) {
-    tenantProvisioningService.provisionTenant(restaurant.getId());
-    String tenant = TenantContext.generateTenantIdentifier(restaurant.getId());
-    TenantContext.setCurrentTenant(tenant);
-    try {
-      Table table = new Table(UUID.randomUUID(), restaurant.getId(), tableCode);
-      tableRepository.save(table);
-    } finally {
-      TenantContext.clear();
-    }
-  }
-
-  private UUID seedMenuItem(Restaurant restaurant) {
-    String tenant = TenantContext.generateTenantIdentifier(restaurant.getId());
-    TenantContext.setCurrentTenant(tenant);
-    try {
-      CategoryEntity category = new CategoryEntity();
-      category.setId(UUID.randomUUID());
-      category.setRestaurantId(restaurant.getId());
-      category.setNumOrder(1);
-      category.setActive(true);
-      categoryJpaRepository.save(category);
-
-      LocalizedTextEntity itemName = new LocalizedTextEntity();
-      itemName.getTranslations().put(Language.PT, "Item de Teste");
-
-      ItemEntity item = new ItemEntity();
-      item.setId(UUID.randomUUID());
-      item.setCategory(category);
-      item.setName(itemName);
-      item.setPrice(new BigDecimal("10.00"));
-      item.setActive(true);
-      itemJpaRepository.save(item);
-
-      return item.getId();
-    } finally {
-      TenantContext.clear();
-    }
-  }
-
-  private String tableDataUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/menu/data";
-  }
-
-  private String openTableUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/open";
-  }
-
-  private String placeOrderUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/menu/order";
-  }
-
-  private String callWaiterUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/waiter/call";
-  }
-
-  private String rateItemUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/feedback/item";
-  }
-
-  private String feedbackUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/feedback/general";
-  }
-
-  private String updateCustomerNameUrl(String slug, String tableCode) {
-    return API_BASE + "/" + slug + "/table/" + tableCode + "/customer-name";
-  }
-
-  // ========== getTableData ==========
+  protected static final String API_BASE = "/api/v1/customer";
 
   @Test
   void getTableData_shouldReturnOk_whenProfessionalPlan() throws Exception {
-    mockMvc
-        .perform(get(tableDataUrl(professionalRestaurant.getSlug(), "01")))
-        .andExpect(status().isOk());
+    mockMvc.perform(get(tableDataUrl(professionalAccount.slug(), "01"))).andExpect(status().isOk());
   }
 
   @Test
@@ -178,14 +52,14 @@ class CustomerApiControllerIT extends H2IT {
   @Test
   void getTableData_shouldReturnNotFound_whenTableDoesNotExist() throws Exception {
     mockMvc
-        .perform(get(tableDataUrl(professionalRestaurant.getSlug(), "99")))
+        .perform(get(tableDataUrl(professionalAccount.slug(), "99")))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void getTableData_shouldReturnNotFound_whenStarterPlan() throws Exception {
     mockMvc
-        .perform(get(tableDataUrl(starterRestaurant.getSlug(), "01")))
+        .perform(get(tableDataUrl(starterAccount.slug(), "01")))
         .andExpect(status().isNotFound());
   }
 
@@ -198,7 +72,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isOk());
@@ -224,7 +98,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "99"))
+            post(openTableUrl(professionalAccount.slug(), "99"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isNotFound());
@@ -237,7 +111,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(openTableUrl(starterRestaurant.getSlug(), "01"))
+            post(openTableUrl(starterAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isNotFound());
@@ -251,7 +125,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -279,11 +153,11 @@ class CustomerApiControllerIT extends H2IT {
           ]
         }
         """
-            .formatted(customerId, itemId, customerId);
+            .formatted(customerId, professionalItemId, customerId);
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "01"))
+            post(placeOrderUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isOk());
@@ -335,11 +209,11 @@ class CustomerApiControllerIT extends H2IT {
           ]
         }
         """
-            .formatted(UUID.randomUUID(), itemId);
+            .formatted(UUID.randomUUID(), professionalItemId);
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "99"))
+            post(placeOrderUrl(professionalAccount.slug(), "99"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isNotFound());
@@ -353,7 +227,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -361,7 +235,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(callWaiterUrl(professionalRestaurant.getSlug(), "01"))
+            post(callWaiterUrl(professionalAccount.slug(), "01"))
                 .param("customerId", customerId.toString()))
         .andExpect(status().isOk());
   }
@@ -379,14 +253,14 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
         .andExpect(status().isOk());
 
     mockMvc
-        .perform(post(callWaiterUrl(professionalRestaurant.getSlug(), "01")))
+        .perform(post(callWaiterUrl(professionalAccount.slug(), "01")))
         .andExpect(status().isOk());
   }
 
@@ -398,7 +272,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -426,21 +300,22 @@ class CustomerApiControllerIT extends H2IT {
           ]
         }
         """
-            .formatted(customerId, itemId, customerId);
+            .formatted(customerId, professionalItemId, customerId);
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "01"))
+            post(placeOrderUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(placeOrderBody))
         .andExpect(status().isOk());
 
-    // Now rate the item (uses the ticket item id, but we use itemId here as a best-effort)
+    // Now rate the item (uses the ticket item id, but we use super.professionalItemId here as a
+    // best-effort)
     String rateBody = "{\"itemId\": \"" + UUID.randomUUID() + "\", \"rating\": 5}";
 
     mockMvc
         .perform(
-            post(rateItemUrl(professionalRestaurant.getSlug(), "01"))
+            post(rateItemUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(rateBody))
         .andExpect(status().isOk());
@@ -453,7 +328,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -461,19 +336,19 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "01"))
+            post(placeOrderUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"tickets\": [{\"customerId\": \""
                         + customerId
                         + "\", \"items\": [{\"itemId\": \""
-                        + itemId
+                        + professionalItemId
                         + "\", \"quantity\": 1}]}]}"))
         .andExpect(status().isOk());
 
     String tableData =
         mockMvc
-            .perform(get(tableDataUrl(professionalRestaurant.getSlug(), "01")))
+            .perform(get(tableDataUrl(professionalAccount.slug(), "01")))
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -497,7 +372,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(feedbackUrl(professionalRestaurant.getSlug(), "01"))
+            post(feedbackUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isOk());
@@ -508,7 +383,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -516,19 +391,19 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "01"))
+            post(placeOrderUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"tickets\": [{\"customerId\": \""
                         + customerId
                         + "\", \"items\": [{\"itemId\": \""
-                        + itemId
+                        + professionalItemId
                         + "\", \"quantity\": 1}]}]}"))
         .andExpect(status().isOk());
 
     String tableData =
         mockMvc
-            .perform(get(tableDataUrl(professionalRestaurant.getSlug(), "01")))
+            .perform(get(tableDataUrl(professionalAccount.slug(), "01")))
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -550,7 +425,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(feedbackUrl(professionalRestaurant.getSlug(), "01"))
+            post(feedbackUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isOk());
@@ -564,7 +439,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"customerId\": \"" + customerId + "\", \"customerName\": \"OldName\"}"))
         .andExpect(status().isOk());
@@ -573,7 +448,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(updateCustomerNameUrl(professionalRestaurant.getSlug(), "01"))
+            post(updateCustomerNameUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isOk());
@@ -597,7 +472,7 @@ class CustomerApiControllerIT extends H2IT {
 
     mockMvc
         .perform(
-            post(updateCustomerNameUrl(professionalRestaurant.getSlug(), "99"))
+            post(updateCustomerNameUrl(professionalAccount.slug(), "99"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isNotFound());
@@ -611,7 +486,7 @@ class CustomerApiControllerIT extends H2IT {
     UUID customerId = UUID.randomUUID();
     mockMvc
         .perform(
-            post(openTableUrl(professionalRestaurant.getSlug(), "01"))
+            post(openTableUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\": \"" + customerId + "\", \"customerName\": \"Customer\"}"))
@@ -640,18 +515,18 @@ class CustomerApiControllerIT extends H2IT {
           ]
         }
         """
-            .formatted(customerId, itemId, customerId);
+            .formatted(customerId, professionalItemId, customerId);
 
     mockMvc
         .perform(
-            post(placeOrderUrl(professionalRestaurant.getSlug(), "01"))
+            post(placeOrderUrl(professionalAccount.slug(), "01"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(placeOrderBody))
         .andExpect(status().isOk());
 
     // Now getTableData should return order data
     mockMvc
-        .perform(get(tableDataUrl(professionalRestaurant.getSlug(), "01")))
+        .perform(get(tableDataUrl(professionalAccount.slug(), "01")))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.orderId").isNotEmpty())
         .andExpect(jsonPath("$.ticketItems").isArray());
@@ -663,7 +538,7 @@ class CustomerApiControllerIT extends H2IT {
   void getTableData_shouldReturnOk_whenLastOrderIdIsInvalid() throws Exception {
     mockMvc
         .perform(
-            get(tableDataUrl(professionalRestaurant.getSlug(), "01"))
+            get(tableDataUrl(professionalAccount.slug(), "01"))
                 .param("lastOrderId", "invalid-uuid"))
         .andExpect(status().isOk());
   }
@@ -672,8 +547,36 @@ class CustomerApiControllerIT extends H2IT {
   void getTableData_shouldReturnOk_whenLastOrderIdIsNonExistent() throws Exception {
     mockMvc
         .perform(
-            get(tableDataUrl(professionalRestaurant.getSlug(), "01"))
+            get(tableDataUrl(professionalAccount.slug(), "01"))
                 .param("lastOrderId", UUID.randomUUID().toString()))
         .andExpect(status().isOk());
+  }
+
+  private String tableDataUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/menu/data";
+  }
+
+  private String openTableUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/open";
+  }
+
+  private String placeOrderUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/menu/order";
+  }
+
+  private String callWaiterUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/waiter/call";
+  }
+
+  private String rateItemUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/feedback/item";
+  }
+
+  private String feedbackUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/feedback/general";
+  }
+
+  private String updateCustomerNameUrl(String slug, String tableCode) {
+    return API_BASE + "/" + slug + "/table/" + tableCode + "/customer-name";
   }
 }

@@ -1,6 +1,5 @@
 package dev.thiagooliveira.tablesplit.infrastructure.notification;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +32,7 @@ public class SseService {
     // Send check-in event
     try {
       emitter.send(SseEmitter.event().name("init").data("connected"));
-    } catch (IOException e) {
+    } catch (Exception e) {
       emitters.remove(emitter);
     }
 
@@ -48,7 +47,7 @@ public class SseService {
       for (SseEmitter emitter : emitters) {
         try {
           emitter.send(payload);
-        } catch (IOException e) {
+        } catch (Exception e) {
           logger.debug("Removing broken SSE emitter for restaurant: {}", restaurantId);
           emitters.remove(emitter);
         }

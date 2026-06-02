@@ -9,10 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.thiagooliveira.tablesplit.domain.order.OrderStatus;
 import dev.thiagooliveira.tablesplit.domain.order.PaymentMethod;
 import dev.thiagooliveira.tablesplit.domain.order.TicketStatus;
-import dev.thiagooliveira.tablesplit.infrastructure.PostgresIT;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryEntity;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.CategoryJpaRepository;
-import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemEntity;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.persistence.ItemJpaRepository;
 import dev.thiagooliveira.tablesplit.infrastructure.order.persistence.*;
 import dev.thiagooliveira.tablesplit.infrastructure.restaurant.persistence.RestaurantJpaRepository;
@@ -31,7 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-class OrderCleanerApiControllerIT extends PostgresIT {
+@IntegrationTest
+class OrderCleanerApiControllerIT extends AbstractInitDatabaseStringTest {
 
   @Autowired private JdbcTemplate jdbcTemplate;
 
@@ -56,7 +56,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-
+    authenticatedWith(professionalAccount.email());
     restaurantId = accountContext.getRestaurant().getId();
     tenantSchema = TenantContext.generateTenantIdentifier(restaurantId);
 
@@ -76,20 +76,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
               .map(TableEntity::getId)
               .orElseThrow(() -> new RuntimeException("Table 01 not found"));
 
-      // Seed Menu Data
-      CategoryEntity category = new CategoryEntity();
-      category.setId(UUID.randomUUID());
-      category.setRestaurantId(restaurantId);
-      category.setNumOrder(1);
-      category.setActive(true);
-      categoryJpaRepository.save(category);
-
-      ItemEntity itemEntity = new ItemEntity();
-      itemEntity.setId(UUID.randomUUID());
-      itemEntity.setCategory(category);
-      itemEntity.setPrice(new BigDecimal("15.50"));
-      itemEntity.setActive(true);
-      itemJpaRepository.save(itemEntity);
+      var itemEntity = itemJpaRepository.findAll().stream().findFirst().orElseThrow();
 
       // OLD ORDER (to be cleaned)
       OrderEntity oldOrder = new OrderEntity();
@@ -100,7 +87,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
       oldOrder.setStatus(OrderStatus.CLOSED);
       oldOrder.setOpenedAt(ZonedDateTime.now(zone).minusDays(100).minusHours(1));
       oldOrder.setClosedAt(ZonedDateTime.now(zone).minusDays(100));
-      oldOrder.setServiceFee(0);
+      oldOrder.setServiceFee(10);
 
       // Add Ticket
       TicketEntity ticket = new TicketEntity();
@@ -149,7 +136,7 @@ class OrderCleanerApiControllerIT extends PostgresIT {
       newOrder.setStatus(OrderStatus.CLOSED);
       newOrder.setOpenedAt(ZonedDateTime.now(zone).minusDays(5).minusHours(1));
       newOrder.setClosedAt(ZonedDateTime.now(zone).minusDays(5));
-      newOrder.setServiceFee(0);
+      newOrder.setServiceFee(10);
       orderJpaRepository.save(newOrder);
 
     } finally {

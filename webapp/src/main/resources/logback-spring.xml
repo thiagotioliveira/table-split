@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <conversionRule conversionWord="customColor" converterClass="dev.thiagooliveira.tablesplit.infrastructure.logging.CustomColorConverter" />
+
     <springProperty scope="context" name="rootLogLevel" source="logging.level.ROOT" defaultValue="INFO"/>
     <springProperty scope="context" name="appLogLevel" source="logging.level.dev.thiagooliveira" defaultValue="INFO"/>
     <springProperty scope="context" name="hibernateSqlLevel" source="logging.level.org.hibernate.SQL" defaultValue="INFO"/>
@@ -9,7 +11,7 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %customColor(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
         </encoder>
     </appender>
 
@@ -20,7 +22,7 @@
             <level>ERROR</level>
         </filter>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %customColor(%-5level) [%logger{36}] %msg%n%xThrowable{full}</pattern>
         </encoder>
     </appender>
 

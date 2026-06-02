@@ -8,8 +8,8 @@ import dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantOperationServic
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 public class MenuLanguageListener {
@@ -29,7 +29,7 @@ public class MenuLanguageListener {
     this.tenantOperationService = tenantOperationService;
   }
 
-  @EventListener
+  @TransactionalEventListener
   public void onRestaurantUpdated(RestaurantUpdatedEvent event) {
     if (event.getAddedLanguages().isEmpty() && event.getRemovedLanguages().isEmpty()) {
       return;

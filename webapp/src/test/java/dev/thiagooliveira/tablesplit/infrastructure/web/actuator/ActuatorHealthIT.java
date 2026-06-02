@@ -5,11 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import dev.thiagooliveira.tablesplit.infrastructure.H2IT;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ActuatorHealthIT extends H2IT {
+@IntegrationTest
+class ActuatorHealthIT extends AbstractInitDatabaseStringTest {
 
   @Test
   @DisplayName("Should return healthy status from actuator health endpoint")

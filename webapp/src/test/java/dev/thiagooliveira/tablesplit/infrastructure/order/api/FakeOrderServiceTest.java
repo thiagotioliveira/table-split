@@ -29,7 +29,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 class FakeOrderServiceTest {
 
-  private FakeOrderProperties properties;
   private RestaurantRepository restaurantRepository;
   private TableRepository tableRepository;
   private OrderRepository orderRepository;
@@ -38,14 +37,13 @@ class FakeOrderServiceTest {
   private ProcessPayment processPayment;
   private SubmitGeneralFeedback submitGeneralFeedback;
   private RateItem rateItem;
-  private TransactionTemplate transactionTemplate;
   private FakeOrderService fakeOrderService;
 
   private final UUID restaurantId = UUID.randomUUID();
 
   @BeforeEach
   void setUp() {
-    properties = mock(FakeOrderProperties.class);
+    FakeOrderProperties properties = mock(FakeOrderProperties.class);
     restaurantRepository = mock(RestaurantRepository.class);
     tableRepository = mock(TableRepository.class);
     orderRepository = mock(OrderRepository.class);
@@ -54,7 +52,7 @@ class FakeOrderServiceTest {
     processPayment = mock(ProcessPayment.class);
     submitGeneralFeedback = mock(SubmitGeneralFeedback.class);
     rateItem = mock(RateItem.class);
-    transactionTemplate = mock(TransactionTemplate.class);
+    TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
 
     // Mock TransactionTemplate.executeWithoutResult to run the callback immediately
     doAnswer(

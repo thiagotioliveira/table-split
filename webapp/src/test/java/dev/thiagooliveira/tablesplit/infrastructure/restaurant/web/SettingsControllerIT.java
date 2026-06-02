@@ -19,21 +19,31 @@ import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Restaurant;
 import dev.thiagooliveira.tablesplit.domain.restaurant.RestaurantRepository;
 import dev.thiagooliveira.tablesplit.domain.restaurant.Tag;
-import dev.thiagooliveira.tablesplit.infrastructure.H2IT;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import dev.thiagooliveira.tablesplit.infrastructure.menu.listener.MenuLanguageListener;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-class SettingsControllerIT extends H2IT {
+@IntegrationTest
+class SettingsControllerIT extends AbstractInitDatabaseStringTest {
 
   @Autowired private RestaurantRepository restaurantRepository;
   @Autowired private AccountRepository accountRepository;
 
   @MockitoSpyBean private MenuLanguageListener menuLanguageListener;
+
+  @Override
+  @BeforeEach
+  protected void setUp() throws Exception {
+    super.setUp();
+    authenticatedWith(professionalAccount.email());
+  }
 
   @Test
   void shouldReturnSettingsView_whenAuthenticated() throws Exception {

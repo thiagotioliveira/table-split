@@ -10,15 +10,17 @@ import dev.thiagooliveira.tablesplit.domain.common.Currency;
 import dev.thiagooliveira.tablesplit.domain.common.Language;
 import dev.thiagooliveira.tablesplit.domain.restaurant.AveragePrice;
 import dev.thiagooliveira.tablesplit.domain.restaurant.CuisineType;
-import dev.thiagooliveira.tablesplit.infrastructure.H2IT;
+import dev.thiagooliveira.tablesplit.infrastructure.AbstractInitDatabaseStringTest;
+import dev.thiagooliveira.tablesplit.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
+@IntegrationTest
 @Transactional
-class RegisterControllerIT extends H2IT {
+class RegisterControllerIT extends AbstractInitDatabaseStringTest {
   @Autowired private UserRepository userRepository;
   @Autowired private PendingRegistrationRepository pendingRegistrationRepository;
 

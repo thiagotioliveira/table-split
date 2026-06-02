@@ -85,6 +85,14 @@ public class RestExceptionHandler {
     return ResponseEntity.badRequest().body(errorResponse);
   }
 
+  @ExceptionHandler(
+      org.springframework.web.context.request.async.AsyncRequestNotUsableException.class)
+  public ResponseEntity<Void> handleAsyncRequestNotUsableException(
+      org.springframework.web.context.request.async.AsyncRequestNotUsableException ex) {
+    log.debug("Client disconnected during async request (SSE): {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
     log.error("Unhandled exception in API request: ", ex);
