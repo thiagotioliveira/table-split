@@ -15,7 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @E2ETest
-public class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
+class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
 
   @Autowired private RestaurantRepository restaurantRepository;
 
@@ -23,12 +23,13 @@ public class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
 
   @BeforeEach
   @Override
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
     restaurant = restaurantRepository.findBySlug(professionalAccount.slug()).orElseThrow();
   }
 
   @Test
+  @SuppressWarnings("java:S5961")
   void testCustomerMenuLandingPage() {
     String url = getBaseUrl() + "/@" + restaurant.getSlug() + "/table/01";
 
@@ -78,7 +79,7 @@ public class RestaurantProfileE2ETest extends AbstractE2ESpringTest {
 
     // Info Cards Validation
     List<WebElement> infoCards = driver.findElements(By.cssSelector("div.info-card"));
-    assertThat(infoCards.size()).isGreaterThanOrEqualTo(4);
+    assertThat(infoCards).hasSizeGreaterThanOrEqualTo(4);
     assertThat(infoCards.get(0).getText()).contains(restaurant.getPhone());
     assertThat(infoCards.get(1).getText()).contains(restaurant.getEmail());
     assertThat(infoCards.get(2).getText()).isNotBlank();

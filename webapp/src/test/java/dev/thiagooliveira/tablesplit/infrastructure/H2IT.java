@@ -18,7 +18,7 @@ public abstract class H2IT extends BaseRegisteredSpringTest {
 
   @Override
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
     accountContext =
         (AccountContext) userDetailsService.loadUserByUsername(PROFESSIONAL_REGISTERED_EMAIL);

@@ -54,7 +54,7 @@ class OrderCleanerApiControllerIT extends AbstractInitDatabaseStringTest {
 
   @BeforeEach
   @Override
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
     authenticatedWith(professionalAccount.email());
     restaurantId = accountContext.getRestaurant().getId();

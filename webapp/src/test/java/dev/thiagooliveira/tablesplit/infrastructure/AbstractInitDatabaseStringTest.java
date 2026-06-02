@@ -89,7 +89,7 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
 
   @Override
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
 
     // Clean up database tables dynamically to avoid dirty state and FK failures across tests
@@ -114,12 +114,10 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
                   String tableName = rs.getString("TABLE_NAME");
                   if (schema != null
                       && (schema.equalsIgnoreCase("public")
-                          || schema.toUpperCase().startsWith("T_"))) {
-                    // Avoid truncating Liquibase tables
-                    if (!tableName.equalsIgnoreCase("databasechangelog")
-                        && !tableName.equalsIgnoreCase("databasechangeloglock")) {
-                      tables.add(schema + "." + tableName);
-                    }
+                          || schema.toUpperCase().startsWith("T_"))
+                      && !tableName.equalsIgnoreCase("databasechangelog")
+                      && !tableName.equalsIgnoreCase("databasechangeloglock")) {
+                    tables.add(schema + "." + tableName);
                   }
                 }
               }
@@ -169,11 +167,6 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
     professionalAccount = createTenantEnvironment("Pro", Plan.PROFESSIONAL);
   }
 
-  /*
-  protected AccountData createDummyAccount(String prefix, Plan plan) {
-      return createTenantEnvironment(prefix, plan);
-  }
-  */
   private AccountData createTenantEnvironment(String prefix, Plan plan) {
 
     AccountEntity account = new AccountEntity();
@@ -308,7 +301,7 @@ public abstract class AbstractInitDatabaseStringTest extends AbstractMockMvcSpri
   protected void setTenant(UUID restaurantId) {
     String tenantId =
         dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.generateTenantIdentifier(
-            professionalAccount.restaurantId());
+            restaurantId);
     dev.thiagooliveira.tablesplit.infrastructure.tenant.TenantContext.setCurrentTenant(tenantId);
   }
 

@@ -17,7 +17,7 @@ class CustomerTableControllerIT extends AbstractInitDatabaseStringTest {
 
   @BeforeEach
   @Override
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
   }
 
@@ -35,12 +35,6 @@ class CustomerTableControllerIT extends AbstractInitDatabaseStringTest {
         .perform(get("/api/v1/customer/" + professionalAccount.slug() + "/table/01/menu/data"))
         .andExpect(status().isOk());
   }
-
-  //  @Test
-  //  void shouldAllowAccess_whenPlanIsTrial() throws Exception {
-  //    mockMvc.perform(get("/@" + trialRestaurant.getSlug() +
-  // "/table/01")).andExpect(status().isOk());
-  //  }
 
   @Test
   void shouldReturnNotFound_whenPlanIsStarter() throws Exception {

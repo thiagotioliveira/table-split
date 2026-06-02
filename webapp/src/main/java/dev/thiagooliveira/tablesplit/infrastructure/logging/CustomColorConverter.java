@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ANSIConstants;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 
+@SuppressWarnings("java:S110")
 public class CustomColorConverter extends ForegroundCompositeConverterBase<ILoggingEvent> {
 
   @Override

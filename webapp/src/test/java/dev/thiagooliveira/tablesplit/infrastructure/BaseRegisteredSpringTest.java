@@ -41,7 +41,7 @@ public abstract class BaseRegisteredSpringTest extends BaseSpringTest {
 
   @Override
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
 
     // Clean up database tables dynamically to avoid dirty state and FK failures across tests
@@ -66,12 +66,10 @@ public abstract class BaseRegisteredSpringTest extends BaseSpringTest {
                   String tableName = rs.getString("TABLE_NAME");
                   if (schema != null
                       && (schema.equalsIgnoreCase("public")
-                          || schema.toUpperCase().startsWith("T_"))) {
-                    // Avoid truncating Liquibase tables
-                    if (!tableName.equalsIgnoreCase("databasechangelog")
-                        && !tableName.equalsIgnoreCase("databasechangeloglock")) {
-                      tables.add(schema + "." + tableName);
-                    }
+                          || schema.toUpperCase().startsWith("T_"))
+                      && !tableName.equalsIgnoreCase("databasechangelog")
+                      && !tableName.equalsIgnoreCase("databasechangeloglock")) {
+                    tables.add(schema + "." + tableName);
                   }
                 }
               }
@@ -115,15 +113,18 @@ public abstract class BaseRegisteredSpringTest extends BaseSpringTest {
     } catch (Exception e) {
       // Ignore
     }
+    try {
+      var professionalResult =
+          registerRestaurant(
+              Plan.PROFESSIONAL, "Cantina Professional", PROFESSIONAL_REGISTERED_EMAIL);
+      professionalSlug = professionalResult.model().getRestaurant().getSlug();
 
-    var professionalResult =
-        registerRestaurant(
-            Plan.PROFESSIONAL, "Cantina Professional", PROFESSIONAL_REGISTERED_EMAIL);
-    professionalSlug = professionalResult.model().getRestaurant().getSlug();
-
-    var starterResult =
-        registerRestaurant(Plan.STARTER, "Cantina Starter", STARTER_REGISTERED_EMAIL);
-    starterSlug = starterResult.model().getRestaurant().getSlug();
+      var starterResult =
+          registerRestaurant(Plan.STARTER, "Cantina Starter", STARTER_REGISTERED_EMAIL);
+      starterSlug = starterResult.model().getRestaurant().getSlug();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   protected record RegistrationResult(

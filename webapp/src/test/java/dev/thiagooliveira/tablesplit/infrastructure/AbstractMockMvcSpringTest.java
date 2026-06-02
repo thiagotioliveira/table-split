@@ -22,7 +22,7 @@ public abstract class AbstractMockMvcSpringTest {
   protected AccountContext accountContext;
 
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
   }
 

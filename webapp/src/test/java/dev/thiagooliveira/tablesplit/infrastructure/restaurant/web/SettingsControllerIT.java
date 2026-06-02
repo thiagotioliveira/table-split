@@ -40,7 +40,7 @@ class SettingsControllerIT extends AbstractInitDatabaseStringTest {
 
   @Override
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
     authenticatedWith(professionalAccount.email());
   }

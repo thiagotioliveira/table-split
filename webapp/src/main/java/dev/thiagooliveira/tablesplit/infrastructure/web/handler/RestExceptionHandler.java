@@ -5,7 +5,6 @@ import dev.thiagooliveira.tablesplit.application.order.exception.TableAlreadyExi
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.ForbiddenException;
 import dev.thiagooliveira.tablesplit.infrastructure.web.exception.NotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,7 +27,7 @@ public class RestExceptionHandler {
                 err ->
                     new ApiErrorResponse.ApiFieldError(
                         err.getField(), err.getDefaultMessage(), err.getRejectedValue()))
-            .collect(Collectors.toList());
+            .toList();
 
     ApiErrorResponse errorResponse =
         new ApiErrorResponse(

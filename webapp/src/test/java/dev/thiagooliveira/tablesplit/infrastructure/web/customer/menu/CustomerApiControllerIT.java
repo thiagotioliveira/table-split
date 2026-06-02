@@ -26,7 +26,7 @@ class CustomerApiControllerIT extends AbstractInitDatabaseStringTest {
 
   @BeforeEach
   @Override
-  protected void setUp() throws Exception {
+  protected void setUp() {
     super.setUp();
     setTenant(professionalAccount.restaurantId());
     professionalItemId =
